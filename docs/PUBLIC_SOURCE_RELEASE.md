@@ -1,6 +1,6 @@
 # 公开源码候选包
 
-主名称为 **Canvillage**，英文全称为 **Infinite Canvas for Village Chiefs**，中文名为 **村长无限画布**。新的源码仓库为 [mengxiangshu666/Canvillage](https://github.com/mengxiangshu666/Canvillage)，先以私密状态建立，完成公开前检查后再决定可见性。
+主名称为 **Canvillage**，英文全称为 **Infinite Canvas for Village Chiefs**，中文名为 **村长无限画布**。源码仓库为 [mengxiangshu666/Canvillage](https://github.com/mengxiangshu666/Canvillage)，已于 2026-10-09 完成公开前检查并公开。
 
 本项目的开发工作区、私人 Git 历史、公开源码和便携运行包分开保存。
 
