@@ -17,14 +17,18 @@ ScriptContentIntent = Literal[
 
 
 class FreezoneStoryKeyframePlan(BaseModel):
-    """一个镜头内部值得被单独锚定的可见状态，不是额外镜头。"""
+    """一个生成段内有独立参考职责的单幅画面，不是额外视频节点。"""
 
-    role: Literal["action_state", "contact_state", "ending_state", "other"] = Field(
-        default="action_state", description="状态画面的用途"
+    role: Literal["action_state", "contact_state", "ending_state", "spatial_reveal", "detail_view", "other"] = Field(
+        default="action_state", description="画面职责：动作、接触、结束状态、空间揭示或局部细节"
     )
+    generation_strategy: Literal["", "independent", "state_edit"] = Field(
+        default="", description="independent用资产组织独立构图；state_edit参考首图改变动作状态；历史缺省保持state_edit"
+    )
+    framing: str = Field(default="", max_length=1000, description="本张景别、视点、取景与主体关系；independent必填，不复制首图机位")
     state: str = Field(max_length=1000, description="这一张画面要冻结的可见状态")
-    purpose: str = Field(default="", max_length=600, description="为什么需要这张状态画面")
-    required: bool = Field(default=False, description="模型或导演认为缺少它会损害动作接力")
+    purpose: str = Field(default="", max_length=600, description="相比首图与其他计划图新增的可见信息，不能只写锁定状态")
+    required: bool = Field(default=False, description="缺少本图会损害动作、空间或关键信息的表达")
 
 
 class FreezoneStoryScriptRow(BaseModel):
@@ -101,7 +105,7 @@ class FreezoneStoryScriptRow(BaseModel):
     keyframe_plan: list[FreezoneStoryKeyframePlan] = Field(
         default_factory=list,
         max_length=4,
-        description="本镜内可选的状态关键画面计划；不是拆成更多视频节点，普通镜头为空",
+        description="本生成段内可选的关键画面计划，按独立构图或动作改图分工；已有参考足够时为空，不增加视频节点",
     )
 
 

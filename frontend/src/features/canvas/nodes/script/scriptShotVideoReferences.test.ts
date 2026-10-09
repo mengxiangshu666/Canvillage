@@ -58,6 +58,18 @@ describe('script video reference roles at submission', () => {
     expect(scriptVideoReferencePrompt('手写提示词', 'manual', graph)).toBe('手写提示词');
   });
 
+  it('carries independent framing and lets the script specify the ending pause', () => {
+    const views = { ...graph, nodes: graph.nodes.map(node => node.id === 'state' ? { ...node, data: { ...node.data,
+      scriptShotKeyframeStrategy: 'independent', scriptShotKeyframeFraming: '侧面全景，手与栏杆同框',
+    } } : node) };
+    const prompt = scriptVideoReferencePrompt('[主体动作：松手后站稳，保持最后一拍]', 'video', views);
+    expect(prompt).toContain('提供独立视点');
+    expect(prompt).toContain('构图：侧面全景，手与栏杆同框');
+    expect(prompt).toContain('保持最后一拍');
+    expect(prompt).toContain('镜头变化及停顿按剧本执行');
+    expect(prompt).not.toContain('不要求在该姿势定格');
+  });
+
   it('records actual video numbering separately from storyboard input and keeps source snapshots stable', () => {
     const compiled = compileScriptVideoReferences('动作', 'video', graph);
     expect(compiled.references?.map(item => [item.scope, item.imageNumber, item.role, item.sourceNodeId])).toEqual([

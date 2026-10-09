@@ -2,6 +2,7 @@ path,license_expression,copyright,evidence
 .dockerignore,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 .env.example,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 .gitattributes,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
+.github/workflows/quality-source.yml,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 .gitignore,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 .gitleaks.toml,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 .pre-commit-config.yaml,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
@@ -232,6 +233,7 @@ docker-compose.release.yml,Elastic-2.0,2026 SuperTale contributors,REUSE.toml ag
 docker-compose.selfhosted.release.yml,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 docker-compose.selfhosted.yml,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 docker-compose.yml,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
+docs/PUBLIC_SOURCE_RELEASE.md,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 docs/arch/g01-filmcraft-workflow-boundary.md,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 docs/en/license.md,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 docs/knowledge/combat_prompt_distilled.md,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
@@ -1220,6 +1222,7 @@ frontend/src/features/canvas/nodes/script/scriptCutReview.ts,Elastic-2.0,2026 Su
 frontend/src/features/canvas/nodes/script/scriptEndFrameDraft.test.ts,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 frontend/src/features/canvas/nodes/script/scriptEndFrameDraft.ts,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 frontend/src/features/canvas/nodes/script/scriptFields.ts,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
+frontend/src/features/canvas/nodes/script/scriptKeyframeImages.test.ts,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 frontend/src/features/canvas/nodes/script/scriptKeyframeImages.ts,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 frontend/src/features/canvas/nodes/script/scriptKeyframePlan.test.ts,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 frontend/src/features/canvas/nodes/script/scriptKeyframePlan.ts,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
@@ -2012,6 +2015,7 @@ scripts/memory_runtime_smoke.py,Elastic-2.0,2026 SuperTale contributors,REUSE.to
 scripts/migrate_identity_data.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 scripts/organize_workspace.ps1,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 scripts/package_village_canvas.ps1,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
+scripts/prepare_public_source.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 scripts/production/one_person_lifetime_film.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 scripts/recompile_agent_memory.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 scripts/reference_distill/__init__.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
@@ -3271,6 +3275,7 @@ tests/test_project_work_ledger_runtime.py,Elastic-2.0,2026 SuperTale contributor
 tests/test_prompt_style_ethnicity_layering.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_prop_extraction_contract.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_provider_failure_checkpoint.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
+tests/test_public_source_export.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_quality_target_manifest.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_real_execution_adapter.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_real_execution_bridge.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
@@ -3688,7 +3693,3 @@ village_canvas_run_api.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml agg
 启动村长无限画布.bat,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 启动村长无限画布.vbs,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 村长无限画布-Start.bat,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
-.github/workflows/quality-source.yml,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
-docs/PUBLIC_SOURCE_RELEASE.md,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
-scripts/prepare_public_source.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
-tests/test_public_source_export.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation

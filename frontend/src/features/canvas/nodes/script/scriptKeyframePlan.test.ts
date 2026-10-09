@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { scriptKeyframePlan, scriptKeyframePlanReport, scriptKeyframeStatePrompt, scriptKeyframeVisualContext } from './scriptKeyframePlan';
+import { scriptKeyframePlan, scriptKeyframePlanIssues, scriptKeyframePlanReport, scriptKeyframeStatePrompt, scriptKeyframeVisualContext } from './scriptKeyframePlan';
 
 describe('keyframe visual differences', () => {
   it('omits an empty-purpose opening repeat and an exact planned duplicate', () => {
@@ -74,7 +74,7 @@ describe('keyframe visual differences', () => {
     expect(prompt).toContain('先看@图片1中实际可见');
     expect(prompt).toContain('姿态、人物间距和接触关系由目标状态决定');
     expect(prompt).toContain('真实间隙');
-    expect(prompt).toContain('起始人物位置、间距和遮挡随目标状态改变');
+    expect(prompt).not.toContain('[画面构图：双方紧挨]');
     expect(prompt).toContain('双方分开，退后两步');
     expect(prompt).toContain('角色引用@图片2');
     expect(prompt).not.toContain('首帧契约：');
@@ -88,15 +88,47 @@ describe('keyframe visual differences', () => {
     expect(prompt).toContain('不恢复已释放的接触');
     expect(prompt.indexOf('角色引用@图片2')).toBeLessThan(prompt.indexOf('首图右手握紧栏杆'));
     expect(prompt).toContain('不同时表现互斥阶段');
-    expect(prompt).toContain('成图核对');
+    expect(prompt).toContain('可见状态：右手已经离开栏杆');
   });
 
-  it('carries the opening state as a comparison, without copying its expression instructions', () => {
+  it('carries stable design without the opening state or expression', () => {
     const row = { start_state: '双方拳臂已经接触', shot_prompt: '[微表情：怒视] + [光影几何：暖光]' };
     const context = scriptKeyframeVisualContext(row);
-    expect(context).toContain('首帧状态对照');
-    expect(context).toContain(row.start_state);
+    expect(context).not.toContain(row.start_state);
     expect(context).toContain('[光影几何：暖光]');
     expect(context).not.toContain('怒视');
+  });
+
+  it('keeps distinct views of the same state and merges exact repeats across legacy and explicit edit strategy', () => {
+    const item = { role: 'spatial_reveal', state: '女孩持剑，敌人化雾', purpose: '看清敌人的位置', required: false };
+    const plan = [
+      { ...item, generation_strategy: 'independent' as const, framing: '女孩过肩看向敌人' },
+      { ...item, generation_strategy: 'independent' as const, framing: '高位俯视两者间距' },
+    ];
+    expect(scriptKeyframePlan({ keyframe_plan: plan })).toEqual(plan);
+    expect(scriptKeyframePlan({ keyframe_plan: [item, { ...item, generation_strategy: 'state_edit' }] })).toEqual([item]);
+  });
+
+  it('uses the alternate framing without assigning the first asset the role of opening image', () => {
+    const item = { role: 'spatial_reveal', generation_strategy: 'independent' as const,
+      framing: '女孩过肩看向敌人', state: '敌人已化为雾气', purpose: '揭示两人的相对位置', required: true };
+    const prompt = scriptKeyframeStatePrompt('角色引用@图片1', item, 0,
+      scriptKeyframeVisualContext({ start_state: '女孩正面持剑', shot_prompt: '[画面构图：女孩正面全身] + [光影几何：月光]' }));
+    expect(prompt).toContain('本张构图：女孩过肩看向敌人');
+    expect(prompt).toContain('不沿用首图机位');
+    expect(prompt).toContain('角色引用@图片1');
+    expect(prompt).not.toContain('先看@图片1');
+    expect(prompt).not.toContain('女孩正面');
+    expect(prompt).toContain('月光');
+  });
+
+  it('reports incomplete independent inputs without dropping their required plan', () => {
+    const item = { generation_strategy: 'independent' as const, state: '站在门边', purpose: '', required: true };
+    const row = { start_state: item.state, keyframe_plan: [item] };
+    expect(scriptKeyframePlan(row)).toHaveLength(1);
+    expect(scriptKeyframePlanIssues([row])).toMatchObject([
+      { rule_id: 'script.keyframe.input.v1', severity: 'blocking', message: expect.stringContaining('缺少景别') },
+    ]);
+    expect(scriptKeyframePlanIssues([{ ...row, keyframe_plan: [{ ...item, framing: '侧面近景' }] }])[0].message).toContain('缺少新增信息');
   });
 });

@@ -75,6 +75,8 @@ def test_keyframe_plan_round_trips_and_is_preserved_by_local_rewrite() -> None:
     plan = [
         {"role": "contact_state", "state": "前轮压住坡沿", "purpose": "锁住支撑关系", "required": True},
         {"role": "ending_state", "state": "主体腾空越过坡沿", "purpose": "锁住切点", "required": False},
+        {"role": "spatial_reveal", "generation_strategy": "independent", "framing": "坡沿侧面全景，板与落点同框",
+         "state": "主体腾空越过坡沿", "purpose": "看清落点距离", "required": True},
     ]
     original = {
         "shot_no": 1,

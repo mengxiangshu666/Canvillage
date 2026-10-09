@@ -1959,7 +1959,8 @@ describe('逐镜出视频 · 同场景相邻镜的上一镜承接边', () => {
       scene_tags: '坡道', scene_descriptions: { 坡道: geography, 地下室: '不相关场景' },
       keyframe_plan: [
         { role: 'contact_state', state: '滑板前轮压上坡沿，双脚仍保持支撑', purpose: '锁住接触关系', required: true },
-        { role: 'ending_state', state: '滑板腾空越过坡沿，身体重心前倾', purpose: '锁住切点状态', required: false },
+        { role: 'spatial_reveal', generation_strategy: 'independent' as const, framing: '侧面全景，板与落地平台同框',
+          state: '滑板腾空越过坡沿，身体重心前倾', purpose: '锁住切点状态', required: false },
       ],
     } : row);
     seedScene(planned);
@@ -1982,6 +1983,11 @@ describe('逐镜出视频 · 同场景相邻镜的上一镜承接边', () => {
     }
     expect(originalKeyframes[0].data.prompt).toContain('锁住接触关系');
     expect(originalKeyframes[1].data.prompt).toContain('锁住切点状态');
+    const openingUrl = useCanvasStore.getState().nodes.find(node => node.id === firstVideo?.data.scriptShotImageNodeId)?.data.imageUrl;
+    expect(openingUrl).toBeTruthy();
+    expect(originalKeyframes[1].data.referenceImageUrls).not.toContain(openingUrl);
+    expect(originalKeyframes[1].data.prompt).toContain('本张构图：侧面全景');
+    expect(originalKeyframes[1].data.prompt).not.toContain('先看@图片1');
     expect(originalKeyframes[0].data.scriptCreativeHandoff).toMatchObject({ sceneDescriptions: { 坡道: geography } });
     expect(originalKeyframes[0].data.prompt).toContain('先看@图片1中实际可见的姿态、接触与支撑');
     expect(originalKeyframes[0].data.prompt).not.toContain('首帧契约');
@@ -1997,6 +2003,8 @@ describe('逐镜出视频 · 同场景相邻镜的上一镜承接边', () => {
     deduped.forEach((node, index) => useCanvasStore.getState().updateNodeData(node.id, { imageUrl: `/state-${index}.png` }));
     scatterScriptShotVideos({ scriptNodeId: SCRIPT_ID, model: VIDEO_MODEL });
     expect(videoByRowKey().get('shot:1')?.data.prompt).toContain('本镜状态关键帧');
+    expect(videoByRowKey().get('shot:1')?.data.prompt).toContain('提供独立视点');
+    expect(videoByRowKey().get('shot:1')?.data.prompt).toContain('侧面全景，板与落地平台同框');
     expect(videoByRowKey().get('shot:1')?.data.prompt).not.toContain('@图片0');
 
     const shortened = planned.map((row, index) => index === 0 ? { ...row, keyframe_plan: row.keyframe_plan?.slice(0, 1) } : row);
@@ -2010,6 +2018,19 @@ describe('逐镜出视频 · 同场景相邻镜的上一镜承接边', () => {
     useCanvasStore.getState().updateNodeData(SCRIPT_ID, { scriptResult: { title: '测试', rows: shortened.map(row => ({ ...row, keyframe_plan: [] })) } });
     scatterScriptShotVideos({ scriptNodeId: SCRIPT_ID, model: VIDEO_MODEL });
     expect(useCanvasStore.getState().nodes.filter(node => node.data.scriptShotKeyframeRowKey === 'shot:1')).toHaveLength(0);
+  });
+
+  it('计划补图尚未生成时也先检查全部参考数量，不为不支持多图的模型先生成补图', () => {
+    const planned = sceneRows().map((row, index) => index === 0 ? { ...row, keyframe_plan: [
+      { role: 'spatial_reveal', generation_strategy: 'independent' as const, framing: '侧面全景',
+        state: '腾空越过坡沿', purpose: '看清落点距离', required: true },
+      { role: 'ending_state', state: '双脚落稳平台', purpose: '看清落地支撑', required: true },
+    ] } : row);
+    seedScene(planned);
+    const result = scatterScriptShotVideos({ scriptNodeId: SCRIPT_ID, model: VIDEO_MODEL,
+      generateVideos: true, modelCapabilities: { supportedModes: ['allReference'], referenceLimits: { allReference: { image: 2 } } } });
+    expect(result.ok).toBe(false);
+    expect(useCanvasStore.getState().nodes.filter(node => node.data.scriptShotKeyframeSourceNodeId)).toHaveLength(0);
   });
 
   it('读取脚本的衔接方式与推荐生成方式并留档', () => {

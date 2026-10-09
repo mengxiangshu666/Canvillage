@@ -10,7 +10,7 @@
  */
 
 export interface FreezoneStoryScriptRow {
-  keyframe_plan?: { role?: 'action_state' | 'contact_state' | 'ending_state' | 'other' | string; state?: string; purpose?: string; required?: boolean }[] | null;
+  keyframe_plan?: { role?: string; generation_strategy?: '' | 'independent' | 'state_edit'; framing?: string; state?: string; purpose?: string; required?: boolean }[] | null;
   sequence_ids?: string[] | null;
   character_state_start?: Record<string, string> | null;
   character_state_end?: Record<string, string> | null;

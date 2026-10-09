@@ -61,16 +61,16 @@ import { ensureShotKeyframeNodes } from './scriptKeyframeImages';
 
 function scriptVideoModelIssue(spec: ScriptShotVideoSpec, model?: ScriptVideoModelCapabilities | null, existing?: CanvasNode, graph: CanvasGraphSlice = liveGraph(), continuitySourceId?: string): string | null {
   const assetCount = spec.assetReferences.filter(reference => reference.assetId).length;
-  const referenceSources = new Set(graph.edges.filter(edge => edge.target === existing?.id && edge.data?.role !== SCRIPT_SHOT_VIDEO_EDGE_ROLE && edge.data?.role !== 'scriptShotAssetReference' && edge.data?.role !== SCRIPT_SHOT_CONTINUITY_EDGE_ROLE).map(edge => edge.source));
+  const referenceSources = new Set(graph.edges.filter(edge => edge.target === existing?.id && edge.data?.role !== SCRIPT_SHOT_VIDEO_EDGE_ROLE && edge.data?.role !== 'scriptShotAssetReference' && edge.data?.role !== SCRIPT_SHOT_CONTINUITY_EDGE_ROLE && edge.data?.role !== SCRIPT_SHOT_KEYFRAME_EDGE_ROLE).map(edge => edge.source));
   if (continuitySourceId) referenceSources.add(continuitySourceId);
   const requiredImages = new Set(spec.assetReferences.map(reference => reference.imageUrl));
   for (const source of referenceSources) {
     const url = firstFrameUrl(graph.nodes.find(node => node.id === source));
     if (url) requiredImages.add(url);
   }
-  const imageCount = requiredImages.size + 1;
+  const imageCount = requiredImages.size + 1 + spec.keyframePlan.length;
   if (assetCount && spec.generationMode === 'firstLastFrame') return '本镜需要资产多参考，首尾帧模式不能同时提交这些资产；请改为多参考生成或换用兼容的镜头方案';
-  if (assetCount && spec.generationMode !== 'textToVideo' && !scriptAssetVideoMode(imageCount, model)) return `本镜需要 ${imageCount} 张参考图（含关键帧与资产），请选择支持该数量多参考图片的模型`;
+  if (imageCount > 1 && spec.generationMode !== 'textToVideo' && spec.generationMode !== 'firstLastFrame' && !scriptAssetVideoMode(imageCount, model)) return `本镜需要 ${imageCount} 张参考图（含关键帧与资产），请选择支持该数量多参考图片的模型`;
   if (spec.generationMode === 'textToVideo' && isScriptNoValue(spec.startState ?? '')) return '文生视频需要明确的可见起始状态，请补充本镜起始状态';
   if (spec.generationMode === 'textToVideo' && spec.requiresAssetReference) return '本镜有需要锁定的资产，请使用带参考图的生成方式，避免文生丢失资产一致性';
   if (spec.generationMode === 'textToVideo' && !model?.supportedModes?.includes('textToVideo')) return '所选模型未声明支持文生视频，请换模型';

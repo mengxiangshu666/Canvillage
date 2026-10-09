@@ -148,6 +148,12 @@ def _creative_handoff(value: object) -> dict[str, Any]:
                     "required": item.get("required") is True,
                 }
             )
+            strategy = item.get("generation_strategy")
+            framing = item.get("framing")
+            if strategy in ("independent", "state_edit"):
+                plan[-1]["generation_strategy"] = strategy
+            if isinstance(framing, str) and _text(framing, None):
+                plan[-1]["framing"] = _text(framing, None)
         if plan:
             result["keyframe_plan"] = plan
     raw_references = source.get("referenceResponsibilities") or source.get("reference_responsibilities")

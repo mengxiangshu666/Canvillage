@@ -221,7 +221,10 @@ RULE_CATALOG: dict[str, dict[str, str]] = {
         "severity": SEVERITY_ADVISORY, "summary": "核对逐镜归属与导演段落镜号",
     },
     "script.keyframe.duplicate_plan.v1": {
-        "severity": SEVERITY_ADVISORY, "summary": "拒绝同镜内状态、职责和用途均重复的补图计划",
+        "severity": SEVERITY_ADVISORY, "summary": "拒绝同镜内状态、职责、用途及构图均重复的补图计划",
+    },
+    "script.keyframe.input.v1": {
+        "severity": SEVERITY_BLOCKING, "summary": "独立构图须有取景关系及新增信息，生成策略必须有效",
     },
     "script.continuity.character_state.v1": {
         "severity": SEVERITY_ADVISORY, "summary": "核对同场连续人物的服装装备接续",
@@ -672,6 +675,7 @@ def validate_script_rows(
     _check_character_states(table, report)
     for index, row in enumerate(table):
         report.issues.extend(_keyframe_duplicate_issues(row, index))
+        report.issues.extend(_keyframe_input_issues(row, index))
     return report
 
 
@@ -690,7 +694,7 @@ def _keyframe_duplicate_issues(row: Mapping[str, Any], row_index: int) -> list[S
     if not isinstance(plan, list):
         return []
     start_key = _keyframe_text_key(row.get("start_state"))
-    seen: dict[tuple[str, str, str], int] = {}
+    seen: dict[tuple[str, str, str, str, str], int] = {}
     issues: list[ScriptIssue] = []
     for index, item in enumerate(plan):
         if not isinstance(item, Mapping):
@@ -700,9 +704,12 @@ def _keyframe_duplicate_issues(row: Mapping[str, Any], row_index: int) -> list[S
             continue
         purpose_key = _keyframe_text_key(item.get("purpose"))
         role = item.get("role") if isinstance(item.get("role"), str) else "action_state"
-        signature = (_keyframe_text_key(role), state_key, purpose_key)
+        framing_key = _keyframe_text_key(item.get("framing"))
+        strategy = item.get("generation_strategy") or "state_edit"
+        signature = (_keyframe_text_key(role), state_key, purpose_key, framing_key,
+                     strategy if isinstance(strategy, str) else "")
         detail: dict[str, Any] = {"keyframe_index": index}
-        if state_key == start_key and not purpose_key and signature[0] == "action_state":
+        if state_key == start_key and not purpose_key and not framing_key and signature[0] == "action_state" and strategy != "independent":
             detail["reason"] = "opening_state"
             message = f"状态画面 {index + 1} 与首帧文字状态相同且没有新增用途，已拒绝重复补图；真实画面差异未检查"
         elif signature in seen:
@@ -716,6 +723,31 @@ def _keyframe_duplicate_issues(row: Mapping[str, Any], row_index: int) -> list[S
             rule_id="script.keyframe.duplicate_plan.v1", severity=SEVERITY_ADVISORY,
             message=message, row_index=row_index, shot_no=_shot_no_of(row, row_index),
             field="keyframe_plan", detail=detail,
+        ))
+    return issues
+
+
+def _keyframe_input_issues(row: Mapping[str, Any], row_index: int) -> list[ScriptIssue]:
+    plan = row.get("keyframe_plan")
+    if not isinstance(plan, list):
+        return []
+    issues: list[ScriptIssue] = []
+    for index, item in enumerate(plan):
+        if not isinstance(item, Mapping) or not _keyframe_text_key(item.get("state")):
+            continue
+        strategy = item.get("generation_strategy")
+        if strategy not in (None, "", "independent", "state_edit"):
+            message = "关键画面的生成方式无效，请选择独立构图或动作改图"
+        elif strategy == "independent" and not _keyframe_text_key(item.get("framing")):
+            message = "独立构图缺少景别、视点和取景关系，请补充后再出图"
+        elif strategy == "independent" and not _keyframe_text_key(item.get("purpose")):
+            message = "独立构图缺少新增信息的说明，请补充本图用途后再出图"
+        else:
+            continue
+        issues.append(ScriptIssue(
+            rule_id="script.keyframe.input.v1", severity=SEVERITY_BLOCKING,
+            message=message, row_index=row_index, shot_no=_shot_no_of(row, row_index),
+            field="keyframe_plan", detail={"keyframe_index": index},
         ))
     return issues
 

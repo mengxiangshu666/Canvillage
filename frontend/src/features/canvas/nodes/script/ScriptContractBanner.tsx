@@ -44,7 +44,7 @@ export function ScriptContractBanner({ report, rows, onDismiss }: ScriptContract
   const keyframeIssues = rows ? scriptKeyframePlanIssues(rows) : [];
   const keyframeIssuesKey = JSON.stringify(keyframeIssues);
   const issues = rows ? [
-    ...(report?.issues ?? []).filter(issue => issue.fixed || issue.rule_id !== 'script.keyframe.duplicate_plan.v1'),
+    ...(report?.issues ?? []).filter(issue => issue.fixed || !['script.keyframe.duplicate_plan.v1', 'script.keyframe.input.v1'].includes(issue.rule_id)),
     ...(keyframeIssuesKey === dismissedKeyframeIssues ? [] : keyframeIssues),
   ] : report?.issues ?? [];
   const repair = report?.repair;

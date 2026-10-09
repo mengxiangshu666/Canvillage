@@ -855,6 +855,29 @@ def test_keyframe_plan_preserves_new_purposes_roles_and_signed_geometry():
     assert not any(issue.rule_id == "script.keyframe.duplicate_plan.v1" for issue in validate_script_rows([row]).issues)
 
 
+def test_keyframe_plan_preserves_distinct_views_and_refuses_incomplete_independent_input():
+    item = {"role": "spatial_reveal", "generation_strategy": "independent", "state": "女孩持剑，敌人化雾",
+            "purpose": "揭示两人的位置", "required": True}
+    plan = [{**item, "framing": "女孩过肩看向敌人"}, {**item, "framing": "高位俯视两者间距"}]
+    row = _row(start_state=item["state"], keyframe_plan=plan)
+    report = repair_script_rows([row])
+    assert report.rows[0]["keyframe_plan"] == plan
+    assert not any(issue.rule_id.startswith("script.keyframe.") for issue in report.issues)
+    for patch, reason in (({"framing": "无"}, "缺少景别"), ({"purpose": ""}, "缺少新增信息"),
+                          ({"generation_strategy": "unknown"}, "生成方式无效")):
+        invalid = [{**plan[0], **patch}]
+        report = repair_script_rows([_row(keyframe_plan=invalid)])
+        assert report.rows[0]["keyframe_plan"] == invalid
+        issues = [issue for issue in report.blocking if issue.rule_id == "script.keyframe.input.v1"]
+        assert len(issues) == 1 and reason in issues[0].message
+
+
+def test_keyframe_legacy_and_explicit_state_edit_have_the_same_duplicate_signature():
+    item = {"role": "contact_state", "state": "手握栏杆", "purpose": "锁定支撑", "required": False}
+    report = repair_script_rows([_row(keyframe_plan=[item, {**item, "generation_strategy": "state_edit", "required": True}])])
+    assert report.rows[0]["keyframe_plan"] == [{**item, "required": True}]
+
+
 def test_keyframe_refusal_respects_local_rewrite_scope():
     from copy import deepcopy
 

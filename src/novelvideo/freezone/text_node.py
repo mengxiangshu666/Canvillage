@@ -143,10 +143,21 @@ You develop a user's idea, creative brief or script excerpt into a structured st
   to recommend single-image generation. Do not invent internal-cut, multi-speaker,
   extension or duration capabilities.
 - `keyframe_plan` is optional and belongs to this one video segment, not a reason to
-  create more video rows. Add at most the few state changes that the viewer must read:
-  contact/weight transfer, an irreversible action state, or the visible ending. Each
-  item states the frozen image purpose and the action that connects it. Ordinary
-  continuous motion with no identity or contact risk should leave the list empty.
+  create more video rows. Plan references by useful visual information, not a fixed
+  frame count or an exhaustive action timeline. Each item specifies one frozen state,
+  a purpose naming what it adds beyond the opening and other references, and framing
+  describing its shot size, viewpoint and subject relationships. Existing character,
+  scene and prop assets already lock design; do not regenerate those as keyframes.
+  Use generation_strategy=independent for a distinct composition, spatial_reveal or
+  detail_view, with explicit framing. Compose it from shared assets without copying
+  the opening camera. Use generation_strategy=state_edit for an action/contact/ending
+  state that needs the opening's design and physical relationships; change the visible
+  geometry, not just the crop or expression. Neither strategy mandates an end frame.
+  A meaningful alternate view of the same state may add information; changing only
+  the role or purpose wording does not make two visually identical images useful.
+  If existing references suffice, leave the list empty. Reuse a real previous video
+  capture through reference_requirements and the continuity workflow when available;
+  planning text cannot invent a captured frame or claim that a generated image is one.
   For contact-heavy or multi-phase action, evaluate which later visible states need
   their own image to preserve contact, support, changed equipment or spatial outcome.
   Do not default to just an opening pose for such segments. Each additional state
@@ -479,7 +490,7 @@ class FreezoneShotRewriteRow(BaseModel):
     transition_plan: str | None = Field(default=None, max_length=1000, description="本镜通向下一镜的开放衔接计划；未修改则保留")
     generation_mode: str | None = Field(default=None, max_length=100, description="推荐生成方式：all_reference优先；按模型能力选择image_to_video / first_last_frame / text_to_video；未修改则保留")
     reference_requirements: str | None = Field(default=None, max_length=1000, description="本镜生成前需要的角色、场景、尾帧等参考；未修改则保留")
-    keyframe_plan: list[FreezoneStoryKeyframePlan] | None = Field(default=None, max_length=4, description="本镜内可选状态关键画面计划；不是拆成更多视频节点")
+    keyframe_plan: list[FreezoneStoryKeyframePlan] | None = Field(default=None, max_length=4, description="本段按独立构图或动作改图分工的可选关键画面计划；不是额外视频节点，未改则保留")
     prop_state_start: str | None = Field(default=None, max_length=1000, description="本镜开始时关键道具状态；未修改则保留")
     prop_state_end: str | None = Field(default=None, max_length=1000, description="本镜结束时关键道具状态；与动作结果一致")
     prop_state_change: str | None = Field(default=None, max_length=1000, description="本镜道具的可见变化；静态时说明保持")
@@ -920,7 +931,11 @@ def merge_freezone_shot_rewrite(
         if field == "shot_prompt":
             value = rewritten_prompt
         if field == "keyframe_plan" and value is not None:
-            value = [item.model_dump() if hasattr(item, "model_dump") else item for item in value]
+            value = [
+                {key: field_value for key, field_value in item.model_dump().items()
+                 if key not in {"generation_strategy", "framing"} or field_value}
+                if hasattr(item, "model_dump") else item for item in value
+            ]
         if value is None:
             continue
         if field == "content_intent" and target.get(field) not in (None, "", "other"):

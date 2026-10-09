@@ -36,7 +36,8 @@ def canvas_http_client(monkeypatch, tmp_path):
         yield client, "/api/v1/projects/reference-handoff/freezone/canvases/isolated"
 
 
-def test_reference_handoff_survives_canvas_http_save_reload_and_workflow_compile(canvas_http_client):
+@pytest.mark.parametrize("keyframe_fields", [{}, {"generation_strategy": "independent", "framing": "南侧平台侧面全景，栏杆和落点同框"}])
+def test_reference_handoff_survives_canvas_http_save_reload_and_workflow_compile(canvas_http_client, keyframe_fields):
     client, url = canvas_http_client
     reference = {
         "scope": "storyboard", "imageNumber": 1, "role": "character", "name": "阿波",
@@ -45,7 +46,7 @@ def test_reference_handoff_survives_canvas_http_save_reload_and_workflow_compile
     handoff = {
         "shotPurpose": "让观众看清释放结果", "cutReason": "落稳后切向前方",
         "sceneDescriptions": {"屋顶": "栏杆在水塔西侧，南侧平台距栏杆两米"},
-        "keyframePlan": [{"role": "ending_state", "state": "手已释放，双脚支撑在南侧平台", "purpose": "核对落点与支撑", "required": True}],
+        "keyframePlan": [{"role": "ending_state", "state": "手已释放，双脚支撑在南侧平台", "purpose": "核对落点与支撑", "required": True, **keyframe_fields}],
         "directorContext": {
             "storyPromise": "一次选择改变关系", "endingChange": "双方最终和解",
             "visualBible": {"visualStyle": "冷峻写实", "colorProgression": "末段转暖"},
@@ -113,6 +114,10 @@ def test_reference_handoff_survives_canvas_http_save_reload_and_workflow_compile
         _compile_workflow_shot_contract(restored["nodes"][0]["data"], duration_seconds=5, index=1)
     restored_handoff["sceneDescriptions"] = handoff["sceneDescriptions"]
     restored_handoff["directorContext"]["endingChange"] = "另一结局"
+    with pytest.raises(ValueError, match="已冻结合同不一致"):
+        _compile_workflow_shot_contract(restored["nodes"][0]["data"], duration_seconds=5, index=1)
+    restored_handoff["directorContext"] = deepcopy(handoff["directorContext"])
+    restored_handoff["keyframePlan"][0]["framing"] = "北侧平台俯视"
     with pytest.raises(ValueError, match="已冻结合同不一致"):
         _compile_workflow_shot_contract(restored["nodes"][0]["data"], duration_seconds=5, index=1)
 

@@ -290,6 +290,8 @@ export interface VideoCreativeHandoff {
   };
   keyframePlan?: Array<{
     role: string;
+    generation_strategy?: 'independent' | 'state_edit';
+    framing?: string;
     state: string;
     purpose: string;
     required: boolean;

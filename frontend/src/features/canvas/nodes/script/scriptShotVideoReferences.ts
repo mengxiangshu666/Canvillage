@@ -54,7 +54,7 @@ export function compileScriptVideoReferences(prompt: string, videoNodeId: string
       sourceNodeId: node.id,
       ...wording,
       ...(role === 'state_frame' ? {
-        responsibility: `是本镜状态关键帧，动作发展到${node.data.scriptShotKeyframeState || '此画面状态'}${node.data.scriptShotKeyframePurpose ? `（参考用途：${node.data.scriptShotKeyframePurpose}，不另设动作，状态优先）` : ''}；${wording.responsibility}`,
+        responsibility: `是本镜状态关键帧，${node.data.scriptShotKeyframeStrategy === 'independent' ? '提供独立视点，' : ''}可见状态：${node.data.scriptShotKeyframeState || '此画面状态'}${node.data.scriptShotKeyframeFraming ? `；构图：${node.data.scriptShotKeyframeFraming}` : ''}${node.data.scriptShotKeyframePurpose ? `（参考用途：${node.data.scriptShotKeyframePurpose}，不另设动作，状态优先）` : ''}；${wording.responsibility}`,
       } : {}),
     };
   });

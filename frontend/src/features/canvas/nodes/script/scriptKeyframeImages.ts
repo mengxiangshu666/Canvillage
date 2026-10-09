@@ -10,7 +10,7 @@ import { storyboardImageNodesForScript } from './scriptStoryboardMembers';
 import { scriptRowsOf } from './scriptStaleness';
 import { scriptRowFingerprint } from './scriptRowFingerprint';
 import { withScriptImageQuality } from './scriptRenderQuality';
-import { scriptKeyframeStatePrompt, scriptKeyframeVisualContext, type ScriptKeyframePlanItem } from './scriptKeyframePlan';
+import { scriptKeyframeInputIssue, scriptKeyframeStatePrompt, scriptKeyframeVisualContext, type ScriptKeyframePlanItem } from './scriptKeyframePlan';
 import type { ScriptShotRefEntry } from './scriptShotRefs';
 import { scriptReferenceResponsibility, scriptDirectorVisualContext, scriptSceneSpatialContext } from './scriptCreativeHandoff';
 
@@ -43,28 +43,31 @@ export function ensureShotKeyframeNodes(params: {
   const absolute = resolveAbsolutePosition(shotImageNode, new Map(store.nodes.map(node => [node.id, node])));
   const baseRefs = Array.isArray(shotImageNode.data.referenceImageUrls)
     ? shotImageNode.data.referenceImageUrls.filter((url): url is string => typeof url === 'string' && url.length > 0) : [];
-  const refs = [...new Set([first, ...baseRefs, ...spec.assetReferences.map(reference => reference.imageUrl)])];
-  const referenceResponsibilities: NonNullable<VideoCreativeHandoff['referenceResponsibilities']> = refs.map((url, index) => {
-    const asset = spec.assetReferences.find(reference => reference.imageUrl === url && reference.assetId);
-    const role = index === 0 ? 'frame_design' : asset?.role ?? 'reference';
-    return {
-      scope: 'keyframe' as const, imageNumber: index + 1, role,
-      name: index === 0 ? '本镜首图' : asset ? `${asset.roleLabel} ${asset.name}` : '参考图',
-      ...(index === 0 ? { sourceNodeId: shotImageNode.id } : {}),
-      ...scriptReferenceResponsibility(role),
-    };
-  });
-  const creativeHandoff: VideoCreativeHandoff = { ...spec.creativeHandoff, referenceResponsibilities: [
-    ...(spec.creativeHandoff.referenceResponsibilities ?? []).filter(reference => reference.scope === 'storyboard'),
-    ...referenceResponsibilities,
-  ] };
-  const referenceInstructions = referenceResponsibilities.slice(1).map(reference =>
-    `${reference.name} 引用@图片${reference.imageNumber}：${reference.responsibility}；${reference.prohibited}；本张姿态、位置和变化服从目标状态。`,
-  ).join('\n');
   const existingForRow = store.nodes.filter(node => node.data.scriptShotKeyframeSourceNodeId === scriptNodeId
     && node.data.scriptShotKeyframeRowKey === spec.rowKey);
   const ids: string[] = [];
   spec.keyframePlan.forEach((item, index) => {
+    const independent = item.generation_strategy === 'independent';
+    const refs = [...new Set([...(independent ? [] : [first]), ...baseRefs, ...spec.assetReferences.map(reference => reference.imageUrl)])];
+    const referenceResponsibilities: NonNullable<VideoCreativeHandoff['referenceResponsibilities']> = refs.map((url, refIndex) => {
+      const opening = !independent && refIndex === 0;
+      const asset = spec.assetReferences.find(reference => reference.imageUrl === url && reference.assetId);
+      const role = opening ? 'frame_design' : asset?.role ?? 'reference';
+      return {
+        scope: 'keyframe' as const, imageNumber: refIndex + 1, role,
+        name: opening ? '本镜首图' : asset ? `${asset.roleLabel} ${asset.name}` : '参考图',
+        ...(opening ? { sourceNodeId: shotImageNode.id } : {}),
+        ...scriptReferenceResponsibility(role),
+      };
+    });
+    const creativeHandoff: VideoCreativeHandoff = { ...spec.creativeHandoff, referenceResponsibilities: [
+      ...(spec.creativeHandoff.referenceResponsibilities ?? []).filter(reference => reference.scope === 'storyboard'),
+      ...referenceResponsibilities,
+    ] };
+    const referenceInstructions = referenceResponsibilities.filter(reference => reference.role !== 'frame_design').map(reference =>
+      `${reference.name} 引用@图片${reference.imageNumber}：${reference.responsibility}；${reference.prohibited}。`,
+    ).join('\n');
+    const inputIssue = scriptKeyframeInputIssue(item);
     const candidates = existingForRow.filter(node => node.data.scriptShotKeyframeIndex === index);
     const current = candidates.find(node => node.data.scriptShotKeyframeFingerprint === spec.rowFingerprint && completedImage(node))
       ?? candidates.find(node => node.data.scriptShotKeyframeFingerprint === spec.rowFingerprint) ?? candidates[0];
@@ -72,21 +75,28 @@ export function ensureShotKeyframeNodes(params: {
     if (duplicateIds.length) useCanvasStore.getState().deleteNodes(duplicateIds);
     const context = [scriptDirectorVisualContext(creativeHandoff), scriptSceneSpatialContext(creativeHandoff), spec.keyframeContext].filter(Boolean).join('\n');
     const prompt = withScriptImageQuality(scriptKeyframeStatePrompt(referenceInstructions, item, index, context));
+    const finished = completedImage(current);
+    // Template updates alone must not discard a completed image or trigger another paid call.
     const refreshed = current && (current.data.scriptShotKeyframeFingerprint !== spec.rowFingerprint
-      || current.data.prompt !== prompt || JSON.stringify(current.data.referenceImageUrls) !== JSON.stringify(refs));
-    const label = `分镜 #${spec.shotNumber} · 状态画面 ${index + 1}`;
+      || JSON.stringify(current.data.referenceImageUrls) !== JSON.stringify(refs)
+      || (current.data.scriptShotKeyframeStrategy || 'state_edit') !== (item.generation_strategy || 'state_edit')
+      || (current.data.scriptShotKeyframeFraming || '') !== (item.framing || '')
+      || (!finished && current.data.prompt !== prompt));
+    const label = `分镜 #${spec.shotNumber} · ${independent ? '独立构图' : '状态画面'} ${index + 1}`;
     const patch = {
-      label, displayName: label, prompt,
+      label, displayName: label, prompt: finished && !refreshed ? current?.data.prompt : prompt,
       model: shotImageNode.data.model, size: shotImageNode.data.size,
       requestAspectRatio: shotImageNode.data.requestAspectRatio, deliverySpec: shotImageNode.data.deliverySpec,
-      count: 1, referenceImageUrl: refs[0], referenceImageUrls: refs,
+      count: 1, referenceImageUrl: refs[0] ?? null, referenceImageUrls: refs,
       scriptShotKeyframeSourceNodeId: scriptNodeId, scriptShotKeyframeRowKey: spec.rowKey,
       scriptShotKeyframeFingerprint: spec.rowFingerprint, scriptShotKeyframeIndex: index,
       scriptShotKeyframeRole: item.role, scriptShotKeyframeState: item.state, scriptShotKeyframePurpose: item.purpose,
+      scriptShotKeyframeStrategy: item.generation_strategy || 'state_edit', scriptShotKeyframeFraming: item.framing || '',
       scriptCreativeHandoff: creativeHandoff,
       ...(refreshed ? { imageUrl: null, previewImageUrl: null, generationBatch: null, generationError: null } : {}),
-      ...(generateImages && !current?.data.isGenerating && (!completedImage(current) || refreshed)
+      ...(generateImages && !inputIssue && !current?.data.isGenerating && (!completedImage(current) || refreshed)
         ? { canvas_auto_generate_once: true, generationError: null } : {}),
+      ...(inputIssue ? { canvas_auto_generate_once: false, generationError: inputIssue } : {}),
     } as Partial<ImageGenNodeData>;
     const live = useCanvasStore.getState();
     const byId = new Map(live.nodes.map(node => [node.id, node]));

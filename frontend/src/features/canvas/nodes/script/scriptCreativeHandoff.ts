@@ -137,7 +137,7 @@ export function scriptReferenceResponsibility(
     case 'state_frame':
       return {
         responsibility: '只指导这一阶段的姿态、接触或空间关系',
-        prohibited: '不覆盖开场，不要求在该姿势定格；从起点通过连续的动作、接触和重心变化到达此状态，不做静帧拼贴或凭空跳变',
+        prohibited: '不覆盖开场，不做静帧拼贴或凭空跳变；状态间的动作、镜头变化及停顿按剧本执行，不从参考图自动推导硬切或保持时长',
       };
     case 'end_frame':
       return {

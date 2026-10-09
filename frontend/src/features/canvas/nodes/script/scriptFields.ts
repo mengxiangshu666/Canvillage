@@ -84,7 +84,7 @@ const SCRIPT_TRAIL_FIELDS: ScriptFieldDef[] = [
   { key: 'end_state', label: '切点状态', widthPx: 180, tier: 'detail' },
   { key: 'generation_mode', label: '推荐生成方式', widthPx: 150, tier: 'detail' },
   { key: 'reference_requirements', label: '参考需求', widthPx: 180, tier: 'detail' },
-  { key: 'keyframe_plan', label: '状态关键画面计划', widthPx: 240, tier: 'detail' },
+  { key: 'keyframe_plan', label: '关键画面计划', widthPx: 240, tier: 'detail' },
 ];
 
 function materializeSlotFields(slot: number): ScriptFieldDef[] {
