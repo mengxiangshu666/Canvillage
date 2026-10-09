@@ -1,0 +1,31 @@
+{
+  "id": "song_poetic_landscape",
+  "name": "宋韵诗意山水",
+  "label": "宋韵诗意山水",
+  "family": "song_aesthetic",
+  "era": "historical_fantasy",
+  "palette": "矿物青绿、赭石、松烟墨、绢本米白与克制金线",
+  "lighting": "柔和天光穿过山岚，低反差层次，局部金色晨昏边光",
+  "optics": "长卷式深景组织，35mm宽幅空间感，清晰中远景层次，无现代镜头炫光",
+  "composition": "高远、深远、平远并置，人物作为山水尺度锚点，大面积留白与云气分隔空间",
+  "camera_motion": "slow lateral scroll, gentle crane through mist layers, restrained parallax",
+  "style_instructions": "Cinematic Song-dynasty-inspired poetic landscape, refined mineral color and ink textures, elegant architecture, restrained human presence, scroll-painting spatial rhythm with readable cinematic depth.",
+  "avoid_instructions": "No generic fantasy game art, no Qing-style costumes, no neon, no plastic 3D, no random calligraphy, no watermark.",
+  "style_tag": "SONG POETIC LANDSCAPE",
+  "style_family": "animation",
+  "animation_subtype": "hybrid",
+  "tags": [
+    "东方",
+    "宋韵",
+    "山水",
+    "诗意"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "slow lateral scroll, gentle crane through mist layers, restrained parallax"
+    }
+  },
+  "image_prompt": "Cinematic Song-dynasty-inspired poetic landscape, refined mineral color and ink textures, elegant architecture, restrained human presence, scroll-painting spatial rhythm with readable cinematic depth.",
+  "video_prompt": "slow lateral scroll, gentle crane through mist layers, restrained parallax",
+  "negative_prompt": "No generic fantasy game art, no Qing-style costumes, no neon, no plastic 3D, no random calligraphy, no watermark."
+}

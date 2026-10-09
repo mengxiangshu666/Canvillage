@@ -1,0 +1,33 @@
+MPFB example avatar attribution
+Source: https://github.com/met4citizen/TalkingHead
+Upstream commit inspected: eed58d198076a7e1e825f804802921c4d3804d46
+Asset: avatars/mpfb.glb
+License: CC0 1.0 Universal (public domain dedication)
+Created with Blender and MPFB. The Village Infinite Canvas copy is texture-resized/WebP optimized without geometry compression; ARKit facial morph targets are preserved.
+
+ICT-FaceKit expression head attribution
+Source: https://github.com/ICT-VGL/ICT-FaceKit
+Asset source: FaceXModel/generic_neutral_mesh.obj plus 57 expression shape OBJ files
+License: MIT
+Copyright (c) 2020 USC Institute for Creative Technologies
+Village Infinite Canvas conversion: OBJ position targets converted into a glTF 2.0 binary with preserved material groups, UVs, generated normals, and named Morph Targets. No identity-basis meshes are distributed.
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

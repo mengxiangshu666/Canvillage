@@ -1,0 +1,31 @@
+{
+  "id": "cosmic_sci_fi",
+  "name": "宇宙科幻",
+  "label": "宇宙科幻",
+  "family": "space_opera",
+  "era": "far_future",
+  "palette": "深空蓝、银白、冷紫与微量琥珀工作灯",
+  "lighting": "physically motivated spacecraft practicals, hard rim from stars, soft instrument glow",
+  "optics": "large-format 28mm scale shots, 50mm human inserts, crisp micro-contrast",
+  "composition": "宏大尺度对比与清晰工程几何并置，人物成为可读的尺度锚点",
+  "camera_motion": "slow zero-gravity drift, orbital arc, controlled push through a structural frame",
+  "style_instructions": "Premium cinematic space opera, physically coherent spacecraft and planetary scale, restrained VFX, human-centered production design, high-end film still.",
+  "avoid_instructions": "No fantasy medieval motifs, no random hologram clutter, no toy spaceship, no unreadable UI text, no watermark.",
+  "style_tag": "CINEMATIC SPACE OPERA",
+  "tags": [
+    "太空",
+    "科幻",
+    "宇宙",
+    "未来"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Use a continuous orbital or zero-gravity drift with clear inertial direction; preserve engineering geometry and human scale."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Premium cinematic space opera, physically coherent spacecraft and planetary scale, restrained VFX, human-centered production design, high-end film still.",
+  "video_prompt": "slow zero-gravity drift, orbital arc, controlled push through a structural frame",
+  "negative_prompt": "No fantasy medieval motifs, no random hologram clutter, no toy spaceship, no unreadable UI text, no watermark."
+}

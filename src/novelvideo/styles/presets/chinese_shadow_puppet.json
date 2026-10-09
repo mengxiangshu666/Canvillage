@@ -1,0 +1,31 @@
+{
+  "id": "chinese_shadow_puppet",
+  "name": "中国皮影",
+  "label": "中国皮影",
+  "family": "shadow_puppet",
+  "era": "timeless",
+  "palette": "半透明朱红、琥珀、靛蓝、墨黑与暖白幕布",
+  "lighting": "强背光穿透彩色皮革，轮廓锐利，幕布边缘有真实暖光衰减",
+  "optics": "正面戏台视角，层叠剪影与轻微皮革透光，无写实镜头景深",
+  "composition": "关节人物侧影清晰，兵器与服饰轮廓可读，幕布框景形成传统舞台秩序",
+  "camera_motion": "measured puppet articulation, lateral stage travel, subtle lamp flicker and layered shadow parallax",
+  "style_instructions": "Authentic Chinese shadow-puppetry cinema, translucent carved leather figures, articulated silhouettes, warm backlit cloth screen, precise folk patterns and theatrical staging.",
+  "avoid_instructions": "No flat vector icon look, no opaque paper cutout, no photoreal actors, no modern objects, no text or watermark.",
+  "style_tag": "CHINESE SHADOW PUPPETRY",
+  "style_family": "animation",
+  "animation_subtype": "hybrid",
+  "tags": [
+    "皮影",
+    "非遗",
+    "剪影",
+    "动画"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "measured puppet articulation, lateral stage travel, subtle lamp flicker and layered shadow parallax"
+    }
+  },
+  "image_prompt": "Authentic Chinese shadow-puppetry cinema, translucent carved leather figures, articulated silhouettes, warm backlit cloth screen, precise folk patterns and theatrical staging.",
+  "video_prompt": "measured puppet articulation, lateral stage travel, subtle lamp flicker and layered shadow parallax",
+  "negative_prompt": "No flat vector icon look, no opaque paper cutout, no photoreal actors, no modern objects, no text or watermark."
+}

@@ -1,0 +1,31 @@
+{
+  "id": "french_new_wave",
+  "name": "法国新浪潮",
+  "label": "法国新浪潮",
+  "family": "new_wave",
+  "era": "1960s",
+  "palette": "高反差黑白或褪色原色，银盐灰阶与自然肤色",
+  "lighting": "街头可用光、窗光和跳切式曝光变化，拒绝棚拍精修",
+  "optics": "28mm/35mm轻便摄影机感，深焦、手持呼吸、真实胶片颗粒",
+  "composition": "即兴街景、人物偏轴、镜面和城市标识作为生活背景，保留偶然感",
+  "camera_motion": "restless handheld observation, abrupt pan, walking follow, deliberate jump-cut energy",
+  "style_instructions": "1960s French New Wave live-action cinema, spontaneous street realism, lightweight camera intimacy, intellectual cool, raw silver-grain texture and unconventional but intentional framing.",
+  "avoid_instructions": "No luxury commercial polish, no digitally pristine finish, no teal-orange grade, no fake film border, no watermark.",
+  "style_tag": "FRENCH NEW WAVE STREET CINEMA",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "电影",
+    "新浪潮",
+    "黑白",
+    "街头"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "restless handheld observation, abrupt pan, walking follow, deliberate jump-cut energy"
+    }
+  },
+  "image_prompt": "1960s French New Wave live-action cinema, spontaneous street realism, lightweight camera intimacy, intellectual cool, raw silver-grain texture and unconventional but intentional framing.",
+  "video_prompt": "restless handheld observation, abrupt pan, walking follow, deliberate jump-cut energy",
+  "negative_prompt": "No luxury commercial polish, no digitally pristine finish, no teal-orange grade, no fake film border, no watermark."
+}

@@ -1,0 +1,43 @@
+{
+  "source_sha256": "c906f501e713ecf192facc2ae8097c33f54f1dc0e9cdbb0b7a1050627c1b7374",
+  "screening_id": "second-film-asset-boundary-20261007",
+  "audience": "17 detected-cut frame windows reviewed; not a full audiovisual screening",
+  "issues": [
+    {
+      "issue_id": "design-change-near-41s",
+      "category": "identity",
+      "severity": "high",
+      "timestamp_seconds": 41.033008,
+      "description": "Frames requested at 40.633008/40.953008 show gold transparent goggles, yellow sleeves and a blue luminous board held under one arm. At 41.113008/41.433008 the airborne design has dark opaque goggles and purple-blue trousers. Compare the script's transformation intent, locked design and source shot before attributing this to generation drift. Shot IDs are unresolved.",
+      "audience_effect": "The cut may read as a different character design during one continuous stunt.",
+      "localized": true
+    },
+    {
+      "issue_id": "board-change-near-44s",
+      "category": "prop_state",
+      "severity": "high",
+      "timestamp_seconds": 44,
+      "description": "Requested frames at 43.6/43.92 seconds show a dark wheel board; frames at 44.08/44.4 show a blue luminous hover board. No transformation is visible in this sampled window. Check whether this change is intentional before repair.",
+      "audience_effect": "The viewer may lose confidence that this is the same board during the same flight action.",
+      "localized": true
+    },
+    {
+      "issue_id": "costume-change-near-44s",
+      "category": "wardrobe",
+      "severity": "medium",
+      "timestamp_seconds": 44,
+      "description": "The sampled pre-boundary character has purple-blue trousers and a different chest treatment; the following view has short dark clothing and a different torso silhouette. Compare the locked design and source frames; shot IDs have not been mapped.",
+      "audience_effect": "A viewpoint change can read as a different character design instead of a continued performance.",
+      "localized": true
+    },
+    {
+      "issue_id": "board-change-near-50s",
+      "category": "prop_state",
+      "severity": "high",
+      "timestamp_seconds": 50.033008,
+      "description": "At 49.633008/49.953008 the rider stands on a thick blue luminous board with circular illuminated side elements. At 50.113008/50.433008 the close view shows a thin tan deck, visible under-deck trucks and small black wheels. Check whether the source design includes a transformation. This is a between-shot design change, not evidence of two simultaneous boards; the earlier two-board suspicion is withdrawn.",
+      "audience_effect": "The finishing action may no longer read as riding the same prop.",
+      "localized": true
+    }
+  ]
+}

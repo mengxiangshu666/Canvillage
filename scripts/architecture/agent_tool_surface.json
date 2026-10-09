@@ -1,0 +1,4781 @@
+{
+  "capability_handlers": {
+    "api.get": "_handle_get",
+    "camera.image.options": "_handle_get_image_camera_options",
+    "camera.resolve": "_handle_resolve_camera_control",
+    "camera.video.templates": "_handle_get_video_camera_templates",
+    "canvas.compatibility.emit": "_handle_emit_canvas_command",
+    "canvas.media.propose": "_handle_propose_generation",
+    "canvas.node.image.annotate": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.image.crop": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.storyboard.split_input": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.video.audio_separate": "_handle_video_node_audio_separate",
+    "canvas.node.video.capture_current_frame": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.video.capture_first_frame": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.video.capture_last_frame": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.video.clip": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.video.download": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.video.fullscreen": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.video.story_analysis": "_handle_video_node_story_analysis",
+    "canvas.node.video.subtitle_erase_box": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.video.subtitle_erase_smart": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.node.video.upscale": "_handle_video_node_upscale",
+    "canvas.snapshot": "_handle_get_canvas_snapshot",
+    "canvas.ui.close_tool_dialog": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.ui.fit_view": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.ui.focus_node": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.ui.open_tool_dialog": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.ui.select_node": "_capability_handler.<locals>.handle_ui_capability",
+    "canvas.viewport": "_handle_get_canvas_viewport",
+    "canvas.wait_receipt": "_handle_wait_canvas_receipt",
+    "context.execution_checkpoint": "_handle_shared_context_execution_checkpoint",
+    "context.expert_plan": "_handle_shared_context_expert_plan",
+    "context.shared_snapshot": "_handle_shared_context_snapshot",
+    "context.tool_allowlist": "_handle_shared_context_tool_allowlist",
+    "creative.build_characters": "_handle_build_characters",
+    "creative.build_keyframe_prompt": "_handle_build_beat_prompt",
+    "creative.build_video_prompt": "_handle_build_beat_prompt",
+    "creative.compose_episode": "_handle_compose_episode",
+    "creative.fix_characters": "_handle_fix_characters",
+    "creative.fix_episode_plan": "_handle_fix_episode_plan",
+    "creative.generate_audio": "_handle_generate_audio",
+    "creative.generate_identity_image": "_handle_generate_identity_image",
+    "creative.generate_portrait": "_handle_generate_portrait",
+    "creative.generate_scene_master": "_handle_generate_scene_master",
+    "creative.generate_scene_reverse": "_handle_generate_scene_reverse",
+    "creative.generate_script": "_handle_generate_script",
+    "creative.generate_sketches": "_handle_generate_sketches",
+    "creative.optimize_prompt": "_handle_optimize_prompt",
+    "creative.optimize_video_global": "_handle_optimize_video_global",
+    "creative.plan_episodes": "_handle_plan_episodes",
+    "creative.plan_identities": "_handle_plan_identities",
+    "creative.plan_props": "_handle_plan_props",
+    "creative.plan_scenes": "_handle_plan_scenes",
+    "creative.render_first_frames": "_handle_render_first_frames",
+    "creative.review_characters": "_handle_review_characters",
+    "creative.review_episode_plan": "_handle_review_episode_plan",
+    "creative.rewrite_content": "_handle_rewrite_content",
+    "creative.start_single_video": "_handle_start_single_video",
+    "creative.update_character_face_prompt": "_handle_update_character_face_prompt",
+    "director.scene.compile": "_handle_libtv_scene_compile",
+    "ingest.uploads": "_handle_list_ingest_uploads",
+    "judgment.ask": "_handle_jev_judge",
+    "knowledge.load_reference": "_handle_knowledge_load_reference",
+    "knowledge.search": "_handle_knowledge_search",
+    "media.character": "_handle_get_character_media",
+    "media.detect_sketch_identities": "_handle_detect_sketch_identities",
+    "media.episode": "_handle_get_episode_media",
+    "media.first_frames": "_handle_get_first_frames",
+    "media.generation_history": "_handle_generation_history",
+    "media.readiness.revalidate": "_handle_get_script_media_readiness",
+    "media.scene_images": "_handle_get_scene_images",
+    "media.sketch_candidates": "_handle_get_sketch_candidates",
+    "media.sketches": "_handle_get_sketches",
+    "memory.preview": "_handle_memory_preview",
+    "pipeline.status": "_handle_pipeline_status",
+    "production.control.get": "_handle_get_production_control",
+    "production.final_video": "_handle_get_final_video",
+    "production.run.command": "_handle_command_production_run",
+    "production.run.start": "_handle_start_production_run",
+    "research.search": "_handle_tavily_search",
+    "script.get": "_handle_get_episode_script",
+    "state.sql.query": "_handle_state_sql_query",
+    "state.sql.schema": "_handle_state_sql_schema",
+    "story.canon": "_handle_story_lab_get",
+    "task.get": "_handle_get_task",
+    "task.list": "_handle_list_tasks",
+    "task.stop": "_handle_stop_canvas_task",
+    "vision.analyze": "_handle_vision_analyze",
+    "workflow.asset_binding.repair": "_handle_repair_workflow_canvas_asset_binding",
+    "workflow.asset_binding.revalidate": "_handle_revalidate_workflow_canvas_asset_binding",
+    "workflow.list": "_handle_list_workflows",
+    "workflow.run.control": "_handle_command_workflow_run",
+    "workflow.run.get": "_handle_get_workflow_run",
+    "workflow.runs.list": "_handle_list_workflow_runs"
+  },
+  "core_capability_cards": [
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "canvas.snapshot",
+      "optional_args": [
+        "project_id",
+        "node_cursor",
+        "node_limit",
+        "node_ids",
+        "include_edges"
+      ],
+      "purpose": "按节点页或指定节点读取权威画布快照与连线；已知目标节点时必须传 node_ids=[目标节点 id]，不要扫描整张画布。",
+      "required_args": [
+        "canvas_id"
+      ],
+      "search_terms": "画布 节点 连线 快照 snapshot graph",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "canvas.viewport",
+      "purpose": "读取持久化视口、revision 与节点/连线数量。",
+      "required_args": [
+        "canvas_id"
+      ],
+      "search_terms": "画布 视口 中心 缩放 viewport revision",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "canvas.wait_receipt",
+      "purpose": "等待并读取一个画布命令的权威回执。",
+      "required_args": [
+        "canvas_id",
+        "command_id"
+      ],
+      "search_terms": "回执 等待 revision receipt verify",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "media",
+      "id": "media.readiness.revalidate",
+      "optional_args": [
+        "step_id"
+      ],
+      "purpose": "按当前画布 revision 与脚本行事实只读复验一个分镜图或逐镜视频节点，不写画布、不启动任务；未 ready 时返回结构化恢复合同。",
+      "required_args": [
+        "canvas_id",
+        "node_id",
+        "action"
+      ],
+      "search_terms": "脚本 付费媒体 门禁 恢复 复验 stale 分镜 视频 readiness revalidate",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "state",
+      "id": "state.sql.schema",
+      "optional_args": [
+        "table",
+        "project_id"
+      ],
+      "purpose": "读取本地状态库的真实表名、视图名与列名；写查询前先用它核对列名，不要凭记忆猜字段。库用逻辑名：project_data / workflow_runs / chat / durable_tasks。传 table 只看一张表（列数上限更宽）；读数里 truncated / columns_truncated / unreadable_objects 说明列表是否被截、哪个对象读不出来。",
+      "required_args": [
+        "database"
+      ],
+      "search_terms": "数据库 表结构 字段 列名 视图 schema tables columns state sql",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "state",
+      "id": "state.sql.query",
+      "optional_args": [
+        "project_id",
+        "max_rows"
+      ],
+      "purpose": "对本地状态库执行单条只读 SELECT/WITH 查询，跨表统计脚本行、镜头、任务、工作流与对话事实；只读、有条数上限、不接受写语句，也读不到模型密钥。",
+      "required_args": [
+        "database",
+        "sql"
+      ],
+      "search_terms": "查询 统计 只读 跨表 镜头 工作流 任务 对话 sql select query state",
+      "side_effect": "read"
+    },
+    {
+      "authorization_mode": "project_write",
+      "cost": "free",
+      "domain": "workflow",
+      "failure_policy": "stop_on_error",
+      "id": "workflow.asset_binding.repair",
+      "idempotency": "command_id",
+      "optional_args": [
+        "project_id",
+        "canvas_id",
+        "source_turn_id",
+        "expected_run_revision"
+      ],
+      "purpose": "只对原 failed WorkflowRun 的重复资产绑定恢复合同重读服务端画布，执行保守的重复认领整理；不删除节点、不出图、不重放 Workflow。",
+      "required_args": [
+        "run_id",
+        "step_id",
+        "command_id"
+      ],
+      "resume_policy": "wait_or_replay_command_id",
+      "route_policy": "workflow_canvas_repair",
+      "search_terms": "工作流 恢复 重复 资产 绑定 整理 ambiguous canvas asset repair",
+      "side_effect": "canvas_write",
+      "verifier_contract": "canvas_command_receipt.v2"
+    },
+    {
+      "authorization_mode": "project_write",
+      "cost": "free",
+      "domain": "workflow",
+      "failure_policy": "stop_on_error",
+      "id": "workflow.asset_binding.revalidate",
+      "idempotency": "command_id",
+      "optional_args": [
+        "project_id",
+        "canvas_id",
+        "source_turn_id",
+        "expected_run_revision"
+      ],
+      "purpose": "对已安全整理的重复资产绑定按当前画布做只读复验；通过后只把原失败步骤转交现有一次性媒体授权门，不提交 provider 任务。",
+      "required_args": [
+        "run_id",
+        "step_id",
+        "command_id"
+      ],
+      "resume_policy": "wait_or_replay_command_id",
+      "route_policy": "workflow_canvas_repair",
+      "search_terms": "工作流 恢复 资产 绑定 复验 readiness 授权交接 revalidate",
+      "side_effect": "workflow_write",
+      "verifier_contract": "workflow_canvas_asset_binding_readiness.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "canvas.ui.select_node",
+      "purpose": "在当前浏览器画布中真实选中指定节点，不修改节点数据。",
+      "required_args": [
+        "node_id"
+      ],
+      "search_terms": "选中 节点 浏览器 UI select node",
+      "side_effect": "browser_ui"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "canvas.ui.focus_node",
+      "purpose": "在当前浏览器画布中真实选中并聚焦指定节点。",
+      "required_args": [
+        "node_id"
+      ],
+      "search_terms": "聚焦 定位 节点 浏览器 UI focus node",
+      "side_effect": "browser_ui"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "canvas.ui.fit_view",
+      "purpose": "让当前浏览器画布视口真实适配全部节点。",
+      "required_args": [],
+      "search_terms": "整理 定位 全部节点 适配视口 fit view",
+      "side_effect": "browser_ui"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "canvas.ui.open_tool_dialog",
+      "purpose": "打开指定节点的真实工具面板，但不自动执行面板操作。",
+      "required_args": [
+        "node_id",
+        "tool_type"
+      ],
+      "search_terms": "打开 节点 工具 面板 对话框 dialog",
+      "side_effect": "browser_ui"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "canvas.ui.close_tool_dialog",
+      "purpose": "关闭当前浏览器画布中已打开的节点工具面板。",
+      "required_args": [],
+      "search_terms": "关闭 节点 工具 面板 对话框 dialog",
+      "side_effect": "browser_ui"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.image.crop",
+      "idempotency": "none",
+      "optional_args": [
+        "source_turn_id"
+      ],
+      "purpose": "在指定图片节点打开真实裁剪构图工具，应用后由前端创建并连接新的图片节点。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_image_tool",
+      "search_terms": "图片 裁剪 构图 比例 crop image tool",
+      "side_effect": "browser_ui",
+      "tool_type": "crop",
+      "verifier_contract": "frontend_tool_dialog_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.image.annotate",
+      "idempotency": "none",
+      "optional_args": [
+        "source_turn_id"
+      ],
+      "purpose": "在指定图片节点打开真实图片标注工具，应用后由前端创建并连接新的标注图片节点。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_image_tool",
+      "search_terms": "图片 标注 画圈 注释 annotate image tool",
+      "side_effect": "browser_ui",
+      "tool_type": "annotate",
+      "verifier_contract": "frontend_tool_dialog_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.storyboard.split_input",
+      "idempotency": "none",
+      "optional_args": [
+        "source_turn_id"
+      ],
+      "purpose": "在指定宫格图片节点打开真实分格抽取工具，应用后由前端创建并连接分镜节点。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_image_tool",
+      "search_terms": "宫格 九宫格 分镜 分格 抽取 storyboard split grid",
+      "side_effect": "browser_ui",
+      "tool_type": "split-storyboard",
+      "verifier_contract": "frontend_tool_dialog_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.video.capture_first_frame",
+      "idempotency": "none",
+      "optional_args": [
+        "source_turn_id"
+      ],
+      "purpose": "从指定视频节点真实截取首帧，并创建自动连回源节点的图片节点。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_video_node",
+      "search_terms": "视频 首帧 截取 当前帧 图片 frame capture first video",
+      "side_effect": "browser_ui",
+      "verifier_contract": "frontend_video_capture_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.video.capture_last_frame",
+      "idempotency": "none",
+      "optional_args": [
+        "source_turn_id"
+      ],
+      "purpose": "从指定视频节点真实截取尾帧，并创建自动连回源节点的图片节点。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_video_node",
+      "search_terms": "视频 尾帧 截取 frame capture last video",
+      "side_effect": "browser_ui",
+      "verifier_contract": "frontend_video_capture_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.video.capture_current_frame",
+      "idempotency": "none",
+      "optional_args": [
+        "source_turn_id"
+      ],
+      "purpose": "从指定视频节点当前播放位置真实截取画面，并创建自动连回源节点的图片节点。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_video_node",
+      "search_terms": "视频 当前帧 截取 frame capture current video",
+      "side_effect": "browser_ui",
+      "verifier_contract": "frontend_video_capture_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.video.clip",
+      "idempotency": "none",
+      "optional_args": [
+        "source_turn_id"
+      ],
+      "purpose": "在指定视频节点打开真实片段截取编辑器，不伪造已提交剪辑。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_video_node",
+      "search_terms": "视频 片段 截取 剪辑 clip editor video",
+      "side_effect": "browser_ui",
+      "verifier_contract": "frontend_video_operation_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.video.subtitle_erase_smart",
+      "idempotency": "none",
+      "optional_args": [
+        "source_turn_id"
+      ],
+      "purpose": "在指定视频节点打开智能去字幕模式，等待用户确认后再提交处理。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_video_node",
+      "search_terms": "视频 智能 去字幕 subtitle erase smart",
+      "side_effect": "browser_ui",
+      "verifier_contract": "frontend_video_operation_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.video.subtitle_erase_box",
+      "idempotency": "none",
+      "optional_args": [
+        "source_turn_id"
+      ],
+      "purpose": "在指定视频节点打开框选去字幕模式，等待区域选择后再提交处理。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_video_node",
+      "search_terms": "视频 框选 去字幕 subtitle erase box",
+      "side_effect": "browser_ui",
+      "verifier_contract": "frontend_video_operation_receipt.v1"
+    },
+    {
+      "cost": "vision_model",
+      "domain": "canvas",
+      "failure_policy": "retry_failed_only",
+      "id": "canvas.node.video.story_analysis",
+      "idempotency": "node_operation",
+      "optional_args": [
+        "project_id",
+        "max_frames",
+        "scene_threshold",
+        "duration_sec",
+        "model",
+        "source_turn_id"
+      ],
+      "purpose": "从指定视频节点提交真实逐帧拉片/故事解析任务，并返回可查询的任务回执。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "poll_or_retry_failed_task",
+      "route_policy": "video_node_task",
+      "search_terms": "视频 拉片 故事 解析 分镜 逐帧 video story analysis shots",
+      "side_effect": "create_task",
+      "task_type": "freezone_video_story",
+      "verifier_contract": "task_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "retry_failed_only",
+      "id": "canvas.node.video.upscale",
+      "idempotency": "node_operation",
+      "optional_args": [
+        "project_id",
+        "resolution",
+        "denoise_strength",
+        "source_turn_id"
+      ],
+      "purpose": "对指定视频节点提交真实高清增强任务，保持原比例并返回任务回执。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "poll_or_retry_failed_task",
+      "route_policy": "video_node_task",
+      "search_terms": "视频 高清 超分 放大 降噪 upscale enhance 1080p 2k 4k",
+      "side_effect": "create_task",
+      "task_type": "freezone_video_upscale",
+      "verifier_contract": "task_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "retry_failed_only",
+      "id": "canvas.node.video.audio_separate",
+      "idempotency": "node_operation",
+      "optional_args": [
+        "project_id",
+        "target_episode",
+        "target_beat",
+        "source_turn_id"
+      ],
+      "purpose": "对指定视频节点提交真实音视频分离任务，返回音轨与无声视频的任务回执。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "poll_or_retry_failed_task",
+      "route_policy": "video_node_task",
+      "search_terms": "视频 音视频 分离 提取 音轨 无声 video audio separate",
+      "side_effect": "create_task",
+      "task_type": "freezone_audio_separate",
+      "verifier_contract": "task_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.video.download",
+      "idempotency": "none",
+      "optional_args": [
+        "project_id",
+        "source_turn_id"
+      ],
+      "purpose": "在当前浏览器中下载指定视频节点的已完成结果，不修改画布。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_video_node",
+      "search_terms": "视频 下载 保存 export download video",
+      "side_effect": "browser_ui",
+      "verifier_contract": "frontend_video_action_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "failure_policy": "stop_on_error",
+      "id": "canvas.node.video.fullscreen",
+      "idempotency": "none",
+      "optional_args": [
+        "project_id",
+        "source_turn_id"
+      ],
+      "purpose": "在当前浏览器查看器中全屏打开指定视频节点，不修改画布。",
+      "required_args": [
+        "canvas_id",
+        "node_id"
+      ],
+      "resume_policy": "reissue_ui_action",
+      "route_policy": "frontend_video_node",
+      "search_terms": "视频 全屏 播放 查看 fullscreen viewer video",
+      "side_effect": "browser_ui",
+      "verifier_contract": "frontend_video_action_receipt.v1"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "camera.image.options",
+      "purpose": "读取图片节点当前真实摄像机机身、镜头、焦段和光圈目录。",
+      "required_args": [],
+      "search_terms": "图片 摄像机 相机 镜头 焦距 光圈 camera lens focal aperture",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "camera.video.templates",
+      "purpose": "读取视频节点当前真实运镜模板目录。",
+      "required_args": [],
+      "search_terms": "视频 运镜 镜头运动 camera movement template",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "canvas",
+      "id": "camera.resolve",
+      "purpose": "读取目录并返回可交给画布命令入口的摄像头 canonical 命令片段。",
+      "required_args": [
+        "node_type"
+      ],
+      "search_terms": "摄像机 参数 解析 校验 canonical resolve",
+      "side_effect": "read"
+    },
+    {
+      "authorization_mode": "none",
+      "cost": "free",
+      "domain": "director",
+      "failure_policy": "stop_on_error",
+      "id": "director.scene.compile",
+      "idempotency": "content_hash",
+      "optional_args": [
+        "prompt",
+        "scene_id",
+        "characters",
+        "characterGroups",
+        "props",
+        "cameras"
+      ],
+      "purpose": "把导演台/LibTV 风格的角色、姿态、道具、分组和机位 JSON 归一为可校验的 3D 场景合同；只读，不写画布。",
+      "required_args": [
+        "scene"
+      ],
+      "resume_policy": "reinvoke_after_state_refresh",
+      "route_policy": "director_world_contract",
+      "search_terms": "导演台 3D 三维 场景 角色 姿态 关节 道具 机位 分组 LibTV director console scene json",
+      "side_effect": "read",
+      "verifier_contract": "director_scene_contract.v1"
+    },
+    {
+      "cost": "external_request",
+      "domain": "research",
+      "id": "research.search",
+      "purpose": "通过项目内 Tavily 轮换池按 quick/standard/deep 合同检索资料，保留来源、反向查询和证据缺口。",
+      "required_args": [
+        "query"
+      ],
+      "search_terms": "联网 研究 搜索 tavily 最新 资料 aigc 反向查询 风险 证据 引用",
+      "side_effect": "project_candidate_memory"
+    },
+    {
+      "cost": "external_request",
+      "domain": "judgment",
+      "id": "judgment.ask",
+      "purpose": "向 JEV 判断服务批量提交是非题、选择题与打分题，返回概率、置信度与加权分，用于拿不准时的结构化裁决。",
+      "required_args": [
+        "state",
+        "questions"
+      ],
+      "search_terms": "判断 裁决 是非 选择 打分 评估 概率 置信度 jev 批量 审核 需不需要 哪个更好",
+      "side_effect": "read"
+    },
+    {
+      "cost": "model_request",
+      "domain": "vision",
+      "id": "vision.analyze",
+      "purpose": "通过已配置视觉模型分析当前项目图片或 HTTP 图片。",
+      "required_args": [
+        "image_url",
+        "question"
+      ],
+      "search_terms": "视觉 图片 分析 验收 vision image",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "task",
+      "id": "task.stop",
+      "purpose": "停止当前节点绑定的真实生成任务并清理运行句柄。",
+      "required_args": [
+        "canvas_id",
+        "node_id",
+        "command_id"
+      ],
+      "search_terms": "停止 终止 取消 节点 任务 stop cancel",
+      "side_effect": "task_control"
+    },
+    {
+      "cost": "free",
+      "domain": "workflow",
+      "id": "workflow.list",
+      "purpose": "列出当前可执行的真实工作流定义。",
+      "required_args": [],
+      "search_terms": "工作流 定义 列表 workflow list",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "workflow",
+      "id": "workflow.runs.list",
+      "purpose": "列出当前画布的工作流运行记录。",
+      "required_args": [
+        "canvas_id"
+      ],
+      "search_terms": "工作流 运行 进度 历史 workflow run",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "workflow",
+      "id": "workflow.run.get",
+      "purpose": "读取一个工作流运行的当前 frontier、步骤和回执。",
+      "required_args": [
+        "run_id"
+      ],
+      "search_terms": "工作流 运行 状态 frontier receipt",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "workflow",
+      "id": "workflow.run.control",
+      "purpose": "暂停、继续、取消或重试一个已有工作流运行。",
+      "required_args": [
+        "run_id",
+        "command"
+      ],
+      "search_terms": "工作流 暂停 继续 取消 重试 pause resume cancel retry",
+      "side_effect": "task_control"
+    },
+    {
+      "cost": "free",
+      "domain": "project",
+      "id": "pipeline.status",
+      "purpose": "读取当前项目生产管线状态。",
+      "required_args": [],
+      "search_terms": "项目 管线 状态 pipeline progress",
+      "side_effect": "read"
+    },
+    {
+      "cost": "free",
+      "domain": "production",
+      "id": "production.control.get",
+      "purpose": "读取当前项目生产控制状态与运行信息。",
+      "required_args": [],
+      "search_terms": "生产 控制 成片 production control",
+      "side_effect": "read"
+    }
+  ],
+  "direct_tools": [
+    {
+      "handler": "_handle_get",
+      "name": "village_canvas_get",
+      "schema": {
+        "description": "Call a Village Infinite Canvas GET API path without using curl.",
+        "name": "village_canvas_get",
+        "parameters": {
+          "properties": {
+            "path": {
+              "description": "Village Infinite Canvas relative API path. Must start with /api/v1/ or /projects/. Absolute URLs are rejected. Ingest routes are only /projects/{project}/ingest/upload and /projects/{project}/ingest/start; ingest_fast is a task_type, not an endpoint.",
+              "type": "string"
+            },
+            "query": {
+              "description": "Optional query parameters.",
+              "type": "object"
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_post",
+      "name": "village_canvas_post",
+      "schema": {
+        "description": "Call a Village Infinite Canvas POST API path without using curl.",
+        "name": "village_canvas_post",
+        "parameters": {
+          "properties": {
+            "body": {
+              "type": "object"
+            },
+            "path": {
+              "description": "Village Infinite Canvas relative API path. Must start with /api/v1/ or /projects/. Absolute URLs are rejected. Ingest routes are only /projects/{project}/ingest/upload and /projects/{project}/ingest/start; ingest_fast is a task_type, not an endpoint.",
+              "type": "string"
+            },
+            "query": {
+              "description": "Optional query parameters.",
+              "type": "object"
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_patch",
+      "name": "village_canvas_patch",
+      "schema": {
+        "description": "Call a Village Infinite Canvas PATCH API path without using curl.",
+        "name": "village_canvas_patch",
+        "parameters": {
+          "properties": {
+            "body": {
+              "type": "object"
+            },
+            "path": {
+              "description": "Village Infinite Canvas relative API path. Must start with /api/v1/ or /projects/. Absolute URLs are rejected. Ingest routes are only /projects/{project}/ingest/upload and /projects/{project}/ingest/start; ingest_fast is a task_type, not an endpoint.",
+              "type": "string"
+            },
+            "query": {
+              "description": "Optional query parameters.",
+              "type": "object"
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_delete",
+      "name": "village_canvas_delete",
+      "schema": {
+        "description": "Call a Village Infinite Canvas DELETE API path without using curl.",
+        "name": "village_canvas_delete",
+        "parameters": {
+          "properties": {
+            "body": {
+              "type": "object"
+            },
+            "path": {
+              "description": "Village Infinite Canvas relative API path. Must start with /api/v1/ or /projects/. Absolute URLs are rejected. Ingest routes are only /projects/{project}/ingest/upload and /projects/{project}/ingest/start; ingest_fast is a task_type, not an endpoint.",
+              "type": "string"
+            },
+            "query": {
+              "description": "Optional query parameters.",
+              "type": "object"
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_tavily_search",
+      "name": "village_canvas_tavily_search",
+      "schema": {
+        "description": "Search current web information through the built-in rotating Tavily pool. Results are cached and automatically saved into current-project knowledge for later lexical or vector recall; API keys never appear in output.",
+        "name": "village_canvas_tavily_search",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "description": "Current canvas scope for cache isolation.",
+              "type": "string"
+            },
+            "counter_queries": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 3,
+              "type": "array"
+            },
+            "counter_search": {
+              "enum": [
+                "off",
+                "one_round",
+                "two_rounds"
+              ],
+              "type": "string"
+            },
+            "exclude_domains": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 50,
+              "type": "array"
+            },
+            "include_answer": {
+              "type": "boolean"
+            },
+            "include_domains": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 50,
+              "type": "array"
+            },
+            "include_raw_content": {
+              "description": "Include cleaned source content when the research task needs it.",
+              "type": "boolean"
+            },
+            "independent_domains_required": {
+              "maximum": 8,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "max_results": {
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "min_sources": {
+              "maximum": 8,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Project scope; defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "query": {
+              "description": "Focused web search query.",
+              "type": "string"
+            },
+            "research_mode": {
+              "enum": [
+                "quick",
+                "standard",
+                "deep"
+              ],
+              "type": "string"
+            },
+            "search_depth": {
+              "enum": [
+                "basic",
+                "advanced"
+              ],
+              "type": "string"
+            },
+            "time_range": {
+              "enum": [
+                "day",
+                "week",
+                "month",
+                "year"
+              ],
+              "type": "string"
+            },
+            "topic": {
+              "enum": [
+                "general",
+                "news",
+                "finance"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_jev_judge",
+      "name": "village_canvas_jev_judge",
+      "schema": {
+        "description": "Ask the JEV judgment service one batch of named yes/no, choice, and score questions about shared content. Returns probabilities, selected choices with confidence, and rubric-weighted scores. Use it when a call needs a structured verdict instead of a guess. JEV is a judge, not a writer: it never drafts text. API keys never appear in output.",
+        "name": "village_canvas_jev_judge",
+        "parameters": {
+          "properties": {
+            "questions": {
+              "additionalProperties": {
+                "properties": {
+                  "criteria": {
+                    "description": "noul: {true, false} descriptions. choice: {optionName: when it applies}. score: ordered level descriptions from low to high (position is the score, starting at 0)."
+                  },
+                  "instructions": {
+                    "description": "The question or statement to evaluate.",
+                    "type": "string"
+                  },
+                  "type": {
+                    "description": "noul = yes/no with probability; choice = pick one option; score = rate on an ordered rubric.",
+                    "enum": [
+                      "noul",
+                      "choice",
+                      "score"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "instructions"
+                ],
+                "type": "object"
+              },
+              "description": "Named questions, e.g. {\"need_reverse\": {\"type\": \"noul\", \"instructions\": \"...\", \"criteria\": {\"true\": \"...\", \"false\": \"...\"}}}.",
+              "type": "object"
+            },
+            "state": {
+              "description": "The shared content every question refers to, e.g. scene environment contract plus per-beat visual descriptions.",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "state",
+            "questions"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_canvas_snapshot",
+      "name": "freezone_get_canvas_snapshot",
+      "schema": {
+        "description": "read-only: read one bounded page of persisted canvas nodes and connected edges. viewport/revision/page metadata are returned before node data, including truncated, omitted_nodes and next_cursor. Use only for node facts, never for viewport placement.",
+        "name": "freezone_get_canvas_snapshot",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "description": "Current canvas id from CURRENT_CANVAS_CONTEXT.",
+              "type": "string"
+            },
+            "include_edges": {
+              "default": true,
+              "type": "boolean"
+            },
+            "node_cursor": {
+              "default": 0,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "node_ids": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 50,
+              "type": "array"
+            },
+            "node_limit": {
+              "default": 20,
+              "maximum": 50,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "canvas_id"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_canvas_viewport",
+      "name": "freezone_get_canvas_viewport",
+      "schema": {
+        "description": "Read only the persisted canvas viewport, revision and graph counts. Prefer CURRENT_CANVAS_CONTEXT.viewport_context for live placement; this tool is a lightweight persisted fallback.",
+        "name": "freezone_get_canvas_viewport",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "description": "Current canvas id from CURRENT_CANVAS_CONTEXT.",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "canvas_id"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_script_media_readiness",
+      "name": "village_canvas_get_script_media_readiness",
+      "schema": {
+        "description": "Read-only: revalidate one script-derived storyboard image or shot video against the current canvas revision, current script row, asset snapshots and storyboard binding. Never writes the canvas or starts media. Use this for recovery before asking for a new paid action; when ready=false, follow the returned recovery contract.",
+        "name": "village_canvas_get_script_media_readiness",
+        "parameters": {
+          "properties": {
+            "action": {
+              "description": "Media action from the recovery contract.",
+              "enum": [
+                "storyboard-images",
+                "shot-videos"
+              ],
+              "type": "string"
+            },
+            "canvas_id": {
+              "description": "Current canvas id from CURRENT_CANVAS_CONTEXT.",
+              "type": "string"
+            },
+            "node_id": {
+              "description": "Exact target node from the recovery contract.",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "step_id": {
+              "description": "Optional workflow step id; when supplied, a not-ready result includes the next structured recovery contract.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "canvas_id",
+            "node_id",
+            "action"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_compatibility_emit_canvas_command",
+      "name": "freezone_emit_canvas_command",
+      "schema": {
+        "description": "Compatibility writer for replaying or resuming an already selected direct-canvas transaction. For every new user intent call village_canvas_dispatch_action instead so the parent ActionRouter selects the executor. Every supported create/update/delete/connect/move operation persists server-side and auto-applies on UI. Never starts media generation.",
+        "name": "freezone_emit_canvas_command",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "description": "Current canvas id from CURRENT_CANVAS_CONTEXT.",
+              "type": "string"
+            },
+            "command_id": {
+              "description": "Batch/idempotency id for this multi-op transaction.",
+              "type": "string"
+            },
+            "commands": {
+              "items": {
+                "properties": {
+                  "aspect_ratio": {
+                    "description": "Actual node aspect ratio; image nodes accept the full list, video nodes accept 16:9/4:3/1:1/3:4/9:16/21:9. Never put a requested ratio only in prompt text.",
+                    "enum": [
+                      "auto",
+                      "1:1",
+                      "16:9",
+                      "9:16",
+                      "4:3",
+                      "3:4",
+                      "3:2",
+                      "2:3",
+                      "4:5",
+                      "5:4",
+                      "21:9"
+                    ],
+                    "type": "string"
+                  },
+                  "camera": {
+                    "properties": {
+                      "aperture": {
+                        "type": "string"
+                      },
+                      "camera_body_id": {
+                        "type": "string"
+                      },
+                      "focal_length_mm": {
+                        "maximum": 2000,
+                        "minimum": 1,
+                        "type": "number"
+                      },
+                      "lens_id": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "camera_movement": {
+                    "description": "Video camera-preset id from current canvas context.",
+                    "type": "string"
+                  },
+                  "clear_camera": {
+                    "description": "Clear image camera selection or video movement on update_node_camera.",
+                    "type": "boolean"
+                  },
+                  "count": {
+                    "enum": [
+                      1,
+                      2,
+                      4,
+                      6,
+                      8,
+                      12
+                    ],
+                    "type": "integer"
+                  },
+                  "created_node_id": {
+                    "description": "Optional stable id; omit to let the server mint one.",
+                    "type": "string"
+                  },
+                  "display_name": {
+                    "type": "string"
+                  },
+                  "duration_sec": {
+                    "maximum": 120,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "generate_audio": {
+                    "type": "boolean"
+                  },
+                  "generation_mode": {
+                    "enum": [
+                      "textToVideo",
+                      "allReference",
+                      "imageToVideo",
+                      "firstLastFrame",
+                      "imageReference",
+                      "videoEdit"
+                    ],
+                    "type": "string"
+                  },
+                  "image_size": {
+                    "description": "Image node resolution tier; applies to image and shot-sequence nodes.",
+                    "enum": [
+                      "0.5K",
+                      "1K",
+                      "2K",
+                      "4K"
+                    ],
+                    "type": "string"
+                  },
+                  "model": {
+                    "description": "Use only a model id present in the current canvas/model context; omit when unknown.",
+                    "type": "string"
+                  },
+                  "node_data": {
+                    "description": "Partial node data patch. Use only for real task handles and node-specific settings; never put prompt text or reason here.",
+                    "type": "object"
+                  },
+                  "node_id": {
+                    "description": "Concrete id, or $selected / $pinned / $pinned:N. Omit → $selected.",
+                    "type": "string"
+                  },
+                  "node_type": {
+                    "enum": [
+                      "audioNode",
+                      "beatContextNode",
+                      "exportImageNode",
+                      "groupNode",
+                      "imageGenNode",
+                      "imageNode",
+                      "pano360ViewerNode",
+                      "scriptNode",
+                      "skillNode",
+                      "storyboardGenNode",
+                      "storyboardNode",
+                      "textAnnotationNode",
+                      "threeDWorldNode",
+                      "uploadNode",
+                      "videoComposeNode",
+                      "videoNode",
+                      "videoStoryNode"
+                    ],
+                    "type": "string"
+                  },
+                  "placement": {
+                    "description": "Semantic browser-resolved placement. Prefer viewport_center + grid for new nodes; explicit x/y take priority.",
+                    "properties": {
+                      "anchor": {
+                        "enum": [
+                          "viewport_center",
+                          "selected_node",
+                          "absolute"
+                        ],
+                        "type": "string"
+                      },
+                      "gap": {
+                        "maximum": 400,
+                        "minimum": 16,
+                        "type": "number"
+                      },
+                      "layout": {
+                        "enum": [
+                          "stack",
+                          "grid",
+                          "row",
+                          "column"
+                        ],
+                        "type": "string"
+                      },
+                      "offset": {
+                        "properties": {
+                          "x": {
+                            "type": "number"
+                          },
+                          "y": {
+                            "type": "number"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "prompts": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "reason": {
+                    "description": "Optional explanation for this command; never place it inside node_data.",
+                    "maxLength": 2000,
+                    "type": "string"
+                  },
+                  "source": {
+                    "description": "Edge source; use $created:N for a node created earlier in this batch, otherwise a concrete id or $selected.",
+                    "type": "string"
+                  },
+                  "target": {
+                    "description": "Edge target; use $created:N for a node created earlier in this batch, otherwise a concrete id or $pinned.",
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "enum": [
+                      "focus_node",
+                      "select_node",
+                      "connect_nodes",
+                      "remove_edge",
+                      "annotate",
+                      "create_canvas_node",
+                      "create_image_prompt_node",
+                      "create_video_prompt_node",
+                      "create_shot_sequence",
+                      "insert_starter_workflow",
+                      "update_node_prompt",
+                      "update_node_label",
+                      "update_node_data",
+                      "update_node_camera",
+                      "move_node",
+                      "duplicate_node",
+                      "delete_node"
+                    ],
+                    "type": "string"
+                  },
+                  "video_quality": {
+                    "description": "Video node resolution tier.",
+                    "enum": [
+                      "480P",
+                      "720P",
+                      "768P",
+                      "1080P",
+                      "4K"
+                    ],
+                    "type": "string"
+                  },
+                  "workflow_id": {
+                    "description": "Starter workflow id from the current workflow manifest.",
+                    "type": "string"
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "type"
+                ],
+                "type": "object"
+              },
+              "maxItems": 20,
+              "minItems": 1,
+              "type": "array"
+            },
+            "dynamic_checkpoint": {
+              "description": "Internal ready_write checkpoint; supplied only by the dynamic existing-node execution chain.",
+              "type": "object"
+            },
+            "expected_canvas_revision": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "source_turn_id": {
+              "description": "Current Agent turn id for causal tracing.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "canvas_id",
+            "commands"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_propose_generation",
+      "name": "freezone_propose_generation",
+      "schema": {
+        "description": "Propose an image/video/audio generation plan without starting a task. In auto mode, copy the current V2 task_authorization so the same turn can continue without another confirmation.",
+        "name": "freezone_propose_generation",
+        "parameters": {
+          "properties": {
+            "kind": {
+              "enum": [
+                "image",
+                "video",
+                "audio"
+              ],
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "node_id": {
+              "description": "Target canvas node id when known.",
+              "type": "string"
+            },
+            "project_id": {
+              "type": "string"
+            },
+            "prompt_preview": {
+              "type": "string"
+            },
+            "summary": {
+              "description": "What would be generated and why.",
+              "type": "string"
+            },
+            "task_authorization": {
+              "description": "Optional current-turn policy facts. The parent service owns the signed paid-media grant and resolves it from the authenticated project/canvas scope; never invent or copy a grant id. compose_authorization_id is a separate browser-issued, server-validated final-compose ticket.",
+              "properties": {
+                "allow_paid_media": {
+                  "type": "boolean"
+                },
+                "allow_structure": {
+                  "type": "boolean"
+                },
+                "compose_authorization_id": {
+                  "description": "Optional browser-issued one-shot final-compose ticket id. Never invent or reuse it for paid media.",
+                  "type": "string"
+                },
+                "max_paid_starts": {
+                  "maximum": 64,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "require_video_confirmation": {
+                  "enum": [
+                    false
+                  ],
+                  "type": "boolean"
+                },
+                "run_mode": {
+                  "enum": [
+                    "draft",
+                    "auto"
+                  ],
+                  "type": "string"
+                },
+                "scope": {
+                  "enum": [
+                    "current_turn"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "scope",
+                "run_mode",
+                "allow_structure",
+                "allow_paid_media",
+                "max_paid_starts",
+                "require_video_confirmation"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "summary"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_run_canvas_node",
+      "name": "freezone_run_node",
+      "schema": {
+        "description": "Start one image, video or audio canvas node through the real Freezone task API. Reads the current node plus incoming edges, selects the matching generation mode, persists the task handle, and immediately updates the live canvas. In auto mode call this after structure and parameter validation.",
+        "name": "freezone_run_node",
+        "parameters": {
+          "properties": {
+            "aspect_ratio": {
+              "type": "string"
+            },
+            "audio_kind": {
+              "enum": [
+                "speech",
+                "music"
+              ],
+              "type": "string"
+            },
+            "canvas_id": {
+              "type": "string"
+            },
+            "command_id": {
+              "description": "Idempotency id for this generation start.",
+              "type": "string"
+            },
+            "duration_sec": {
+              "maximum": 120,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "generation_mode": {
+              "enum": [
+                "textToVideo",
+                "allReference",
+                "imageToVideo",
+                "firstLastFrame",
+                "imageReference",
+                "videoEdit"
+              ],
+              "type": "string"
+            },
+            "image_size": {
+              "enum": [
+                "0.5K",
+                "1K",
+                "2K",
+                "4K"
+              ],
+              "type": "string"
+            },
+            "model": {
+              "description": "Optional current direct-model id override.",
+              "type": "string"
+            },
+            "node_id": {
+              "description": "Concrete generation-capable node id.",
+              "type": "string"
+            },
+            "operation": {
+              "enum": [
+                "start",
+                "retry"
+              ],
+              "type": "string"
+            },
+            "project_id": {
+              "type": "string"
+            },
+            "prompt": {
+              "description": "Optional override; otherwise reads the node or incoming text.",
+              "type": "string"
+            },
+            "quality": {
+              "type": "string"
+            },
+            "reference_urls": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 12,
+              "type": "array"
+            },
+            "references": {
+              "items": {
+                "properties": {
+                  "role": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "enum": [
+                      "image",
+                      "video",
+                      "audio"
+                    ],
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "url"
+                ],
+                "type": "object"
+              },
+              "maxItems": 12,
+              "type": "array"
+            },
+            "task_authorization": {
+              "description": "Optional current-turn policy facts. The parent service owns the signed paid-media grant and resolves it from the authenticated project/canvas scope; never invent or copy a grant id. compose_authorization_id is a separate browser-issued, server-validated final-compose ticket.",
+              "properties": {
+                "allow_paid_media": {
+                  "type": "boolean"
+                },
+                "allow_structure": {
+                  "type": "boolean"
+                },
+                "compose_authorization_id": {
+                  "description": "Optional browser-issued one-shot final-compose ticket id. Never invent or reuse it for paid media.",
+                  "type": "string"
+                },
+                "max_paid_starts": {
+                  "maximum": 64,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "require_video_confirmation": {
+                  "enum": [
+                    false
+                  ],
+                  "type": "boolean"
+                },
+                "run_mode": {
+                  "enum": [
+                    "draft",
+                    "auto"
+                  ],
+                  "type": "string"
+                },
+                "scope": {
+                  "enum": [
+                    "current_turn"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "scope",
+                "run_mode",
+                "allow_structure",
+                "allow_paid_media",
+                "max_paid_starts",
+                "require_video_confirmation"
+              ],
+              "type": "object"
+            },
+            "video_quality": {
+              "enum": [
+                "480p",
+                "720p",
+                "768p",
+                "1080p",
+                "2k",
+                "480P",
+                "720P",
+                "768P",
+                "1080P",
+                "4K"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "canvas_id",
+            "node_id",
+            "command_id"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_retry_canvas_node",
+      "name": "freezone_retry_node",
+      "schema": {
+        "description": "Retry one failed or cancelled canvas generation from the node's current prompt, direct model, parameters and incoming references. Persists a new task handle and immediately resumes the node UI.",
+        "name": "freezone_retry_node",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "type": "string"
+            },
+            "command_id": {
+              "description": "New idempotency id for this retry.",
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "node_id": {
+              "type": "string"
+            },
+            "project_id": {
+              "type": "string"
+            },
+            "prompt": {
+              "type": "string"
+            },
+            "references": {
+              "items": {
+                "type": "object"
+              },
+              "maxItems": 12,
+              "type": "array"
+            },
+            "task_authorization": {
+              "description": "Optional current-turn policy facts. The parent service owns the signed paid-media grant and resolves it from the authenticated project/canvas scope; never invent or copy a grant id. compose_authorization_id is a separate browser-issued, server-validated final-compose ticket.",
+              "properties": {
+                "allow_paid_media": {
+                  "type": "boolean"
+                },
+                "allow_structure": {
+                  "type": "boolean"
+                },
+                "compose_authorization_id": {
+                  "description": "Optional browser-issued one-shot final-compose ticket id. Never invent or reuse it for paid media.",
+                  "type": "string"
+                },
+                "max_paid_starts": {
+                  "maximum": 64,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "require_video_confirmation": {
+                  "enum": [
+                    false
+                  ],
+                  "type": "boolean"
+                },
+                "run_mode": {
+                  "enum": [
+                    "draft",
+                    "auto"
+                  ],
+                  "type": "string"
+                },
+                "scope": {
+                  "enum": [
+                    "current_turn"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "scope",
+                "run_mode",
+                "allow_structure",
+                "allow_paid_media",
+                "max_paid_starts",
+                "require_video_confirmation"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "canvas_id",
+            "node_id",
+            "command_id"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_stop_canvas_task",
+      "name": "freezone_stop_task",
+      "schema": {
+        "description": "Cancel the real task attached to one canvas node, then clear the persisted task handle so the node exits generation state immediately. Replays are idempotent at the task API.",
+        "name": "freezone_stop_task",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "type": "string"
+            },
+            "command_id": {
+              "description": "Idempotency id for this stop action.",
+              "type": "string"
+            },
+            "job_id": {
+              "description": "Optional override; normally read from the node.",
+              "type": "string"
+            },
+            "node_id": {
+              "type": "string"
+            },
+            "project_id": {
+              "type": "string"
+            },
+            "task_type": {
+              "description": "Optional override; normally read from the node.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "canvas_id",
+            "node_id",
+            "command_id"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_pipeline_status",
+      "name": "village_canvas_pipeline_status",
+      "schema": {
+        "description": "Get the current Village Infinite Canvas project pipeline status.",
+        "name": "village_canvas_pipeline_status",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "description": "Optional episode number.",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Project id. Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_story_lab_get",
+      "name": "village_canvas_story_lab_get",
+      "schema": {
+        "description": "Read the current project's 故事 Agent/Story Lab brief, generated stages and latest persisted results. Use before continuing or revising story creation.",
+        "name": "village_canvas_story_lab_get",
+        "parameters": {
+          "properties": {
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_story_lab_save",
+      "name": "village_canvas_story_lab_save",
+      "schema": {
+        "description": "Save the current project's 故事 Agent creative brief without starting model generation.",
+        "name": "village_canvas_story_lab_save",
+        "parameters": {
+          "properties": {
+            "audience": {
+              "type": "string"
+            },
+            "genre": {
+              "type": "string"
+            },
+            "logline": {
+              "type": "string"
+            },
+            "point_of_view": {
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "style_id": {
+              "type": "string"
+            },
+            "style_mode": {
+              "enum": [
+                "infer",
+                "confirmed"
+              ],
+              "type": "string"
+            },
+            "style_name": {
+              "type": "string"
+            },
+            "style_prompt": {
+              "type": "string"
+            },
+            "target_length": {
+              "maximum": 100000,
+              "minimum": 100,
+              "type": "integer"
+            },
+            "target_units": {
+              "maximum": 200,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "theme": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "work_type": {
+              "enum": [
+                "long_novel",
+                "short_novel",
+                "screenplay",
+                "micro_drama",
+                "comic_narration"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "logline",
+            "work_type"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_story_lab_generate",
+      "name": "village_canvas_story_lab_generate",
+      "schema": {
+        "description": "Start exactly one 故事 Agent generation stage. On the first stage, pass the creative brief in the same call; later stages reuse persisted state. Poll task_type='story_lab_<stage>' with episode=0.",
+        "name": "village_canvas_story_lab_generate",
+        "parameters": {
+          "properties": {
+            "audience": {
+              "type": "string"
+            },
+            "genre": {
+              "type": "string"
+            },
+            "instructions": {
+              "description": "Optional revision or generation direction for this stage.",
+              "type": "string"
+            },
+            "logline": {
+              "type": "string"
+            },
+            "point_of_view": {
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "stage": {
+              "enum": [
+                "bible",
+                "outline",
+                "draft",
+                "audit"
+              ],
+              "type": "string"
+            },
+            "style_id": {
+              "type": "string"
+            },
+            "style_mode": {
+              "enum": [
+                "infer",
+                "confirmed"
+              ],
+              "type": "string"
+            },
+            "style_name": {
+              "type": "string"
+            },
+            "style_prompt": {
+              "type": "string"
+            },
+            "target_length": {
+              "maximum": 100000,
+              "minimum": 100,
+              "type": "integer"
+            },
+            "target_units": {
+              "maximum": 200,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "theme": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "work_type": {
+              "enum": [
+                "long_novel",
+                "short_novel",
+                "screenplay",
+                "micro_drama",
+                "comic_narration"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "stage"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_story_lab_publish",
+      "name": "village_canvas_story_lab_publish",
+      "schema": {
+        "description": "Publish the approved 故事 Agent draft into 项目素材: export UTF-8 text, copy it to the project upload area, and enqueue the existing ingest task.",
+        "name": "village_canvas_story_lab_publish",
+        "parameters": {
+          "properties": {
+            "filename": {
+              "description": "Optional .txt export filename.",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "rebuild": {
+              "description": "Rebuild an existing ingest graph when true.",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_production_control",
+      "name": "village_canvas_get_production_control",
+      "schema": {
+        "description": "Read the durable one-click production driver: current stage, run status, blockers, settings and next real action.",
+        "name": "village_canvas_get_production_control",
+        "parameters": {
+          "properties": {
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_list_workflows",
+      "name": "village_canvas_list_workflows",
+      "schema": {
+        "description": "List the real durable workflow definitions before choosing one. Returns ids, versions, steps, starter templates and declared outputs.",
+        "name": "village_canvas_list_workflows",
+        "parameters": {
+          "properties": {
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_list_workflow_runs",
+      "name": "village_canvas_list_workflow_runs",
+      "schema": {
+        "description": "List workflow runs on the current canvas. Resume a running, paused or failed run instead of creating a duplicate.",
+        "name": "village_canvas_list_workflow_runs",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "description": "Defaults to the active canvas.",
+              "type": "string"
+            },
+            "limit": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_start_workflow_run",
+      "name": "village_canvas_start_workflow_run",
+      "schema": {
+        "description": "Compatibility entry for resuming or explicitly replaying an already selected durable workflow. For every new user intent call village_canvas_dispatch_action instead so ActionRouter decides whether a WorkflowRun is needed. Draft builds editable structure without media; auto consumes the server-owned current-turn budget for this project and canvas.",
+        "name": "village_canvas_start_workflow_run",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "description": "Defaults to the active canvas.",
+              "type": "string"
+            },
+            "canvas_revision": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "goal": {
+              "type": "string"
+            },
+            "idempotency_key": {
+              "description": "Stable optional retry key; one is derived when omitted.",
+              "type": "string"
+            },
+            "inputs": {
+              "description": "Optional workflow-specific inputs.",
+              "type": "object"
+            },
+            "model_bindings": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Optional direct registry ids for this run. The server resolves and freezes them without accepting keys.",
+              "type": "object"
+            },
+            "pinned_node_ids": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 500,
+              "type": "array"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "request": {
+              "description": "The complete user production request.",
+              "type": "string"
+            },
+            "run_mode": {
+              "default": "draft",
+              "enum": [
+                "draft",
+                "auto"
+              ],
+              "type": "string"
+            },
+            "selected_node_ids": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 500,
+              "type": "array"
+            },
+            "source_turn_id": {
+              "type": "string"
+            },
+            "starter_workflow_id": {
+              "description": "Optional explicit canvas template id. Leave empty for dynamic composition.",
+              "type": "string"
+            },
+            "success_criteria": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 100,
+              "type": "array"
+            },
+            "task_authorization": {
+              "description": "Optional current-turn policy facts. The parent service owns the signed paid-media grant and resolves it from the authenticated project/canvas scope; never invent or copy a grant id. compose_authorization_id is a separate browser-issued, server-validated final-compose ticket.",
+              "properties": {
+                "allow_paid_media": {
+                  "type": "boolean"
+                },
+                "allow_structure": {
+                  "type": "boolean"
+                },
+                "compose_authorization_id": {
+                  "description": "Optional browser-issued one-shot final-compose ticket id. Never invent or reuse it for paid media.",
+                  "type": "string"
+                },
+                "max_paid_starts": {
+                  "maximum": 64,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "require_video_confirmation": {
+                  "enum": [
+                    false
+                  ],
+                  "type": "boolean"
+                },
+                "run_mode": {
+                  "enum": [
+                    "draft",
+                    "auto"
+                  ],
+                  "type": "string"
+                },
+                "scope": {
+                  "enum": [
+                    "current_turn"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "scope",
+                "run_mode",
+                "allow_structure",
+                "allow_paid_media",
+                "max_paid_starts",
+                "require_video_confirmation"
+              ],
+              "type": "object"
+            },
+            "use_starter_workflow": {
+              "default": false,
+              "description": "Opt in to the selected workflow's starter canvas template. Defaults to dynamic composition.",
+              "type": "boolean"
+            },
+            "workflow_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "workflow_id",
+            "request"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_workflow_run",
+      "name": "village_canvas_get_workflow_run",
+      "schema": {
+        "description": "Read a durable canvas workflow run, its current frontier, checkpoints, artifacts and revision.",
+        "name": "village_canvas_get_workflow_run",
+        "parameters": {
+          "properties": {
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "run_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "run_id"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_update_workflow_run",
+      "name": "village_canvas_update_workflow_run",
+      "schema": {
+        "description": "Legacy/manual V1 checkpoint compatibility only. V2 workflow lifecycle is advanced by the server executor, CanvasCommandGateway and verifier; do not forge step completion.",
+        "name": "village_canvas_update_workflow_run",
+        "parameters": {
+          "properties": {
+            "error": {
+              "type": "string"
+            },
+            "event_id": {
+              "description": "Stable idempotency id for this checkpoint result.",
+              "type": "string"
+            },
+            "event_type": {
+              "enum": [
+                "step_started",
+                "step_completed",
+                "step_failed",
+                "steering_added"
+              ],
+              "type": "string"
+            },
+            "expected_revision": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "payload": {
+              "type": "object"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "run_id": {
+              "type": "string"
+            },
+            "step_id": {
+              "enum": [
+                "story_and_shots",
+                "asset_slots",
+                "media_generation",
+                "quality_review",
+                "delivery"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "run_id",
+            "event_id",
+            "event_type"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_command_workflow_run",
+      "name": "village_canvas_command_workflow_run",
+      "schema": {
+        "description": "Pause, resume, cancel, retry a failed checkpoint, or add a steering direction without discarding completed workflow assets. Browser-issued one-shot tickets may be carried in task_authorization; the plugin consumes them before retrying final_film, storyboard_images or shot_videos.",
+        "name": "village_canvas_command_workflow_run",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "description": "Optional canvas scope. The plugin verifies it against the durable run.",
+              "type": "string"
+            },
+            "command": {
+              "enum": [
+                "pause",
+                "resume",
+                "cancel",
+                "retry",
+                "steer"
+              ],
+              "type": "string"
+            },
+            "direction": {
+              "type": "string"
+            },
+            "execution_context": {
+              "description": "Planner-owned context forwarded unchanged when recovering a workflow step.",
+              "type": "object"
+            },
+            "expected_revision": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "idempotency_key": {
+              "type": "string"
+            },
+            "item_ids": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 500,
+              "type": "array"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "retry_scope": {
+              "default": "whole_step",
+              "enum": [
+                "whole_step",
+                "failed_items_only"
+              ],
+              "type": "string"
+            },
+            "run_id": {
+              "type": "string"
+            },
+            "step_id": {
+              "type": "string"
+            },
+            "task_authorization": {
+              "description": "Optional current-turn policy facts. The parent service owns the signed paid-media grant and resolves it from the authenticated project/canvas scope; never invent or copy a grant id. compose_authorization_id is a separate browser-issued, server-validated final-compose ticket.",
+              "properties": {
+                "allow_paid_media": {
+                  "type": "boolean"
+                },
+                "allow_structure": {
+                  "type": "boolean"
+                },
+                "compose_authorization_id": {
+                  "description": "Optional browser-issued one-shot final-compose ticket id. Never invent or reuse it for paid media.",
+                  "type": "string"
+                },
+                "max_paid_starts": {
+                  "maximum": 64,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "require_video_confirmation": {
+                  "enum": [
+                    false
+                  ],
+                  "type": "boolean"
+                },
+                "run_mode": {
+                  "enum": [
+                    "draft",
+                    "auto"
+                  ],
+                  "type": "string"
+                },
+                "scope": {
+                  "enum": [
+                    "current_turn"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "scope",
+                "run_mode",
+                "allow_structure",
+                "allow_paid_media",
+                "max_paid_starts",
+                "require_video_confirmation"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "run_id",
+            "command",
+            "idempotency_key"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_start_production_run",
+      "name": "village_canvas_start_production_run",
+      "schema": {
+        "description": "Start or reuse the durable one-click production driver. Auto-mode task_authorization can run the complete media workflow; confirmed_paid_media remains a direct-call override.",
+        "name": "village_canvas_start_production_run",
+        "parameters": {
+          "properties": {
+            "aspect_ratio": {
+              "enum": [
+                "9:16",
+                "16:9",
+                "2:3",
+                "1:1"
+              ],
+              "type": "string"
+            },
+            "asset_plan": {
+              "type": "object"
+            },
+            "assumptions": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 50,
+              "type": "array"
+            },
+            "auto_generate_paid_media": {
+              "description": "False by default. Auto mode may set true for end-to-end production.",
+              "type": "boolean"
+            },
+            "budget": {
+              "type": "object"
+            },
+            "canvas_id": {
+              "type": "string"
+            },
+            "canvas_skeleton_refs": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 500,
+              "type": "array"
+            },
+            "confirmed_paid_media": {
+              "description": "Optional direct-call override when no Canvas V2 authorization is present.",
+              "type": "boolean"
+            },
+            "constraints": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 50,
+              "type": "array"
+            },
+            "director_intent_contract": {
+              "description": "Optional intent facts. State only what you know (delivery_level, shot_count, characters, locations, props, style, reference_policy, spatial_complexity, audio_required, subtitles_required, compose_required, output_spec). The server derives required_assets, quality_gates, graph_contract, template_policy and contract_revision; do not hand-author them.",
+              "type": "object"
+            },
+            "director_plan": {
+              "type": "object"
+            },
+            "episode": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "episode_plan": {
+              "items": {
+                "type": "object"
+              },
+              "maxItems": 100,
+              "type": "array"
+            },
+            "goal": {
+              "type": "string"
+            },
+            "image_model": {
+              "type": "string"
+            },
+            "mode": {
+              "enum": [
+                "best",
+                "next"
+              ],
+              "type": "string"
+            },
+            "output_spec": {
+              "type": "object"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "quality_gates": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 50,
+              "type": "array"
+            },
+            "success_criteria": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 100,
+              "type": "array"
+            },
+            "target_episodes": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "task_authorization": {
+              "description": "Optional current-turn policy facts. The parent service owns the signed paid-media grant and resolves it from the authenticated project/canvas scope; never invent or copy a grant id. compose_authorization_id is a separate browser-issued, server-validated final-compose ticket.",
+              "properties": {
+                "allow_paid_media": {
+                  "type": "boolean"
+                },
+                "allow_structure": {
+                  "type": "boolean"
+                },
+                "compose_authorization_id": {
+                  "description": "Optional browser-issued one-shot final-compose ticket id. Never invent or reuse it for paid media.",
+                  "type": "string"
+                },
+                "max_paid_starts": {
+                  "maximum": 64,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "require_video_confirmation": {
+                  "enum": [
+                    false
+                  ],
+                  "type": "boolean"
+                },
+                "run_mode": {
+                  "enum": [
+                    "draft",
+                    "auto"
+                  ],
+                  "type": "string"
+                },
+                "scope": {
+                  "enum": [
+                    "current_turn"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "scope",
+                "run_mode",
+                "allow_structure",
+                "allow_paid_media",
+                "max_paid_starts",
+                "require_video_confirmation"
+              ],
+              "type": "object"
+            },
+            "uploaded_filename": {
+              "type": "string"
+            },
+            "video_backend": {
+              "type": "string"
+            },
+            "world_state_ref": {
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_command_production_run",
+      "name": "village_canvas_command_production_run",
+      "schema": {
+        "description": "Control a durable production run. Auto-mode task_authorization may resume/retry; confirmed_paid_media is an optional direct-call override.",
+        "name": "village_canvas_command_production_run",
+        "parameters": {
+          "properties": {
+            "command": {
+              "enum": [
+                "pause",
+                "resume",
+                "cancel",
+                "retry",
+                "skip",
+                "take_over"
+              ],
+              "type": "string"
+            },
+            "confirmed_paid_media": {
+              "description": "Optional direct-call override for resume/retry.",
+              "type": "boolean"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "run_id": {
+              "type": "string"
+            },
+            "task_authorization": {
+              "description": "Optional current-turn policy facts. The parent service owns the signed paid-media grant and resolves it from the authenticated project/canvas scope; never invent or copy a grant id. compose_authorization_id is a separate browser-issued, server-validated final-compose ticket.",
+              "properties": {
+                "allow_paid_media": {
+                  "type": "boolean"
+                },
+                "allow_structure": {
+                  "type": "boolean"
+                },
+                "compose_authorization_id": {
+                  "description": "Optional browser-issued one-shot final-compose ticket id. Never invent or reuse it for paid media.",
+                  "type": "string"
+                },
+                "max_paid_starts": {
+                  "maximum": 64,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "require_video_confirmation": {
+                  "enum": [
+                    false
+                  ],
+                  "type": "boolean"
+                },
+                "run_mode": {
+                  "enum": [
+                    "draft",
+                    "auto"
+                  ],
+                  "type": "string"
+                },
+                "scope": {
+                  "enum": [
+                    "current_turn"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "scope",
+                "run_mode",
+                "allow_structure",
+                "allow_paid_media",
+                "max_paid_starts",
+                "require_video_confirmation"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "run_id",
+            "command"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_list_tasks",
+      "name": "village_canvas_list_tasks",
+      "schema": {
+        "description": "List Village Infinite Canvas tasks for the current or specified project.",
+        "name": "village_canvas_list_tasks",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "type": "integer"
+            },
+            "project_id": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "task_type": {
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_task",
+      "name": "village_canvas_get_task",
+      "schema": {
+        "description": "Get one Village Infinite Canvas task status by task type, episode, and optional beat/scope.",
+        "name": "village_canvas_get_task",
+        "parameters": {
+          "properties": {
+            "beat": {
+              "type": "integer"
+            },
+            "beat_num": {
+              "type": "integer"
+            },
+            "episode": {
+              "type": "integer"
+            },
+            "project_id": {
+              "type": "string"
+            },
+            "scope": {
+              "type": "string"
+            },
+            "task_type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "task_type",
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_episode_script",
+      "name": "village_canvas_get_episode_script",
+      "schema": {
+        "description": "Get one episode script for the current or specified project.",
+        "name": "village_canvas_get_episode_script",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "type": "integer"
+            },
+            "project_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_list_ingest_uploads",
+      "name": "village_canvas_list_ingest_uploads",
+      "schema": {
+        "description": "List files already uploaded to the current project's ingest script directory. Use this when the user asks which files are currently uploaded, or before starting video/short-drama ingest from a previously uploaded script.",
+        "name": "village_canvas_list_ingest_uploads",
+        "parameters": {
+          "properties": {
+            "project_id": {
+              "description": "Project id. Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_build_characters",
+      "name": "village_canvas_build_characters",
+      "schema": {
+        "description": "Extract characters from the project's knowledge graph (async build_characters task, episode 0). Requires ingest to be complete first. Use THIS instead of guessing a path. Poll with village_canvas_get_task(task_type='build_characters', episode=0); read results with village_canvas_get('/projects/{project}/characters').",
+        "name": "village_canvas_build_characters",
+        "parameters": {
+          "properties": {
+            "project_id": {
+              "description": "Project id. Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_plan_episodes",
+      "name": "village_canvas_plan_episodes",
+      "schema": {
+        "description": "Plan/generate episodes (分集规划, async build_episodes task, episode 0). Requires ingest + character extraction done first. Use THIS instead of guessing a path — the real endpoint is POST /projects/{project}/episodes/plan (NOT /episodes, /tasks/..., /build_episodes or /start_pipeline). Poll with village_canvas_get_task(task_type='build_episodes', episode=0); read with village_canvas_get('/projects/{project}/episodes').",
+        "name": "village_canvas_plan_episodes",
+        "parameters": {
+          "properties": {
+            "planning_mode": {
+              "description": "Planning mode (default 'chapters').",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "target_episodes": {
+              "description": "How many episodes to plan (default 10).",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_generate_script",
+      "name": "village_canvas_generate_script",
+      "schema": {
+        "description": "Generate the screenplay for one episode (脚本生成, script_writer task). Use THIS instead of guessing — the real endpoint is POST /projects/{project}/episodes/{episode}/script/generate. Requires the episode's character identities planned first (else returns code 'identity_plan_required'). Poll with village_canvas_get_task(task_type='script_writer', episode=N); read with village_canvas_get_episode_script(episode=N).",
+        "name": "village_canvas_generate_script",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "description": "Episode number (1-based, required).",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_update_character_face_prompt",
+      "name": "village_canvas_update_character_face_prompt",
+      "schema": {
+        "description": "Set or repair one character's face_prompt (面部特征) before portrait generation. Use this after character extraction if a core character has an empty face_prompt, or when character_portrait fails with '请先设置面部特征 (face_prompt)'. Real endpoint PATCH /projects/{project}/characters/{name} with {face_prompt: ...}. After this succeeds, retry village_canvas_generate_portrait for that character.",
+        "name": "village_canvas_update_character_face_prompt",
+        "parameters": {
+          "properties": {
+            "character": {
+              "description": "Alias of name.",
+              "type": "string"
+            },
+            "face_prompt": {
+              "description": "Concrete facial features: hairstyle, face shape, eyes, skin tone, age cues; no clothing.",
+              "type": "string"
+            },
+            "name": {
+              "description": "Character name (required).",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "face_prompt"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_plan_identities",
+      "name": "village_canvas_plan_identities",
+      "schema": {
+        "description": "Plan character identities for one episode (身份规划, identity_planner task). Use THIS instead of guessing — real endpoint POST /projects/{project}/episodes/{episode}/identities/plan-async. This is a PREREQUISITE for village_canvas_generate_script. Poll village_canvas_get_task(task_type='identity_planner', episode=N).",
+        "name": "village_canvas_plan_identities",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_plan_scenes",
+      "name": "village_canvas_plan_scenes",
+      "schema": {
+        "description": "Plan the scene menu for one episode (场景规划, episode_scene_planner task). Use THIS after script generation and before sketch generation when the pipeline needs scene context. Real endpoint POST /projects/{project}/episodes/{episode}/scenes/plan. Poll with village_canvas_get_task(task_type='episode_scene_planner', episode=N).",
+        "name": "village_canvas_plan_scenes",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_plan_props",
+      "name": "village_canvas_plan_props",
+      "schema": {
+        "description": "Plan the prop menu for one episode (道具规划, episode_prop_planner task). Use THIS after script generation and before sketch generation when the pipeline needs prop context. Real endpoint POST /projects/{project}/episodes/{episode}/props/plan. Poll with village_canvas_get_task(task_type='episode_prop_planner', episode=N).",
+        "name": "village_canvas_plan_props",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_generate_scene_master",
+      "name": "village_canvas_generate_scene_master",
+      "schema": {
+        "description": "Generate one scene's canonical master reference image (场景正向参考图, scene_reference_asset task). Real endpoint POST /projects/{project}/scenes/{name}/master/generate-async. Use scene names from village_canvas_get(path='/projects/{project}/scenes') or the episode scene menu. Poll with village_canvas_get_task(task_type='scene_reference_asset', episode=0, scope=<returned scope>).",
+        "name": "village_canvas_generate_scene_master",
+        "parameters": {
+          "properties": {
+            "name": {
+              "description": "Scene name (required).",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "scene_name": {
+              "description": "Alias of name.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_generate_scene_reverse",
+      "name": "village_canvas_generate_scene_reverse",
+      "schema": {
+        "description": "Generate one scene's reverse master reference image (场景反向参考图, scene_reference_asset task). Real endpoint POST /projects/{project}/scenes/{name}/reverse/generate-async. Poll with village_canvas_get_task(task_type='scene_reference_asset', episode=0, scope=<returned scope>).",
+        "name": "village_canvas_generate_scene_reverse",
+        "parameters": {
+          "properties": {
+            "name": {
+              "description": "Scene name (required).",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "scene_name": {
+              "description": "Alias of name.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_generate_portrait",
+      "name": "village_canvas_generate_portrait",
+      "schema": {
+        "description": "Generate one character's portrait (肖像生成, character_portrait task). Real endpoint POST /projects/{project}/characters/{name}/portrait-async. Call once per character. Poll village_canvas_get_task(task_type='character_portrait').",
+        "name": "village_canvas_generate_portrait",
+        "parameters": {
+          "properties": {
+            "name": {
+              "description": "Character name (required; from the character list).",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_generate_identity_image",
+      "name": "village_canvas_generate_identity_image",
+      "schema": {
+        "description": "Generate a character identity image (身份图生成, identity_image task). Real endpoint POST /projects/{project}/characters/{name}/identities/{identity_id}/generate-async. Poll village_canvas_get_task(task_type='identity_image').",
+        "name": "village_canvas_generate_identity_image",
+        "parameters": {
+          "properties": {
+            "identity_id": {
+              "description": "Identity id from the character's identity list (required).",
+              "type": "string"
+            },
+            "name": {
+              "description": "Character name (required).",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "identity_id"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_generate_sketches",
+      "name": "village_canvas_generate_sketches",
+      "schema": {
+        "description": "Generate beat sketches for one episode (草图生成, sketch_generation task). Real endpoint POST /projects/{project}/episodes/{episode}/sketches/generate with a canonical body. This tool automatically runs assign-colors first by default and fills safe defaults: model='nanobanana', grid_index=-1 (all grids), sketch_scene_grouping=true, aspect_ratio='2:3'. Use THIS instead of village_canvas_post or guessing the body. Runs after the script exists. Poll village_canvas_get_task(task_type='sketch_generation', episode=N).",
+        "name": "village_canvas_generate_sketches",
+        "parameters": {
+          "properties": {
+            "aspect_ratio": {
+              "description": "Sketch aspect ratio. Default: 2:3.",
+              "enum": [
+                "2:3",
+                "16:9"
+              ],
+              "type": "string"
+            },
+            "auto_assign_colors": {
+              "description": "Run /sketches/assign-colors before generation. Default: true.",
+              "type": "boolean"
+            },
+            "body": {
+              "description": "Advanced override merged into the canonical generate body.",
+              "type": "object"
+            },
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "grid_index": {
+              "description": "Grid index to generate. Use -1 to generate all grids. Default: -1.",
+              "type": "integer"
+            },
+            "image_generation_selection": {
+              "description": "Optional backend/provider selection from sketch settings.",
+              "type": "string"
+            },
+            "model": {
+              "description": "Sketch model. Default: nanobanana.",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "sketch_scene_grouping": {
+              "description": "Group sketch grids by scene. Default: true.",
+              "type": "boolean"
+            },
+            "style": {
+              "description": "Optional visual style override.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_detect_sketch_identities",
+      "name": "village_canvas_detect_sketch_identities",
+      "schema": {
+        "description": "Run AI detection on one episode's generated sketches and persist detected identities and props to each beat. Real endpoint POST /projects/{project}/episodes/{episode}/sketches/detect-identities. Requires sketches to exist and sketch colors to be assigned; if colors are missing, run village_canvas_generate_sketches or POST assign-colors first. Use THIS when the user asks to run AI 检测 / identity detection for sketches. If the tool returns a timeout or retryable=false, do not call it again in the same turn; report the timeout and stop.",
+        "name": "village_canvas_detect_sketch_identities",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_sketches",
+      "name": "village_canvas_get_sketches",
+      "schema": {
+        "description": "Get display-ready official sketch URLs for an episode, to SHOW the user. This tool returns only current sketch_url media. It does not fall back to grids/epNNN/sketch/beat_XX_t* pool candidates and never substitutes first frames. Use village_canvas_get_first_frames only when the user explicitly asks for 首帧/first frames. Do NOT read sketch_path from a task result, and do NOT use vision_analyze to 'show' images. After calling this tool, do not write markdown images, raw URLs, http/static paths, or HTML media tags.",
+        "name": "village_canvas_get_sketches",
+        "parameters": {
+          "properties": {
+            "beat": {
+              "description": "Show only one beat's sketch.",
+              "type": "integer"
+            },
+            "beat_indices": {
+              "description": "Show only these beat numbers, in episode order.",
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "limit": {
+              "description": "Maximum media items to return. Default/max: 12.",
+              "type": "integer"
+            },
+            "offset": {
+              "description": "Zero-based media offset after beat filtering. Use with limit for paging.",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_first_frames",
+      "name": "village_canvas_get_first_frames",
+      "schema": {
+        "description": "Get display-ready first-frame URLs for an episode, to SHOW the user. This tool returns only frame_url media. Use this only when the user explicitly asks for 首帧/first frames. Use village_canvas_get_sketches for sketches. After calling this tool, do not write markdown images, raw URLs, http/static paths, or HTML media tags.",
+        "name": "village_canvas_get_first_frames",
+        "parameters": {
+          "properties": {
+            "beat": {
+              "description": "Show only one beat's first frame.",
+              "type": "integer"
+            },
+            "beat_indices": {
+              "description": "Show only these beat numbers, in episode order.",
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "limit": {
+              "description": "Maximum media items to return. Default/max: 12.",
+              "type": "integer"
+            },
+            "offset": {
+              "description": "Zero-based media offset after beat filtering. Use with limit for paging.",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_sketch_candidates",
+      "name": "village_canvas_get_sketch_candidates",
+      "schema": {
+        "description": "Get display-ready sketch pool candidates for one beat. This tool shows grids/epNNN/sketch/beat_XX_t* candidates and is separate from current sketch_url. Use village_canvas_get_sketches when the user asks for the official/current sketch.",
+        "name": "village_canvas_get_sketch_candidates",
+        "parameters": {
+          "properties": {
+            "beat": {
+              "description": "Beat number (required).",
+              "type": "integer"
+            },
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "limit": {
+              "description": "Maximum media items to return. Default/max: 12.",
+              "type": "integer"
+            },
+            "offset": {
+              "description": "Zero-based candidate offset. Use with limit for paging.",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode",
+            "beat"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_scene_images",
+      "name": "village_canvas_get_scene_images",
+      "schema": {
+        "description": "Get display-ready scene image URLs for a project, to SHOW the user. Returns per-scene servable master_url/reverse_master_url/pano_url/custom_scene_url and prepared media data. Do NOT use local *_path fields, task result paths, or synthesized download URLs. After calling this tool, do not write markdown images, raw URLs, http/static paths, or HTML media tags.",
+        "name": "village_canvas_get_scene_images",
+        "parameters": {
+          "properties": {
+            "include_custom": {
+              "description": "Include custom_scene_url entries. Default: false.",
+              "type": "boolean"
+            },
+            "include_pano": {
+              "description": "Include pano_url entries. Default: false.",
+              "type": "boolean"
+            },
+            "include_reverse": {
+              "description": "Include reverse_master_url entries. Default: true.",
+              "type": "boolean"
+            },
+            "index": {
+              "description": "Show only the Nth scene from the API scene list, 1-based.",
+              "type": "integer"
+            },
+            "limit": {
+              "description": "Maximum media items to return. Default/max: 12.",
+              "type": "integer"
+            },
+            "name": {
+              "description": "Show scenes whose name contains this text.",
+              "type": "string"
+            },
+            "names": {
+              "description": "Show scenes whose name contains any of these texts.",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "offset": {
+              "description": "Zero-based media offset after scene filtering. Use with limit for paging.",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "scene_indices": {
+              "description": "Show only these 1-based scene indexes from the API scene list.",
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "scene_name": {
+              "description": "Alias of name; fuzzy contains match.",
+              "type": "string"
+            },
+            "scene_type": {
+              "description": "Show only scenes with this scene_type.",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_character_media",
+      "name": "village_canvas_get_character_media",
+      "schema": {
+        "description": "Get display-ready character portrait/identity image URLs and prepared media data. After calling this tool, do not write markdown images, raw URLs, http/static paths, or HTML media tags; the backend renders the returned media automatically.",
+        "name": "village_canvas_get_character_media",
+        "parameters": {
+          "properties": {
+            "identity_name": {
+              "description": "Fuzzy text query over identity image names/ids.",
+              "type": "string"
+            },
+            "include_identities": {
+              "description": "Include identity images. Default: true.",
+              "type": "boolean"
+            },
+            "limit": {
+              "description": "Maximum media items to return. Default/max: 12.",
+              "type": "integer"
+            },
+            "media_kind": {
+              "description": "all=portraits plus identity images; portrait=only character portraits; identity=only identity images.",
+              "enum": [
+                "all",
+                "portrait",
+                "identity"
+              ],
+              "type": "string"
+            },
+            "name": {
+              "description": "Show character media whose character name, aliases, or identity name/id contains this text.",
+              "type": "string"
+            },
+            "names": {
+              "description": "Show character media whose character name, aliases, or identity name/id contains any of these texts.",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "offset": {
+              "description": "Zero-based media offset after character filtering. Use with limit for paging.",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "query": {
+              "description": "Broad fuzzy text query over character name, role/description, identity names, and identity descriptions.",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_episode_media",
+      "name": "village_canvas_get_episode_media",
+      "schema": {
+        "description": "Get display-ready episode beat video/audio URLs and prepared media data. media_type='video' returns video previews; media_type='audio' returns audio items. After calling this tool, do not write markdown images, raw URLs, http/static paths, or HTML media tags; the backend renders the returned media automatically.",
+        "name": "village_canvas_get_episode_media",
+        "parameters": {
+          "properties": {
+            "beat": {
+              "description": "Show only one beat's video/audio.",
+              "type": "integer"
+            },
+            "beat_indices": {
+              "description": "Show only these beat numbers, in episode order.",
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "limit": {
+              "description": "Maximum media items to return. Video max 6; audio max 20.",
+              "type": "integer"
+            },
+            "media_type": {
+              "description": "Default: video.",
+              "enum": [
+                "video",
+                "audio"
+              ],
+              "type": "string"
+            },
+            "offset": {
+              "description": "Zero-based media offset after beat filtering. Use with limit for paging.",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "query": {
+              "description": "Fuzzy text query over beat title, description, narration/dialogue, speaker, characters, and scene.",
+              "type": "string"
+            },
+            "search": {
+              "description": "Alias of query.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_render_first_frames",
+      "name": "village_canvas_render_first_frames",
+      "schema": {
+        "description": "Generate first frames for an episode (首帧生成, selected_regen task). Real endpoint POST /projects/{project}/episodes/{episode}/beats/regenerate with {beat_indices:[...]}. Omit beat_indices to render ALL beats of the episode (resolved automatically). Requires sketches first. Poll village_canvas_get_task(task_type='selected_regen', episode=N).",
+        "name": "village_canvas_render_first_frames",
+        "parameters": {
+          "properties": {
+            "beat_indices": {
+              "description": "Beat numbers to render. Omit to render all beats of the episode.",
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "style": {
+              "description": "Optional visual style override.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_generate_audio",
+      "name": "village_canvas_generate_audio",
+      "schema": {
+        "description": "Generate episode audio/voiceover using the current IndexTTS2 audio pipeline (音频生成, audio_generation_indextts2 task). Real endpoint POST /projects/{project}/episodes/{episode}/audio/generate. Use THIS instead of legacy /tts/generate, which has been removed. Poll village_canvas_get_task(task_type='audio_generation_indextts2', episode=N).",
+        "name": "village_canvas_generate_audio",
+        "parameters": {
+          "properties": {
+            "beat_numbers": {
+              "description": "Optional beat numbers for partial audio generation.",
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "mode": {
+              "description": "Audio generation mode. Backend default is sync_changed.",
+              "type": "string"
+            },
+            "model": {
+              "description": "Optional model override.",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "provider": {
+              "description": "Optional provider override.",
+              "type": "string"
+            },
+            "rate": {
+              "description": "Optional speech rate override.",
+              "type": "string"
+            },
+            "voice": {
+              "description": "Optional voice override.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_optimize_video_global",
+      "name": "village_canvas_optimize_video_global",
+      "schema": {
+        "description": "Run global video optimization for one episode (全局视频优化, global_optimize_video task). Real endpoint POST /projects/{project}/episodes/{episode}/optimize/video-global. Poll village_canvas_get_task(task_type='global_optimize_video', episode=N).",
+        "name": "village_canvas_optimize_video_global",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_compose_episode",
+      "name": "village_canvas_compose_episode",
+      "schema": {
+        "description": "Compose/export the final video for one episode (合成导出, compose_episode task). Real endpoint POST /projects/{project}/episodes/{episode}/videos/compose. Poll village_canvas_get_task(task_type='compose_episode', episode=N).",
+        "name": "village_canvas_compose_episode",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_get_final_video",
+      "name": "village_canvas_get_final_video",
+      "schema": {
+        "description": "Get and display the composed final episode video (最终成片展示). Real endpoint GET /projects/{project}/episodes/{episode}/final. Use this after compose_episode completes or when the user asks for the final video. If no final video exists, report that state; do not synthesize file URLs.",
+        "name": "village_canvas_get_final_video",
+        "parameters": {
+          "properties": {
+            "episode": {
+              "description": "Episode number (required).",
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_start_single_video",
+      "name": "village_canvas_start_single_video",
+      "schema": {
+        "description": "Generate one beat's video (单 beat 视频, single_video task), POST /episodes/{ep}/beats/{beat}/video. You do NOT pass a prompt — the beat's stored video_prompt is used. Prerequisites: the beat's first frame must exist AND the beat must have a non-empty video_prompt; if the API returns '首帧不存在' or 'prompt is required', that prerequisite is missing — report it, do NOT invent fixes. Auto-mode task_authorization or confirmed_paid_media=true is required. Compose only works after all beat videos exist.",
+        "name": "village_canvas_start_single_video",
+        "parameters": {
+          "properties": {
+            "beat": {
+              "description": "Beat number (required).",
+              "type": "integer"
+            },
+            "beat_number": {
+              "type": "integer"
+            },
+            "confirmed_paid_media": {
+              "description": "Optional direct-call override.",
+              "type": "boolean"
+            },
+            "duration": {
+              "description": "Optional seconds.",
+              "type": "number"
+            },
+            "episode": {
+              "type": "integer"
+            },
+            "mode": {
+              "description": "Optional model-supported video mode.",
+              "type": "string"
+            },
+            "project_id": {
+              "type": "string"
+            },
+            "resolution": {
+              "description": "Optional model-supported resolution.",
+              "type": "string"
+            },
+            "task_authorization": {
+              "description": "Optional current-turn policy facts. The parent service owns the signed paid-media grant and resolves it from the authenticated project/canvas scope; never invent or copy a grant id. compose_authorization_id is a separate browser-issued, server-validated final-compose ticket.",
+              "properties": {
+                "allow_paid_media": {
+                  "type": "boolean"
+                },
+                "allow_structure": {
+                  "type": "boolean"
+                },
+                "compose_authorization_id": {
+                  "description": "Optional browser-issued one-shot final-compose ticket id. Never invent or reuse it for paid media.",
+                  "type": "string"
+                },
+                "max_paid_starts": {
+                  "maximum": 64,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "require_video_confirmation": {
+                  "enum": [
+                    false
+                  ],
+                  "type": "boolean"
+                },
+                "run_mode": {
+                  "enum": [
+                    "draft",
+                    "auto"
+                  ],
+                  "type": "string"
+                },
+                "scope": {
+                  "enum": [
+                    "current_turn"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "scope",
+                "run_mode",
+                "allow_structure",
+                "allow_paid_media",
+                "max_paid_starts",
+                "require_video_confirmation"
+              ],
+              "type": "object"
+            },
+            "video_backend": {
+              "description": "Optional backend override.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "episode",
+            "beat"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_frontend_ui_tool",
+      "name": "village_canvas_ui",
+      "schema": {
+        "description": "Operate the current browser's real canvas UI and wait for an ack/progress/result receipt. This tool only selects or focuses nodes, fits the viewport, and opens or closes a node tool panel; it never creates, edits, moves, connects, or deletes canvas data.",
+        "name": "village_canvas_ui",
+        "parameters": {
+          "properties": {
+            "action": {
+              "enum": [
+                "select_node",
+                "focus_node",
+                "fit_view",
+                "open_tool_dialog",
+                "close_tool_dialog"
+              ],
+              "type": "string"
+            },
+            "canvas_id": {
+              "description": "Current canvas id.",
+              "type": "string"
+            },
+            "duration_ms": {
+              "default": 220,
+              "maximum": 2000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "max_zoom": {
+              "maximum": 4.0,
+              "minimum": 0.1,
+              "type": "number"
+            },
+            "node_id": {
+              "description": "Required by select, focus and open-tool actions.",
+              "type": "string"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "source_turn_id": {
+              "description": "Current Agent turn id for event correlation.",
+              "type": "string"
+            },
+            "timeout_seconds": {
+              "default": 8,
+              "maximum": 18,
+              "minimum": 1,
+              "type": "number"
+            },
+            "tool_type": {
+              "description": "Required only when opening a node tool panel.",
+              "enum": [
+                "crop",
+                "annotate",
+                "split-storyboard"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "canvas_id",
+            "action"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_dispatch_canvas_action",
+      "name": "village_canvas_dispatch_action",
+      "schema": {
+        "description": "Canonical execution entry for 小树. Compile the understood user request into task facts and one executable payload, then call this once. The parent ActionRouter deterministically chooses direct CanvasCommandGateway or durable WorkflowRun; do not choose between the legacy write/start tools yourself. Direct routes require commands. For an existing-node/edge mutation set dynamic_execution=true; the server will compile the runtime allowlist, confirm the checkpoint, bind the current canvas revision and then emit a receipt-backed write. Never send or invent an execution_context. Durable routes reuse workflow_id or default to custom-canvas-workflow; they compose from current canvas facts and do not insert a starter graph unless starter_workflow_id or use_starter_workflow=true is explicit. Returns the authoritative canvas receipt or WorkflowRun plus the route decision.",
+        "name": "village_canvas_dispatch_action",
+        "parameters": {
+          "properties": {
+            "asset_plan": {
+              "type": "object"
+            },
+            "assumptions": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 20,
+              "type": "array"
+            },
+            "budget": {
+              "type": "object"
+            },
+            "canvas_id": {
+              "description": "Current canvas id.",
+              "type": "string"
+            },
+            "canvas_skeleton_refs": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 500,
+              "type": "array"
+            },
+            "command_id": {
+              "description": "Stable idempotency id for a direct canvas transaction.",
+              "type": "string"
+            },
+            "commands": {
+              "items": {
+                "properties": {
+                  "aspect_ratio": {
+                    "description": "Actual node aspect ratio; image nodes accept the full list, video nodes accept 16:9/4:3/1:1/3:4/9:16/21:9. Never put a requested ratio only in prompt text.",
+                    "enum": [
+                      "auto",
+                      "1:1",
+                      "16:9",
+                      "9:16",
+                      "4:3",
+                      "3:4",
+                      "3:2",
+                      "2:3",
+                      "4:5",
+                      "5:4",
+                      "21:9"
+                    ],
+                    "type": "string"
+                  },
+                  "camera": {
+                    "properties": {
+                      "aperture": {
+                        "type": "string"
+                      },
+                      "camera_body_id": {
+                        "type": "string"
+                      },
+                      "focal_length_mm": {
+                        "maximum": 2000,
+                        "minimum": 1,
+                        "type": "number"
+                      },
+                      "lens_id": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "camera_movement": {
+                    "description": "Video camera-preset id from current canvas context.",
+                    "type": "string"
+                  },
+                  "clear_camera": {
+                    "description": "Clear image camera selection or video movement on update_node_camera.",
+                    "type": "boolean"
+                  },
+                  "count": {
+                    "enum": [
+                      1,
+                      2,
+                      4,
+                      6,
+                      8,
+                      12
+                    ],
+                    "type": "integer"
+                  },
+                  "created_node_id": {
+                    "description": "Optional stable id; omit to let the server mint one.",
+                    "type": "string"
+                  },
+                  "display_name": {
+                    "type": "string"
+                  },
+                  "duration_sec": {
+                    "maximum": 120,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "generate_audio": {
+                    "type": "boolean"
+                  },
+                  "generation_mode": {
+                    "enum": [
+                      "textToVideo",
+                      "allReference",
+                      "imageToVideo",
+                      "firstLastFrame",
+                      "imageReference",
+                      "videoEdit"
+                    ],
+                    "type": "string"
+                  },
+                  "image_size": {
+                    "description": "Image node resolution tier; applies to image and shot-sequence nodes.",
+                    "enum": [
+                      "0.5K",
+                      "1K",
+                      "2K",
+                      "4K"
+                    ],
+                    "type": "string"
+                  },
+                  "model": {
+                    "description": "Use only a model id present in the current canvas/model context; omit when unknown.",
+                    "type": "string"
+                  },
+                  "node_data": {
+                    "description": "Partial node data patch. Use only for real task handles and node-specific settings; never put prompt text or reason here.",
+                    "type": "object"
+                  },
+                  "node_id": {
+                    "description": "Concrete id, or $selected / $pinned / $pinned:N. Omit → $selected.",
+                    "type": "string"
+                  },
+                  "node_type": {
+                    "enum": [
+                      "audioNode",
+                      "beatContextNode",
+                      "exportImageNode",
+                      "groupNode",
+                      "imageGenNode",
+                      "imageNode",
+                      "pano360ViewerNode",
+                      "scriptNode",
+                      "skillNode",
+                      "storyboardGenNode",
+                      "storyboardNode",
+                      "textAnnotationNode",
+                      "threeDWorldNode",
+                      "uploadNode",
+                      "videoComposeNode",
+                      "videoNode",
+                      "videoStoryNode"
+                    ],
+                    "type": "string"
+                  },
+                  "placement": {
+                    "description": "Semantic browser-resolved placement. Prefer viewport_center + grid for new nodes; explicit x/y take priority.",
+                    "properties": {
+                      "anchor": {
+                        "enum": [
+                          "viewport_center",
+                          "selected_node",
+                          "absolute"
+                        ],
+                        "type": "string"
+                      },
+                      "gap": {
+                        "maximum": 400,
+                        "minimum": 16,
+                        "type": "number"
+                      },
+                      "layout": {
+                        "enum": [
+                          "stack",
+                          "grid",
+                          "row",
+                          "column"
+                        ],
+                        "type": "string"
+                      },
+                      "offset": {
+                        "properties": {
+                          "x": {
+                            "type": "number"
+                          },
+                          "y": {
+                            "type": "number"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "prompts": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "reason": {
+                    "description": "Optional explanation for this command; never place it inside node_data.",
+                    "maxLength": 2000,
+                    "type": "string"
+                  },
+                  "source": {
+                    "description": "Edge source; use $created:N for a node created earlier in this batch, otherwise a concrete id or $selected.",
+                    "type": "string"
+                  },
+                  "target": {
+                    "description": "Edge target; use $created:N for a node created earlier in this batch, otherwise a concrete id or $pinned.",
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "enum": [
+                      "focus_node",
+                      "select_node",
+                      "connect_nodes",
+                      "remove_edge",
+                      "annotate",
+                      "create_canvas_node",
+                      "create_image_prompt_node",
+                      "create_video_prompt_node",
+                      "create_shot_sequence",
+                      "insert_starter_workflow",
+                      "update_node_prompt",
+                      "update_node_label",
+                      "update_node_data",
+                      "update_node_camera",
+                      "move_node",
+                      "duplicate_node",
+                      "delete_node"
+                    ],
+                    "type": "string"
+                  },
+                  "video_quality": {
+                    "description": "Video node resolution tier.",
+                    "enum": [
+                      "480P",
+                      "720P",
+                      "768P",
+                      "1080P",
+                      "4K"
+                    ],
+                    "type": "string"
+                  },
+                  "workflow_id": {
+                    "description": "Starter workflow id from the current workflow manifest.",
+                    "type": "string"
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "type"
+                ],
+                "type": "object"
+              },
+              "maxItems": 20,
+              "minItems": 1,
+              "type": "array"
+            },
+            "concurrency_policy": {
+              "description": "Server-bounded episode/shot concurrency policy.",
+              "type": "object"
+            },
+            "constraints": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 20,
+              "type": "array"
+            },
+            "director_clarification_answers": {
+              "description": "Answers collected by the director gate. The gate returns every remaining gap at once in `questions`; keep prior answers and add each answered question_id. Accepting an offered default also counts as an answer.",
+              "type": "object"
+            },
+            "director_intent_contract": {
+              "description": "Optional intent facts. State only what you know (delivery_level, shot_count, characters, locations, props, style, reference_policy, spatial_complexity, audio_required, subtitles_required, compose_required, output_spec). The server derives required_assets, quality_gates, graph_contract, template_policy and contract_revision; do not hand-author them.",
+              "type": "object"
+            },
+            "director_plan": {
+              "type": "object"
+            },
+            "director_plan_revision": {
+              "description": "Immutable DirectorPlan revision referenced by this child run.",
+              "type": "string"
+            },
+            "dynamic_execution": {
+              "default": false,
+              "description": "For existing-node/edge mutations only: run the shared-context, runtime-allowlist and ready_write checkpoint chain before writing.",
+              "type": "boolean"
+            },
+            "episode_plan": {
+              "items": {
+                "type": "object"
+              },
+              "maxItems": 100,
+              "type": "array"
+            },
+            "episode_scope": {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "expected_canvas_revision": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "generation_node_id": {
+              "description": "Existing generation-capable node for a single direct media action. When one command creates exactly one media node, the created id is used automatically.",
+              "type": "string"
+            },
+            "goal": {
+              "description": "One concise outcome statement derived from the full request and current canvas facts.",
+              "minLength": 1,
+              "type": "string"
+            },
+            "idempotency_key": {
+              "type": "string"
+            },
+            "inputs": {
+              "type": "object"
+            },
+            "model_bindings": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "output_spec": {
+              "type": "object"
+            },
+            "parent_run_id": {
+              "description": "Project-level ProductionControlStore parent run to continue.",
+              "type": "string"
+            },
+            "pinned_node_ids": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 500,
+              "type": "array"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "quality_gates": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 50,
+              "type": "array"
+            },
+            "request": {
+              "description": "Complete understood production request.",
+              "minLength": 1,
+              "type": "string"
+            },
+            "run_mode": {
+              "default": "draft",
+              "enum": [
+                "draft",
+                "auto"
+              ],
+              "type": "string"
+            },
+            "selected_node_ids": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 500,
+              "type": "array"
+            },
+            "source_turn_id": {
+              "type": "string"
+            },
+            "starter_workflow_id": {
+              "description": "Optional explicit canvas template id. Leave empty for dynamic composition.",
+              "type": "string"
+            },
+            "success_criteria": {
+              "description": "Observable completion checks tied to canvas, task, media, revision or verifier evidence.",
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 20,
+              "minItems": 1,
+              "type": "array"
+            },
+            "task": {
+              "description": "Structural facts compiled from the understood task. Do not infer from keywords; count the planned steps, items and dependencies and declare recovery/delivery needs.",
+              "properties": {
+                "commands": {
+                  "description": "Optional exact executable canvas command batch; when present it is the write plan.",
+                  "items": {
+                    "type": "object"
+                  },
+                  "maxItems": 100,
+                  "type": "array"
+                },
+                "contains_paid_media": {
+                  "type": "boolean"
+                },
+                "creation_reason": {
+                  "description": "Optional note on why new nodes are being created; advisory only, never blocking (T-212).",
+                  "maxLength": 1000,
+                  "type": "string"
+                },
+                "dependency_count": {
+                  "maximum": 200000,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "estimated_duration_seconds": {
+                  "maximum": 604800,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "existing_run_id": {
+                  "description": "Exact failed, paused or running WorkflowRun to continue; empty for a genuinely new task.",
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                "interaction_mode": {
+                  "description": "Only execute authorizes a write or WorkflowRun command.",
+                  "enum": [
+                    "discuss",
+                    "plan",
+                    "execute"
+                  ],
+                  "type": "string"
+                },
+                "item_count": {
+                  "maximum": 50000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "operation": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "requires_delivery": {
+                  "type": "boolean"
+                },
+                "requires_recovery": {
+                  "type": "boolean"
+                },
+                "step_count": {
+                  "maximum": 1000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "target_node_ids": {
+                  "description": "Concrete existing targets. Include every node referenced by mutation commands.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 500,
+                  "type": "array"
+                },
+                "target_strategy": {
+                  "description": "Reuse current nodes/run unless a missing carrier is proven.",
+                  "enum": [
+                    "reuse_existing",
+                    "create_missing"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation",
+                "interaction_mode",
+                "target_strategy",
+                "target_node_ids",
+                "step_count",
+                "item_count",
+                "dependency_count",
+                "estimated_duration_seconds",
+                "requires_recovery",
+                "requires_delivery",
+                "contains_paid_media"
+              ],
+              "type": "object"
+            },
+            "task_authorization": {
+              "description": "Optional current-turn policy facts. The parent service owns the signed paid-media grant and resolves it from the authenticated project/canvas scope; never invent or copy a grant id. compose_authorization_id is a separate browser-issued, server-validated final-compose ticket.",
+              "properties": {
+                "allow_paid_media": {
+                  "type": "boolean"
+                },
+                "allow_structure": {
+                  "type": "boolean"
+                },
+                "compose_authorization_id": {
+                  "description": "Optional browser-issued one-shot final-compose ticket id. Never invent or reuse it for paid media.",
+                  "type": "string"
+                },
+                "max_paid_starts": {
+                  "maximum": 64,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "require_video_confirmation": {
+                  "enum": [
+                    false
+                  ],
+                  "type": "boolean"
+                },
+                "run_mode": {
+                  "enum": [
+                    "draft",
+                    "auto"
+                  ],
+                  "type": "string"
+                },
+                "scope": {
+                  "enum": [
+                    "current_turn"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "scope",
+                "run_mode",
+                "allow_structure",
+                "allow_paid_media",
+                "max_paid_starts",
+                "require_video_confirmation"
+              ],
+              "type": "object"
+            },
+            "unknowns": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 20,
+              "type": "array"
+            },
+            "use_starter_workflow": {
+              "default": false,
+              "description": "Opt in to the workflow's starter canvas template; defaults to dynamic composition.",
+              "type": "boolean"
+            },
+            "workflow_id": {
+              "description": "Used only when the router selects WorkflowRun.",
+              "enum": [
+                "one-click-film",
+                "storyboard-production",
+                "custom-canvas-workflow",
+                "freezone-final-film"
+              ],
+              "type": "string"
+            },
+            "world_state_ref": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "canvas_id",
+            "request",
+            "task",
+            "goal",
+            "success_criteria"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_read_canvas_compact",
+      "name": "village_canvas_read_compact",
+      "schema": {
+        "description": "Fast read-only compact graph projection. Header fields (revision, viewport, counts, selection and paging) are emitted before bounded node summaries, preventing large canvas payloads from hiding viewport facts. The response also includes reference_manifest: 图片N/视频N/音频N are display labels only; bind generation inputs by its concrete node_id or asset_id and preserve the listed order.",
+        "name": "village_canvas_read_compact",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "description": "Current canvas id.",
+              "type": "string"
+            },
+            "node_cursor": {
+              "default": 0,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "node_limit": {
+              "default": 40,
+              "maximum": 200,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "prompt_chars": {
+              "default": 0,
+              "description": "Optional prompt/content excerpt length; zero returns only has_prompt.",
+              "maximum": 500,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "canvas_id"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_apply_canvas_commands",
+      "name": "village_canvas_apply_commands",
+      "schema": {
+        "description": "Compatibility plugin-bus canvas writer for an already routed direct transaction. Apply one idempotent batch through the existing canvas_chat_commands.v1 contract and return authoritative revision, applied_ops, created_node_ids and server_applied. Never starts media generation and cannot create image, video, or audio nodes; those must use village_canvas_dispatch_action so director, authorization, and WorkflowRun gates remain authoritative.",
+        "name": "village_canvas_apply_commands",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "description": "Current canvas id from CURRENT_CANVAS_CONTEXT.",
+              "type": "string"
+            },
+            "command_id": {
+              "description": "Batch/idempotency id for this multi-op transaction.",
+              "type": "string"
+            },
+            "commands": {
+              "items": {
+                "properties": {
+                  "aspect_ratio": {
+                    "description": "Actual node aspect ratio; image nodes accept the full list, video nodes accept 16:9/4:3/1:1/3:4/9:16/21:9. Never put a requested ratio only in prompt text.",
+                    "enum": [
+                      "auto",
+                      "1:1",
+                      "16:9",
+                      "9:16",
+                      "4:3",
+                      "3:4",
+                      "3:2",
+                      "2:3",
+                      "4:5",
+                      "5:4",
+                      "21:9"
+                    ],
+                    "type": "string"
+                  },
+                  "camera": {
+                    "properties": {
+                      "aperture": {
+                        "type": "string"
+                      },
+                      "camera_body_id": {
+                        "type": "string"
+                      },
+                      "focal_length_mm": {
+                        "maximum": 2000,
+                        "minimum": 1,
+                        "type": "number"
+                      },
+                      "lens_id": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "camera_movement": {
+                    "description": "Video camera-preset id from current canvas context.",
+                    "type": "string"
+                  },
+                  "clear_camera": {
+                    "description": "Clear image camera selection or video movement on update_node_camera.",
+                    "type": "boolean"
+                  },
+                  "count": {
+                    "enum": [
+                      1,
+                      2,
+                      4,
+                      6,
+                      8,
+                      12
+                    ],
+                    "type": "integer"
+                  },
+                  "created_node_id": {
+                    "description": "Optional stable id; omit to let the server mint one.",
+                    "type": "string"
+                  },
+                  "display_name": {
+                    "type": "string"
+                  },
+                  "duration_sec": {
+                    "maximum": 120,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "generate_audio": {
+                    "type": "boolean"
+                  },
+                  "generation_mode": {
+                    "enum": [
+                      "textToVideo",
+                      "allReference",
+                      "imageToVideo",
+                      "firstLastFrame",
+                      "imageReference",
+                      "videoEdit"
+                    ],
+                    "type": "string"
+                  },
+                  "image_size": {
+                    "description": "Image node resolution tier; applies to image and shot-sequence nodes.",
+                    "enum": [
+                      "0.5K",
+                      "1K",
+                      "2K",
+                      "4K"
+                    ],
+                    "type": "string"
+                  },
+                  "model": {
+                    "description": "Use only a model id present in the current canvas/model context; omit when unknown.",
+                    "type": "string"
+                  },
+                  "node_data": {
+                    "description": "Partial node data patch. Use only for real task handles and node-specific settings; never put prompt text or reason here.",
+                    "type": "object"
+                  },
+                  "node_id": {
+                    "description": "Concrete id, or $selected / $pinned / $pinned:N. Omit → $selected.",
+                    "type": "string"
+                  },
+                  "node_type": {
+                    "enum": [
+                      "audioNode",
+                      "beatContextNode",
+                      "exportImageNode",
+                      "groupNode",
+                      "imageGenNode",
+                      "imageNode",
+                      "pano360ViewerNode",
+                      "scriptNode",
+                      "skillNode",
+                      "storyboardGenNode",
+                      "storyboardNode",
+                      "textAnnotationNode",
+                      "threeDWorldNode",
+                      "uploadNode",
+                      "videoComposeNode",
+                      "videoNode",
+                      "videoStoryNode"
+                    ],
+                    "type": "string"
+                  },
+                  "placement": {
+                    "description": "Semantic browser-resolved placement. Prefer viewport_center + grid for new nodes; explicit x/y take priority.",
+                    "properties": {
+                      "anchor": {
+                        "enum": [
+                          "viewport_center",
+                          "selected_node",
+                          "absolute"
+                        ],
+                        "type": "string"
+                      },
+                      "gap": {
+                        "maximum": 400,
+                        "minimum": 16,
+                        "type": "number"
+                      },
+                      "layout": {
+                        "enum": [
+                          "stack",
+                          "grid",
+                          "row",
+                          "column"
+                        ],
+                        "type": "string"
+                      },
+                      "offset": {
+                        "properties": {
+                          "x": {
+                            "type": "number"
+                          },
+                          "y": {
+                            "type": "number"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "prompts": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "reason": {
+                    "description": "Optional explanation for this command; never place it inside node_data.",
+                    "maxLength": 2000,
+                    "type": "string"
+                  },
+                  "source": {
+                    "description": "Edge source; use $created:N for a node created earlier in this batch, otherwise a concrete id or $selected.",
+                    "type": "string"
+                  },
+                  "target": {
+                    "description": "Edge target; use $created:N for a node created earlier in this batch, otherwise a concrete id or $pinned.",
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "enum": [
+                      "focus_node",
+                      "select_node",
+                      "connect_nodes",
+                      "remove_edge",
+                      "annotate",
+                      "create_canvas_node",
+                      "create_image_prompt_node",
+                      "create_video_prompt_node",
+                      "create_shot_sequence",
+                      "insert_starter_workflow",
+                      "update_node_prompt",
+                      "update_node_label",
+                      "update_node_data",
+                      "update_node_camera",
+                      "move_node",
+                      "duplicate_node",
+                      "delete_node"
+                    ],
+                    "type": "string"
+                  },
+                  "video_quality": {
+                    "description": "Video node resolution tier.",
+                    "enum": [
+                      "480P",
+                      "720P",
+                      "768P",
+                      "1080P",
+                      "4K"
+                    ],
+                    "type": "string"
+                  },
+                  "workflow_id": {
+                    "description": "Starter workflow id from the current workflow manifest.",
+                    "type": "string"
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "type"
+                ],
+                "type": "object"
+              },
+              "maxItems": 20,
+              "minItems": 1,
+              "type": "array"
+            },
+            "dynamic_checkpoint": {
+              "description": "Internal ready_write checkpoint; supplied only by the dynamic existing-node execution chain.",
+              "type": "object"
+            },
+            "expected_canvas_revision": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "source_turn_id": {
+              "description": "Current Agent turn id for causal tracing.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "canvas_id",
+            "commands"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "handler": "_handle_wait_canvas_receipt",
+      "name": "village_canvas_wait_receipt",
+      "schema": {
+        "description": "Wait up to 10 seconds for a persisted canvas command receipt. Use after an incomplete or asynchronous command result; returns revision and created node ids without loading chat history.",
+        "name": "village_canvas_wait_receipt",
+        "parameters": {
+          "properties": {
+            "canvas_id": {
+              "description": "Current canvas id.",
+              "type": "string"
+            },
+            "command_id": {
+              "description": "Idempotent command id returned by apply_commands.",
+              "type": "string"
+            },
+            "poll_interval_ms": {
+              "default": 100,
+              "maximum": 1000,
+              "minimum": 50,
+              "type": "integer"
+            },
+            "project_id": {
+              "description": "Defaults to VILLAGE_CANVAS_PROJECT_ID.",
+              "type": "string"
+            },
+            "timeout_ms": {
+              "default": 3000,
+              "maximum": 10000,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "canvas_id",
+            "command_id"
+          ],
+          "type": "object"
+        }
+      }
+    }
+  ],
+  "schema_version": 1
+}

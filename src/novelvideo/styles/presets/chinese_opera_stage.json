@@ -1,0 +1,31 @@
+{
+  "id": "chinese_opera_stage",
+  "name": "戏曲舞台美学",
+  "label": "戏曲舞台美学",
+  "family": "chinese_opera",
+  "era": "timeless",
+  "palette": "正红、孔雀蓝、鎏金、墨黑与象牙白，色彩等级明确",
+  "lighting": "舞台追光与柔和顶光，脸谱和水袖高光准确，背景保持深黑",
+  "optics": "50mm正面舞台观察与85mm表演细节，适度景深，不做现代演唱会灯效",
+  "composition": "一桌二椅式象征空间，身段和眼神为中心，水袖、靠旗与兵器形成节奏线",
+  "camera_motion": "ceremonial dolly, measured orbit around performance axis, movement follows sleeve and gaze",
+  "style_instructions": "Cinematic Chinese opera stage aesthetic, authentic costume craftsmanship, precise face-paint grammar, symbolic staging, controlled theatrical lighting and readable performance gestures.",
+  "avoid_instructions": "No carnival makeup, no random costume mixing, no LED concert stage, no casual body language, no text or watermark.",
+  "style_tag": "CHINESE OPERA THEATRICAL CINEMA",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "戏曲",
+    "舞台",
+    "国风",
+    "表演"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "ceremonial dolly, measured orbit around performance axis, movement follows sleeve and gaze"
+    }
+  },
+  "image_prompt": "Cinematic Chinese opera stage aesthetic, authentic costume craftsmanship, precise face-paint grammar, symbolic staging, controlled theatrical lighting and readable performance gestures.",
+  "video_prompt": "ceremonial dolly, measured orbit around performance axis, movement follows sleeve and gaze",
+  "negative_prompt": "No carnival makeup, no random costume mixing, no LED concert stage, no casual body language, no text or watermark."
+}

@@ -1,0 +1,31 @@
+{
+  "id": "low_poly_diorama",
+  "name": "低多边形微缩",
+  "label": "低多边形微缩",
+  "family": "low_poly",
+  "era": "timeless",
+  "palette": "有限哑光色板，柔和互补色与低饱和环境色",
+  "lighting": "微缩摄影式柔光、清晰接触阴影、轻微环境遮蔽",
+  "optics": "35mm等距或轻俯视视角，适度移轴感，几何边面保持清晰",
+  "composition": "模块化场景像桌面模型，主体、路径和地标在单幅中一目了然",
+  "camera_motion": "slow tabletop orbit, miniature crane, clean modular parallax",
+  "style_instructions": "Stylized low-poly cinematic diorama, intentionally faceted geometry, matte materials, miniature-scale worldbuilding, clear shape language and polished global illumination.",
+  "avoid_instructions": "No photoreal textures, no noisy mesh detail, no voxel cubes, no glossy plastic toy look, no text or watermark.",
+  "style_tag": "LOW-POLY CINEMATIC DIORAMA",
+  "style_family": "animation",
+  "animation_subtype": "3d",
+  "tags": [
+    "低多边形",
+    "微缩",
+    "三维",
+    "场景"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "slow tabletop orbit, miniature crane, clean modular parallax"
+    }
+  },
+  "image_prompt": "Stylized low-poly cinematic diorama, intentionally faceted geometry, matte materials, miniature-scale worldbuilding, clear shape language and polished global illumination.",
+  "video_prompt": "slow tabletop orbit, miniature crane, clean modular parallax",
+  "negative_prompt": "No photoreal textures, no noisy mesh detail, no voxel cubes, no glossy plastic toy look, no text or watermark."
+}

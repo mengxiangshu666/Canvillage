@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "packageId": "prompt-hubs-sd",
+  "authority": "seed",
+  "notes": [
+    "Prompt-Hubs 的 SD 家族：公开模型 id 形如 sd2.0*，用公开 /v1/videos 报文，带 ratio 字段。",
+    "命中词 sd2. 带一个点，是本仓唯一带点的前缀 —— 它和 huabu 的裸 sd2 指向不同的报文形状：带点走这家（带 ratio / auto_face），带横线的 sd-2.0-fast 走 huabu。",
+    "本条不带首帧字段（first_frame_field 为 null），只收 referenceImages 数组。",
+    "本包只描述「中性请求怎么落到这家上游」，中性请求模型仍在 Python 代码里。"
+  ],
+  "profiles": [
+    {
+      "profile_id": "prompt_hubs_sd",
+      "match_prefixes": [
+        "sd2.",
+        "sd2fast"
+      ],
+      "duration_field": "duration",
+      "duration_choices": null,
+      "ratio_field": "ratio",
+      "first_frame_field": null,
+      "ref_field": "referenceImages",
+      "audio_field": null,
+      "auto_face_field": "auto_face"
+    }
+  ]
+}

@@ -1,0 +1,791 @@
+{
+  "schema_version": 1,
+  "owner": "Village Infinite Canvas",
+  "scope": "narrative_shotcraft_adapter",
+  "upstream": "Vincentwei1021/video-shotcraft",
+  "upstream_revision": "b1534bbfb892c1047f29f3fe63677b961844d37e",
+  "upstream_catalog_revision": "bdd94be16d60fa8f",
+  "allowed_categories": [
+    "camera",
+    "transition",
+    "rhythm",
+    "effects",
+    "opening",
+    "outro"
+  ],
+  "cards": [
+    {
+      "name": "crash-zoom-punch",
+      "category": "camera",
+      "summary": "全景一拍急推到目标特写（6f），落位二选一——过冲回弹（弹性）或撞停震屏（重量）",
+      "use": "功能段\"点名\"镜头——把观众视线一拍按到目标卡/模块上；强调级用撞停",
+      "duration": "约 0.5s 动作 + 前后 hold（动作 6–11f，前 hold ≥30f 建立全景、后 hold ≥45f 读特写）",
+      "energy": "高（瞬时冲击，非持续高能）",
+      "intention": "慢推近（spotlight-hero-card）是\"请看\"，急推是\"看这个！\"——一拍之内 从全景砸到特写，视线没有选择余地。落位质感分两款：回弹是弹性 （\"看这个\"），撞停震屏是重量（\"就是它\"），按强调级选。",
+      "tags": [
+        "camera",
+        "effects"
+      ],
+      "source": "cards/camera/crash-zoom-punch.md"
+    },
+    {
+      "name": "depth-layer-moves",
+      "category": "camera",
+      "summary": "分层深度两款运镜——多层视差滑轨（3 层速度梯度横移出纵深）与伪 dolly-zoom（主体钉死、背景膨胀压来）",
+      "use": "平面截图要\"有厚度\"的段落；戏剧性蓄力时刻用 dolly-zoom（一支片 ≤1 次）",
+      "duration": "视差滑轨 4–5s 持续；dolly-zoom 3–4s 单向行程",
+      "energy": "视差=中（质感型）；dolly-zoom=中高（压迫感渐强）",
+      "intention": "整页平移是\"看页面\"，分层深度是\"在页面的空间里\"。视差滑轨给横移 加纵深（迪士尼多平面摄影机原理，Linear 片同款质感）；伪 dolly-zoom 反过来——主角纹丝不动、全世界压过来，给戏剧性时刻蓄力。",
+      "tags": [
+        "camera"
+      ],
+      "source": "cards/camera/depth-layer-moves.md"
+    },
+    {
+      "name": "graze-face-tour",
+      "category": "camera",
+      "summary": "大倾角贴面游走特写——镜头贴着 UI 表面低飞掠过（侧栏树/顶栏/列表当地形），页面文字初始悬浮在界面上空带同形软影，随镜头行进先后加速贴落回界面",
+      "use": "功能区巡礼（把 UI 当地景飞掠）；配合暗场+霓虹缘光做产品\"内部世界\"段落；界面内容逐区登场",
+      "duration": "单段 4–5s；可多段接力延长",
+      "energy": "中高（运镜持续推进+元素连续落位，信息密度高）",
+      "intention": "把 UI 拍成地形：大倾角特写让侧栏树、导航、列表行变成掠过的地貌， 浅景深强化\"贴面\"。戏眼是**文字空中贴落**：文字/组件不是原地淡入， 而是悬浮在界面上空（3D z 轴抬高），在空中时往界面投同形软影， 随镜头行进先后加速贴落、影子随高度收敛消失——观众看见界面在 镜头经过时\"完成自己\"。影子是可感命门：没有影子，悬浮读作 普通位移入场；有影子，空间关系瞬间成立。",
+      "tags": [
+        "camera",
+        "ui-entrance"
+      ],
+      "source": "cards/camera/graze-face-tour.md"
+    },
+    {
+      "name": "overhead-camera-moves",
+      "category": "camera",
+      "summary": "俯拍揭示两式——tilt-reveal 俯仰抬正揭示、overhead-tabletop-drop 桌面卡阵横滑骤降扎入",
+      "use": "用\"俯仰角\"讲故事的开场/转场：单页 establishing 用 A，多页巡视择一扎入用 B",
+      "duration": "A ~4.8s / B ~4.7s",
+      "energy": "A 中 / B 中高",
+      "intention": "库内俯拍视角一直空缺——crane-rise 是\"平移+缩放\"的升起（俯仰角 不动），space-camera C 式 drone-dive 是俯冲降落一镜到底；这两式让 **俯仰角本身讲故事**：A 是揭示——整页 rotateX 平躺、开场只见上缘 一条透视窄带，机位\"抬头\"回正，内容一排排涌入视野，像掀开桌上的 图纸；B 是选择——三张页面卡平躺成桌面卡阵，相机俯拍横向滑过依次 掠过（韦斯·安德森 tabletop），滑到目标页猛地俯冲扎入、抬正成满屏， \"巡视一圈，就选这张\"。选型：单页开场用 A，多页转场/开场用 B。",
+      "tags": [
+        "camera",
+        "opening",
+        "transition"
+      ],
+      "source": "cards/camera/overhead-camera-moves.md"
+    },
+    {
+      "name": "space-camera-moves",
+      "category": "camera",
+      "summary": "3D 空间化运镜两式——exploded-view 爆炸分解（构件沿 Z 炸开再合体）、drone-dive-landing 无人机俯冲降落",
+      "use": "把平面页面当 3D 实体拍的高光段落；两式都是\"大动作\"，一支片合计 ≤2 次",
+      "duration": "A 5s（炸开-悬停-合体全程）；C 3–5s 单向俯冲",
+      "energy": "高",
+      "intention": "depth-layer 卡是给平移加纵深——层在动、页面还是页面。这两式更进一步： 整页被当成一个 3D 实体，相机（或世界）绕着它做实拍级机动。两式叙事 语义各占一格：A 说\"看看它由什么组成\"（拆解展示，Apple 发布片语言）； C 说\"从全局俯瞰砸到主角\"（上帝视角一头扎进 hero 特写，全景→焦点）。",
+      "tags": [
+        "camera"
+      ],
+      "source": "cards/camera/space-camera-moves.md"
+    },
+    {
+      "name": "steep-tilt-glide",
+      "category": "camera",
+      "summary": "固定镜头下直立页面以 60° 强透视侧立（右近左远），页面自身沿其 3D 横面方向滑移掠过镜头（物动镜不动），滑移带速度重影、文字组件悬空贴落、由暗揭亮",
+      "use": "长页面/多区块 UI 的炫技巡览（内容依次滑过固定机位）；暗场霓虹调性；与贴面运镜卡互补的\"侧掠\"机位",
+      "duration": "4s（120f）单镜；页面越宽越可拉长",
+      "energy": "中高（透视炫技+持续运动，但节奏是匀的）",
+      "intention": "把页面立成一堵斜墙：镜头钉死不动，60° 强透视让右缘贴脸、左缘 消失在灭点，页面自己沿自身平面横向滑移——内容像列车车厢一样 依次掠过。命门是**物动镜不动**：perspective/origin/rotY 全程常数， 唯一动的量是页面局部 translateX——镜头一动语义就变成运镜炫技， 这里的戏是\"页面在自我展示\"。角度经三轮收敛为精确 60° （-45°\"不对\"→-53°\"再大一点\"→-60°选中）。",
+      "tags": [
+        "camera",
+        "ui-entrance"
+      ],
+      "source": "cards/camera/steep-tilt-glide.md"
+    },
+    {
+      "name": "tension-camera-moves",
+      "category": "camera",
+      "summary": "情绪运镜四式——bullet-time 冻结环绕、dutch-roll 斜角滚正、slow-push 慢推压迫、pull-back 拉远孤立，相机替观众\"感受\"而非\"看\"",
+      "use": "情绪节点（震撼/纠偏/积压/收束）的运镜语言；与 space-camera-moves 的\"炫技大动作\"互补——这四式动作小、情绪重",
+      "duration": "单式 4–5s；全片合计 ≤2 式（各 ≤1 次）",
+      "energy": "A 高 / B 中 / C 低压升 / D 低收",
+      "intention": "space-camera-moves 三式是\"把页面当 3D 实体拍\"的高光炫技；这四式相反—— 动作本身克制，全部劲道在情绪语义上：A 说\"这一刻值得停下时间看\" （运动中的元素被冻住、相机绕行审视）；B 说\"问题解决了，世界被扶正\" （斜角悬着的难受感在节拍上滚回水平）；C 说\"有什么要发生了\"（慢到 不自觉的推近积压张力，顶点硬切释放）；D 说\"最后只剩这一件事\" （后拉中周围逐层熄灭，孤悬一点收束全片）。四式各占一个情绪格， 是分镜阶段\"这一段观众该感到什么\"的直接词汇。",
+      "tags": [
+        "camera"
+      ],
+      "source": "cards/camera/tension-camera-moves.md"
+    },
+    {
+      "name": "brand-frame-snap",
+      "category": "effects",
+      "summary": "品牌色画框语法——一圈粗纯色画框先于内容长出包住全屏，录屏窗口落进框内；模式切换时整圈画框同帧硬翻色+窗内布局同帧换，一个 borderColor 干完章节导航/状态提示/品牌露出三件事",
+      "use": "双模式/双章节产品片的全片包装层（蓝=模式A、绿=模式B 颜色编码）；真实录屏素材的品牌化包裹",
+      "duration": "单次翻色 ~4.3s（130f）；画框本身可全片驻场",
+      "energy": "中（翻色瞬间高，其余时间是安静的包装层）",
+      "intention": "真实录屏直接铺满屏没有品牌存在感，加 logo 水印又廉价。本卡用一圈 粗品牌色画框把录屏\"装裱\"起来：画框**先于内容出现**（先立画框再放 画，仪式感），之后画框颜色成为全片的语义编码——蓝=Design、绿=Dev Mode。章节切换时整圈画框一帧内硬翻色，无渐变，颜色硬切就是\"换挡\" 声效的视觉等价物；窗内布局同帧 A→B、角标与徽标同步换字，三处同帧 共振把\"模式切换\"砸实。与 theme-switch-moves 分工：那换的是 UI 本体 肤色（有扫过边界），本卡换的是\"画框\"这个包装层（同帧无边界）， 语义是模式/章节切换不是主题切换。",
+      "tags": [
+        "effects",
+        "transition"
+      ],
+      "source": "cards/effects/brand-frame-snap.md"
+    },
+    {
+      "name": "fui-hud-moves",
+      "category": "effects",
+      "summary": "FUI/HUD 两式——line-unfold-panel 一线展面（线→面 CRT 语法）与 reticle-lock-on 准星咬合（取景框飞入锁定目标）",
+      "use": "暗场/科技感段落的面板入退场用 A；任何\"看这里\"的目标点名用 B（替代箭头圈红，画面不冻结）",
+      "duration": "A 3–4s（含退场）/ B 2–3s",
+      "energy": "A 中 / B 中高（咬合帧是打击点）",
+      "intention": "科幻虚构界面（Jarvis/Territory）的两个可中性化母题。A 是面板的 仪式感开关机：1px 细线极快抽出→纵向撑开成面板→内容淡入，退场反向 压线缩点熄灭（老 CRT 关机）；灰阶细线即成立，不需要科技蓝。 B 是运动中的捕获：四个 L 形角标从画外冲入、超调回弹、\"咔\"地咬合 到目标元素四角+弹标签——与 freeze-annotate 分工：那卡冻结画面标注， 本卡在流动中点名。",
+      "tags": [
+        "effects",
+        "ui-entrance"
+      ],
+      "source": "cards/effects/fui-hud-moves.md"
+    },
+    {
+      "name": "glow-flyline-moves",
+      "category": "effects",
+      "summary": "暗场光斑与飞线三式——glow-orb-ambient 光斑底噪、flyline-arc 飞线连接、orb-flyline-relay 同帧共振组合",
+      "use": "全片唯一暗场段落的氛围与数据叙事：铺底噪用 A、讲数据流向用 B、要背景给前景搭腔用 C；Linear 官网味",
+      "duration": "A ~5s / B ~4.7s / C ~5.2s",
+      "energy": "A 低（底噪级）/ B 中 / C 中高",
+      "intention": "这是库内第一张整卡住在**暗场**的卡。白底提亮不可见判例反过来读就是： 要玩光，先去暗场。A 是空间的呼吸——近黑底三团重 blur 光斑有机漂移， 中央深卡边缘随最近光斑靠近而泛光，背景不再是死的；B 是数据的动词—— 发光弧线从 A 卡\"打\"到 B 卡，亮点头领跑、渐隐光尾，落点描边脉冲点亮， 指标关联第一次有了方向；C 是 A+B 的焊接——飞线落点帧邻近光斑同帧 涨亮一拍，氛围层与事件层**同帧共振**，互相搭腔而非各演各的（组合命门： 拆开共振帧就退化成两张卡并置）。",
+      "tags": [
+        "effects",
+        "data"
+      ],
+      "source": "cards/effects/glow-flyline-moves.md"
+    },
+    {
+      "name": "icon-performance-moves",
+      "category": "effects",
+      "summary": "图标表演两式——pop-burst-confirm 爆花确认（对勾蓄力弹大+炸粒子+扩散环）与 attention-bounce 求关注弹跳（图标连跳递增+落地压扁+镜头被吸引）",
+      "use": "半屏级 icon 特写段落；A \"完成/成功\"的标点符号，B 新功能引出",
+      "duration": "A 3–4s / B 4–5s",
+      "energy": "A 高潮点缀 / B 蓄势引入",
+      "intention": "库内图标动画品类首批入库：icon 是镜头怼着拍的表演者，不是 UI 角落的 微交互。A 是确认时刻的三连爆——大对勾先缩 0.6x 蓄力 3f、弹 1.35x 过冲 落回，同帧中心射出 10 根短线粒子+一圈描边环从边缘扩到 2.5 倍直径淡出， \"部署成功\"不是画出来的是炸出来的；B 是 macOS Dock 语汇——app 图标 原地连跳 4 次一次比一次高（0.5→1.2 倍 icon 高），每次落地压扁 （宽 1.2x 高 0.8x）+溅尘点，跳最高那下镜头向它轻推 8%（被吸引）， 落定后弹开功能面板——把\"用户注意力\"剪进叙事。",
+      "tags": [
+        "effects",
+        "interaction"
+      ],
+      "source": "cards/effects/icon-performance-moves.md"
+    },
+    {
+      "name": "impact-feedback",
+      "category": "effects",
+      "summary": "命中反馈两式——hit-counter 连招计数（顿帧+伤害数字+combo 跳字）、anime-impact 动漫打击帧（负片+集中线+色散）",
+      "use": "元素落位/撞击的\"命中一瞬\"——给砸入、撞停加游戏级手感；按强度阶梯选式",
+      "duration": "n/a（元素级技法，寄生在落位动作上；各式占用帧数见参数表）",
+      "energy": "高（瞬时冲击）",
+      "intention": "元素砸到位却没有\"砸到了\"的一瞬，落位读作 PPT 飞入。游戏 juice （Vlambeer screenshake 理论）与动漫演出 impact frames 给了同一答案： 命中的那几帧把时间咬住，冲量才传到观众手上。两式是一条强度阶梯： B 用局部顿帧叠伤害数字和 combo 跳字，把功能清单剪成一套连招， 叙事感最强；C 是最重的一拳——撞停 3 帧翻负片炸集中线，强调级最高、 最风格化。",
+      "tags": [
+        "effects"
+      ],
+      "source": "cards/effects/impact-feedback.md"
+    },
+    {
+      "name": "light-play-moves",
+      "category": "effects",
+      "summary": "光效三式——spotlight-sweep 聚光扫字、sheen 单点扫光、halation-bloom 撞停晕染",
+      "use": "把光当第四种笔触（扫/擦/晕）：暗场标题揭示（A）、主角卡加冕（B）、撞停帧冲击（D）",
+      "duration": "A ~5.3s / B ~4.7s / D ~4.8s",
+      "energy": "A 中 / B 低 / D 高",
+      "intention": "库内\"光\"一直只有 spotlight-hero-card 一个点射手法；这三式把光做成 体系，三种笔触三种职责：A 是**扫**——暗场里几乎不可见的标题被锥形 光摆动扫亮，光到哪哪亮，与 spotlight-hero-card 的区别是那个打卡片、 这个扫文字；B 是**擦**——深墨主角卡上一道 45° 高光带缓扫一次，被 圆角裁住，无声的加冕；D 是**晕**——白字撞停帧一圈柔晕猛涨炸开再 回落成驻留呼吸光，与 B 的区别是 B 移动扫过、D 驻留在高光边缘。 全部深底或深主角——**白底上提亮不可见**（判例）是这整张卡的地基。",
+      "tags": [
+        "effects",
+        "typography"
+      ],
+      "source": "cards/effects/light-play-moves.md"
+    },
+    {
+      "name": "line-boil",
+      "category": "effects",
+      "summary": "线条沸腾——hold 期间文字/描边轮廓每 3 帧轻微扭动一次，像手绘逐帧重描，静止画面保持\"活着\"的呼吸感",
+      "use": "标题字卡/描边元素的长 hold 段（黑场字卡升级首选）；质感层手法，寄生在别的镜头上",
+      "duration": "寄生型——沸腾段随宿主 hold 长度，无自身时长",
+      "energy": "低（底噪级）",
+      "intention": "库内 R 系判例要求落定后\"真静止\"，但长字卡（3s+ 的黑场字卡、片尾） 完全冻结会读作\"片子卡了\"。本卡给第三种状态：**活着的静止**——轮廓 每 3 帧被\"重描\"一次，位置内容全然不动，只有线条边缘在极轻微地呼吸， 手绘动画 hold 帧的百年惯例。与 noise-drift（被否决）的区别正是可感性： 漂移是整体 1–3px 位移（肉眼读不出），沸腾是轮廓形变+阶梯跳变（每次 换 seed 都是一次可见的\"重描\"）。纸墨审美里这是\"手工感\"的直接来源。",
+      "tags": [
+        "effects",
+        "typography"
+      ],
+      "source": "cards/effects/line-boil.md"
+    },
+    {
+      "name": "riso-print-hits",
+      "category": "effects",
+      "summary": "套印错位两式——riso-misregistration-hit 单发冲击帧（撞停裂双色版抖两下套准）与 riso-beat-pump 节拍泵（逐拍跳大+错版逐次加码）",
+      "use": "标题/卡片的命中强调，纸墨审美版的\"故障闪\"；A 单发高潮、B 节奏段连打",
+      "duration": "A 4s（单发）；B 4.7s（四拍）",
+      "energy": "高",
+      "intention": "RGB 色散故障闪（impact-feedback C 式的一部分）是荧光屏语言，与纸墨 调性相克。这两式给出印刷版平替：元素裂成浅灰/深墨两份单色印版 （multiply 油墨感而非 screen 荧光感），像 risograph 没对准版，抖几下 \"啪\"地套准——同样的冲击力，介质想象完全换成纸上油墨。A 是单发： 撞停瞬间裂版、震荡衰减、硬切套准，给一次命中盖章；B 是它的节奏化： 每个鼓点整画面跳大 8% + 标题裂版，错位逐拍加码，越打越狠—— 卡点段的视觉低音鼓。同技术根（衰减震荡的双版错位），单发/连打二选一。",
+      "tags": [
+        "effects",
+        "typography",
+        "rhythm"
+      ],
+      "source": "cards/effects/riso-print-hits.md"
+    },
+    {
+      "name": "slam-entrance-moves",
+      "category": "effects",
+      "summary": "高能砸入三式——kanada-perspective-snap 金田透视急停、score-slam 比分砸落、impact-burst-kit 落点冲击套件（波及邻卡）",
+      "use": "主角卡/KPI 卡的重拳入场；impact-feedback 管落位后的反馈，本卡管入场本身就是冲击",
+      "duration": "单式动作段 6–22f + 冲击余波 ~16f + hold ≥45f",
+      "energy": "高",
+      "intention": "库内入场词汇的力度上限一直是 deck-deal-flyin 的\"发牌\"——快但不重。 本卡补\"砸\"这一档，三种口味：A 是方向感——卡片带鱼眼级夸张透视贴着 镜头甩进来，\"啪\"地弹平，动漫金田流的潇洒；B 是重量感——KPI 卡从 镜头前 2.5 倍大小砸落，圆环+尘点+震屏三件套同帧起爆，体育比分弹窗 的分量；C 是传导感——B 的三件套之上，冲击波前沿扫过左右邻卡时把 它们可见地推开再弹回，\"这一下震到了邻居\"，一件事说清力量大小。 选型按叙事需要：告诉观众\"它来了\"用 A，\"它很重\"用 B，\"它震动了 全场\"用 C。",
+      "tags": [
+        "effects",
+        "ui-entrance"
+      ],
+      "source": "cards/effects/slam-entrance-moves.md"
+    },
+    {
+      "name": "spotlight-sweep-moves",
+      "category": "effects",
+      "summary": "暗场聚光显影三式——A 醒睡扫过（光到即亮光走即暗）、B 贴边泛光横摇（紫光贴 UI 边缘渗入+聚光匀速右移）、C 角落匀速显影（径向聚光从角落匀速扩张点亮全屏）；黑场里\"光即叙事\"的 UI 展示",
+      "use": "暗色调品牌片里逐个介绍 UI 面板/功能区；黑场开场把界面\"点亮\"登场；段落间光转场",
+      "duration": "单式 3.5–4.5s；A/B 可串联成巡礼段",
+      "energy": "中低（克制、神秘感，爆点在\"亮起\"瞬间）",
+      "intention": "黑场里观众只能看见光给看的东西——聚光既是照明也是运镜和剪辑： 光到哪里哪里登场，光走即谢幕。三式共用\"贴边紫色辉光光线\"这个 身份元素（光线贴着 UI 边框/logo/顶边走，辉光要亮要糊，是光在 \"抚摸\"界面而不是描边动画）。命门是**匀速**：聚光的移动/扩张 严格 linear——缓动会让光有\"意图\"，匀速才读作探照灯的机械扫掠 （C 式判例：linear 但半径终值过大＝前 1/4 就饱和，观感照样不匀速）。",
+      "tags": [
+        "effects",
+        "ui-entrance",
+        "transition"
+      ],
+      "source": "cards/effects/spotlight-sweep-moves.md"
+    },
+    {
+      "name": "brand-ink-open",
+      "category": "opening",
+      "summary": "墨线十字准星描画→字标逐字压印→打字机副标→满一秒静止再上浮消散",
+      "use": "品牌开场；任何\"先立名号再进产品\"的片头",
+      "duration": "约 2.8s（83f）",
+      "energy": "低（起步位，为后续镜头留爬升空间）",
+      "intention": "第一拍先给品牌记忆点：观众在任何产品画面出现之前，先看清并记住名字。安静、纸墨质感、有一个完整的静止时刻。",
+      "tags": [
+        "opening",
+        "typography"
+      ],
+      "source": "cards/opening/brand-ink-open.md"
+    },
+    {
+      "name": "crane-rise-reveal",
+      "category": "opening",
+      "summary": "升降臂拉升揭示——开场怼在一行数据特写，相机沿 Y 轴减速升起后拉，行行涌入直到整面 dashboard 铺满全幅",
+      "use": "\"从细节到全局\"的开场定场；与 drone-dive-landing（全局→单点俯冲）互为反向",
+      "duration": "5s（特写 hold 20f + 拉升 100f + 满幅静止 30f）",
+      "energy": "中高（持续单向运动，无冲击拍）",
+      "intention": "开场定场库内已有 drone-dive-landing——从上帝视角砸进 hero 特写， \"全局→焦点\"。本卡是它的镜像：\"焦点→全局\"——先怼在一行真实数据上 让观众看清\"这是什么\"，再升降臂式拉升后退，一排排内容涌入画面， 最后整面产品铺满——\"你看到的这一行，只是这一面墙的一格\"。 适合以产品体量/内容丰富度为卖点的开场；两卡同片只用一个方向。",
+      "tags": [
+        "opening",
+        "camera",
+        "data"
+      ],
+      "source": "cards/opening/crane-rise-reveal.md"
+    },
+    {
+      "name": "dataviz-landscape-open",
+      "category": "opening",
+      "summary": "暗场支流线束地景开场——多条流线汇入主干、虚构 ID 标签浮在线上、相机重景深低速飞越",
+      "use": "品牌级抽象开场（\"数据宇宙\"隐喻），接亮场产品段或字标；与 glow-flyline-moves 分工：那卡是段落内卡片之间的连线叙事，本卡是开场专用的全画幅地景",
+      "duration": "5–8s（开场氛围段，一支片 ≤1 次）",
+      "energy": "低开缓升（起步位，为后续爬升留空间）",
+      "intention": "Linear Releases 发布片开场实证的品牌级开场品类：把产品背后的数据世界 拍成一片**暗场地景**——支流线束从画面深处汇入一条主干（\"无数工作流 汇成一个产品\"的隐喻），真实感来自三样东西：①虚构 issue/任务 ID 标签 浮在线上（观众认出\"这是我每天看到的那种东西\"）；②重景深——近景大虚焦 流过、中景标签清晰可读、远景渐隐，三层纵深让平面 SVG 读作空间； ③相机低速匀稳飞越——这是氛围段不是炫技段，速度感交给后面的镜头。 手搓 UI 合规依据：非复刻场景（页面上不存在此画面），按核心理念 1 修订版走质量+表达明确性门槛。",
+      "tags": [
+        "opening",
+        "data",
+        "camera"
+      ],
+      "source": "cards/opening/dataviz-landscape-open.md"
+    },
+    {
+      "name": "icon-field-colorize",
+      "category": "opening",
+      "summary": "灰阶小图标点阵错峰浮现铺满全屏，停一拍后多道品牌色横带波纹极快向下扫翻全场——\"功能全景先摆满，品牌一瞬间点亮\"的开场/收束卡",
+      "use": "开场铺陈产品能力面（图标=功能宇宙）再一举打上品牌色；功能集合页、生态/集成规模展示、片头 logo 前垫场",
+      "duration": "浮现 ~45f 错峰 + 静置 ~10f + 翻色 12–45f + 终态静置；全段 3–4s",
+      "energy": "中（浮现是铺垫，翻色瞬间是唯一爆点）",
+      "intention": "先用灰阶把\"多\"摆足——上百个小图标错峰浮进来铺满画面，灰阶保证 读作背景纹理不抢戏；停一拍让观众意识到\"摆满了\"，然后品牌色以 横带波纹形式极快扫过全场，灰世界一瞬间被点亮。命门在**翻色不是 同帧硬翻**：原片实测是 ~0.5s 内多道色波依次向下快扫（蓝先覆盖全场， 橙/绿/红依次覆盖更低行带），终态呈四色横带分层——波纹感让\"点亮\" 有方向和速度，硬翻只读作换了张图。",
+      "tags": [
+        "opening",
+        "ui-entrance",
+        "outro"
+      ],
+      "source": "cards/opening/icon-field-colorize.md"
+    },
+    {
+      "name": "letterspace-materialize",
+      "category": "opening",
+      "summary": "大字距字标全字符并行连续描画结晶——所有字母同帧起笔、笔画像手写一样连续生长、同帧齐收成词；氛围底景上的品牌字标显影",
+      "use": "片尾/片头品牌字标登场（SUPERHUMAN 式大字距全大写）；章节题字；needs 静谧/高级感的收束帧",
+      "duration": "静置 ~15f + 描画 ~50f + 终态静置 ≥30f；全段 3–4s",
+      "energy": "低（静谧仪式感，一次呼吸完成）",
+      "intention": "字标不是淡入也不是打字机，而是\"结晶\"：全部字母的笔画同时 开始连续生长，像一只看不见的手同时写所有字母，同一瞬间齐收 成词。两个命门：**连续**（笔画必须是连续画出的过程，不许遮罩 分段——先半截再另半截会被读穿；任何中间帧都该像\"写到一半\"）； **同步**（所有字母同帧起笔、同帧完成——逐字错峰是打字机语义， 这里是整词一体的仪式感）。",
+      "tags": [
+        "opening",
+        "typography",
+        "outro"
+      ],
+      "source": "cards/opening/letterspace-materialize.md"
+    },
+    {
+      "name": "magician-card-flourish",
+      "category": "opening",
+      "summary": "纯黑场上蓝色星芒闪现 0.3s（X 形针状光束旋转 90°+中心辉光放射小光芒），卡片从闪光点弹射而出——极速自旋弧线飞向镜头、自旋随靠近衰减、瞬间硬定格近满幅、定格后 sheen 扫光",
+      "use": "单张卡片/海报/封面的魔术性登场（片头主视觉、产品卡揭晓）；纯黑暗场；需要\"变出来\"仪式感的爆点",
+      "duration": "闪光 0.3s + 飞行 ~1.7s + 定格展示+扫光 ~2s；全段 4.2s",
+      "energy": "高（一次性爆点，定格后即静）",
+      "intention": "魔术师甩牌：一道蓝色星芒闪过，卡片仿佛从光里被变出来——从画面 中心极远处（视觉上一个小点）弹射而出，沿弧线极速自旋飞向镜头， 到达中心瞬间硬定格成近满幅展示。三个魔术感命门：**闪光先行** （光是\"变\"的仪式，0.3s 短促干脆）、**弹射节奏**（起飞慢速蓄力→ 急加速踢出→弧线段减速抵达，slow-in→burst→decelerating arc）、 **定格即静**（无减速尾巴无回弹，13 整圈自旋保证定格恰为正面）。",
+      "tags": [
+        "opening",
+        "ui-entrance",
+        "effects"
+      ],
+      "source": "cards/opening/magician-card-flourish.md"
+    },
+    {
+      "name": "spotlight-hero-card",
+      "category": "opening",
+      "summary": "聚光灯扫过页面锁定一张卡，斜 45° 推进后卡片弹起悬浮、光束沿轮廓两圈、贴回原位",
+      "use": "\"单一主角\"式产品开场；把一个核心对象（卡片/条目/模块）立成全片主角",
+      "duration": "约 4.6s（82–220f）",
+      "energy": "中（质感最高的一镜，节奏慢而稳）",
+      "intention": "开场只讲一件事：这一张卡就是产品的原子单位。聚光灯替观众做视线引导，弹起悬浮给它体积和重量，轮廓光束是\"扫描/检视\"的隐喻，最后贴回原位表示它属于这个页面。",
+      "tags": [
+        "opening",
+        "effects",
+        "camera"
+      ],
+      "source": "cards/opening/spotlight-hero-card.md"
+    },
+    {
+      "name": "stroke-segment-build",
+      "category": "opening",
+      "summary": "断笔成字——标题拆成十几段互不相连的笔画乱序逐段点亮，前 70% 不可读，末段落位瞬间语义\"啪\"地成立",
+      "use": "开场吊悬念的产品名/大数字揭晓；一支片 ≤1 次；与 type-assembly/draw-svg-trace 分工：那些是\"看着字被组装/描画\"，本卡是\"意义延迟揭晓\"",
+      "duration": "4–5s",
+      "energy": "低起中收（悬念型，落位帧是能量点）",
+      "intention": "《异形》片头判例：标题不是被画出来的，是\"显影\"出来的——拆成离散 笔画段乱序点亮，观众前 70% 时间只看到神秘碎段，最后几段落位的瞬间 突然读出是什么字。\"认出的那一刻\"就是钩子，钩子的强度取决于 不可读期撑多久、钥匙段压多晚。",
+      "tags": [
+        "opening",
+        "typography"
+      ],
+      "source": "cards/opening/stroke-segment-build.md"
+    },
+    {
+      "name": "text-as-mask",
+      "category": "opening",
+      "summary": "文字视频遮罩——超粗大标题字内部透出缓慢平移的产品画面，结尾字形放大 26 倍溢出、内部画面接管全屏",
+      "use": "品牌词/口号与产品画面二合一的开场或章节卡；字是门、产品在门里",
+      "duration": "5s（hold 20f + 字内漂移 80f + 放大接管 30f + 静止 20f）",
+      "energy": "中高（漂移段沉稳，接管段一次爆发）",
+      "intention": "标题和产品画面抢屏幕是老问题——先字后画慢，画上压字挤。这一式让 两者同体：字形就是遮罩，产品只透过笔画显形，观众同时读到词和画面 质感；结尾字形胀开溢出画幅，产品自然接管全屏——\"从品牌词走进产品\" 一条镜头说完，兼任章节转场（与 transition-travel C 字腔穿越同族： 那边是镜头钻进字腔，这边是字形自己胀开，前者相机动、后者门动）。",
+      "tags": [
+        "opening",
+        "typography"
+      ],
+      "source": "cards/opening/text-as-mask.md"
+    },
+    {
+      "name": "edit-hook-moves",
+      "category": "outro",
+      "summary": "logo-sting-button 片尾钩子——片尾 logo 定住后突插 12f 彩蛋再收，预告片 button ending",
+      "use": "片尾收束（全片 ≤1 次）",
+      "duration": "~5s",
+      "energy": "低→瞬时中→低",
+      "intention": "库内声画卡管的都是\"画面上的事\"；这一式管**时间线本身的修辞**—— 终点的反悔：收黑→logo 淡入定住（观众以为结束）→突然 12f UI 特写 彩蛋硬切插入→切回 logo 收尾，预告片 button ending，留最后一个钩子。 拿观众的\"已经结束了\"的预期开玩笑。",
+      "tags": [
+        "outro"
+      ],
+      "source": "cards/outro/edit-hook-moves.md"
+    },
+    {
+      "name": "neon-triple-marquee",
+      "category": "outro",
+      "summary": "三行对向霓虹跑马灯 recap——BETTER/FASTER/STRONGER 空心描边巨字上中下排满全屏，奇偶行反向匀速无限横滚，三行按 1/3 相位轮流亮起，结尾整组淡出",
+      "use": "片尾主题词复读机段落；三连词口号的\"余韵\"拍法（cel-flash-stomp 砸完之后的低一档收尾）；音乐段无旁白铺陈",
+      "duration": "4–5s（demo 150f：10f 淡入 + 循环体 + 20f 淡出）",
+      "energy": "中高（持续流动 + 逐行脉冲，无瞬时冲击）",
+      "intention": "一行 marquee 只是网页装饰；三行叠起来、奇偶反向、再让亮度按相位轮流 走，就成了\"主题词在观众眼前列队巡游\"。命门是**明暗轮唱**：任一时刻 只有一行是霓虹主角，其余压暗成细描边背景——三行全亮是灯牌事故， 轮流亮才是 recap。反向对滚制造\"包围感\"：上下行向右、中行向左， 视线被夹在中间，词从两侧源源不断流过，读作\"这三个词说不完\"。",
+      "tags": [
+        "outro",
+        "typography"
+      ],
+      "source": "cards/outro/neon-triple-marquee.md"
+    },
+    {
+      "name": "outro-group-photo-launch",
+      "category": "outro",
+      "summary": "全片元素从四面八方飞来围住字标合影，crane 落机位+舞台光+金尘做成发布会收场",
+      "use": "outro/品牌收尾；多功能产品的\"全家福\"式终镜",
+      "duration": "约 4.8s（145f）",
+      "energy": "峰值（全片最高点）",
+      "intention": "把看过的每个功能各抽一个代表元素叫回来合影，字标压轴登场——观众离场前最后记住的是\"这些东西属于同一个产品\"。规格必须是发布会级：能量推到全片最高。",
+      "tags": [
+        "outro"
+      ],
+      "source": "cards/outro/outro-group-photo-launch.md"
+    },
+    {
+      "name": "ui-strip-away-outro",
+      "category": "outro",
+      "summary": "减法式收尾——点击 Publish 后整个编辑器 UI 从外围到中心层层错峰蒸发，黑场上只剩那颗按钮滑到屏心放大，按钮再淡出交棒字标定版",
+      "use": "\"发布/完成\"语义的 outro；想讲\"一键之后一切复杂性消失\"的产品收尾",
+      "duration": "~4.3s（130f：光标就位 34f → 蒸发 ~40f → 按钮独占 → 字标接棒）",
+      "energy": "中（前段安静操作，中段持续退场，无瞬时冲击）",
+      "intention": "库内收尾全是\"加法\"：outro-group-photo-launch 元素飞来合影，logo sting 是定住再彩蛋。本卡是唯一的\"减法\"路线——点击引爆全 UI 退场， 黑场只留语义焦点（那颗被点的按钮），把\"发布 = 复杂性归零\"翻译成 动效叙事。命门有二：**蒸发要有秩序**——从外围到中心每 4f 一层、 每层带方向性位移（各自往画外散），乱序或同帧齐灭读作断电故障； **按钮是唯一幸存者且必须迁移**——蒸发期间从工具条角落滑到屏心 放大 1.5 倍、白晕随黑场增强，完成从\"UI 控件\"到\"仪式主角\"的升格， 最后淡出把黑场交给字标。",
+      "tags": [
+        "outro"
+      ],
+      "source": "cards/outro/ui-strip-away-outro.md"
+    },
+    {
+      "name": "ui-to-brand-morph",
+      "category": "outro",
+      "summary": "UI 变品牌两式——icon-flip-bloom 图标 Y 轴翻扁成竖线绽放成花形 mark + wordmark 逐字落定，与 input-morph-assemble 输入框收缩成胶囊、三粒图元落下集结成 logo 单瓣",
+      "use": "品牌收尾/outro 前最后一拍；\"你每天用的那个 UI 就是这个品牌\"的视觉论证",
+      "duration": "A ~4.3s（130f）/ B ~4.7s（140f）",
+      "energy": "中高（收尾点睛，一次完整变形讲完）",
+      "intention": "品牌收尾库里已有三条路：brand-ink-open 是开场描画压印、 morph-from-primitive 是图元→UI 容器（方向相反）、 outro-group-photo-launch 是元素围拢合影（聚而不变）。本卡补第四条： **产品 UI 元素自己变形成品牌符号**——A 式是图标翻一个身变成 logo （同位实体交换），B 式是全片反复出现的输入框在最后一次发送后集结成 logo 单瓣（多元素落位拼装）。观众看到的不是\"logo 出现了\"，而是 \"刚才用的东西原来就是它\"，因果链本身就是品牌论证。",
+      "tags": [
+        "outro"
+      ],
+      "source": "cards/outro/ui-to-brand-morph.md"
+    },
+    {
+      "name": "beat-cut-moves",
+      "category": "rhythm",
+      "summary": "硬切当节拍乐器的两式——递进硬切串（间隔减半加速逼近）与连闪定格（三次白闪各切一个裁切）",
+      "use": "高光/冲刺段落把\"切\"本身打成鼓点；A 式预告片式加速逼近，B 式颁奖连拍仪式感",
+      "duration": "A 全程 ~4.3s（建立 49f + 五连切 + 定格 hold 35f）；B 全程 ~4.3s（活素材 30f + 三闪 + hold 60f）",
+      "energy": "高",
+      "intention": "库内节奏词汇一直只管\"一条运动内\"的速率（speed-ramp 是同一条 take 里变速）和\"落定后停多久\"（R 系呼吸判例），没有词管**多镜之间切点 怎么排**。本卡补这一块：硬切不做任何过渡，切点间隔本身就是乐谱—— 间隔递减读作加速逼近（A），等距三闪读作快门连拍（B）。与 R 系不 冲突：R 管落定后的停，本卡管切点排布，切串结束必须接足量 hold 把 呼吸还回去。注意这是刻意的例外——节奏偏好判例是单向\"放慢\"，硬切 串切得越狠，切完的 hold 要比平常更长。",
+      "tags": [
+        "rhythm",
+        "transition"
+      ],
+      "source": "cards/rhythm/beat-cut-moves.md"
+    },
+    {
+      "name": "beat-step-list-theme-cycle",
+      "category": "rhythm",
+      "summary": "三通道节拍器——深色场形容词列表逐拍上移一行，视口中央固定胶囊\"接住\"下一个词并换色，整场底色同拍跟换；行、色、场三通道锁死同一拍点",
+      "use": "\"同一产品多种气质/多主题展示\"段落（modern/playful/expressive 式形容词连打）；全片节奏最密的一段；音乐段对拍",
+      "duration": "铺垫 30f + 每拍 18f × 拍数 + 收尾 hold；3 拍约 3.5s（demo 110f）",
+      "energy": "高（0.6s 一拍三通道齐跳，密度型高能）",
+      "intention": "换一次主题色是功能演示；0.6 秒换一次、连换三次、每次\"选中行+胶囊色 +全场底色\"三件事同帧齐跳——就成了节拍器。用最便宜的变量切换做出 全片最高的节奏密度。命门有二：一是**三通道必须锁同一拍点**，任何 一通道慢半拍，\"齐跳\"退化成三个各自为政的动画；二是**跳与滑的分界** ——跳变只占拍头 6f，其余 12f 完全静置，拍点要\"跳\"不要\"滑\"， 匀速滚动的列表就只是列表。",
+      "tags": [
+        "rhythm",
+        "typography"
+      ],
+      "source": "cards/rhythm/beat-step-list-theme-cycle.md"
+    },
+    {
+      "name": "montage-rhythm-moves",
+      "category": "rhythm",
+      "summary": "蒙太奇节奏三式——drop-blackout-slam 黑场蓄爆、wright-triple-cut 三连咔哒特写、domino-cascade 多米诺连锁入场",
+      "use": "段落级节奏设计：蓄力爆发（A）、流程速写（B）、开场连锁（C）；与 beat-cut-moves（切点排布）互补——这三式管\"段落的呼吸形状\"",
+      "duration": "A 4.3s / B 4.3s / C 5s",
+      "energy": "高",
+      "intention": "beat-cut-moves 管切点间隔怎么排，这三式管更大一层的节奏叙事： A 是\"静默即蓄力\"——drop 前一拍切全黑死寂憋一整拍，爆开才够响 （EDM 演出 blackout 惯例），给全片最高潮的前一秒用；B 是\"流程三连\" ——三个超近特写咔哒咔哒咔哒连打（按下/拨动/翻牌），第三声甩回全景 亮结果，Edgar Wright 式把\"操作很简单\"剪成肌肉记忆；C 是\"动量传递\" ——标题砸落震起卡片、卡片落地撞进侧边栏，每个元素的入场由上一个的 撞击触发，Rube Goldberg 式把一页内容的入场讲成连锁反应。",
+      "tags": [
+        "rhythm"
+      ],
+      "source": "cards/rhythm/montage-rhythm-moves.md"
+    },
+    {
+      "name": "panel-grid-moves",
+      "category": "rhythm",
+      "summary": "分格节奏三式——grid-flash-mosaic 九宫格闪切填墙吞屏、flip-grid-reflow 网格集体重排、comic-panel-split 漫画斜格三机位并列",
+      "use": "把\"格子\"当节奏器：逐格踩拍亮相（A）、节拍点集体换位（B）、同主体多机位定格并列（C）；三式都吃拍点",
+      "duration": "A ~4.7s / B ~4.8s / C ~5s",
+      "energy": "A 高 / B 中 / C 中高",
+      "intention": "与 wall-reveal-moves 的区别是本卡的定位锚：那是\"整墙怎么入场\" （一次性揭示），这是\"格子怎么当节奏器\"——分格、重排、并列都发生 在节拍上，格变即鼓点。A 是填：3×3 格按十六分音符乱序逐格啪啪硬入， 填满停一拍，中心格放大吞掉全屏——功能矩阵一秒全亮相；B 是移：6 张卡 在节拍点集体直线换位（横排→3×2 网格），半秒落定 + 加深脉冲收束—— 布局重排本身当一个鼓点；C 是并：画面咔咔切成 3 个斜线分格，同一产品 三种机位同时定格，停半拍后一格斜边扩张吃掉全屏——Scott Pilgrim 的 分屏语言。按需选：多功能亮相用 A，布局叙事用 B，单品多视角用 C。",
+      "tags": [
+        "rhythm",
+        "ui-entrance"
+      ],
+      "source": "cards/rhythm/panel-grid-moves.md"
+    },
+    {
+      "name": "rhythm-interrupt-moves",
+      "category": "rhythm",
+      "summary": "打断节奏两式——jump-cut-punch-in 三级跳切推近、strobe-black-frames 频闪黑帧",
+      "use": "用\"打断连续性\"本身当节奏器：顿挫推近（B）、窒息逼近（C）；与 beat-cut-moves（切点排布）、montage-rhythm（段落呼吸）互补",
+      "duration": "B ~4.5s / C ~4.5s",
+      "energy": "B 中 / C 高",
+      "intention": "库内节奏卡管的都是\"怎么切、切多密\"；这两式管**怎么断**——观众预期 连续，你偏打断，打断方式即表达：B 是空间断——同构图三次无补间跳大 （1x→1.6x→2.6x），戈达尔跳切的顿挫，比连续推近更有\"看这里、再近点、 就是它\"的指令感；C 是存在断——画面与纯黑交替频闪且间隔收紧， 高潮前的窒息倒数。选型：强制聚焦指标用 B，高潮前蓄压用 C。",
+      "tags": [
+        "rhythm"
+      ],
+      "source": "cards/rhythm/rhythm-interrupt-moves.md"
+    },
+    {
+      "name": "sakuga-timing-shift",
+      "category": "rhythm",
+      "summary": "一拍三转一拍一——元素先以每 3 帧一步的手翻书顿挫移动，高潮瞬间切成逐帧丝滑冲刺，帧率量化的突变本身就是看点",
+      "use": "单元素的强调性位移（卡片入场、指标冲线）；需要\"手工感→高潮爆发\"反差的段落",
+      "duration": "~5s",
+      "energy": "中高",
+      "intention": "库内时间轴操纵已有 speed-ramp 连续变速与 hit-counter 的局部顿帧。 本卡是另一种——**改的不是速度是帧率本身**： 顿挫段驱动帧 q=floor(f/3)*3，元素每 3 帧才动一步（10fps 手翻书）， 切换帧起改用原始 f 逐帧驱动，丝滑冲刺。一拍三的钝与一拍一的滑 同屏对切，日式作画的拍数演出（shooting on 3s / on 1s）。顿挫段 不是低级感是手工感，切换点即高潮标记。",
+      "tags": [
+        "rhythm",
+        "ui-entrance"
+      ],
+      "source": "cards/rhythm/sakuga-timing-shift.md"
+    },
+    {
+      "name": "smear-multiples",
+      "category": "rhythm",
+      "summary": "残像分身——卡片高速横移时拖 4 个清晰可数的半透明分身副本，落位瞬间收拢合一；motion blur 的动画式平替",
+      "use": "元素高速位移段想要\"漫画式速度感\"而非\"摄影式模糊\"时；与 CameraMotionBlur 二选一",
+      "duration": "元素级技法（移动 12f + 合拢回弹 8f，寄生在位移动作上）",
+      "energy": "中高",
+      "intention": "快速位移的速度感库内标准答案是 CameraMotionBlur（摄影隐喻：快门拖影， 连续的糊）。本卡给第二个答案，动漫演出的 smear frame 传统：残像是 **离散、清晰、可数的**完整副本——观众能数出 4 张卡，读作\"快到留下 分身\"而非\"快到糊掉\"。两者气质完全不同：blur 是实拍级质感，分身是 漫画级趣味；同一次位移二选一，叠用读作渲染错误。分身式还有一个 实用优势：残像里内容仍可辨，适合\"移动的东西本身是信息\"的场景。",
+      "tags": [
+        "rhythm",
+        "effects"
+      ],
+      "source": "cards/rhythm/smear-multiples.md"
+    },
+    {
+      "name": "spectrum-morph-ui",
+      "category": "rhythm",
+      "summary": "频谱化 UI——标题下划线裂成一排竖条按频谱跳动两小节，再收拢还原成直线；音乐可视化长在 UI 上",
+      "use": "有音轨片子的声画同步高光段（BGM 副歌起/鼓点密集段）；标题字卡、章节页的下划线/分隔线构件",
+      "duration": "~4.7s（裂开 8f + 跳动 64f + 收拢 12f + 静止 39f）",
+      "energy": "中",
+      "intention": "声画同步库内已有 type-rhythm-sync A（字重脉冲）——那是\"文字自己动\"； 本卡是\"UI 构件变成均衡器\"：下划线这个最不起眼的构件被音乐借用两小节， 裂成 28 根竖条跳出频谱，然后**收拢还原、完璧归赵**。借用-归还结构是 全部优雅所在——观众先认出\"这是下划线\"，再看它变成别的东西，最后 看它变回来；若一开始就是频谱条，只是又一个音乐可视化。跳完必须还原 成那条 8px 直线，一像素不差。",
+      "tags": [
+        "rhythm",
+        "typography"
+      ],
+      "source": "cards/rhythm/spectrum-morph-ui.md"
+    },
+    {
+      "name": "speed-ramp-freeze",
+      "category": "rhythm",
+      "summary": "帧号非线性 remap 的两款节奏手法——变速（快→0.2x 凝视→快）与定格标注（流动→定格圈注→解冻）",
+      "use": "卡片流/长横移中把一个重点\"放慢/停下给人看\"；教学解说语境用定格标注",
+      "duration": "变速全程 4–5s（慢速窗 ≥40f）；定格标注全程 4–5s（定格段 ≥45f）",
+      "energy": "中高（速度反差本身即energy beat）",
+      "intention": "匀速流读作 PPT（R2），全程快流观众抓不住重点（R3）。变速在一条 运动里制造\"冲刺-凝视-冲刺\"；定格标注更进一步——干脆停下来， 马克笔圈出重点再走。两款同一技术根（帧号 remap），语义不同： 变速是\"路过时多看一眼\"，定格是\"停课划重点\"。",
+      "tags": [
+        "rhythm"
+      ],
+      "source": "cards/rhythm/speed-ramp-freeze.md"
+    },
+    {
+      "name": "trailer-grammar-moves",
+      "category": "rhythm",
+      "summary": "预告片语法三式——trailer-bumper 前置速剪钩子、card-footage-cadence 字卡穿插对话、smash-cut 猛切入定",
+      "use": "预告片的三个结构性时刻：开场怎么钩（A）、中段怎么对话（B）、高潮怎么收（C）；三式合用即一支预告片的骨架",
+      "duration": "A ~4.7s / B ~5s / C ~4.5s",
+      "energy": "A 高 / B 中 / C 高",
+      "intention": "库内节奏卡各管一段：beat-cut 管切点排布、montage-rhythm 管段落呼吸、 rhythm-interrupt 管打断。本卡管**预告片的结构性时刻**——不是某个 镜头怎么动，是整片的三个关节怎么接：A 是开场钩——正片前 0.9 秒塞 三个最抓眼镜头速剪 + 黑场静默一拍再开场，预告片的\"预告\"；B 是中段 对话——UI 镜头与黑底短语卡互相接拍交替硬切，画面与文字都踩拍点， 第三幕结构；C 是高潮句号——满屏动势轰鸣最高潮一帧硬切成整齐静止 全景死寂，喧闹→死寂。三式合用即一支预告片的骨架。",
+      "tags": [
+        "rhythm",
+        "opening",
+        "transition"
+      ],
+      "source": "cards/rhythm/trailer-grammar-moves.md"
+    },
+    {
+      "name": "bottom-push-stack-wipe",
+      "category": "transition",
+      "summary": "底边上推换章——新场景连底色整屏从底边向上推入，把旧场景物理顶出画外，连推数章各配一种饱和底色，内容钉死在各自色底坐标系里随底色走",
+      "use": "多章节产品片的换章骨架（每章一个卖点一种底色）；需要\"翻页节奏感\"贯穿全片的段落切换",
+      "duration": "单次推入 30f + 章内 hold ~1s；demo 三连推 140f（~4.7s）",
+      "energy": "中",
+      "intention": "wipe-transitions 是一条边界扫过、新旧页都不动；page-turn 是立方体 翻转。本卡是第三种物性：**新章把旧章顶出去**——两屏刚性接触、同速 同向位移，像自动售货机压栈。命门是\"连底色整屏走\"：底色+窗口卡+装饰 条焊成一块整料从底边推入，观众读到\"换了个世界\"而不是\"换了张卡\"。 重 ease-out（快进慢停）给推入一个\"哐\"的落位感；上缘 40px 接缝阴影 是两屏物理接触的证据。连推三章且底色饱和度拉满，换章本身就成了全片 的节拍器——slack 原片全片就靠这一招做骨架。",
+      "tags": [
+        "transition"
+      ],
+      "source": "cards/transition/bottom-push-stack-wipe.md"
+    },
+    {
+      "name": "bubble-swarm-takeover",
+      "category": "transition",
+      "summary": "珠光气泡群幕布转场——大小不一的气泡从画外飘入越涨越大遮满整屏，页面同步\"洗白\"，遮蔽峰值处藏切换，气泡向外散开后已是新场景；可混入 i18n 文字胶囊变体",
+      "use": "章节级换景且品牌世界里有\"实体装饰物\"可当幕布（气泡/花瓣/图标皆可换皮）；转场即品牌露出的段落",
+      "duration": "~4.3s（130f：飘入 ~67f + 峰值藏切 + 散开 ~43f）",
+      "energy": "中高（持续群体涌动，无瞬时冲击）",
+      "intention": "transition-hidden-cut 的前景遮挡式是\"一件东西扫过去的 1–3 帧\"， wipe-transitions 是一条几何边界扫过——都是\"边界\"思维。本卡是\"幕布\" 思维：让一**群**品牌实体花 2 秒飘入前景涨大遮屏，遮蔽峰值藏硬切， 再散开露出新场景。比几何擦除高级的地方在于幕布本身就是品牌资产， 转场时间越长品牌露出越足，反而不嫌慢。命门有二：**峰值必须真遮满** （6 颗巨型气泡按网格钉落点兜底，随机群只管氛围）；**洗白层压在页面 与气泡之间**——页面先被洗掉细节，气泡才接得住全部视线，切换在白纱 后面完成，观众无从对比前后帧。",
+      "tags": [
+        "transition"
+      ],
+      "source": "cards/transition/bubble-swarm-takeover.md"
+    },
+    {
+      "name": "card-flip-reveal",
+      "category": "transition",
+      "summary": "功能卡 3D 翻面揭示——卡片沿 Y 轴翻 180°，正面 UI 翻到侧棱最薄处闪过一道随角度移动的高光带，背面揭出大号结论数字，逐张错峰扫过整排",
+      "use": "\"功能→成果\"的成对叙事：一排功能卡逐张翻出各自的指标/结论；元素级转场卡",
+      "duration": "单卡翻转 26f，三卡错峰 10f，全程 ~4.9s（含 hold）",
+      "energy": "中高",
+      "intention": "库内\"翻\"字辈已有 wall-reveal-moves B（整墙波浪翻面，讲入场）和 split-flap（字符翻牌，讲文字）。本卡是**语义翻面**：一张卡的正反两面 是一对因果——正面是功能界面，背面是它带来的数字结论。翻面动作本身 就是\"所以呢？\"的回答，Apple bento 段落的标准语法。逐张错峰 10f 扫过 一排，三张卡三个数字节奏读作\"成果连报\"。",
+      "tags": [
+        "transition",
+        "data"
+      ],
+      "source": "cards/transition/card-flip-reveal.md"
+    },
+    {
+      "name": "card-flock-tumble",
+      "category": "transition",
+      "summary": "三张 UI 页卡从侧棱薄边 3D 翻飞成阶梯站定（全程清晰、样条连续丝滑），站定后保持慢转不停，快速收束吸入中心，炸出单个湍流烟雾环扩散，巨字横贯收场",
+      "use": "能量高潮段（功能页群→品牌口号的爆点转场）；霓虹暗场调性；\"多页面能力\"收束成一句话的段落",
+      "duration": "翻飞 ~1.5s + 慢转展示 ~0.3s + 收束 0.3s + 烟环+巨字 ~2s；全段 4.5s",
+      "energy": "极高（全片能量顶点用）",
+      "intention": "三张页卡像被甩出的扑克在 3D 空间翻飞列队，站定亮相后被瞬间 吸入中心，炸出一圈烟雾环，品牌巨字穿环而出——\"能力展示→能量 坍缩→口号爆发\"一气呵成。命门有三：**丝滑**（侧棱→翻飞→站定 一条 Catmull-Rom 样条导数连续，分段插值的顿挫会被读出来）、 **不许停**（站定后保持低角速度慢转到收束，静止段被裁\"不要停住， 保持旋转\"——高潮段没有静帧）、**全程清晰**（motion blur/景深糊 全删，被裁\"不要加模糊效果\"）。",
+      "tags": [
+        "transition"
+      ],
+      "source": "cards/transition/card-flock-tumble.md"
+    },
+    {
+      "name": "circle-match-iris",
+      "category": "transition",
+      "summary": "圆心匹配光圈切——光圈从页面上圆形元素的圆心炸开，圈内新页的圆形图表接在同一个圆上；匹配剪辑给光圈一个语义锚点",
+      "use": "前景有圆形元素（头像/图标/圆钮）、后景有圆形主体（donut 图/圆环进度）的接缝；转场技法卡",
+      "duration": "4.7s（锚点脉冲 30f + 光圈扩张 45f + 图表生长 55f + 静止 40f）",
+      "energy": "中高",
+      "intention": "普通 iris 光圈（词汇表原条目）从任意点开圈，观众只读到\"换页了\"。 本卡把它和 match-cut 焊死：光圈必须从前景一个**真实圆形元素**的圆心 炸开，圈内长出的新页里有个圆形图表恰好接在同一个圆上——观众看到的 是\"头像的圆变成了图表的圆\"，圆形本身完成叙事（这个人→这个人的数据）。 这是 match-cut 在 UI 语境里的落地形态：不靠构图巧合，靠语义圆对圆。 与穿越三式同属\"后景在前景里预先在场\"，但锚点是抽象形状而非容器。",
+      "tags": [
+        "transition"
+      ],
+      "source": "cards/transition/circle-match-iris.md"
+    },
+    {
+      "name": "color-block-step-wipe",
+      "category": "transition",
+      "summary": "离散阶跃色块吞屏两式——A 中央小条按 3–5 步硬跳阶跃扩成全屏（接管后徽章两跳弹出），B 色块从角落斜向 3 步吃屏并携带一张页面卡逐跳前进",
+      "use": "品牌色转场/章节交接；\"硬朗无缓动\"的像素游戏手感段落；接管后的纯色场当下一段的舞台",
+      "duration": "A ~2.5s（生长 44f + 徽章 + hold）/ B ~1.5–2s（3 跳 30f + hold）；demo 合计 150f",
+      "energy": "中高（能量来自\"跳变\"的顿挫而非速度）",
+      "intention": "库里 wipe 类全是连续扫过——边界匀速或缓动地推过去。本卡反着来： **全程零插值零缓动**，色块像老式像素游戏的方块生长，每一跳都是硬切， 跳与跳之间完全静止。顿挫本身就是节奏：3–5 声\"咔、咔、咔\"比一次 平滑扫过更有宣告感。变体 B 再加一层：色块推进时携带一张内容卡同拍 离散跳位——卡不做补间，读作\"整块被搬进来\"，色块是运货的不是装饰的。",
+      "tags": [
+        "transition"
+      ],
+      "source": "cards/transition/color-block-step-wipe.md"
+    },
+    {
+      "name": "line-carry-transition",
+      "category": "transition",
+      "summary": "线条接力横移转场——场景 A 的进度条延伸出画，镜头跟线横移，线在移动中拐角围出场景 B 的卡框，全程无剪切",
+      "use": "两个有图形亲缘的场景之间（进度条→卡框、下划线→图表轴）；一支片子的招牌转场位，Catch Me If You Can 片头的图形接力",
+      "duration": "~5.3s（进度条走满 + 横移 60f + 围框 + 内容淡入 + 静止 36f）",
+      "energy": "中",
+      "intention": "转场库三大族（穿越/藏切/体块）都在回答\"场景怎么换\"；本卡的回答是 **根本不换——一条线牵着你走过去**。进度条走满后末端延伸成长线冲出 卡缘，镜头跟着线横移 1920px 进入新世界，线在移动中拐直角围出 B 场景 的卡框，框闭合、内容淡入，从头到尾观众的眼睛没离开过这条线。图形 连续性本身就是转场。与 match-cut 的区别：那是切点两侧形状对位—— 终究还是切；这是连续绘制——**没有切**。线的身份要有叙事逻辑（进度条 \"走完了\"所以延伸出去），无来由的线只是装饰。",
+      "tags": [
+        "transition",
+        "camera"
+      ],
+      "source": "cards/transition/line-carry-transition.md"
+    },
+    {
+      "name": "page-turn-transitions",
+      "category": "transition",
+      "summary": "整页体块转场两式——cube-rotate 立方体翻转（两页贴盒子相邻面转 90°）与 barn-door-split 对开门裂幕（旧页裂两半滑出、新页迎上）",
+      "use": "章节级换页：两个并列大段落之间的\"翻篇\"仪式；与 shot-transitions 系（镜头交棒）分工——那是\"航拍机移过去\"，这是\"页面自己是实体\"",
+      "duration": "单式 前态建立 30f + 转场 20–38f + 收尾 ≥40f，约 4.4–4.7s",
+      "energy": "中高",
+      "intention": "shot-transitions 六式和 transition-travel/hidden-cut 都把页面当\"场景\" ——相机在场景间移动。本卡把页面当**实体**：它有厚度、有重量、会翻面 会裂开。体块隐喻的仪式感更强，适合章节级大换页（功能 A 讲完→功能 B） 而非镜头级小交棒。A 立方体是\"空间上并列\"——两页是盒子的两面， 暗示同级关系；B 对开门是\"旧的让位\"——旧页从正中撕开滑走、新页 从底下迎上来，暗示取代关系。按语义选：并列翻篇用 A，新旧交替用 B。",
+      "tags": [
+        "transition"
+      ],
+      "source": "cards/transition/page-turn-transitions.md"
+    },
+    {
+      "name": "paper-plane-messenger",
+      "category": "transition",
+      "summary": "纸飞机信使转场——点击\"发送\"后镜头拉远脱离窗口 A，折纸飞机沿贝塞尔弧线飞出（俯仰跟随切线），镜头伴飞穿过多层视差道具，飞抵窗口 B 门前落定，B 放大接管全屏",
+      "use": "\"发送/邀请/分享\"动作连接两个人物/场景视角的叙事转场；抽象动作需要一个隐喻实体当转场载具时",
+      "duration": "~5s（150f：点击 12f → 拉远 16–42f → 飞行 34–104f → B 接管 112–146f）",
+      "energy": "中",
+      "intention": "transition-travel 是镜头钻进画面里的既有元素换景；本卡反过来——从 动作里**放出一个语义信使**，让镜头跟着它飞去下一个场景。\"发送\"这个 抽象动作被实体化成折纸飞机，A/B 两窗的空间关系被飞行轨迹真实丈量 过，观众对\"消息去了哪\"有了身体感。命门是 2.5D 相机管线：所有元素 挂在同一世界坐标系上，镜头中心 A→跟飞机→B、变焦拉远再推近，视差 道具按 depth 乘相机位移——重 3D 原片降级成一台\"假三维\"，成本掉一个 量级而纵深感保留。飞机俯仰角跟随弧线切线是\"它在飞\"而非\"它在平移\" 的全部区别。",
+      "tags": [
+        "transition",
+        "camera"
+      ],
+      "source": "cards/transition/paper-plane-messenger.md"
+    },
+    {
+      "name": "print-texture-transitions",
+      "category": "transition",
+      "summary": "印刷质感转场——ink-bleed-reveal 墨渗揭示（须状渗边洇开吃掉旧景）",
+      "use": "换景接缝的纸墨审美款；与交棒六式/穿越三式并列的第三族——\"介质显影\"型转场",
+      "duration": "4–4.5s（洇开段 55–80f + 静止收尾 ≥30f）",
+      "energy": "中（渐进显形，无冲击拍）",
+      "intention": "转场语言已有交棒（shot-transitions 六式）和穿越（transition-travel） ，都是空间/光学隐喻。本式开第三族：**介质隐喻**——新画面不是\"到来\" 而是\"印染\"出来的，直接调用库内纸墨审美的物理想象：像一滴墨落在 宣纸上洇开吃掉旧景，有机、书写感。天然亲和 paper/ink 调性的片子， 是 light-leak-burn（强调色漏光）之外的另一个\"介质系\"接缝选择。",
+      "tags": [
+        "transition"
+      ],
+      "source": "cards/transition/print-texture-transitions.md"
+    },
+    {
+      "name": "shot-transitions",
+      "category": "transition",
+      "summary": "镜头交棒六式——推进流白、穿暗场直航、虚焦接力、黑场字卡、whip-pan 甩镜、mask-wipe 穿窗（含纵深款），按能量落差选型",
+      "use": "任何两镜衔接处（技法卡，分镜阶段排完镜头后逐个接缝选一式）",
+      "duration": "n/a（技法卡；各式占用帧数见参数表，从相邻镜头预算里划）",
+      "energy": "n/a（技法卡，不占能量位）",
+      "intention": "库内各镜头卡只管自己的入场和收尾，镜与镜\"怎么接\"一直没有词汇—— 接缝裸切会把逐镜头攒出的电影感一次漏光。公认优秀的发布片 （Linear Releases/Agent，2026-07-11 抽帧逆向）全程没有一次裸切： 换景要么靠深度旅行、要么靠焦点接力、要么靠黑场字卡蓄力。",
+      "tags": [
+        "transition"
+      ],
+      "source": "cards/transition/shot-transitions.md"
+    },
+    {
+      "name": "tear-streak-transitions",
+      "category": "transition",
+      "summary": "撕裂转场——glitch-displace 噪声撕裂（16 横条错位抖动中硬切），数字故障语义的条带级撕裂",
+      "use": "高能换页：数字故障/断裂语义；页面完整性不破、能量拉满的条带级撕裂",
+      "duration": "前态 ≥40f + 撕裂 17–24f + 收尾 ≥40f，约 4.5s（135–140f）",
+      "energy": "高",
+      "intention": "本卡管**条带级撕裂**——页面被切成横条高速运动，但每条内容完整。 这是反复裁决划出的品味分界：碎块系转场三连否（doom-melt 竖条坠落、 pixel-dissolve 方块翻黑、facade-block 砖块翻飞全部淘汰），条带系过关。碎块读作\"页面被破坏\"，条带读作\"页面在高速 运动\"——完整性不破、能量却拉满。横向撕：条带左右错位抖动 + 明暗重影，数字故障的灰阶降维（RGB split 改明暗双重影）。 适用系统故障/瞬间跳变语义。",
+      "tags": [
+        "transition",
+        "effects"
+      ],
+      "source": "cards/transition/tear-streak-transitions.md"
+    },
+    {
+      "name": "transition-hidden-cut",
+      "category": "transition",
+      "summary": "藏切点转场三式——前景遮挡隐形切、对撞开屏、暖色漏光，硬切藏进遮挡/撞击/光峰的 1-3 帧里，观众看不见剪刀",
+      "use": "两镜衔接处需要\"无痕换景\"或\"仪式感开屏\"时（技法卡，与 shot-transitions 六式同层选型）",
+      "duration": "n/a（技法卡；各式占用帧数见参数表，从相邻镜头预算里划）",
+      "energy": "n/a（技法卡，不占能量位）",
+      "intention": "与 shot-transitions A 式 flash-cut 同族：flash-cut 用一层白闪盖住硬切， 这三式换了三种\"障眼物\"——扫过的前景卡片（A）、对撞的撞击帧（B）、 爬到顶峰的漏光（C）。共同原理是魔术误导：观众的眼睛被大动作/强光 吸走的那 1-3 帧里完成硬切，回过神来景已经换了，全程\"看不见剪刀\"。 flash-cut 是最素的一款；要方向感选 A，要仪式感选 B，要温度选 C。",
+      "tags": [
+        "transition"
+      ],
+      "source": "cards/transition/transition-hidden-cut.md"
+    },
+    {
+      "name": "transition-travel",
+      "category": "transition",
+      "summary": "穿越式转场两式——共享元素归位、字腔穿越，镜头钻进画面里的真实元素完成换景",
+      "use": "前后两镜存在\"元素/容器\"级空间关系的接缝（技法卡，与 shot-transitions 六式互补选用）",
+      "duration": "n/a（技法卡；各式动作段 25–60f，前后 hold 另计，帧数从相邻镜头预算里划）",
+      "energy": "n/a（技法卡，不占能量位）",
+      "intention": "shot-transitions 六式是\"交棒\"型——前镜收尾、后镜入场，接缝靠白闪/暗场/ 焦点/黑场/糊帧/窗口盖住换页瞬间。本卡两式是\"穿越\"型——后景在前景画面里 以真实元素存在（网格槽位/字形洞），镜头一条连续空间运动钻进去， 观众从头到尾跟着同一个物体，没有交棒瞬间。选型口径：后景能在前景里\"预先 在场\"→穿越；两景只是先后关系、无空间嵌套→交棒。两式内部再按语义分—— A 是\"把这张卡放回去\"（详情→总览，F 式穿窗的逆向）；C 是\"标题即是门\" （章节字卡与转场二合一）。",
+      "tags": [
+        "transition",
+        "camera"
+      ],
+      "source": "cards/transition/transition-travel.md"
+    },
+    {
+      "name": "wipe-transitions",
+      "category": "transition",
+      "summary": "几何擦除转场两式——clock-wipe 时钟扫描（雷达指针扫一圈换页）与 blinds-slice 百叶窗切条（12 竖条错峰翻换成波）",
+      "use": "新旧页都不动、一条几何边界扫过完成交接的通用转场；不依赖构图里有合适元素，哪儿都能用",
+      "duration": "单式 前态 ≥20f + 擦除 32–60f + 收尾 ≥40f，约 5s（150f）",
+      "energy": "中",
+      "intention": "转场库已有三族：穿越系（钻进去）、藏切系（遮住切）、体块系（页面是 实体）。本卡是第四族**几何擦除系**——新旧页都不动，一条几何边界扫过 完成交接，擦除的形状即语义：A 圆扫是\"仪表盘刷新了一屏数据\"，B 条扫 是\"百叶窗逐叶翻面换页\"。与 shot-transitions F 元素遮罩擦除的区别： F 用页面内真实元素当遮罩（依赖构图），本卡是纯几何形——通用性即定位。 按语义选：数据刷新用 A，横向推进翻页用 B。",
+      "tags": [
+        "transition"
+      ],
+      "source": "cards/transition/wipe-transitions.md"
+    }
+  ]
+}

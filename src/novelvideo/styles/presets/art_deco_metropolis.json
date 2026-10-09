@@ -1,0 +1,30 @@
+{
+  "id": "art_deco_metropolis",
+  "name": "装饰艺术都会",
+  "family": "art_deco",
+  "era": "1920s_1930s",
+  "palette": "黑金、象牙白、孔雀绿、酒红与抛光黄铜，色块高贵而克制",
+  "lighting": "阶梯式轮廓光、扇形投影、吊灯与磨砂玻璃辉光，金属边缘清晰",
+  "optics": "对称广角、垂直线校正与柔化高光，保留旧时代银盐质感",
+  "composition": "放射纹、折线、阶梯、拱门和摩天楼形成严格几何秩序，人物服装与建筑同构",
+  "camera_motion": "symmetrical push-in, elegant elevator rise, lateral ballroom track, architectural reveal",
+  "style_instructions": "Art Deco metropolitan glamour, streamlined geometry, black lacquer, brass, frosted glass, monumental lobbies and disciplined 1920s luxury rendered as cinematic production design.",
+  "avoid_instructions": "No Victorian ornament overload, no steampunk gears, no neon cyberpunk, no minimalist modern office, no text or watermark.",
+  "style_tag": "ART DECO GEOMETRIC METROPOLITAN GLAMOUR",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "装饰艺术",
+    "都会",
+    "几何",
+    "黑金"
+  ],
+  "image_prompt": "Art Deco metropolitan glamour, streamlined geometry, black lacquer, brass, frosted glass, monumental lobbies and disciplined 1920s luxury rendered as cinematic production design.",
+  "video_prompt": "symmetrical push-in, elegant elevator rise, lateral ballroom track, architectural reveal",
+  "negative_prompt": "No Victorian ornament overload, no steampunk gears, no neon cyberpunk, no minimalist modern office, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "symmetrical push-in, elegant elevator rise, lateral ballroom track, architectural reveal"
+    }
+  }
+}

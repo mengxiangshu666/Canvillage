@@ -1,0 +1,30 @@
+{
+  "id": "pinscreen_engraving",
+  "name": "针幕浮雕动画",
+  "family": "pinscreen_animation",
+  "era": "1930s_contemporary",
+  "palette": "纯黑、银灰与粉笔白的连续灰阶，严格不使用彩色",
+  "lighting": "单一低角度掠射光照亮可推拉金属针阵列，以针高形成浮雕阴影",
+  "optics": "浅浮雕式空间、雾化渐层与铜版画般细密颗粒，边缘由针影自然软化",
+  "composition": "梦境人物和环境从连续灰阶中浮现、溶解，前后层次依靠针阵列起伏而非线稿",
+  "camera_motion": "slow relief emergence, shadow-field dissolve, subtle lateral drift, dreamlike depth breathing",
+  "style_instructions": "Pinscreen animation made from a dense movable metal-pin field under raking light, producing monochrome bas-relief shadows, engraving-like gradients and dreamlike forms that emerge from darkness.",
+  "avoid_instructions": "No paper ink linework, no pixel grid, no photographic film grain, no expressionist painted sets, no color tinting, no text or watermark.",
+  "style_tag": "MONOCHROME PINSCREEN BAS-RELIEF ANIMATION",
+  "style_family": "animation",
+  "animation_subtype": "stop_motion",
+  "tags": [
+    "针幕动画",
+    "浮雕灰阶",
+    "实体定格",
+    "梦境"
+  ],
+  "image_prompt": "Pinscreen animation made from a dense movable metal-pin field under raking light, producing monochrome bas-relief shadows, engraving-like gradients and dreamlike forms that emerge from darkness.",
+  "video_prompt": "slow relief emergence, shadow-field dissolve, subtle lateral drift, dreamlike depth breathing",
+  "negative_prompt": "No paper ink linework, no pixel grid, no photographic film grain, no expressionist painted sets, no color tinting, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "slow relief emergence, shadow-field dissolve, subtle lateral drift, dreamlike depth breathing"
+    }
+  }
+}

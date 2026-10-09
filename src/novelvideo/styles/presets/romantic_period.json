@@ -1,0 +1,32 @@
+{
+  "id": "romantic_period",
+  "name": "浪漫主义年代剧",
+  "label": "浪漫主义年代剧",
+  "family": "romantic_period",
+  "era": "19th_century",
+  "palette": "奶油、酒红、深绿、褪金与温暖肤色",
+  "lighting": "window light through curtains, candle practicals, soft bloom, gentle chiaroscuro",
+  "optics": "50mm/75mm portrait lenses, shallow depth, subtle diffusion",
+  "composition": "门框与织物形成私密层次，双人调度强调视线、距离和未说出口的情绪",
+  "camera_motion": "slow push-in, gentle orbit around conversation, restrained crane for emotional release",
+  "style_instructions": "Romantic period cinema with researched interiors and garments, intimate eye-lines, tactile fabrics, natural human performances, elegant filmic restraint.",
+  "avoid_instructions": "No modern objects, no melodramatic poster posing, no plastic skin, no text or watermark.",
+  "style_tag": "ROMANTIC SOFT CINEMA",
+  "tags": [
+    "年代剧",
+    "爱情",
+    "室内",
+    "古典"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Let the camera slowly close the distance between characters while preserving eye-lines, fabric continuity, and one-way emotional progression."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Romantic period cinema with researched interiors and garments, intimate eye-lines, tactile fabrics, natural human performances, elegant filmic restraint.",
+  "video_prompt": "slow push-in, gentle orbit around conversation, restrained crane for emotional release",
+  "negative_prompt": "No modern objects, no melodramatic poster posing, no plastic skin, no text or watermark."
+}
+

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "village-canvas://schemas/model-capabilities",
+  "type": "object",
+  "required": ["models", "count"],
+  "properties": {
+    "count": {"type": "integer", "minimum": 0},
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "id", "model_id", "enabled", "runtime_ready"],
+        "properties": {
+          "kind": {"type": "string"},
+          "id": {"type": "string"},
+          "model_id": {"type": "string"},
+          "enabled": {"type": "boolean"},
+          "runtime_ready": {"type": ["boolean", "null"]},
+          "supported_modes": {"type": "array"},
+          "aspect_ratio_options": {"type": ["array", "null"]},
+          "resolution_options": {"type": ["array", "null"]},
+          "native_audio": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}

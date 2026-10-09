@@ -1,0 +1,34 @@
+{
+  "id": "neo_noir",
+  "name": "新黑色电影",
+  "label": "新黑色电影",
+  "family": "noir",
+  "era": "contemporary",
+  "palette": "深黑、烟灰、钨丝琥珀与一点冷青，局部高饱和红色作为叙事重音",
+  "lighting": "低调布光，硬质侧光与百叶窗切光，强烈明暗分区，湿地反光与背光轮廓",
+  "optics": "35mm/50mm anamorphic feel, shallow depth of field, subtle halation, controlled gate weave",
+  "composition": "斜线构图、前景遮挡、镜面与门框形成窥视层次，人物置于负空间的边缘",
+  "camera_motion": "slow push-in, lateral track, restrained handheld drift; let the camera reveal information rather than chase it",
+  "style_instructions": "Live-action neo-noir crime drama, tactile production design, practical locations, expressive shadows, precise blocking, cinematic still frame.",
+  "avoid_instructions": "No glossy music-video look, no neon overload, no plastic skin, no comic-book rendering, no text or watermark.",
+  "style_tag": "NEO-NOIR CHIAROSCURO",
+  "tags": [
+    "电影",
+    "悬疑",
+    "犯罪",
+    "夜景"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Keep the low-key lighting and motivated practical sources; use a slow investigative camera move, one clear subject action, and a decisive visual reveal."
+    },
+    "nanobanana": {
+      "image_prompt": "Prioritize readable silhouettes, practical light sources, and a controlled pool of highlight against deep shadow."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Live-action neo-noir crime drama, tactile production design, practical locations, expressive shadows, precise blocking, cinematic still frame.",
+  "video_prompt": "slow push-in, lateral track, restrained handheld drift; let the camera reveal information rather than chase it",
+  "negative_prompt": "No glossy music-video look, no neon overload, no plastic skin, no comic-book rendering, no text or watermark."
+}

@@ -1,0 +1,33 @@
+{
+  "_comment": "由 check_file_sizes.py --print-baseline 生成；已登记的巨型源码文件只允许缩小，新文件必须低于 threshold。",
+  "baseline": {
+    "frontend/src/api/ops.ts": 3703,
+    "frontend/src/components/episode/beat-workbench/video-pane.tsx": 3771,
+    "frontend/src/components/settings/settings-dialog.tsx": 3946,
+    "frontend/src/features/canvas/Canvas.tsx": 5505,
+    "frontend/src/features/viewer-kit/three-d/ThreeDDirectorDialog.tsx": 3245,
+    "frontend/src/routes/_app/projects.$project/characters.lazy.tsx": 3389,
+    "frontend/src/stores/canvasStore.ts": 4290,
+    "src/novelvideo/api/production_orchestrator.py": 3175,
+    "src/novelvideo/api/routes/chat.py": 4006,
+    "src/novelvideo/api/routes/generation.py": 5734,
+    "src/novelvideo/chat/memory_index.py": 4729,
+    "src/novelvideo/cognee/store.py": 3093,
+    "src/novelvideo/freezone/canvas_command_gateway.py": 3322,
+    "src/novelvideo/freezone/presets.py": 5176,
+    "src/novelvideo/generators/nanobanana_grid.py": 7735,
+    "src/novelvideo/generators/prompt_builder.py": 4083,
+    "src/novelvideo/task_backend/runners/video.py": 3579
+  },
+  "roots": [
+    "src",
+    "frontend/src"
+  ],
+  "schema_version": 1,
+  "suffixes": [
+    ".py",
+    ".ts",
+    ".tsx"
+  ],
+  "threshold": 3000
+}

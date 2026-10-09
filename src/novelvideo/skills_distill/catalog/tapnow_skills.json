@@ -1,0 +1,82 @@
+[
+  {
+    "skill_key": "seedance-2-prompt-copilot",
+    "name": "Seedance 2 提示词助手",
+    "description": "把 brief、分镜和参考素材整理成可执行的视频生成合同。",
+    "category": "视频提示词",
+    "tags": ["Seedance", "文生视频", "图生视频", "分镜"],
+    "model_hint": "Seedance 2",
+    "cover_image": "/images/skill-covers/seedance-2-prompt-copilot.jpg",
+    "body": "## Purpose\n把用户意图编译成一个可控的视频 Prompt，并保留参考素材顺序。\n\n## Boundary\n只负责意图、镜头、动作、对白和负面约束；模型能力、参数、费用与任务状态交给运行时合同。\n\n## Workflow\n1. 读取当前画布中用户主动引用的节点。\n2. 明确主体、动作、场景、镜头、时长和画幅。\n3. 输出一份最终 Prompt、参考素材清单和待验证参数。\n4. 通过画布节点执行并等待正式任务回执。\n\n## Output Contract\n返回 prompt、negative_prompt、reference_nodes、model_hint、quality_checks；不虚报生成成功。\n\n## Quality Bar\n动作可拍、镜头连续、素材可追溯；失败时只按真实错误做一次最小修复。"
+  },
+  {
+    "skill_key": "seedance-2-5-prompt-copilot",
+    "name": "Seedance 2.5 提示词助手",
+    "description": "面向多参考、首尾帧、短剧情和连续镜头的高稳定视频提示词编译。",
+    "category": "视频提示词",
+    "tags": ["Seedance 2.5", "多参考", "首尾帧", "连续性"],
+    "model_hint": "Seedance 2.5",
+    "cover_image": "/images/skill-covers/seedance-2-5-prompt-copilot.jpg",
+    "body": "## Purpose\n将批准的 brief 和参考包编译成一份唯一、可验收的视频合同。\n\n## Boundary\n不猜上游能力，不把模式不支持伪装成 Prompt 问题；运行时决定确切模式与参数。\n\n## Workflow\n1. 读取主动引用的图片、视频、音频和文本节点。\n2. 标注首帧、尾帧、角色、场景和动作参考。\n3. 编译动作、运镜、节奏、对白与声音要求。\n4. 校验输入数量、比例、时长和当前直连模型能力后执行。\n\n## Output Contract\n返回 final_prompt、negative_prompt、reference_manifest、capability_warnings、retry_plan。\n\n## Quality Bar\n每个参考都有用途，连续性事实不漂移；失败只从最近成功产物恢复。"
+  },
+  {
+    "skill_key": "kling-prompt-copilot",
+    "name": "可灵提示词助手",
+    "description": "针对可灵的运镜、动作、参考图和对白场景编译稳定视频提示词。",
+    "category": "视频提示词",
+    "tags": ["可灵", "运镜", "参考图", "对白"],
+    "model_hint": "Kling",
+    "cover_image": "/images/skill-covers/kling-prompt-copilot.jpg",
+    "body": "## Purpose\n把自然语言需求整理成可灵可执行的镜头与动作描述。\n\n## Boundary\n不替运行时决定接口字段，只声明参考素材意图和生成约束。\n\n## Workflow\n1. 读取当前引用节点和连续性事实。\n2. 先写主体和动作，再写镜头、速度、景别与光线。\n3. 对人物、宠物或生物明确身份锁和禁用变形项。\n4. 输出唯一 Prompt，交给正式视频节点生成。\n\n## Output Contract\n返回 prompt、negative_prompt、reference_nodes、motion_beats、validation_notes。\n\n## Quality Bar\n不堆形容词，不隐藏输入缺口；先报告缺素材或模式不匹配。"
+  },
+  {
+    "skill_key": "minimax-h3-prompt-copilot",
+    "name": "MiniMax H3 提示词助手",
+    "description": "为 MiniMax H3 规划多模态参考、对白、音乐和动作连续性。",
+    "category": "视频提示词",
+    "tags": ["MiniMax H3", "多模态", "对白", "音乐"],
+    "model_hint": "MiniMax H3",
+    "cover_image": "/images/skill-covers/minimax-h3-prompt-copilot.jpg",
+    "body": "## Purpose\n把 H3 视频任务拆成参考包、表演节拍、声音意图和镜头合同。\n\n## Boundary\n生成协议、可用模型和任务状态由运行时处理，Skill 不伪造结果。\n\n## Workflow\n1. 读取用户主动引用的媒体节点。\n2. 识别人物表演、对白、音乐、动作和镜头依赖。\n3. 将复杂需求压缩成有序时间线和可执行 Prompt。\n4. 根据真实失败回执做单变量修复。\n\n## Output Contract\n返回 prompt、negative_prompt、reference_manifest、timeline_beats、retry_plan。\n\n## Quality Bar\n对白、动作、镜头和声音因果清楚，输入输出可回溯。"
+  },
+  {
+    "skill_key": "gpt-image2-prompt-copilot",
+    "name": "GPT Image 2 提示词助手",
+    "description": "把生图与改图需求整理成结构化画面、构图、文字和约束合同。",
+    "category": "图片提示词",
+    "tags": ["GPT Image 2", "文生图", "图生图", "改图"],
+    "model_hint": "GPT Image 2",
+    "cover_image": "/images/skill-covers/gpt-image2-prompt-copilot.jpg",
+    "body": "## Purpose\n为文生图、图生图和局部编辑生成结构化 Prompt。\n\n## Boundary\n不臆测接口是否支持输入图、遮罩或尺寸；能力由当前直连图片模型合同判定。\n\n## Workflow\n1. 识别新图、参考图变体或局部编辑。\n2. 固定主体、构图、材质、光线、文字和必须保留项。\n3. 明确图片节点输入顺序和输出验收点。\n4. 将真实生成结果回填为画布资产。\n\n## Output Contract\n返回 prompt、negative_prompt、reference_nodes、edit_intent、aspect_ratio、quality_checks。\n\n## Quality Bar\n编辑只改变指定区域，参考图用途明确，文字按原文校验。"
+  },
+  {
+    "skill_key": "banana-prompt-copilot",
+    "name": "Banana 图像提示词助手",
+    "description": "适配 Gemini/Banana 的参考图、风格变体和版式图像提示词。",
+    "category": "图片提示词",
+    "tags": ["Banana", "Gemini", "参考图", "风格变体"],
+    "model_hint": "Banana / Gemini Image",
+    "cover_image": "/images/skill-covers/banana-prompt-copilot.jpg",
+    "body": "## Purpose\n把图像创意编译成 Banana/Gemini 友好的参考图与变体任务。\n\n## Boundary\n不替模型运行时猜输入协议，引用关系必须通过画布节点表达。\n\n## Workflow\n1. 读取主动引用的参考图和用户 brief。\n2. 固定身份、布局、风格和需要变化的单一变量。\n3. 输出主 Prompt、负面约束和变体验收表。\n4. 生成结果进入画布后保留来源与版本。\n\n## Output Contract\n返回 prompt、negative_prompt、reference_nodes、variant_axis、acceptance_checks。\n\n## Quality Bar\n每轮只改变一个主要变量，确保可比较、可回滚。"
+  },
+  {
+    "skill_key": "explain-how-it-made",
+    "name": "创作过程解读",
+    "description": "从当前画布节点、模型和资产血缘中提炼可复用的创作方法。",
+    "category": "画布分析",
+    "tags": ["画布分析", "资产血缘", "方法论", "只读"],
+    "model_hint": "Canvas Vision / Agent",
+    "cover_image": "/images/skill-covers/explain-how-it-made.jpg",
+    "body": "## Purpose\n只读分析当前画布怎样被制作出来，并提炼可复用方法。\n\n## Boundary\n不改节点、不启动生成，只解释用户可见的创作事实。\n\n## Workflow\n1. 读取画布快照、主动引用节点和任务历史。\n2. 选择承重节点，重建输入到输出的链路。\n3. 解释模型选择、Prompt 结构、重试和资产血缘。\n4. 输出可迁移的 Skill 建议。\n\n## Output Contract\n返回 goal、load_bearing_nodes、workflow_summary、transferable_methods、evidence_refs。\n\n## Quality Bar\n区分画布事实与推断，每项推断标注依据。"
+  },
+  {
+    "skill_key": "skill-creator",
+    "name": "Skill 设计器",
+    "description": "把一套可复用的创作判断整理成可安装、可测试的 Skill。",
+    "category": "技能设计",
+    "tags": ["Skill", "协议", "测试", "可复用"],
+    "model_hint": "Agent / LLM",
+    "cover_image": "/images/skill-covers/skill-creator.jpg",
+    "body": "## Purpose\n将稳定的创作方法写成可安装的 Skill 合同。\n\n## Boundary\n吸收判断力与验收标准，不复制外部平台的缓存、凭据、会话或运行时代码。\n\n## Workflow\n1. 明确用途、触发条件、输入和输出。\n2. 写清工作流、工具策略、模型边界和质量门槛。\n3. 为失败路径增加受控重试和恢复点。\n4. 编写最小评测案例，通过后安装到技能商店。\n\n## Output Contract\n返回 purpose、workflow、tool_policy、constraints、output_contract、quality_bar、evaluation_cases。\n\n## Quality Bar\n技能可单独调用、可验证、可回滚，且不与现有能力重复。"
+  }
+]

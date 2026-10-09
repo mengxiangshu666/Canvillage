@@ -1,0 +1,52 @@
+{
+  "schema": "village_canvas.quality_targets.v1",
+  "groups": {
+    "backend_core": [
+      "tests/test_canvas_command_gateway.py",
+      "tests/test_workflow_causal_chain.py",
+      "tests/test_workflow_runtime.py",
+      "tests/test_workflow_learning_bridge.py",
+      "tests/test_agent_workflow_memory_e2e.py",
+      "tests/test_chat_service_user_agent_scope.py",
+      "tests/test_chat_json_render_error_log.py",
+      "tests/test_native_village_canvas_plugin.py",
+      "tests/test_agent_runtime_skills.py",
+      "tests/test_character_quality.py",
+      "tests/test_agent_plugin_registry.py",
+      "tests/test_memory_index.py",
+      "tests/test_memory_compiler.py",
+      "tests/test_memory_hooks.py",
+      "tests/test_model_gateway_settings.py",
+      "tests/test_node_capability_parity.py",
+      "tests/test_architecture_boundaries.py",
+      "tests/test_architecture_file_sizes.py",
+      "tests/test_feature_boundaries.py",
+      "tests/test_architecture_manifest.py",
+      "tests/test_ai_change_context.py",
+      "tests/test_ai_project_snapshot.py",
+      "tests/test_ci_policy_consistency.py",
+      "tests/test_status_ledger.py",
+      "tests/test_docs_index.py",
+      "tests/test_modifications_ledger.py",
+      "tests/test_ai_continuity_surface.py",
+      "tests/test_state_sql_readonly.py",
+      "tests/test_account_avatar.py",
+      "tests/test_agent_tool_surface.py",
+      "tests/test_village_canvas_tool_registry.py"
+    ],
+    "frontend_core": [
+      "frontend/src/features/superchat",
+      "frontend/src/features/canvas",
+      "frontend/src/api/workflow-runtime.test.ts",
+      "frontend/src/task-center",
+      "frontend/src/__tests__/task-center",
+      "frontend/src/__tests__/components/task-center",
+      "frontend/src/__tests__/components/settings/village-direct-models-panel.test.tsx",
+      "frontend/src/__tests__/api/production.test.ts",
+      "frontend/src/__tests__/routes/script-workflow-contract.test.ts",
+      "frontend/src/__tests__/components/layout/header.test.tsx",
+      "frontend/src/__tests__/components/account/avatar-upload-dialog.test.tsx",
+      "frontend/src/__tests__/stores/auth-store.test.ts"
+    ]
+  }
+}

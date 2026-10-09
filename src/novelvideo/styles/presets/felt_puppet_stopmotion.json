@@ -1,0 +1,30 @@
+{
+  "id": "felt_puppet_stopmotion",
+  "name": "毛毡木偶定格",
+  "family": "felt_stop_motion",
+  "era": "contemporary",
+  "palette": "羊毛原色、柔和植物染、暖木色与低饱和背景，纤维颜色自然混合",
+  "lighting": "桌面柔箱布光、真实接触阴影与轻微逐帧抖动，毛毡纤维可见",
+  "optics": "微缩摄影近景、适度景深和实体镜头呼吸，保持模型比例可信",
+  "composition": "针毡角色、缝线、布料接缝、纽扣和微缩布景共同构成实体世界",
+  "camera_motion": "incremental stop-motion track, tabletop orbit, gentle rack focus, handcrafted crane move",
+  "style_instructions": "Needle-felt puppet stop-motion with visible wool fibers, stitching, fabric seams, armature presence, handcrafted miniature sets and tactile frame-by-frame performance.",
+  "avoid_instructions": "No clay fingerprints, no smooth CG fur, no plastic toy shine, no flat paper-cut body, no seamless digital surface, no text or watermark.",
+  "style_tag": "TACTILE NEEDLE-FELT PUPPET STOP-MOTION",
+  "style_family": "animation",
+  "animation_subtype": "stop_motion",
+  "tags": [
+    "毛毡木偶",
+    "定格动画",
+    "微缩布景",
+    "手工纤维"
+  ],
+  "image_prompt": "Needle-felt puppet stop-motion with visible wool fibers, stitching, fabric seams, armature presence, handcrafted miniature sets and tactile frame-by-frame performance.",
+  "video_prompt": "incremental stop-motion track, tabletop orbit, gentle rack focus, handcrafted crane move",
+  "negative_prompt": "No clay fingerprints, no smooth CG fur, no plastic toy shine, no flat paper-cut body, no seamless digital surface, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "incremental stop-motion track, tabletop orbit, gentle rack focus, handcrafted crane move"
+    }
+  }
+}

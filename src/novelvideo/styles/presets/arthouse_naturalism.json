@@ -1,0 +1,31 @@
+{
+  "id": "arthouse_naturalism",
+  "name": "当代作者电影",
+  "label": "当代作者电影",
+  "family": "arthouse",
+  "era": "contemporary",
+  "palette": "克制的灰绿、奶油白、褪红与自然肤色，低饱和但有色彩温度",
+  "lighting": "soft window light, overcast daylight, motivated practicals, delicate shadow detail",
+  "optics": "50mm/85mm spherical lenses, selective focus, subtle diffusion, quiet long takes",
+  "composition": "几何空间与人物关系优先，留出呼吸感负空间，偶尔使用尴尬的偏置构图",
+  "camera_motion": "slow lateral drift, gentle pan following attention, rare static hold only at emotional punctuation",
+  "style_instructions": "Contemporary auteur naturalism, quiet observational framing, emotionally precise blocking, tactile real locations, understated cinematic realism.",
+  "avoid_instructions": "No melodramatic glamour, no oversaturated grade, no fantasy haze, no generic stock-photo smiles, no text or watermark.",
+  "style_tag": "AUTEUR NATURALISM",
+  "tags": [
+    "作者电影",
+    "自然主义",
+    "情绪",
+    "生活"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Build a restrained continuous movement around gaze, breath, and small gestures; camera drifts only when attention shifts."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Contemporary auteur naturalism, quiet observational framing, emotionally precise blocking, tactile real locations, understated cinematic realism.",
+  "video_prompt": "slow lateral drift, gentle pan following attention, rare static hold only at emotional punctuation",
+  "negative_prompt": "No melodramatic glamour, no oversaturated grade, no fantasy haze, no generic stock-photo smiles, no text or watermark."
+}

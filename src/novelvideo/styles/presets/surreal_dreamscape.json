@@ -1,0 +1,31 @@
+{
+  "id": "surreal_dreamscape",
+  "name": "超现实梦境",
+  "label": "超现实梦境",
+  "family": "surrealism",
+  "era": "timeless",
+  "palette": "低饱和现实底色配单一超现实高纯度色，色彩关系克制",
+  "lighting": "真实自然光照亮不可能空间，阴影逻辑始终可信",
+  "optics": "32mm深焦与缓慢空间变形，透视连续但物理关系悖论化",
+  "composition": "日常尺度和巨物尺度并置，主体清晰，异常元素只有一个核心视觉命题",
+  "camera_motion": "impossible continuous dolly, slow gravity shift, seamless spatial fold without chaotic morphing",
+  "style_instructions": "Cinematic surreal dreamscape grounded in photographic realism, one precise impossible spatial idea, lucid composition, believable light and restrained psychological unease.",
+  "avoid_instructions": "No random AI collage, no melting faces, no excessive floating objects, no psychedelic color noise, no text or watermark.",
+  "style_tag": "LUCID SURREAL DREAMSCAPE",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "超现实",
+    "梦境",
+    "电影",
+    "概念"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "impossible continuous dolly, slow gravity shift, seamless spatial fold without chaotic morphing"
+    }
+  },
+  "image_prompt": "Cinematic surreal dreamscape grounded in photographic realism, one precise impossible spatial idea, lucid composition, believable light and restrained psychological unease.",
+  "video_prompt": "impossible continuous dolly, slow gravity shift, seamless spatial fold without chaotic morphing",
+  "negative_prompt": "No random AI collage, no melting faces, no excessive floating objects, no psychedelic color noise, no text or watermark."
+}

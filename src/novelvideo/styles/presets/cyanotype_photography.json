@@ -1,0 +1,30 @@
+{
+  "id": "cyanotype_photography",
+  "name": "蓝晒摄影",
+  "family": "cyanotype",
+  "era": "19th_century_contemporary",
+  "palette": "普鲁士蓝到深靛蓝的单色阶与纸白负形，禁止无关彩色",
+  "lighting": "日光曝光般的高反差轮廓、接触印相边缘与局部化学晕染",
+  "optics": "摄影负片与植物/建筑接触印相语言结合，纤维纸和刷涂边界可见",
+  "composition": "主体轮廓、半透明层叠和大片蓝色负空间形成安静而实验性的画面",
+  "camera_motion": "slow contact-print reveal, blue-toned dissolve, gentle parallax, exposure-like fade",
+  "style_instructions": "Cyanotype photographic print aesthetics, Prussian-blue monochrome, paper-white silhouettes, contact-print detail, hand-coated edges and subtle chemical bloom translated into cinematic imagery.",
+  "avoid_instructions": "No full-color grading, no neon cyan glow, no blueprint labels, no glossy digital gradient, no ordinary black-and-white photo, no text or watermark.",
+  "style_tag": "PRUSSIAN-BLUE CYANOTYPE CONTACT PRINT",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "蓝晒",
+    "摄影工艺",
+    "单色",
+    "接触印相"
+  ],
+  "image_prompt": "Cyanotype photographic print aesthetics, Prussian-blue monochrome, paper-white silhouettes, contact-print detail, hand-coated edges and subtle chemical bloom translated into cinematic imagery.",
+  "video_prompt": "slow contact-print reveal, blue-toned dissolve, gentle parallax, exposure-like fade",
+  "negative_prompt": "No full-color grading, no neon cyan glow, no blueprint labels, no glossy digital gradient, no ordinary black-and-white photo, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "slow contact-print reveal, blue-toned dissolve, gentle parallax, exposure-like fade"
+    }
+  }
+}

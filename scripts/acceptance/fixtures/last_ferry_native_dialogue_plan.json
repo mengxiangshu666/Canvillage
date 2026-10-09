@@ -1,0 +1,69 @@
+{
+  "title": "最后一班渡轮原生对白验证",
+  "lines": [
+    {
+      "id": "D1",
+      "speaker": "",
+      "text": "水位越过警戒线，七分钟后封港。",
+      "duration": 6,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-01-storyboard.png",
+      "prompt": "暴雨中的旧城石街和百年钟楼外景，港口警示灯在雨幕里忽明忽暗，无线电调度声从画外传来，声音清楚、紧迫、带雨噪，画面没有字幕和旁白。镜头从河面缓慢推近钟楼。"
+    },
+    {
+      "id": "D2",
+      "speaker": "苏岚",
+      "text": "林默，船不等人。",
+      "duration": 5,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-04-storyboard.png",
+      "prompt": "钟腹档案室内，苏岚站在齐腰深浑水中，雨衣滴水，胸前黄铜哨轻撞衣料。她抬眼看着林默，说话表演。镜头从中景缓慢推近，林默在景深处保持连续动作和服装。"
+    },
+    {
+      "id": "D3",
+      "speaker": "苏岚",
+      "text": "她十年前没有走，对吗？",
+      "duration": 6,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-04-storyboard.png",
+      "prompt": "钟腹档案室内，苏岚低头看着被洪水打湿的失踪者名单，神情克制而迟疑。她抬眼看向画面右侧的林默，说话表演。镜头保持近景，雨水、油布和旧照片清楚可见。"
+    },
+    {
+      "id": "D4",
+      "speaker": "林默",
+      "text": "这是我姐的。",
+      "duration": 5,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-03-storyboard.png",
+      "prompt": "钟腹横梁近景，林默跪在湿滑铁梁上，掌心托着一截褪色红发带和防水航海日志。他认出红发带，眼神从迟疑变成确认，说话表演。镜头极缓慢前推，人物服装、雨夜和钟体环境保持不变。"
+    },
+    {
+      "id": "D5",
+      "speaker": "林默",
+      "text": "别让这些名字沉下去。",
+      "duration": 6,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-04-storyboard.png",
+      "prompt": "洪水漫过腰线的钟腹档案室，林默托着旧名单和油布档案，目光坚定地看向苏岚，说话表演。浑浊水流、漂浮旧报纸和矿灯光影持续运动，镜头从中景推近到双人近景。"
+    },
+    {
+      "id": "D6",
+      "speaker": "林默",
+      "text": "如果钟声能让人记住。",
+      "duration": 5,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-05-storyboard.png",
+      "prompt": "钟楼顶层，林默和苏岚的双手压在同一根锈死钟绳上，铜钟的阴影在矿灯下摆动。林默抬头看向铜钟，说话表演。低机位强透视，动作发力线清楚，雨雾从身边掠过。"
+    },
+    {
+      "id": "D7",
+      "speaker": "苏岚",
+      "text": "那就让全城听见。",
+      "duration": 5,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-05-storyboard.png",
+      "prompt": "钟楼顶层仰角近景，苏岚和林默共同拉动锈死钟绳，苏岚侧脸贴近林默，眼神坚定，说话表演。镜头跟随钟绳发力和雨雾震动，不出现字幕。"
+    },
+    {
+      "id": "D8",
+      "speaker": "苏岚",
+      "text": "后来，夜航船都能听见它。",
+      "duration": 6,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-06-storyboard.png",
+      "prompt": "天亮前的渡轮后甲板，苏岚和林默背对镜头站在栏杆边回望旧城，苏岚安静地说出这句话，说话表演。远处钟楼尖端沉入发白水线，钟声在水中留下扩散波纹，镜头缓慢后退到平静水面。"
+    }
+  ]
+}

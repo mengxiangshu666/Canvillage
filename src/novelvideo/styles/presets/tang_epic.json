@@ -1,0 +1,32 @@
+{
+  "id": "tang_epic",
+  "name": "唐风史诗",
+  "label": "唐风史诗",
+  "family": "historical_epic",
+  "era": "tang_dynasty",
+  "palette": "朱砂、鎏金、石青、黛黑与温润肤色",
+  "lighting": "sunset ceremonial backlight, warm firelight, soft atmospheric bounce, controlled gold highlights",
+  "optics": "40mm/65mm large-format cinematic lens, moderate depth, finely resolved textile detail",
+  "composition": "仪式性轴线、宏大群像、门阙与旌旗形成层次，人物动线清晰",
+  "camera_motion": "slow crane reveal, grand lateral tracking, measured push toward the emotional subject",
+  "style_instructions": "Grand Tang-inspired historical cinema, researched material culture, sumptuous textiles and architecture, dignified ensemble blocking, premium live-action production design.",
+  "avoid_instructions": "No anachronistic props, no costume fusion, no plastic fantasy armor, no overcrowded ornament, no text or watermark.",
+  "style_tag": "CEREMONIAL EPIC GRANDEUR",
+  "tags": [
+    "历史",
+    "古装",
+    "史诗",
+    "盛唐"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Use a ceremonial crane or lateral track that reveals scale while keeping costume layers and group blocking continuous."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Grand Tang-inspired historical cinema, researched material culture, sumptuous textiles and architecture, dignified ensemble blocking, premium live-action production design.",
+  "video_prompt": "slow crane reveal, grand lateral tracking, measured push toward the emotional subject",
+  "negative_prompt": "No anachronistic props, no costume fusion, no plastic fantasy armor, no overcrowded ornament, no text or watermark."
+}
+

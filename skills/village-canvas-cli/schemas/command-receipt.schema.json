@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "village-canvas://schemas/command-receipt",
+  "type": "object",
+  "required": ["verified", "receipt"],
+  "properties": {
+    "verified": {"const": true},
+    "before_revision": {"type": "integer", "minimum": 0},
+    "after_revision": {"type": "integer", "minimum": 0},
+    "revision": {"type": "integer", "minimum": 0},
+    "node_count": {"type": "integer", "minimum": 0},
+    "edge_count": {"type": "integer", "minimum": 0},
+    "receipt": {"type": "object"}
+  }
+}

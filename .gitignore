@@ -1,0 +1,126 @@
+__pycache__/
+*.pyc
+/.cache/
+.pytest_cache/
+.DS_Store
+.env
+.env1
+/.venv/
+/.playwright-mcp
+/.nicegui
+/output
+logs/
+jr_error.log
+/launchd/
+
+# 测试数据与产物，勿提交
+/data/
+/rag_storage/
+/inputs/
+/*.log
+/*.mp3
+/*.zip
+
+# 本地参考资料（嵌入的第三方仓库，不跟踪）
+/awesome-nano-banana-pro-prompts/
+/awesome-nanobanana-pro/
+/.codex-ref/
+
+# Deploy secrets
+deploy/compose/windows/novelvideo.env
+deploy/compose/windows/users.json
+
+# Claude Code
+.claude/settings.local.json
+.claude/skills/**/*-workspace/
+*.skill
+/scripts/output
+node_modules/
+
+# AI agent tooling state（会话级草稿，不属于产品）
+# 不写开头的 /：这些工具会在任意子目录建自己的 state，根锚会漏掉嵌套的那份。
+.mimosa/
+.v2c/
+.video_agent/
+.zcode/
+.quarkclouddrive/
+/.pnpm-store/
+/docs/issues
+scripts/incident_drills/.drill.local.env
+.obsidian/
+
+# 已退休的 Hermes 插件缓存（2026-09-20 起只做归档，不得再进仓库）
+/.hermes/
+
+# Quark Drive skill runtime credentials live in the private data root.
+/skills/quarkclouddrive/codex/
+
+# 验收日志（证据归档在本地/CI 工件，不进 git）
+/acceptance-logs/
+/artifacts/
+/docs/research/_qa_aigc_execution*/
+docs/oss-split/
+
+# 内部过程文档不进公开仓（迁至 dc workspace docs）
+docs/changes/
+docs/adr/
+docs/compliance/
+docs/superpowers/
+
+# git worktree 统一目录(主目录永远 main)
+/.worktrees/
+
+# Village Infinite Canvas local-only runtime/state/assets
+/项目资产/
+/_deploy_backups/
+/_task_backups/
+/_integration_backups/
+/runtime/
+/state/
+/src/state/
+/.omx/
+/frontend/test-results/
+/frontend/dist/
+/frontend/dist-ssr/
+
+# Single-root local workspace layout (mutable artifacts stay outside Git)
+/workspace/
+
+# Local probes and scratch helpers
+/_audit/*.log
+/.tables
+/_ci_logs.py
+/_db_inspect*.py
+/_kacang_probe.py
+/_secret_scan.py
+/_snapshot_diff.py
+
+# Credentials and local environment overrides
+**/.env
+**/.env.local
+**/.env.*.local
+*.pem
+*.key
+*.p12
+*.pfx
+*_cookies.json
+*cookies*.json
+
+# Frontend generated static build output kept for local runtime, rebuilt in CI/cloud
+/frontend/assets/
+/frontend/brand/
+/frontend/expression-head/
+/frontend/fonts/
+/frontend/images/
+/frontend/locales/
+/frontend/login-cinematic/
+/frontend/login-community/
+/frontend/mediapipe/
+/frontend/petdex/
+/frontend/piko/
+/frontend/video/
+/frontend/viewer-kit/
+/frontend/version.json
+
+# CLI 画布绑定（canvas use 写在工作目录）
+/.village-canvas.json

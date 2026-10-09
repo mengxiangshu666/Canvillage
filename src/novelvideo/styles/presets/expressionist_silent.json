@@ -1,0 +1,31 @@
+{
+  "id": "expressionist_silent",
+  "name": "表现主义默片",
+  "label": "表现主义默片",
+  "family": "expressionism",
+  "era": "1920s",
+  "palette": "纯黑、粉笔白、银灰与极少量染色琥珀",
+  "lighting": "极硬侧光、夸张投影、黑白断层，人物脸部具有戏剧性切光",
+  "optics": "24mm倾斜透视、深焦、手摇默片质感，画面几何故意不安",
+  "composition": "歪斜建筑、尖锐阴影、扭曲门窗和高对比人物剪影共同表达心理",
+  "camera_motion": "stiff theatrical track, iris-like reveal, deliberate stop-start silent-film cadence",
+  "style_instructions": "German Expressionist silent-cinema aesthetic, angular painted sets, distorted perspective, stark chiaroscuro, theatrical acting silhouette and authentic early-film texture.",
+  "avoid_instructions": "No modern noir neon, no smooth CGI architecture, no realistic neutral set, no fake subtitles, no watermark.",
+  "style_tag": "EXPRESSIONIST SILENT CINEMA",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "默片",
+    "表现主义",
+    "黑白",
+    "心理"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "stiff theatrical track, iris-like reveal, deliberate stop-start silent-film cadence"
+    }
+  },
+  "image_prompt": "German Expressionist silent-cinema aesthetic, angular painted sets, distorted perspective, stark chiaroscuro, theatrical acting silhouette and authentic early-film texture.",
+  "video_prompt": "stiff theatrical track, iris-like reveal, deliberate stop-start silent-film cadence",
+  "negative_prompt": "No modern noir neon, no smooth CGI architecture, no realistic neutral set, no fake subtitles, no watermark."
+}

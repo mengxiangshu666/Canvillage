@@ -1,0 +1,30 @@
+{
+  "id": "persian_miniature",
+  "name": "波斯细密画",
+  "family": "persian_miniature",
+  "era": "timurid_safavid",
+  "palette": "群青、青绿、朱红、金色、粉白与紫罗兰，宝石般色块嵌入纸本",
+  "lighting": "非自然主义平面设色，以金色、纹样与色彩邻接建立层次",
+  "optics": "多重视点、倾斜建筑平面与精密自然纹样，空间像展开的诗页",
+  "composition": "园林、山石、亭阁、云气和人物在装饰边框内形成密集但有节奏的叙事",
+  "camera_motion": "illuminated-manuscript drift, layered garden reveal, calligraphic cloud transition, slow ornamental push",
+  "style_instructions": "Persian miniature and illuminated-manuscript aesthetics, jewel pigments, gold ornament, multiple viewpoints, intricate gardens, stylized rocks and lyrical densely patterned narrative space.",
+  "avoid_instructions": "No European chiaroscuro, no photoreal depth, no generic Arabian fantasy, no oil impasto, no Indian palace mashup, no text or watermark.",
+  "style_tag": "PERSIAN MINIATURE ILLUMINATED POETIC SPACE",
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "tags": [
+    "波斯细密画",
+    "手抄本",
+    "园林",
+    "金饰"
+  ],
+  "image_prompt": "Persian miniature and illuminated-manuscript aesthetics, jewel pigments, gold ornament, multiple viewpoints, intricate gardens, stylized rocks and lyrical densely patterned narrative space.",
+  "video_prompt": "illuminated-manuscript drift, layered garden reveal, calligraphic cloud transition, slow ornamental push",
+  "negative_prompt": "No European chiaroscuro, no photoreal depth, no generic Arabian fantasy, no oil impasto, no Indian palace mashup, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "illuminated-manuscript drift, layered garden reveal, calligraphic cloud transition, slow ornamental push"
+    }
+  }
+}

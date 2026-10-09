@@ -1,0 +1,31 @@
+{
+  "id": "anime_cel_premium",
+  "name": "高级赛璐璐",
+  "label": "高级赛璐璐",
+  "family": "anime_cel",
+  "era": "timeless",
+  "palette": "高纯度主色、干净阴影、受控高光与环境色",
+  "lighting": "two-layer cel shading, graphic rim light, painted atmospheric background",
+  "optics": "clean illustration perspective, strong silhouette design, no photographic bokeh",
+  "composition": "角色轮廓优先、背景服务叙事、动作线和视线引导明确",
+  "camera_motion": "dynamic 2D multiplane parallax, clean pan, impact zoom",
+  "style_instructions": "Premium 2D anime cel-shaded key visual, crisp line art, controlled two-tone shading, expressive faces, polished production keyframe quality.",
+  "avoid_instructions": "No photorealism, no 3D CGI, no gradient airbrush, no extra fingers or limbs, no text or watermark.",
+  "style_tag": "PREMIUM CEL ANIMATION",
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "tags": [
+    "动画",
+    "赛璐璐",
+    "日系",
+    "动作"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Use clean multiplane parallax and one readable action beat; preserve line weight, flat color blocks, and character proportions."
+    }
+  },
+  "image_prompt": "Premium 2D anime cel-shaded key visual, crisp line art, controlled two-tone shading, expressive faces, polished production keyframe quality.",
+  "video_prompt": "dynamic 2D multiplane parallax, clean pan, impact zoom",
+  "negative_prompt": "No photorealism, no 3D CGI, no gradient airbrush, no extra fingers or limbs, no text or watermark."
+}

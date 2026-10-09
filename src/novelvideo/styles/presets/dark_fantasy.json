@@ -1,0 +1,31 @@
+{
+  "id": "dark_fantasy",
+  "name": "暗黑奇幻",
+  "label": "暗黑奇幻",
+  "family": "dark_fantasy",
+  "era": "mythic",
+  "palette": "黑曜石、铁锈红、冷灰、病态金与深森林绿",
+  "lighting": "stormy shafts, firelit practicals, heavy shadow masses, selective magical edge light",
+  "optics": "24mm atmospheric wide shots and 75mm portrait compression, textured diffusion",
+  "composition": "巨物尺度、斜向地平线、前景枝桠与烟尘制造压迫层次",
+  "camera_motion": "slow ominous dolly, rising crane reveal, sudden restrained push at threat beats",
+  "style_instructions": "Painterly dark fantasy cinema with monumental environments, believable worn materials, mythic scale, readable faces and grounded physical light.",
+  "avoid_instructions": "No generic game asset look, no glossy armor, no excessive particles, no cute fantasy, no text or watermark.",
+  "style_tag": "DARK FANTASY ATMOSPHERE",
+  "tags": [
+    "奇幻",
+    "暗黑",
+    "史诗",
+    "魔法"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Build a slow threat reveal with one directional camera move and restrained environmental motion; keep the subject readable inside shadow masses."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Painterly dark fantasy cinema with monumental environments, believable worn materials, mythic scale, readable faces and grounded physical light.",
+  "video_prompt": "slow ominous dolly, rising crane reveal, sudden restrained push at threat beats",
+  "negative_prompt": "No generic game asset look, no glossy armor, no excessive particles, no cute fantasy, no text or watermark."
+}

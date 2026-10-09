@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "packageId": "kacang-933-fast",
+  "authority": "seed",
+  "notes": [
+    "卡藏 933 Fast：公开模型 id 首字母是大写 S，除此之外与 Prompt-Hubs Firefly 那套多参考合同逐字段相同。",
+    "命中规则是精确匹配单个型号 —— 这家没有可用的前缀族，写宽前缀只会误伤别的型号。",
+    "与 prompt-hubs-firefly 的关系由测试里的「漂移守卫」钉住：哪些字段必须一致、哪些允许不同，都写在测试里。",
+    "本包只描述「中性请求怎么落到这家上游」，中性请求模型仍在 Python 代码里。"
+  ],
+  "profiles": [
+    {
+      "profile_id": "kacang_933_fast",
+      "match_prefixes": [],
+      "match_exact": [
+        "s-videos-f-933-fast-480-2"
+      ],
+      "duration_field": "duration",
+      "duration_choices": null,
+      "ratio_field": "ratio",
+      "first_frame_field": "image",
+      "ref_field": "referenceImages",
+      "audio_field": "generate_audio",
+      "auto_face_field": "auto_face",
+      "extra_static": {
+        "resolution": "480p"
+      },
+      "drop_fields": [
+        "seconds"
+      ]
+    }
+  ]
+}

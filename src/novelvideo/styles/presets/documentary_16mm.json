@@ -1,0 +1,31 @@
+{
+  "id": "documentary_16mm",
+  "name": "16毫米纪实",
+  "label": "16毫米纪实",
+  "family": "documentary",
+  "era": "contemporary",
+  "palette": "褪色暖灰、土黄、低饱和蓝，保留现场色温而不做过度校色",
+  "lighting": "available light, soft overcast spill, imperfect exposure roll-off, honest mixed lighting",
+  "optics": "16mm texture, 28mm/40mm documentary lenses, tactile grain, gentle motion blur",
+  "composition": "观察式取景、自然遮挡、非对称留白，允许人物进入或离开画面",
+  "camera_motion": "handheld breathing, small reframes, human reaction to movement, no synthetic gimbal glide",
+  "style_instructions": "Authentic 16mm observational documentary image, lived-in locations, unforced performances, truthful material texture, intimate human distance.",
+  "avoid_instructions": "No staged commercial polish, no beauty retouching, no artificial fog, no symmetrical poster composition, no text or watermark.",
+  "style_tag": "OBSERVATIONAL 16MM",
+  "tags": [
+    "纪实",
+    "手持",
+    "生活流",
+    "真实"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Use a continuous handheld observation with small organic reframes; preserve imperfect timing and let the subject action unfold naturally."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Authentic 16mm observational documentary image, lived-in locations, unforced performances, truthful material texture, intimate human distance.",
+  "video_prompt": "handheld breathing, small reframes, human reaction to movement, no synthetic gimbal glide",
+  "negative_prompt": "No staged commercial polish, no beauty retouching, no artificial fog, no symmetrical poster composition, no text or watermark."
+}

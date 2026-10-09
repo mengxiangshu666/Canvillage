@@ -1,0 +1,30 @@
+{
+  "id": "indian_miniature",
+  "name": "印度细密画",
+  "family": "indian_miniature",
+  "era": "mughal_rajput",
+  "palette": "朱砂、孔雀蓝、孔雀绿、藏红花黄、粉红与金色，细密矿物色层清晰",
+  "lighting": "平面设色与局部金饰高光，不以单一写实光源塑造空间",
+  "optics": "高视点、浅空间和精密纹饰，人物、园林、动物与建筑同时清晰",
+  "composition": "装饰边框、宫廷/园林叙事、重复图案和多人物关系形成可阅读的完整画页",
+  "camera_motion": "miniature-tableau push, garden-layer pan, ornate border reveal, figure-to-pattern transition",
+  "style_instructions": "Indian miniature painting with finely controlled outlines, jewel-like mineral pigments, gold details, elevated viewpoint, intricate textiles, gardens and densely readable narrative tableaux.",
+  "avoid_instructions": "No Bollywood stage lighting, no oil-paint modeling, no Persian-only cloud convention, no photoreal skin, no generic mandala overlay, no text or watermark.",
+  "style_tag": "INDIAN MINIATURE JEWEL-TONED NARRATIVE",
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "tags": [
+    "印度细密画",
+    "矿物色",
+    "宫廷园林",
+    "纹饰"
+  ],
+  "image_prompt": "Indian miniature painting with finely controlled outlines, jewel-like mineral pigments, gold details, elevated viewpoint, intricate textiles, gardens and densely readable narrative tableaux.",
+  "video_prompt": "miniature-tableau push, garden-layer pan, ornate border reveal, figure-to-pattern transition",
+  "negative_prompt": "No Bollywood stage lighting, no oil-paint modeling, no Persian-only cloud convention, no photoreal skin, no generic mandala overlay, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "miniature-tableau push, garden-layer pan, ornate border reveal, figure-to-pattern transition"
+    }
+  }
+}

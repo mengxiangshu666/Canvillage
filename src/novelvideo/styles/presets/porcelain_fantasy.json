@@ -1,0 +1,31 @@
+{
+  "id": "porcelain_fantasy",
+  "name": "青花瓷幻想",
+  "label": "青花瓷幻想",
+  "family": "porcelain",
+  "era": "timeless_fantasy",
+  "palette": "钴蓝、釉白、少量铁锈红与温润金色",
+  "lighting": "柔亮瓷釉高光、蓝白环境反射、裂纹处细微阴影",
+  "optics": "图案平面性与瓷器立体空间融合，边缘洁净，无摄影散景滥用",
+  "composition": "山水纹样沿服饰与建筑连续流动，人物和环境像同一件瓷器展开",
+  "camera_motion": "gliding reveal across glazed surfaces, pattern-led morph, gentle ceramic parallax",
+  "style_instructions": "Blue-and-white porcelain fantasy cinema, cobalt underglaze linework, luminous ceramic surfaces, continuous Chinese landscape motifs and elegant material-driven world design.",
+  "avoid_instructions": "No cheap ceramic souvenir look, no random floral clutter, no Japanese porcelain motifs, no plastic gloss, no text or watermark.",
+  "style_tag": "BLUE-WHITE PORCELAIN FANTASY",
+  "style_family": "animation",
+  "animation_subtype": "hybrid",
+  "tags": [
+    "青花瓷",
+    "东方",
+    "材质",
+    "幻想"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "gliding reveal across glazed surfaces, pattern-led morph, gentle ceramic parallax"
+    }
+  },
+  "image_prompt": "Blue-and-white porcelain fantasy cinema, cobalt underglaze linework, luminous ceramic surfaces, continuous Chinese landscape motifs and elegant material-driven world design.",
+  "video_prompt": "gliding reveal across glazed surfaces, pattern-led morph, gentle ceramic parallax",
+  "negative_prompt": "No cheap ceramic souvenir look, no random floral clutter, no Japanese porcelain motifs, no plastic gloss, no text or watermark."
+}

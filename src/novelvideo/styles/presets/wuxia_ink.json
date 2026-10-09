@@ -1,0 +1,31 @@
+{
+  "id": "wuxia_ink",
+  "name": "水墨武侠",
+  "label": "水墨武侠",
+  "family": "ink_wuxia",
+  "era": "historical_fantasy",
+  "palette": "墨黑、宣纸白、朱砂红与冷青，留白主导",
+  "lighting": "mist-softened moonlight or overcast daylight, graphic backlight, ink-wash tonal transitions",
+  "optics": "35mm wide establishing views, 85mm compressed duel details, soft diffusion",
+  "composition": "书法般的动势线、山水负空间、前后景层叠，动作姿态形成视觉笔锋",
+  "camera_motion": "floating crane, deliberate lateral sweep, short acceleration during martial impact",
+  "style_instructions": "Cinematic Chinese ink-wash wuxia, elegant physical choreography, atmospheric mountains and architecture, controlled fusion of live-action realism and expressive ink textures.",
+  "avoid_instructions": "No flat generic cartoon, no random calligraphy text, no excessive smoke hiding anatomy, no plastic armor, no watermark.",
+  "style_tag": "INK-WASH WUXIA EPIC",
+  "tags": [
+    "武侠",
+    "水墨",
+    "东方",
+    "动作"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Choreograph one readable martial exchange with directional follow-through; camera sweeps like a brush stroke while preserving footwork and spatial geography."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Cinematic Chinese ink-wash wuxia, elegant physical choreography, atmospheric mountains and architecture, controlled fusion of live-action realism and expressive ink textures.",
+  "video_prompt": "floating crane, deliberate lateral sweep, short acceleration during martial impact",
+  "negative_prompt": "No flat generic cartoon, no random calligraphy text, no excessive smoke hiding anatomy, no plastic armor, no watermark."
+}

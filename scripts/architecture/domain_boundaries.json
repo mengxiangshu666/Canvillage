@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "source_package": "novelvideo",
+  "domains": {
+    "api": ["api"],
+    "agent": [
+      "agent_plugins",
+      "agent_tools",
+      "agents",
+      "chat",
+      "skills",
+      "skills_distill",
+      "tool_failure_disposition"
+    ],
+    "canvas": ["director_world", "freezone"],
+    "memory": ["cognee"],
+    "model": [
+      "embedding_models",
+      "generators",
+      "model_catalog",
+      "model_gateway_runtime",
+      "model_gateway_settings"
+    ],
+    "workflow": ["task_backend", "workflow_runtime", "workflows"],
+    "production": ["creative_execution", "production", "story_lab"],
+    "foundation": [
+      "account_avatar",
+      "assets",
+      "audio_request_usage",
+      "audio",
+      "backup",
+      "canvas_cli",
+      "cli",
+      "config",
+      "director_rhythm",
+      "env",
+      "export",
+      "gateway_transport",
+      "image_request_usage",
+      "llm_instrumentation",
+      "manual_shots",
+      "media_binaries",
+      "models",
+      "newapi_provisioner",
+      "novel_source",
+      "official_defaults",
+      "ports",
+      "product_identity",
+      "project_config",
+      "project_context",
+      "release_notes",
+      "research",
+      "render_plan",
+      "security",
+      "seedance2_i2v",
+      "stage_asset_tasks",
+      "services",
+      "shared",
+      "story_input_normalizer",
+      "sqlite_pragmas",
+      "sqlite_store",
+      "state_sql",
+      "storage",
+      "styles",
+      "task_change_pulse",
+      "task_identity",
+      "task_jobs",
+      "task_scopes",
+      "task_state",
+      "time_of_day",
+      "utils",
+      "video_request_usage",
+      "verification"
+    ]
+  },
+  "rules": [
+    {
+      "id": "domain-to-api",
+      "source_domains": ["agent", "canvas", "memory", "model", "workflow", "production"],
+      "target_domain": "api",
+      "severity": "high",
+      "mode": "report",
+      "reason": "业务领域不应反向依赖 HTTP 路由或 API 依赖工厂；应通过应用门面、port 或 contract 获取能力。"
+    },
+    {
+      "id": "workflow-to-canvas-implementation",
+      "source_domains": ["workflow"],
+      "target_domain": "canvas",
+      "severity": "medium",
+      "mode": "report",
+      "reason": "WorkflowRuntime 应依赖 CanvasCommandPort/DTO，而不是直接依赖 Freezone 实现。"
+    },
+    {
+      "id": "workflow-to-production-implementation",
+      "source_domains": ["workflow"],
+      "target_domain": "production",
+      "severity": "medium",
+      "mode": "report",
+      "exclude_target_modules": [
+        "novelvideo.production.metadata",
+        "novelvideo.production.asset_passport",
+        "novelvideo.production.shot_contract",
+        "novelvideo.production.cost_receipt"
+      ],
+      "reason": "WorkflowRuntime 与 Production 应通过阶段合同或应用门面交互，避免互相穿透。"
+    },
+    {
+      "id": "model-to-workflow-implementation",
+      "source_domains": ["model"],
+      "target_domain": "workflow",
+      "severity": "medium",
+      "mode": "report",
+      "reason": "模型层不应依赖任务编排实现；应返回标准模型能力或媒体请求合同。"
+    }
+  ]
+}

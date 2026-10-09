@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "packageId": "sd2-5-m-full",
+  "authority": "seed",
+  "notes": [
+    "画布「满血」SD 2.5-M 系列：站方文档标称 5/10/15/30 秒，比 huabu 的 sd-2.0-fast（5/10/15）更宽。",
+    "站方文档（2026-09-11 定稿）把 image 列为禁发字段，首帧字段名是 first_image；本条不带画幅字段。",
+    "这条前缀 sd-2.5-m 现在按「具体度」赢过 huabu 的 sd-2，不再依赖档案顺序 —— 2026-09-12 那次 30 秒被压成 15 秒就是顺序写错造成的。",
+    "已知未修缺口：本条前缀宽于能力档案（只认 sd-2.5-M-720P-v1），会产生 2 条静默降档，见 tests/test_video_contract_packages.py 的 KNOWN_UNVERIFIED_TIER_GAPS。",
+    "本包只描述「中性请求怎么落到这家上游」，中性请求模型仍在 Python 代码里。"
+  ],
+  "profiles": [
+    {
+      "profile_id": "sd2_5_m_full",
+      "match_prefixes": [
+        "sd-2.5-m"
+      ],
+      "duration_field": "duration",
+      "duration_choices": [
+        5,
+        10,
+        15,
+        30
+      ],
+      "ratio_field": null,
+      "first_frame_field": "first_image",
+      "ref_field": null,
+      "audio_field": null,
+      "auto_face_field": null
+    }
+  ]
+}

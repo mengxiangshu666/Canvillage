@@ -1,0 +1,34 @@
+{
+  "id": "cyberpunk_neon",
+  "name": "赛博霓虹",
+  "label": "赛博霓虹",
+  "family": "cyberpunk",
+  "era": "near_future",
+  "palette": "电蓝、洋红、酸性绿与湿润黑色，冷暖互撞",
+  "lighting": "volumetric neon, rim lights, reflective wet surfaces, localized haze only where motivated",
+  "optics": "24mm wide environmental lens, 50mm subject inserts, anamorphic flare used sparingly",
+  "composition": "多层城市深度、透明材质和反射构成画面，主体轮廓必须清晰",
+  "camera_motion": "slow parallax dolly, vertical crane through signage layers, controlled rack focus",
+  "style_instructions": "High-end cyberpunk live-action production frame, believable near-future infrastructure, dense layered depth, practical materials, cinematic clarity.",
+  "avoid_instructions": "No random gibberish text, no cluttered UI overlay, no fantasy medieval props, no oversharpened game screenshot, no watermark.",
+  "style_tag": "CYBERPUNK NEON REALISM",
+  "tags": [
+    "科幻",
+    "霓虹",
+    "未来都市",
+    "赛博"
+  ],
+  "model_overrides": {
+    "nanobanana": {
+      "image_prompt": "Treat neon as motivated light on real materials; reserve saturated color for readable focal accents."
+    },
+    "video": {
+      "video_prompt": "Animate parallax through layered signage and reflections; maintain a single coherent light direction and clear subject silhouette."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "High-end cyberpunk live-action production frame, believable near-future infrastructure, dense layered depth, practical materials, cinematic clarity.",
+  "video_prompt": "slow parallax dolly, vertical crane through signage layers, controlled rack focus",
+  "negative_prompt": "No random gibberish text, no cluttered UI overlay, no fantasy medieval props, no oversharpened game screenshot, no watermark."
+}

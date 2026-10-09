@@ -1,0 +1,69 @@
+# Generated AIGC bundle hashes are byte-exact; keep them stable on every OS.
+agent_skills/village-canvas-aigc-knowledge/references/vault-aigc/source/** -text whitespace=cr-at-eol
+agent_skills/village-canvas-shotcraft/references/upstream/** -text whitespace=cr-at-eol
+
+# CI and Linux operations scripts must stay executable with LF line endings.
+*.sh text eol=lf
+
+# Public source exports keep development records in the private workspace.
+/AGENTS.md export-ignore
+/PROJECT_LAYOUT.md export-ignore
+/STATUS.md export-ignore
+/MODIFICATIONS.md export-ignore
+/DESIGN.md export-ignore
+/GOVERNANCE.md export-ignore
+/.zcodeignore export-ignore
+/.github/** export-ignore
+/.github/workflows/quality-source.yml -export-ignore
+/docs/*.md export-ignore
+/docs/ai/** export-ignore
+/docs/research/** export-ignore
+/docs/status/** export-ignore
+/docs/prompts/** export-ignore
+/docs/en/** export-ignore
+/docs/zh/** export-ignore
+/docs/en/license.md -export-ignore
+/docs/zh/license.md -export-ignore
+/docs/PUBLIC_SOURCE_RELEASE.md -export-ignore
+/llms.txt export-ignore
+/scripts/ci/install_self_hosted_runner_maintenance.sh export-ignore
+/scripts/ci/maintain_self_hosted_runner.sh export-ignore
+/scripts/ci/provision_self_hosted_runner.sh export-ignore
+
+# Unused or unverified media stays local; public releases must also omit its history.
+/frontend/public/expression-head/libtv-mood-proxy/** export-ignore
+/frontend/public/login-cinematic/fonts/DingTalk_JinBuTi_Title.woff2 export-ignore
+/assets/partners/** export-ignore
+/src/novelvideo/assets/login_bgm.mp3 export-ignore
+
+# These checks describe private development records, not product behavior.
+/tests/test_ai_change_context.py export-ignore
+/tests/test_ai_continuity_surface.py export-ignore
+/tests/test_branding_cleanup.py export-ignore
+/tests/test_ci_policy_consistency.py export-ignore
+/tests/test_docs_index.py export-ignore
+/tests/test_gate_declaration_coverage.py export-ignore
+/tests/test_modifications_ledger.py export-ignore
+/tests/test_reference_corpus_registry.py export-ignore
+/tests/test_status_ledger.py export-ignore
+
+# Never export private data even if a file was accidentally added to Git.
+/.env* export-ignore
+/.env.example -export-ignore
+/frontend/.env* export-ignore
+/frontend/.env.example -export-ignore
+/frontend/.env.supercanvas -export-ignore
+/项目资产/** export-ignore
+/workspace/** export-ignore
+/runtime/** export-ignore
+/.venv/** export-ignore
+**/node_modules/** export-ignore
+*.db export-ignore
+*.sqlite export-ignore
+*.sqlite3 export-ignore
+*.log export-ignore
+*.pem export-ignore
+*.key export-ignore
+*.p12 export-ignore
+*.pfx export-ignore
+*cookies*.json export-ignore

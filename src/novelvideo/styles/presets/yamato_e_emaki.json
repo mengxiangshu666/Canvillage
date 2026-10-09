@@ -1,0 +1,30 @@
+{
+  "id": "yamato_e_emaki",
+  "name": "大和绘绘卷",
+  "family": "yamato_e",
+  "era": "heian_kamakura",
+  "palette": "纸本矿物色、朱红、群青、青绿、胡粉与金银云霞，色层柔和沉静",
+  "lighting": "平面设色和季节色彩表达时间，不采用西方明暗塑形",
+  "optics": "吹拔屋台式俯视、横向连续叙事和多时空并置，人物尺度服务故事关系",
+  "composition": "屋顶省略、引目钩鼻人物、云霞分段和建筑斜线引导阅读方向",
+  "camera_motion": "emaki scroll pan, roofless interior reveal, cloud-divider transition, continuous narrative drift",
+  "style_instructions": "Japanese yamato-e emaki picture-scroll aesthetics, continuous horizontal narrative, fukinuki-yatai roofless interiors, mineral colors, seasonal cloud bands and courtly spatial rhythm.",
+  "avoid_instructions": "No ukiyo-e wave cliché, no modern manga panel, no heavy black outline, no single-poster centered composition, no photographic lighting, no text or watermark.",
+  "style_tag": "YAMATO-E EMAKI CONTINUOUS NARRATIVE",
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "tags": [
+    "大和绘",
+    "绘卷",
+    "连续叙事",
+    "矿物色"
+  ],
+  "image_prompt": "Japanese yamato-e emaki picture-scroll aesthetics, continuous horizontal narrative, fukinuki-yatai roofless interiors, mineral colors, seasonal cloud bands and courtly spatial rhythm.",
+  "video_prompt": "emaki scroll pan, roofless interior reveal, cloud-divider transition, continuous narrative drift",
+  "negative_prompt": "No ukiyo-e wave cliché, no modern manga panel, no heavy black outline, no single-poster centered composition, no photographic lighting, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "emaki scroll pan, roofless interior reveal, cloud-divider transition, continuous narrative drift"
+    }
+  }
+}

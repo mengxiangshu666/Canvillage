@@ -1,0 +1,30 @@
+{
+  "id": "giallo_psychological",
+  "name": "铅黄心理惊悚",
+  "family": "giallo",
+  "era": "1960s_1980s",
+  "palette": "高纯猩红、孔雀绿、钴蓝凝胶光与深黑阴影，局部奶油黄形成不安反差",
+  "lighting": "强烈彩色凝胶侧光、硬切阴影、镜面反射和局部过曝，保持黑位纯净",
+  "optics": "长焦变焦、窥视视角、分焦镜头、极端局部特写与轻微胶片颗粒",
+  "composition": "狭长走廊、巴洛克室内、玻璃和镜面形成层层遮挡，主观视线制造心理压迫",
+  "camera_motion": "slow predatory zoom, subjective corridor track, abrupt whip pan, precise insert close-up",
+  "style_instructions": "Italian giallo psychological thriller, saturated red-green-blue gel lighting, baroque interiors, reflective surfaces, voyeuristic framing and elegant menace on tactile film.",
+  "avoid_instructions": "No cyberpunk infrastructure, no generic wet-street noir, no monochrome detective look, no gore-dominant composition, no text or watermark.",
+  "style_tag": "GIALLO CHROMATIC PSYCHOLOGICAL MENACE",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "铅黄电影",
+    "心理惊悚",
+    "凝胶光",
+    "主观镜头"
+  ],
+  "image_prompt": "Italian giallo psychological thriller, saturated red-green-blue gel lighting, baroque interiors, reflective surfaces, voyeuristic framing and elegant menace on tactile film.",
+  "video_prompt": "slow predatory zoom, subjective corridor track, abrupt whip pan, precise insert close-up",
+  "negative_prompt": "No cyberpunk infrastructure, no generic wet-street noir, no monochrome detective look, no gore-dominant composition, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "slow predatory zoom, subjective corridor track, abrupt whip pan, precise insert close-up"
+    }
+  }
+}

@@ -1,0 +1,1086 @@
+[
+  {
+    "id": "story-continuity-film",
+    "title": "故事连续性起步骨架",
+    "description": "用导演总纲、角色和场景参考，搭出可编辑的连续镜头与引用准备骨架；不等于最终成片。",
+    "template_kind": "production_scaffold",
+    "delivery_level": "shot_draft",
+    "required_inputs": ["project_goal", "story_beats"],
+    "optional_inputs": ["character_asset", "location_asset", "prop_asset", "style_asset"],
+    "required_roles": ["world_bible", "storyboard", "shot_sequence"],
+    "outputs": ["director_brief", "storyboard", "shot_contracts"],
+    "does_not_produce": ["final_video", "audio_mix", "subtitle_track", "final_compose_artifact"],
+    "quality_gates": ["director_plan_valid", "canvas_structure_receipt", "story_and_shots_complete", "shot_contracts_valid"],
+    "icon": "bookOpen",
+    "nodes": [
+      {
+        "key": "director-brief",
+        "type": "textAnnotationNode",
+        "offset": {
+          "x": 0,
+          "y": -230
+        },
+        "data": {
+          "displayName": "导演总纲 · 全片连续性",
+          "content": "导演总纲（生成前可编辑）\n角色身份、年龄、体型、脸部特征与服装在全片保持一致；场景的时间、光线、色调、关键道具和左右关系连续；每个镜头只表达一个叙事动作，并让镜头运动服务剧情推进。"
+        }
+      },
+      {
+        "key": "character-reference",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "displayName": "角色参考 · 人设与造型"
+        }
+      },
+      {
+        "key": "scene-reference",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 230
+        },
+        "data": {
+          "displayName": "场景参考 · 环境与光线"
+        }
+      },
+      {
+        "key": "storyboard",
+        "type": "storyboardGenNode",
+        "offset": {
+          "x": 430,
+          "y": 0
+        },
+        "data": {
+          "displayName": "分镜生成 · 角色与场景参考"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 850,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频生成 · 延续人物与场景",
+          "prompt": "以上游素材为人物、服饰、场景与镜头风格依据；保持身份和画面连续性，聚焦一个主要动作，并在动作完成时收束。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "character-reference",
+        "target": "storyboard"
+      },
+      {
+        "source": "scene-reference",
+        "target": "storyboard"
+      },
+      {
+        "source": "director-brief",
+        "target": "video"
+      },
+      {
+        "source": "character-reference",
+        "target": "video"
+      },
+      {
+        "source": "scene-reference",
+        "target": "video"
+      },
+      {
+        "source": "storyboard",
+        "target": "video"
+      }
+    ]
+  },
+  {
+    "id": "single-reference-video",
+    "title": "单参考图转视频",
+    "description": "一张主体或场景参考图，直接进入视频生成。",
+    "template_kind": "media_scaffold",
+    "delivery_level": "media_draft",
+    "required_inputs": ["reference_asset"],
+    "optional_inputs": ["style_asset", "motion_reference"],
+    "required_roles": ["reference_asset", "video_generation"],
+    "outputs": ["video_generation_task"],
+    "does_not_produce": ["final_compose_artifact", "audio_mix", "subtitle_track"],
+    "quality_gates": ["reference_bound", "video_node_present", "task_receipt"],
+    "icon": "film",
+    "nodes": [
+      {
+        "key": "reference",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "displayName": "参考图 · 上传主体或场景"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 390,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频生成 · 保持主体连续",
+          "prompt": "以上游素材为人物、服饰、场景与镜头风格依据；保持身份和画面连续性，聚焦一个主要动作，并在动作完成时收束。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "reference",
+        "target": "video"
+      }
+    ]
+  },
+  {
+    "id": "multi-reference-video",
+    "title": "多参考一致性视频",
+    "description": "人物、造型和动作分槽输入，再统一生成视频。",
+    "template_kind": "media_scaffold",
+    "delivery_level": "media_draft",
+    "required_inputs": ["character_asset", "wardrobe_asset", "motion_reference"],
+    "optional_inputs": ["scene_asset", "style_asset"],
+    "required_roles": ["character_asset", "wardrobe_asset", "motion_reference", "video_generation"],
+    "outputs": ["video_generation_task", "reference_bindings"],
+    "does_not_produce": ["character_identity_set", "final_compose_artifact", "audio_mix"],
+    "quality_gates": ["reference_roles_bound", "video_node_present", "task_receipt"],
+    "icon": "layers",
+    "nodes": [
+      {
+        "key": "character",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": -210
+        },
+        "data": {
+          "displayName": "人物参考 · 脸与主体"
+        }
+      },
+      {
+        "key": "wardrobe",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "displayName": "造型参考 · 服饰与质感"
+        }
+      },
+      {
+        "key": "motion",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 210
+        },
+        "data": {
+          "displayName": "动作参考 · 姿态与镜头"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 410,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频生成 · 多参考融合",
+          "prompt": "以上游素材为人物、服饰、场景与镜头风格依据；保持身份和画面连续性，聚焦一个主要动作，并在动作完成时收束。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "character",
+        "target": "video"
+      },
+      {
+        "source": "wardrobe",
+        "target": "video"
+      },
+      {
+        "source": "motion",
+        "target": "video"
+      }
+    ]
+  },
+  {
+    "id": "refine-then-video",
+    "title": "视觉定稿后转视频",
+    "description": "先锁定画面质量，再把定稿帧用于视频生成。",
+    "template_kind": "media_scaffold",
+    "delivery_level": "media_draft",
+    "required_inputs": ["reference_asset"],
+    "optional_inputs": ["style_asset", "continuity_constraints"],
+    "required_roles": ["reference_asset", "image_refine", "video_generation"],
+    "outputs": ["refined_frame", "video_generation_task"],
+    "does_not_produce": ["final_compose_artifact", "audio_mix", "subtitle_track"],
+    "quality_gates": ["refine_input_bound", "refined_frame_receipt", "video_node_present"],
+    "icon": "sparkles",
+    "nodes": [
+      {
+        "key": "reference",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "displayName": "原始参考图"
+        }
+      },
+      {
+        "key": "refine",
+        "type": "imageNode",
+        "offset": {
+          "x": 390,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视觉定稿 · 光影与质感",
+          "prompt": "基于上游参考完成视觉定稿：保持主体身份、构图和关键服饰，只优化质感、光影与画面稳定性。"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 780,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频生成 · 使用定稿帧",
+          "prompt": "以上游素材为人物、服饰、场景与镜头风格依据；保持身份和画面连续性，聚焦一个主要动作，并在动作完成时收束。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "reference",
+        "target": "refine"
+      },
+      {
+        "source": "refine",
+        "target": "video"
+      }
+    ]
+  },
+  {
+    "id": "storyboard-to-video",
+    "title": "分镜到视频",
+    "description": "先搭建可编辑分镜，再把选定画面连接到视频节点。",
+    "template_kind": "production_scaffold",
+    "delivery_level": "media_draft",
+    "required_inputs": ["project_goal", "story_beats"],
+    "optional_inputs": ["character_asset", "location_asset", "prop_asset", "style_asset"],
+    "required_roles": ["storyboard", "video_generation"],
+    "outputs": ["storyboard", "video_generation_task"],
+    "does_not_produce": ["final_compose_artifact", "audio_mix", "subtitle_track", "multi_shot_continuity_report"],
+    "quality_gates": ["director_plan_valid", "storyboard_receipt", "shot_contracts_valid", "video_node_present"],
+    "icon": "grid",
+    "nodes": [
+      {
+        "key": "storyboard",
+        "type": "storyboardGenNode",
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "displayName": "分镜生成 · 建立镜头节奏"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 430,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频生成 · 延续分镜",
+          "prompt": "以上游素材为人物、服饰、场景与镜头风格依据；保持身份和画面连续性，聚焦一个主要动作，并在动作完成时收束。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "storyboard",
+        "target": "video"
+      }
+    ]
+  },
+  {
+    "id": "video-composition",
+    "title": "多段视频合成",
+    "description": "两路以上视频汇入合成节点，用于剪辑与声画组合。",
+    "template_kind": "finish_scaffold",
+    "delivery_level": "final_film",
+    "required_inputs": ["two_or_more_video_assets"],
+    "optional_inputs": ["audio_asset", "subtitle_track"],
+    "required_roles": ["video_generation", "final_compose"],
+    "outputs": ["compose_node"],
+    "does_not_produce": ["video_generation", "final_compose_artifact"],
+    "quality_gates": ["compose_node_present", "final_compose_artifact"],
+    "icon": "clapperboard",
+    "nodes": [
+      {
+        "key": "clip-a",
+        "type": "videoNode",
+        "offset": {
+          "x": 0,
+          "y": -170
+        },
+        "data": {
+          "displayName": "片段 A · 上传或生成"
+        }
+      },
+      {
+        "key": "clip-b",
+        "type": "videoNode",
+        "offset": {
+          "x": 0,
+          "y": 170
+        },
+        "data": {
+          "displayName": "片段 B · 上传或生成"
+        }
+      },
+      {
+        "key": "compose",
+        "type": "videoComposeNode",
+        "offset": {
+          "x": 430,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频合成 · 排序与拼接"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "clip-a",
+        "target": "compose"
+      },
+      {
+        "source": "clip-b",
+        "target": "compose"
+      }
+    ]
+  },
+  {
+    "id": "panorama-shot-planning",
+    "title": "全景取景规划",
+    "description": "从环境图进入全景查看器，再截取稳定的镜头参考。",
+    "template_kind": "planning_scaffold",
+    "delivery_level": "shot_draft",
+    "required_inputs": ["environment_asset"],
+    "optional_inputs": ["spatial_complexity", "camera_target"],
+    "required_roles": ["location_asset", "pano_viewer"],
+    "outputs": ["camera_reference", "location_view_selection"],
+    "does_not_produce": ["3d_world_artifact", "video_generation_task", "final_video"],
+    "quality_gates": ["environment_bound", "pano_viewer_present", "view_selection_recorded"],
+    "icon": "compass",
+    "nodes": [
+      {
+        "key": "environment",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "displayName": "环境图 · 全景或场景参考"
+        }
+      },
+      {
+        "key": "viewer",
+        "type": "pano360ViewerNode",
+        "offset": {
+          "x": 420,
+          "y": 0
+        },
+        "data": {
+          "displayName": "全景查看器 · 选择镜头方向"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "environment",
+        "target": "viewer"
+      }
+    ]
+  },
+  {
+    "id": "product-showcase-video",
+    "title": "产品特写展示",
+    "description": "把产品主体、材质和卖点锁进一段可控的商业镜头。",
+    "template_kind": "media_scaffold",
+    "delivery_level": "media_draft",
+    "required_inputs": ["product_asset", "product_selling_points"],
+    "optional_inputs": ["brand_style", "motion_reference", "audio_asset"],
+    "required_roles": ["prop_asset", "video_generation"],
+    "outputs": ["product_shot_contract", "video_generation_task"],
+    "does_not_produce": ["brand_approved_final_video", "final_compose_artifact", "audio_mix"],
+    "quality_gates": ["product_bound", "selling_points_present", "video_node_present", "task_receipt"],
+    "icon": "sparkles",
+    "nodes": [
+      {
+        "key": "product-reference",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "displayName": "产品主图 · 材质与外形"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 410,
+          "y": 0
+        },
+        "data": {
+          "displayName": "产品展示 · 细节推进",
+          "model": "",
+          "genMode": "imageToVideo",
+          "prompt": "以上游产品为唯一主体，保持外形、品牌元素、材质和比例准确。镜头由中近景平稳推进到关键细节，单一清晰动作，干净商业光线，结尾停在可辨识的产品英雄构图。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "product-reference",
+        "target": "video"
+      }
+    ]
+  },
+  {
+    "id": "first-last-frame-transition",
+    "title": "首尾帧电影转场",
+    "description": "用两张关键画面规划有起点、有落点的镜头衔接。",
+    "template_kind": "media_scaffold",
+    "delivery_level": "media_draft",
+    "required_inputs": ["first_frame_asset", "last_frame_asset"],
+    "optional_inputs": ["transition_style", "motion_reference"],
+    "required_roles": ["first_frame", "last_frame", "video_generation"],
+    "outputs": ["transition_shot_contract", "video_generation_task"],
+    "does_not_produce": ["final_compose_artifact", "audio_mix", "subtitle_track"],
+    "quality_gates": ["first_frame_bound", "last_frame_bound", "video_node_present", "task_receipt"],
+    "icon": "layers",
+    "nodes": [
+      {
+        "key": "first-frame",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": -120
+        },
+        "data": {
+          "displayName": "首帧 · 起始构图"
+        }
+      },
+      {
+        "key": "last-frame",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 120
+        },
+        "data": {
+          "displayName": "尾帧 · 落点构图"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 410,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频转场 · 首尾帧衔接",
+          "model": "",
+          "genMode": "firstLastFrame",
+          "prompt": "从首帧自然推进到尾帧，保持主体身份、空间关系与光线逻辑连续。只设计一条可解释的镜头运动或场景变化，避免突然变形、跳切、叠影和无关元素。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "first-frame",
+        "target": "video"
+      },
+      {
+        "source": "last-frame",
+        "target": "video"
+      }
+    ]
+  },
+  {
+    "id": "motion-reference-redraw",
+    "title": "源视频动作重绘",
+    "description": "保留源视频动作节奏，用独立视频重绘模型做风格或主体调整。",
+    "template_kind": "media_scaffold",
+    "delivery_level": "media_draft",
+    "required_inputs": ["source_video_asset"],
+    "optional_inputs": ["subject_asset", "style_asset", "prompt_override"],
+    "required_roles": ["motion_reference", "video_generation"],
+    "outputs": ["redraw_video_task"],
+    "does_not_produce": ["final_compose_artifact", "audio_mix", "subtitle_track"],
+    "quality_gates": ["source_video_bound", "video_model_resolved", "task_receipt"],
+    "icon": "film",
+    "nodes": [
+      {
+        "key": "source-video",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "displayName": "源视频 · 动作与镜头节奏"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 410,
+          "y": 0
+        },
+        "data": {
+          "displayName": "源视频重绘 · 选择直连模型",
+          "model": "",
+          "genMode": "videoEdit",
+          "prompt": "以源视频的动作节奏、镜头运动和时序为基础完成重绘。保持一个明确主体与连续空间；若有风格或造型改动，必须贯穿全段并避免遮罩、网格、马赛克、字幕或界面元素。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "source-video",
+        "target": "video"
+      }
+    ]
+  },
+  {
+    "id": "script-voice-video",
+    "title": "脚本配音成片",
+    "description": "脚本节点负责镜头结构，旁白文本生成语音，再和视频进入合成节点。",
+    "template_kind": "production_scaffold",
+    "delivery_level": "final_film",
+    "required_inputs": ["script_or_story_goal", "voice_text"],
+    "optional_inputs": ["character_asset", "location_asset", "music_asset", "subtitle_policy"],
+    "required_roles": ["storyboard", "audio", "video_generation", "final_compose"],
+    "outputs": ["script", "voice_task", "video_generation_task", "compose_node"],
+    "does_not_produce": ["final_compose_artifact", "subtitle_track"],
+    "quality_gates": ["script_receipt", "voice_receipt", "video_node_present", "compose_node_present", "final_compose_artifact"],
+    "icon": "clapperboard",
+    "nodes": [
+      {
+        "key": "script",
+        "type": "scriptNode",
+        "offset": {
+          "x": 0,
+          "y": -180
+        },
+        "data": {
+          "displayName": "脚本生成 · 镜头表与台词",
+          "prompt": "根据主题生成可拍短视频脚本：标题、镜头序号、画面描述、动作、旁白/台词、时长建议。"
+        }
+      },
+      {
+        "key": "voice-text",
+        "type": "textAnnotationNode",
+        "offset": {
+          "x": 0,
+          "y": 140
+        },
+        "data": {
+          "displayName": "旁白文本 · 可转语音",
+          "content": "在这里整理最终旁白/台词；连接到音频节点后生成配音。",
+          "mode": "textToMusic"
+        }
+      },
+      {
+        "key": "voice",
+        "type": "audioNode",
+        "offset": {
+          "x": 410,
+          "y": 140
+        },
+        "data": {
+          "displayName": "AI 配音 · 旁白轨",
+          "audioKind": "speech"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 410,
+          "y": -180
+        },
+        "data": {
+          "displayName": "视频生成 · 按脚本拍摄",
+          "prompt": "严格按照上游脚本的镜头目标生成单段视频：动作单一、构图稳定、节奏清晰。"
+        }
+      },
+      {
+        "key": "compose",
+        "type": "videoComposeNode",
+        "offset": {
+          "x": 830,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频合成 · 声画对齐"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "script",
+        "target": "video"
+      },
+      {
+        "source": "voice-text",
+        "target": "voice"
+      },
+      {
+        "source": "video",
+        "target": "compose"
+      },
+      {
+        "source": "voice",
+        "target": "compose"
+      }
+    ]
+  },
+  {
+    "id": "music-driven-video",
+    "title": "音乐驱动视频",
+    "description": "先写音乐描述并生成 BGM，再把音乐作为视频节奏参考和合成音轨。",
+    "template_kind": "production_scaffold",
+    "delivery_level": "final_film",
+    "required_inputs": ["music_brief", "visual_brief"],
+    "optional_inputs": ["character_asset", "location_asset", "subtitle_policy"],
+    "required_roles": ["audio", "video_generation", "final_compose"],
+    "outputs": ["music_task", "video_generation_task", "compose_node"],
+    "does_not_produce": ["final_compose_artifact", "subtitle_track"],
+    "quality_gates": ["music_receipt", "video_node_present", "compose_node_present", "audio_video_sync", "final_compose_artifact"],
+    "icon": "music",
+    "nodes": [
+      {
+        "key": "music-text",
+        "type": "textAnnotationNode",
+        "offset": {
+          "x": 0,
+          "y": 120
+        },
+        "data": {
+          "displayName": "音乐描述 · 情绪/节奏",
+          "content": "音乐风格、情绪、速度、乐器、段落起伏。",
+          "mode": "textToMusicGen"
+        }
+      },
+      {
+        "key": "music",
+        "type": "audioNode",
+        "offset": {
+          "x": 400,
+          "y": 120
+        },
+        "data": {
+          "displayName": "AI 音乐 · BGM",
+          "audioKind": "music",
+          "musicLengthMs": 30000,
+          "forceInstrumental": true
+        }
+      },
+      {
+        "key": "visual-brief",
+        "type": "textAnnotationNode",
+        "offset": {
+          "x": 0,
+          "y": -130
+        },
+        "data": {
+          "displayName": "画面 brief · 跟随音乐",
+          "content": "画面随音乐节奏推进：开场建立氛围，中段强化动作，结尾收束到主视觉。"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 400,
+          "y": -130
+        },
+        "data": {
+          "displayName": "视频生成 · 按音乐节奏",
+          "prompt": "根据上游画面 brief 和音乐情绪设计镜头节奏，动作与切换服务音乐起伏，保持主体清晰稳定。"
+        }
+      },
+      {
+        "key": "compose",
+        "type": "videoComposeNode",
+        "offset": {
+          "x": 830,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频合成 · BGM 对齐"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "music-text",
+        "target": "music"
+      },
+      {
+        "source": "visual-brief",
+        "target": "video"
+      },
+      {
+        "source": "music",
+        "target": "video"
+      },
+      {
+        "source": "music",
+        "target": "compose"
+      },
+      {
+        "source": "video",
+        "target": "compose"
+      }
+    ]
+  },
+  {
+    "id": "video-analysis-recut",
+    "title": "源视频解析再创作",
+    "description": "把源视频解析成故事与镜头线索，再输出可重绘或可剪辑的新方案。",
+    "template_kind": "production_scaffold",
+    "delivery_level": "shot_draft",
+    "required_inputs": ["source_video_asset"],
+    "optional_inputs": ["reframe_goal", "style_asset", "audio_asset"],
+    "required_roles": ["source_video", "storyboard", "final_compose"],
+    "outputs": ["analysis_script", "redraw_plan", "compose_node"],
+    "does_not_produce": ["redraw_video_artifact", "final_compose_artifact", "audio_mix"],
+    "quality_gates": ["source_video_bound", "analysis_script_receipt", "redraw_plan_present", "compose_node_present"],
+    "icon": "film",
+    "nodes": [
+      {
+        "key": "source-video",
+        "type": "videoNode",
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "displayName": "源视频 · 上传/粘贴待解析"
+        }
+      },
+      {
+        "key": "analysis-script",
+        "type": "scriptNode",
+        "offset": {
+          "x": 420,
+          "y": -120
+        },
+        "data": {
+          "displayName": "解析脚本 · 镜头重构",
+          "prompt": "解析上游视频的镜头顺序、动作节奏、主体变化、场景信息和可复用运镜，整理成可再创作脚本。"
+        }
+      },
+      {
+        "key": "redraw-video",
+        "type": "videoNode",
+        "offset": {
+          "x": 850,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频重绘 · 复用动作节奏",
+          "genMode": "videoEdit",
+          "prompt": "以上游源视频与解析脚本为依据，保留动作节奏、镜头运动和时序；视觉风格可重绘，但主体必须连续清晰。"
+        }
+      },
+      {
+        "key": "compose",
+        "type": "videoComposeNode",
+        "offset": {
+          "x": 1260,
+          "y": 0
+        },
+        "data": {
+          "displayName": "剪辑合成 · 新旧对照"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "source-video",
+        "target": "analysis-script"
+      },
+      {
+        "source": "source-video",
+        "target": "redraw-video"
+      },
+      {
+        "source": "analysis-script",
+        "target": "redraw-video"
+      },
+      {
+        "source": "source-video",
+        "target": "compose"
+      },
+      {
+        "source": "redraw-video",
+        "target": "compose"
+      }
+    ]
+  },
+  {
+    "id": "image-to-3d-shot",
+    "title": "图片转 3D 取景",
+    "description": "用参考图生成 3D 世界，再从空间里取导演控制镜头进入视频。",
+    "template_kind": "spatial_scaffold",
+    "delivery_level": "media_draft",
+    "required_inputs": ["scene_reference_asset"],
+    "optional_inputs": ["camera_path", "character_asset", "prop_asset"],
+    "required_roles": ["location_asset", "3d_world", "video_generation"],
+    "outputs": ["3d_world_task", "camera_shot_contract", "video_generation_task"],
+    "does_not_produce": ["production_ready_3d_scene", "final_compose_artifact", "audio_mix"],
+    "quality_gates": ["scene_reference_bound", "3d_world_receipt", "camera_path_present", "video_node_present", "task_receipt"],
+    "icon": "compass",
+    "nodes": [
+      {
+        "key": "scene-reference",
+        "type": "uploadNode",
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "displayName": "场景参考图 · 空间来源"
+        }
+      },
+      {
+        "key": "world",
+        "type": "threeDWorldNode",
+        "offset": {
+          "x": 420,
+          "y": 0
+        },
+        "data": {
+          "displayName": "3D 世界 · 空间重建",
+          "prompt": "从上游图片建立可取景的空间世界，保持场景结构、透视、主光方向和关键道具位置。"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 850,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频生成 · 空间取景镜头",
+          "prompt": "以上游 3D 世界的导演视角为构图依据，生成一个空间关系稳定、景深自然、镜头运动清楚的短镜头。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "scene-reference",
+        "target": "world"
+      },
+      {
+        "source": "world",
+        "target": "video"
+      }
+    ]
+  },
+  {
+    "id": "original-vertical-short-film",
+    "title": "原创竖屏短片",
+    "description": "从一句话创意搭出脚本、角色、场景、分镜、关键帧到视频的可编辑竖屏短片骨架。",
+    "template_kind": "original_production_scaffold",
+    "delivery_level": "media_draft",
+    "required_inputs": ["creative_brief"],
+    "optional_inputs": ["character_asset", "location_asset", "prop_asset", "style_asset"],
+    "required_roles": ["world_bible", "storyboard", "shot_sequence", "character_asset", "location_asset", "image_generation", "video_generation"],
+    "outputs": ["script", "character_plan", "scene_plan", "storyboard", "keyframe_task", "video_generation_task"],
+    "does_not_produce": ["final_compose_artifact", "audio_mix", "subtitle_track"],
+    "quality_gates": ["creative_brief_present", "script_receipt", "reference_roles_bound", "storyboard_receipt", "keyframe_receipt", "video_node_present"],
+    "icon": "film",
+    "nodes": [
+      {
+        "key": "creative",
+        "type": "textAnnotationNode",
+        "offset": {"x": 0, "y": -240},
+        "data": {
+          "displayName": "创意 · 一句话灵感",
+          "content": "在这里写下这支原创竖屏短片的一句话创意、受众和情绪方向。"
+        }
+      },
+      {
+        "key": "script",
+        "type": "scriptNode",
+        "offset": {"x": 360, "y": -240},
+        "data": {
+          "displayName": "脚本 · 镜头与节奏",
+          "prompt": "把上游创意整理成竖屏短片脚本：开场钩子、镜头动作、角色台词或旁白、时长和收束画面。"
+        }
+      },
+      {
+        "key": "character",
+        "type": "uploadNode",
+        "offset": {"x": 720, "y": -390},
+        "data": {"displayName": "角色 · 人设与造型参考"}
+      },
+      {
+        "key": "scene",
+        "type": "uploadNode",
+        "offset": {"x": 720, "y": -90},
+        "data": {"displayName": "场景 · 环境与光线参考"}
+      },
+      {
+        "key": "storyboard",
+        "type": "storyboardGenNode",
+        "offset": {"x": 1080, "y": -240},
+        "data": {"displayName": "分镜 · 竖屏镜头表"}
+      },
+      {
+        "key": "image",
+        "type": "imageGenNode",
+        "offset": {"x": 1450, "y": -240},
+        "data": {
+          "displayName": "图 · 关键帧生成",
+          "requestAspectRatio": "9:16",
+          "prompt": "根据上游分镜生成竖屏关键帧，保持角色、场景、服装和道具的连续性。"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {"x": 1830, "y": -240},
+        "data": {
+          "displayName": "视频 · 竖屏镜头生成",
+          "genMode": "imageToVideo",
+          "prompt": "以关键帧和上游分镜为依据生成竖屏短镜头，保持主体身份和场景连续，动作单一清晰。"
+        }
+      }
+    ],
+    "edges": [
+      {"source": "creative", "target": "script"},
+      {"source": "script", "target": "storyboard"},
+      {"source": "character", "target": "storyboard"},
+      {"source": "scene", "target": "storyboard"},
+      {"source": "storyboard", "target": "image"},
+      {"source": "image", "target": "video"}
+    ]
+  },
+  {
+    "id": "product-advertisement",
+    "title": "产品广告",
+    "description": "从产品卖点搭出商业广告的创意、脚本、产品与场景参考、分镜、关键帧和视频骨架。",
+    "template_kind": "product_production_scaffold",
+    "delivery_level": "media_draft",
+    "required_inputs": ["product_asset", "product_selling_points"],
+    "optional_inputs": ["brand_style", "location_asset", "motion_reference", "audio_asset"],
+    "required_roles": ["world_bible", "storyboard", "shot_sequence", "prop_asset", "location_asset", "image_generation", "video_generation"],
+    "outputs": ["advertising_script", "product_shot_contract", "storyboard", "keyframe_task", "video_generation_task"],
+    "does_not_produce": ["brand_approved_final_video", "final_compose_artifact", "audio_mix"],
+    "quality_gates": ["product_bound", "selling_points_present", "script_receipt", "storyboard_receipt", "keyframe_receipt", "video_node_present"],
+    "icon": "sparkles",
+    "nodes": [
+      {
+        "key": "creative",
+        "type": "textAnnotationNode",
+        "offset": {"x": 0, "y": -240},
+        "data": {
+          "displayName": "创意 · 广告主题与卖点",
+          "content": "写下产品、目标人群、核心卖点和希望用户记住的画面。"
+        }
+      },
+      {
+        "key": "script",
+        "type": "scriptNode",
+        "offset": {"x": 360, "y": -240},
+        "data": {
+          "displayName": "脚本 · 广告镜头表",
+          "prompt": "把上游产品创意整理成广告脚本：卖点顺序、镜头动作、字幕或旁白、品牌收束和每镜时长。"
+        }
+      },
+      {
+        "key": "product",
+        "type": "uploadNode",
+        "offset": {"x": 720, "y": -390},
+        "data": {"displayName": "角色 · 产品主体参考"}
+      },
+      {
+        "key": "scene",
+        "type": "uploadNode",
+        "offset": {"x": 720, "y": -90},
+        "data": {"displayName": "场景 · 棚拍与品牌环境"}
+      },
+      {
+        "key": "storyboard",
+        "type": "storyboardGenNode",
+        "offset": {"x": 1080, "y": -240},
+        "data": {"displayName": "分镜 · 产品广告镜头表"}
+      },
+      {
+        "key": "image",
+        "type": "imageGenNode",
+        "offset": {"x": 1450, "y": -240},
+        "data": {
+          "displayName": "图 · 产品关键帧",
+          "requestAspectRatio": "9:16",
+          "prompt": "根据上游广告分镜生成产品关键帧，保持产品外形、品牌元素、材质和比例准确。"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {"x": 1830, "y": -240},
+        "data": {
+          "displayName": "视频 · 产品广告镜头",
+          "genMode": "imageToVideo",
+          "prompt": "以产品关键帧和广告分镜为依据生成商业短镜头，保持产品外形和品牌元素稳定，镜头运动克制清晰。"
+        }
+      }
+    ],
+    "edges": [
+      {"source": "creative", "target": "script"},
+      {"source": "script", "target": "storyboard"},
+      {"source": "product", "target": "storyboard"},
+      {"source": "scene", "target": "storyboard"},
+      {"source": "storyboard", "target": "image"},
+      {"source": "image", "target": "video"}
+    ]
+  }
+]

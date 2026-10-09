@@ -1,0 +1,30 @@
+{
+  "id": "oil_painted_animation",
+  "name": "厚涂油画动画",
+  "family": "painted_animation",
+  "era": "contemporary",
+  "palette": "综合色油画调色，使用邻近色破色、温冷互补与可见底层综合色",
+  "lighting": "光线由厚涂笔触塑造，亮部堆叠、暗部透明，边缘有失有得",
+  "optics": "电影式中长焦空间但所有表面保持画布与鬃毛笔触，不出现数码光滑质感",
+  "composition": "稳定人物剪影与清楚焦点，背景和角色共享同一油画材质，动作方向由笔触组织",
+  "camera_motion": "painted parallax drift, restrained dolly, brush-led motion smear, stable silhouette tracking",
+  "style_instructions": "Oil-painted animation with visible bristle strokes, impasto highlights, broken color, canvas tooth and frame-to-frame painterly motion while preserving stable faces and silhouettes.",
+  "avoid_instructions": "No watercolor wash, no cel-shaded edges, no smooth digital airbrush, no melted facial anatomy, no plastic 3D surface, no text or watermark.",
+  "style_tag": "IMPASTO OIL-PAINTED ANIMATION",
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "tags": [
+    "油画动画",
+    "厚涂",
+    "笔触",
+    "画布肌理"
+  ],
+  "image_prompt": "Oil-painted animation with visible bristle strokes, impasto highlights, broken color, canvas tooth and frame-to-frame painterly motion while preserving stable faces and silhouettes.",
+  "video_prompt": "painted parallax drift, restrained dolly, brush-led motion smear, stable silhouette tracking",
+  "negative_prompt": "No watercolor wash, no cel-shaded edges, no smooth digital airbrush, no melted facial anatomy, no plastic 3D surface, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "painted parallax drift, restrained dolly, brush-led motion smear, stable silhouette tracking"
+    }
+  }
+}

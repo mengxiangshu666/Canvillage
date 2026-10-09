@@ -1,0 +1,37 @@
+{
+  "arguments": {
+    "backend": "fixture-video",
+    "gen_mode": "referenceToVideo",
+    "prompt": "等门打开再横移",
+    "reference_items": [{ "type": "image", "role": "style", "path": "https://fixture.invalid/style.png" }],
+    "aspect_ratio": "16:9",
+    "resolution": "720p",
+    "duration_seconds": 8,
+    "generate_audio": true,
+    "parameters": { "style_strength": 0.7 }
+  },
+  "request": {
+    "schema": "video_generation_request.v1",
+    "settings": {
+      "backend": "fixture-video",
+      "gen_mode": "referenceToVideo",
+      "aspect_ratio": "16:9",
+      "resolution": "720p",
+      "duration_seconds": "8",
+      "generate_audio": "true",
+      "requested_generate_audio": "",
+      "generate_audio_explicit": "",
+      "audio_type": "",
+      "native_audio_strategy": "",
+      "human_review": "",
+      "scene_optimize": ""
+    },
+    "inputs": [{
+      "slot": "reference", "type": "image", "role": "style",
+      "source_sha256": "62c7b5eddbd5e2d20a8b31e5b88b560a160214f3a5e4dff81d1e3142735ac9e4",
+      "content_sha256": ""
+    }],
+    "details_sha256": "fc26917e3317749789382264563da2c240b97118e3db5ecf6c9f784b07ce4ea3",
+    "request_sha256": "a206b1d98eb0f922eab633e7d1e5119f460440ca9fcc0d4a6e0b82e97967a6fb"
+  }
+}

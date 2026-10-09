@@ -1,0 +1,214 @@
+{
+  "_meta": {
+    "name": "LibTV Director Console 3D Asset Library",
+    "source": "liblib.tv chunk 1pw97ep85si5l.js (director_img_to_scene prompt + scene importer)",
+    "extracted_at": "2026-09-01",
+    "license_note": "Extracted for internal research / interoperability. Contains functional parameter dictionaries only.",
+    "coordinate_system": {
+      "handedness": "right-handed, Y-up",
+      "unit": "1 unit = 1 meter",
+      "adult_height_m": 1.75,
+      "ground": "Y=0 (standing characters/props have position.y=0)",
+      "facing": "+Z toward camera/viewer, +X toward screen right",
+      "origin": "near the ground contact point of the main subject"
+    },
+    "spacing": {
+      "row_x_m": 1.5,
+      "depth_z_m": 1.5
+    }
+  },
+
+  "bodyTypes": [
+    {"id": "mannequin", "label": "标准男性素体", "height_m": 1.75},
+    {"id": "female",     "label": "标准女性素体", "height_m": 1.75},
+    {"id": "muscular",   "label": "健壮体型（肌肉发达成年男性）", "height_m": 1.75},
+    {"id": "slim",       "label": "纤细体型", "height_m": 1.75},
+    {"id": "broad",      "label": "宽厚体型（敦实成年男性）", "height_m": 1.75},
+    {"id": "teen",       "label": "少年体型", "height_m": 1.5},
+    {"id": "child",      "label": "儿童体型", "height_m": 1.1},
+    {"id": "chibi",      "label": "Q版二头身", "height_m": null}
+  ],
+
+  "jointSchema": {
+    "_note": "Units = degrees. Standing = 0 baseline. l_/r_ = the character's OWN left/right, NOT viewer's. When facing camera, l_arm appears on screen RIGHT.",
+    "body":  {"fields": ["bend", "turn", "tilt"], "semantics": "bend=forward+/backward-, turn=left+/right-, tilt=left+/right-"},
+    "torso": {"fields": ["bend", "turn", "tilt"], "semantics": "same as body"},
+    "head":  {"fields": ["nod", "turn", "tilt"], "semantics": "nod=up+/down-"},
+    "l_arm": {"fields": ["raise", "straddle", "turn"], "range": {"raise": [-30, 180]}, "rest": {"raise": -5}},
+    "r_arm": {"fields": ["raise", "straddle", "turn"], "range": {"raise": [-30, 180]}, "rest": {"raise": -5}},
+    "l_elbow": {"fields": ["bend"], "range": {"bend": [0, 150]}},
+    "r_elbow": {"fields": ["bend"], "range": {"bend": [0, 150]}},
+    "l_leg":  {"fields": ["raise", "straddle", "turn"], "semantics": "raise=forward+/backward-"},
+    "r_leg":  {"fields": ["raise", "straddle", "turn"], "semantics": "raise=forward+/backward-"},
+    "l_knee": {"fields": ["bend"], "range": {"bend": [0, 150]}},
+    "r_knee": {"fields": ["bend"], "range": {"bend": [0, 150]}},
+    "constraints": [
+      "Both feet planted => l_leg/r_leg.raise ~0 and knee.bend ~0",
+      "Mirrored poses: left/right share raise/straddle/bend values, turn takes opposite sign",
+      "Match amplitude to the source image (no universally conservative near-zero values)"
+    ]
+  },
+
+  "poseLibrary": {
+    "_notation": "body/torso=[bend,turn,tilt] head=[nod,turn,tilt] arm=[raise,straddle,turn] elbow/knee=[bend] leg=[raise,straddle,turn]; unspecified joints ~0",
+    "_usage": "Pick the closest base pose by 'what is the character doing', then only fine-tune joints that differ from the image. For left-handed variants, swap l_/r_ values.",
+    "poses": {
+      "stand":       {"label": "站立",   "head": [-10,0,0], "l_arm": [-5,12,0], "r_arm": [-5,14,0], "l_elbow": [15], "r_elbow": [15]},
+      "walk":        {"label": "行走",   "torso": [3,5,0], "l_arm": [40,9,0], "r_arm": [-8,27,-4], "l_elbow": [37], "r_elbow": [26], "l_leg": [-10,0,0], "r_leg": [36,-2,0], "l_knee": [22], "r_knee": [41]},
+      "run":         {"label": "跑步",   "body": [-2,0,0], "l_arm": [-26,23,14], "r_arm": [23,14,19], "l_elbow": [60], "r_elbow": [89], "l_leg": [50,0,0], "r_leg": [-20,0,0], "l_knee": [18], "r_knee": [36]},
+      "sit":         {"label": "坐姿",   "body": [-5,0,0], "torso": [5,0,0], "l_elbow": [80], "r_elbow": [80], "l_leg": [90,5,0], "r_leg": [90,5,0], "l_knee": [90], "r_knee": [90]},
+      "crouch":      {"label": "蹲下",   "torso": [45,0,0], "head": [-15,0,0], "l_arm": [39,8,26], "r_arm": [20,15,30], "l_elbow": [87], "r_elbow": [100], "l_leg": [100,15,16], "r_leg": [90,15,16], "l_knee": [104], "r_knee": [97]},
+      "one_knee":    {"label": "单膝跪", "torso": [21,0,0], "l_leg": [90,0,4], "r_leg": [27,0,0], "l_knee": [74], "r_knee": [89]},
+      "hands_hips":  {"label": "叉腰",   "l_arm": [15,31,-9], "r_arm": [21,31,3], "l_elbow": [80], "r_elbow": [80]},
+      "arms_crossed":{"label": "抱臂",   "l_arm": [7,22,17], "r_arm": [8,22,39], "l_elbow": [107], "r_elbow": [107]},
+      "wave":        {"label": "招手(右手)", "head": [-5,15,5], "r_arm": [62,-10,90], "r_elbow": [94]},
+      "point":       {"label": "指向(右手)", "r_arm": [90,0,0], "r_elbow": [0]},
+      "phone":       {"label": "看手机", "head": [17,0,0], "l_arm": [55,-10,-4], "r_arm": [24,-10,-13], "l_elbow": [89], "r_elbow": [43]},
+      "push":        {"label": "双手前推", "torso": [19,0,0], "l_arm": [100,6,5], "r_arm": [101,11,0], "l_elbow": [14], "r_elbow": [0]},
+      "bow":         {"label": "鞠躬",   "torso": [45,0,0], "head": [20,0,0]},
+      "think":       {"label": "思考(手托下巴)", "head": [10,-10,5], "r_arm": [87,-10,90], "r_elbow": [122]}
+    }
+  },
+
+  "propAssets": [
+    {"id": "mesh_cube",     "label": "立方体",   "category": "primitive"},
+    {"id": "mesh_sphere",   "label": "球体",     "category": "primitive"},
+    {"id": "mesh_cylinder", "label": "圆柱",     "category": "primitive"},
+    {"id": "mesh_torus",    "label": "环状体",   "category": "primitive"},
+    {"id": "mesh_cone",     "label": "圆锥",     "category": "primitive"},
+    {"id": "mesh_pyramid",  "label": "棱锥",     "category": "primitive"},
+    {"id": "chair",         "label": "椅子",     "category": "furniture"},
+    {"id": "sofa",          "label": "沙发",     "category": "furniture"},
+    {"id": "square_table",  "label": "方桌",     "category": "furniture"},
+    {"id": "round_table",   "label": "圆桌",     "category": "furniture"},
+    {"id": "wall_2m",       "label": "2米墙段",  "category": "architecture"},
+    {"id": "wall_3m",       "label": "3米墙段",  "category": "architecture"},
+    {"id": "column",        "label": "柱子",     "category": "architecture"},
+    {"id": "staircase",     "label": "楼梯段",   "category": "architecture"},
+    {"id": "tree_small",    "label": "小树",     "category": "nature"},
+    {"id": "tree_large",    "label": "大树",     "category": "nature"},
+    {"id": "rock",          "label": "石头",     "category": "nature"},
+    {"id": "bush",          "label": "灌木",     "category": "nature"},
+    {"id": "car",           "label": "轿车",     "category": "urban"},
+    {"id": "bicycle",       "label": "自行车",   "category": "urban"},
+    {"id": "streetlamp",    "label": "路灯",     "category": "urban"},
+    {"id": "bench",         "label": "长椅",     "category": "urban"},
+    {"id": "trash_bin",     "label": "垃圾桶",   "category": "urban"},
+    {"id": "arrow",         "label": "方向箭头", "category": "helper"},
+    {"id": "area_marker",   "label": "区域标记", "category": "helper"}
+  ],
+
+  "propRules": {
+    "default_size_m": 1.0,
+    "anchor": "geometry center at origin (so a 1m cube needs position.y=0.5)",
+    "placement": "grounded props => position.y=0; set (x,z) by base contact point; align heading with rotation.y",
+    "scale": "default {x:1,y:1,z:1}; only change when the source image clearly shows oversized/undersized",
+    "fallback": "for objects not in the list, approximate with mesh_* primitives"
+  },
+
+  "rotationRules": {
+    "axis": "rotation.y controls heading (euler degrees)",
+    "values": {
+      "0": "facing camera (+Z)",
+      "90": "facing right (+X)",
+      "-90": "facing left (-X)",
+      "180": "away from camera (-Z)"
+    },
+    "image_cues": [
+      "full face / chest visible => y~0",
+      "profile only => y~±90",
+      "back of head / back => y~180",
+      "in-between => diagonal (e.g. ±45, ±135)"
+    ],
+    "multi_character": [
+      "two characters facing each other: one y~0, other y~180",
+      "side by side same direction: same y",
+      "circle / huddle: each faces the center"
+    ]
+  },
+
+  "cameraSpec": {
+    "fields": {
+      "position": "camera location in meters; +Z front, +X right, Y up; usually on the subject's +Z side",
+      "lookAt": "target point; usually torso/face height (y~1.2-1.6)",
+      "fov": "field of view in degrees, ~15-90"
+    },
+    "inference_from_image": [
+      "horizon high in frame => high angle (camera higher, looking down)",
+      "horizon low => low angle (camera lower, looking up)",
+      "centered => eye level",
+      "stronger convergence of ground/walls => closer camera or wider lens",
+      "subject fills more of frame => closer / longer focal (smaller fov)"
+    ],
+    "presets": {
+      "eye_level": {"position": {"y": 1.2}, "note": "1.2-1.7"},
+      "high_angle": {"position": {"y": 5}, "note": "raise 5-12, lower lookAt.y"},
+      "low_angle": {"position": {"y": 0.3}, "note": "lower 0.3-0.8, raise lookAt.y"}
+    },
+    "shot_sizes": {
+      "wide":       {"distance_z": 8, "fov": [55, 70]},
+      "medium":     {"distance_z": 4, "fov": 50},
+      "close_up":   {"distance_z": 2, "fov": 35}
+    },
+    "fallback": {"position": {"x": 0, "y": 1.5, "z": 4}, "lookAt": {"x": 0, "y": 1.2, "z": 0}, "fov": 50}
+  },
+
+  "imageBBox": {
+    "required": true,
+    "format": {"x1": "0-1", "y1": "0-1", "x2": "0-1", "y2": "0-1"},
+    "origin": "top-left (x1,y1), bottom-right (x2,y2)",
+    "units": "normalized fractions of the whole image, NOT pixels",
+    "constraints": ["x1 < x2", "y1 < y2", "box visible body region even when occluded", "never box multiple people into one bbox"]
+  },
+
+  "characterGroups": {
+    "purpose": "batch-select & move crowds in the director console",
+    "format": {"label": "中文 label", "members": "array of indices into characters[] (0-based)"},
+    "constraints": [
+      "a group needs at least 2 characters, else ignored",
+      "a character must not appear in multiple groups",
+      "protagonists that need individual control stay OUT of groups",
+      "omittable when there are no groups"
+    ],
+    "formations": {
+      "row": "one every ~1.5m along X",
+      "grid": "~1.5m on both X and Z",
+      "arc": "distribute around a center point by radius",
+      "depth_rows": "tighter X spacing, larger z for distant rows"
+    },
+    "example": {"label": "背景人群", "members": [2, 3, 4, 5, 6, 7]}
+  },
+
+  "sceneJsonSchema": {
+    "characters": [{
+      "bodyType": "mannequin",
+      "imageBBox": {"x1": 0.35, "y1": 0.12, "x2": 0.62, "y2": 0.95},
+      "position": {"x": 0, "y": 0, "z": 0},
+      "rotation": {"x": 0, "y": 0, "z": 0},
+      "scale": {"x": 1, "y": 1, "z": 1},
+      "jointAngles": {
+        "body":  {"bend": 0, "turn": 0, "tilt": 0},
+        "torso": {"bend": 2, "turn": 0, "tilt": 0},
+        "head":  {"nod": -10, "turn": 0, "tilt": 0},
+        "l_arm": {"raise": -5, "straddle": 7, "turn": 0},
+        "r_arm": {"raise": -5, "straddle": 7, "turn": 0},
+        "l_elbow": {"bend": 15}, "r_elbow": {"bend": 15},
+        "l_leg": {"raise": 0, "straddle": 0, "turn": 0},
+        "r_leg": {"raise": 0, "straddle": 0, "turn": 0},
+        "l_knee": {"bend": 0}, "r_knee": {"bend": 0}
+      }
+    }],
+    "characterGroups": [{"label": "背景人群", "members": [1, 2, 3]}],
+    "props": [{
+      "assetId": "chair",
+      "position": {"x": 0, "y": 0, "z": 0},
+      "rotation": {"x": 0, "y": 0, "z": 0},
+      "scale": {"x": 1, "y": 1, "z": 1}
+    }],
+    "cameras": [{
+      "position": {"x": 0, "y": 1.5, "z": 4},
+      "lookAt": {"x": 0, "y": 1.2, "z": 0},
+      "fov": 50
+    }]
+  }
+}

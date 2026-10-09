@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "scope": "narrative_shotcraft_adapter",
+  "owner": "Village Infinite Canvas",
+  "upstream": "Vincentwei1021/video-shotcraft",
+  "upstream_revision": "b1534bbfb892c1047f29f3fe63677b961844d37e",
+  "allowed_categories": [
+    "camera",
+    "transition",
+    "rhythm",
+    "effects",
+    "opening",
+    "outro"
+  ],
+  "summary": {
+    "cards": 56,
+    "core_references": 4,
+    "files": 62
+  },
+  "files": [
+    {
+      "source": "LICENSE",
+      "bundle_path": "UPSTREAM_LICENSE.txt",
+      "sha256": "b2ce9877a55547ada9b870150664d1468ff777e67cc9888806a73927d31c5771",
+      "size": 11340
+    },
+    {
+      "source": "references/shots/camera/crash-zoom-punch.md",
+      "bundle_path": "cards/camera/crash-zoom-punch.md",
+      "sha256": "7ff7214d17dc305718683ae15b308ab6704a2cc82ee82a6afe9db5cbe7a417f4",
+      "size": 2044
+    },
+    {
+      "source": "references/shots/camera/depth-layer-moves.md",
+      "bundle_path": "cards/camera/depth-layer-moves.md",
+      "sha256": "3caa8ebc9c5ae5af8dfe3932f43bc88c1f1bd5d4e6980a0c0461be121bcf1acc",
+      "size": 2254
+    },
+    {
+      "source": "references/shots/camera/graze-face-tour.md",
+      "bundle_path": "cards/camera/graze-face-tour.md",
+      "sha256": "5ce46610dee7fbdd5d07679353d71c464ba8797273351bc8dbaac5182db5b9a3",
+      "size": 3630
+    },
+    {
+      "source": "references/shots/camera/overhead-camera-moves.md",
+      "bundle_path": "cards/camera/overhead-camera-moves.md",
+      "sha256": "3ae9c44dbaae7ff0bef4e6d3ea5357985e88f9813f8720f62127900d0bd4d7ce",
+      "size": 3435
+    },
+    {
+      "source": "references/shots/camera/space-camera-moves.md",
+      "bundle_path": "cards/camera/space-camera-moves.md",
+      "sha256": "0ae6452bf1fefca34b7dc6b7761e98ff4347b3654873c046183b1a8e07ed26f9",
+      "size": 3192
+    },
+    {
+      "source": "references/shots/camera/steep-tilt-glide.md",
+      "bundle_path": "cards/camera/steep-tilt-glide.md",
+      "sha256": "6dfdc1e8f114dfbe75f2eb6a7c0824930fbf77d83a2368818088f0cc05881703",
+      "size": 3218
+    },
+    {
+      "source": "references/shots/camera/tension-camera-moves.md",
+      "bundle_path": "cards/camera/tension-camera-moves.md",
+      "sha256": "6612ba598559261d2bb556bd536eeb1659490102a48b57e034fe053e10774631",
+      "size": 4763
+    },
+    {
+      "source": "references/shots/effects/brand-frame-snap.md",
+      "bundle_path": "cards/effects/brand-frame-snap.md",
+      "sha256": "76df6e490212f838a2c613b4ba28a32ae3149d9c5fec3cd3a51a64768e65b3c0",
+      "size": 3557
+    },
+    {
+      "source": "references/shots/effects/fui-hud-moves.md",
+      "bundle_path": "cards/effects/fui-hud-moves.md",
+      "sha256": "480e920e376e8f18529142d06c4de84544406b0e5f2dd37062dfe274b3f51305",
+      "size": 2663
+    },
+    {
+      "source": "references/shots/effects/glow-flyline-moves.md",
+      "bundle_path": "cards/effects/glow-flyline-moves.md",
+      "sha256": "e6e11ac3659debfc8918c956c4a3c5ccb202c76f89d5d3b09717fb240be6f8be",
+      "size": 3631
+    },
+    {
+      "source": "references/shots/effects/icon-performance-moves.md",
+      "bundle_path": "cards/effects/icon-performance-moves.md",
+      "sha256": "e643217134fe454c5049a4bf02ece3a2c0d066a4bf7f2c92e3d2c17daed351fe",
+      "size": 2904
+    },
+    {
+      "source": "references/shots/effects/impact-feedback.md",
+      "bundle_path": "cards/effects/impact-feedback.md",
+      "sha256": "823876ebd6b955693ce6665db33cbb9fb07f6c5ab5ca6f2da9212b0bb16b94d6",
+      "size": 3443
+    },
+    {
+      "source": "references/shots/effects/light-play-moves.md",
+      "bundle_path": "cards/effects/light-play-moves.md",
+      "sha256": "e45f10c67bca8d9bf20af879f60328182ba71a67fa0f90c082f8c8feedb42328",
+      "size": 3353
+    },
+    {
+      "source": "references/shots/effects/line-boil.md",
+      "bundle_path": "cards/effects/line-boil.md",
+      "sha256": "751b96babc027ee5e8f3c45267e0374fbc2c94386c7d57a2eed1b918092bc734",
+      "size": 3159
+    },
+    {
+      "source": "references/shots/effects/riso-print-hits.md",
+      "bundle_path": "cards/effects/riso-print-hits.md",
+      "sha256": "aa97fa4a3d0c097563bd409c80c37e714fea534b88bfe66dd6eccd375200a227",
+      "size": 3947
+    },
+    {
+      "source": "references/shots/effects/slam-entrance-moves.md",
+      "bundle_path": "cards/effects/slam-entrance-moves.md",
+      "sha256": "69ae6548395c30d1fe45266da594af8e241655914f7395a361c73772a5092cb7",
+      "size": 3816
+    },
+    {
+      "source": "references/shots/effects/spotlight-sweep-moves.md",
+      "bundle_path": "cards/effects/spotlight-sweep-moves.md",
+      "sha256": "35b5a5bde17662af0e303315c5a34f9d79bce89b4779e0c74f0452a80c99af94",
+      "size": 3562
+    },
+    {
+      "source": "references/shots/opening/brand-ink-open.md",
+      "bundle_path": "cards/opening/brand-ink-open.md",
+      "sha256": "e0611980f4bce40459337e8f9a26162df2239f7e1513c4745b859bda7bfbcbba",
+      "size": 2409
+    },
+    {
+      "source": "references/shots/opening/crane-rise-reveal.md",
+      "bundle_path": "cards/opening/crane-rise-reveal.md",
+      "sha256": "4d3b7e5b49d12034d511e4cc9035861b9e7a8b46a605d8e6c5483a6de8a6f4f5",
+      "size": 2920
+    },
+    {
+      "source": "references/shots/opening/dataviz-landscape-open.md",
+      "bundle_path": "cards/opening/dataviz-landscape-open.md",
+      "sha256": "40318d4903ce1aecf1b39a0beb7738e7ec9b41f35ce49978eafe875efa402439",
+      "size": 4822
+    },
+    {
+      "source": "references/shots/opening/icon-field-colorize.md",
+      "bundle_path": "cards/opening/icon-field-colorize.md",
+      "sha256": "987a9354ef9f933965c5bea27c6aa9b8e22b9150114b2c7dd85052f2c692b6a4",
+      "size": 3339
+    },
+    {
+      "source": "references/shots/opening/letterspace-materialize.md",
+      "bundle_path": "cards/opening/letterspace-materialize.md",
+      "sha256": "f6632e8da2ab2bef13248514617e3e636c79d9140de4605997312b01060ddd4a",
+      "size": 3206
+    },
+    {
+      "source": "references/shots/opening/magician-card-flourish.md",
+      "bundle_path": "cards/opening/magician-card-flourish.md",
+      "sha256": "9a92ef4e4c2b1256abbec0e0ec9b6dd94d46131d4b83f2e0937c10af2e3c27fd",
+      "size": 4375
+    },
+    {
+      "source": "references/shots/opening/spotlight-hero-card.md",
+      "bundle_path": "cards/opening/spotlight-hero-card.md",
+      "sha256": "208e4df079bf011e7a10d5bc62699a87f76e353d52b64442278d8aaaaf79d0b2",
+      "size": 3707
+    },
+    {
+      "source": "references/shots/opening/stroke-segment-build.md",
+      "bundle_path": "cards/opening/stroke-segment-build.md",
+      "sha256": "05cbabf125c1ff573d2f5f7b3899fa98cfb5cb880fa9683ab3180f2e0f7e5b9b",
+      "size": 2499
+    },
+    {
+      "source": "references/shots/opening/text-as-mask.md",
+      "bundle_path": "cards/opening/text-as-mask.md",
+      "sha256": "2fed719c299185b875d086b0027f38a3d64cc4707f9e8a0856cde854db3c7b35",
+      "size": 3100
+    },
+    {
+      "source": "references/shots/outro/edit-hook-moves.md",
+      "bundle_path": "cards/outro/edit-hook-moves.md",
+      "sha256": "1baf040246f537057fa7ef22a3fcb1607a6d297c1495e1808d071e6564720263",
+      "size": 1926
+    },
+    {
+      "source": "references/shots/outro/neon-triple-marquee.md",
+      "bundle_path": "cards/outro/neon-triple-marquee.md",
+      "sha256": "5e15f43be56a4f3dc9e784c9cc45e42823a859c45a0065e5141be1e843450b2a",
+      "size": 3790
+    },
+    {
+      "source": "references/shots/outro/outro-group-photo-launch.md",
+      "bundle_path": "cards/outro/outro-group-photo-launch.md",
+      "sha256": "a070c08898bc0701049de5b18ac75470b60b6841e53e1a6c4edfbe22165559b4",
+      "size": 3471
+    },
+    {
+      "source": "references/shots/outro/ui-strip-away-outro.md",
+      "bundle_path": "cards/outro/ui-strip-away-outro.md",
+      "sha256": "db597a2edd6fbcecd7172585a7a8724f4f17cc29bf96715d2f9377a8b7af6669",
+      "size": 4132
+    },
+    {
+      "source": "references/shots/outro/ui-to-brand-morph.md",
+      "bundle_path": "cards/outro/ui-to-brand-morph.md",
+      "sha256": "006c3b4212594b13e1ddeea9cac8ea1cc71d37747acde45b19a72dc943747108",
+      "size": 4749
+    },
+    {
+      "source": "references/shots/rhythm/beat-cut-moves.md",
+      "bundle_path": "cards/rhythm/beat-cut-moves.md",
+      "sha256": "8ddffa6bffa58ce9bd7573211e0decd7182e4719b3772a48e9b27085b325d8e7",
+      "size": 4255
+    },
+    {
+      "source": "references/shots/rhythm/beat-step-list-theme-cycle.md",
+      "bundle_path": "cards/rhythm/beat-step-list-theme-cycle.md",
+      "sha256": "47f30ecbdc393a7a2b3dae63ffe516d5c0c93bdfc015ecc68dd70ba3077fdce6",
+      "size": 3894
+    },
+    {
+      "source": "references/shots/rhythm/montage-rhythm-moves.md",
+      "bundle_path": "cards/rhythm/montage-rhythm-moves.md",
+      "sha256": "d573edbbc8198ec29391784ea4f1720df930684ed51b92c7b3b8babf5383f5ea",
+      "size": 4450
+    },
+    {
+      "source": "references/shots/rhythm/panel-grid-moves.md",
+      "bundle_path": "cards/rhythm/panel-grid-moves.md",
+      "sha256": "6294ff8de084ac4256a72e9fdded233996e9c91147198f0ff5e4fd8cc063a75a",
+      "size": 3970
+    },
+    {
+      "source": "references/shots/rhythm/rhythm-interrupt-moves.md",
+      "bundle_path": "cards/rhythm/rhythm-interrupt-moves.md",
+      "sha256": "e841a4213854f4e3ac0e897cc4dca6a0ccf2427e22f12f68a26908593c591986",
+      "size": 2575
+    },
+    {
+      "source": "references/shots/rhythm/sakuga-timing-shift.md",
+      "bundle_path": "cards/rhythm/sakuga-timing-shift.md",
+      "sha256": "64b73c42b1d01883060b0ca611e9427c7b12ddad5a087c8f702591e83e7797b5",
+      "size": 2881
+    },
+    {
+      "source": "references/shots/rhythm/smear-multiples.md",
+      "bundle_path": "cards/rhythm/smear-multiples.md",
+      "sha256": "07c27e3e4dc24cd648c5ca329c49f90b369294031f977bf8f4b3bace89fc33d7",
+      "size": 2927
+    },
+    {
+      "source": "references/shots/rhythm/spectrum-morph-ui.md",
+      "bundle_path": "cards/rhythm/spectrum-morph-ui.md",
+      "sha256": "dd375cd1335a6464e408cc154d1234575df024b0e87bc0a1d29f77ca94985bbd",
+      "size": 3066
+    },
+    {
+      "source": "references/shots/rhythm/speed-ramp-freeze.md",
+      "bundle_path": "cards/rhythm/speed-ramp-freeze.md",
+      "sha256": "7d365e36082978b66ec5bca6623b9dbe57c7898b472f031a84d2bbbd09c3f56f",
+      "size": 2319
+    },
+    {
+      "source": "references/shots/rhythm/trailer-grammar-moves.md",
+      "bundle_path": "cards/rhythm/trailer-grammar-moves.md",
+      "sha256": "1a898754876bc6cb5b1fa818564634df7932abf5dddaf430d492dfc72d556cdf",
+      "size": 3740
+    },
+    {
+      "source": "references/shots/transition/bottom-push-stack-wipe.md",
+      "bundle_path": "cards/transition/bottom-push-stack-wipe.md",
+      "sha256": "f6bbe2e5462b55c354dd6843918c3a981ef3fed5281053d556593ce4f8c282f4",
+      "size": 3787
+    },
+    {
+      "source": "references/shots/transition/bubble-swarm-takeover.md",
+      "bundle_path": "cards/transition/bubble-swarm-takeover.md",
+      "sha256": "767d3e1d6828c22e2c2ca1270ab54f14046ab19be2d06f1c84461ca333f8c5f8",
+      "size": 4171
+    },
+    {
+      "source": "references/shots/transition/card-flip-reveal.md",
+      "bundle_path": "cards/transition/card-flip-reveal.md",
+      "sha256": "02c3e077d64c5eabb31d1b62be542a95c4c8d9b65d58139eba365a26a29e5911",
+      "size": 2873
+    },
+    {
+      "source": "references/shots/transition/card-flock-tumble.md",
+      "bundle_path": "cards/transition/card-flock-tumble.md",
+      "sha256": "3e9766a79c9e85f364687ba3578ebe0477038722752586befdf97a148e0f7f0b",
+      "size": 3427
+    },
+    {
+      "source": "references/shots/transition/circle-match-iris.md",
+      "bundle_path": "cards/transition/circle-match-iris.md",
+      "sha256": "5c5e46f211f90fdb437865a863144abba7867eea34d7c19b34d5bc0e5e063f14",
+      "size": 3367
+    },
+    {
+      "source": "references/shots/transition/color-block-step-wipe.md",
+      "bundle_path": "cards/transition/color-block-step-wipe.md",
+      "sha256": "f8e028eb284e91fb77c882280dfe83ec57057837b972068c1418356f0c76067c",
+      "size": 3735
+    },
+    {
+      "source": "references/shots/transition/line-carry-transition.md",
+      "bundle_path": "cards/transition/line-carry-transition.md",
+      "sha256": "fd032128329b222c8769911fe5419c9ee0aad4411055c26bd5f7a238bbf59c97",
+      "size": 3260
+    },
+    {
+      "source": "references/shots/transition/page-turn-transitions.md",
+      "bundle_path": "cards/transition/page-turn-transitions.md",
+      "sha256": "7604612d8fe0af814da0b3b34e7b108a897ce994663180ad6a827c8ee664a2ff",
+      "size": 3329
+    },
+    {
+      "source": "references/shots/transition/paper-plane-messenger.md",
+      "bundle_path": "cards/transition/paper-plane-messenger.md",
+      "sha256": "11784ee5f5feedf662b4c513d11623cf7eb92bf084f43ca5847dcceb10ac649f",
+      "size": 4234
+    },
+    {
+      "source": "references/shots/transition/print-texture-transitions.md",
+      "bundle_path": "cards/transition/print-texture-transitions.md",
+      "sha256": "a1ccb5edbd881ec2c2a3981cc1a8b5969ec63cae63d6b421169d8247c1180b70",
+      "size": 2505
+    },
+    {
+      "source": "references/shots/transition/shot-transitions.md",
+      "bundle_path": "cards/transition/shot-transitions.md",
+      "sha256": "c4e6093997ead518d22ecefab1983e4b66a9c09b27959fb87fc347d2739b2a5a",
+      "size": 6186
+    },
+    {
+      "source": "references/shots/transition/tear-streak-transitions.md",
+      "bundle_path": "cards/transition/tear-streak-transitions.md",
+      "sha256": "440ebe46abf0894f5b0f380cfcaa5825cec5c20e8a58715b264a2434e806fcdd",
+      "size": 2559
+    },
+    {
+      "source": "references/shots/transition/transition-hidden-cut.md",
+      "bundle_path": "cards/transition/transition-hidden-cut.md",
+      "sha256": "3e6b872df779eef27a4ec0304d04a02d49ba5a3ad7bf6744020c1de94c64d22e",
+      "size": 4825
+    },
+    {
+      "source": "references/shots/transition/transition-travel.md",
+      "bundle_path": "cards/transition/transition-travel.md",
+      "sha256": "7e1d46357459532c97dde76cf2631770dd21580978f13437a0c4eefd647653eb",
+      "size": 3993
+    },
+    {
+      "source": "references/shots/transition/wipe-transitions.md",
+      "bundle_path": "cards/transition/wipe-transitions.md",
+      "sha256": "d3588e8ccb16dd6561c5298bfdfd1183a93716367148c1a153dba2ba5c0a6d43",
+      "size": 3277
+    },
+    {
+      "source": "gallery/api/library.json#allowlisted-metadata",
+      "bundle_path": "catalog.json",
+      "sha256": "4c3869a9304f612ba52d994e4cebd0a683ebc89d7e39819bb5d1e70eee9a4130",
+      "size": 66928
+    },
+    {
+      "source": "references/aesthetic-rules.md",
+      "bundle_path": "core/aesthetic-rules.md",
+      "sha256": "2221b6d4906c49e1b7c2b1f5c0db064fa6e3120c02cc689821524f452578893b",
+      "size": 24507
+    },
+    {
+      "source": "references/final-review.md",
+      "bundle_path": "core/final-review.md",
+      "sha256": "cc90c0235adcd0f04b0645609748cd41a52885f17acb3663f9680b7ab10527af",
+      "size": 6527
+    },
+    {
+      "source": "references/music-beat-sync.md",
+      "bundle_path": "core/music-beat-sync.md",
+      "sha256": "982d3aefa6b8461ccfddb586a11d1fed024cc19f717df99b0d1393052b2c275c",
+      "size": 5107
+    },
+    {
+      "source": "references/sound-design.md",
+      "bundle_path": "core/sound-design.md",
+      "sha256": "3f565138f56c50d8e48d513359b6832f8683ae075d5db6c1e84813e0b0f210a6",
+      "size": 23234
+    }
+  ],
+  "bundle_hash": "83dd4c4524ba5d6290581741e3c64d8903e42e7d59df8f772d05208ba4c9db44"
+}

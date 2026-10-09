@@ -1,0 +1,31 @@
+{
+  "id": "solarpunk_cinema",
+  "name": "太阳朋克",
+  "label": "太阳朋克",
+  "family": "solarpunk",
+  "era": "near_future",
+  "palette": "叶绿、陶土、天空蓝、蜂蜜金与自然木色",
+  "lighting": "清晨或午后自然光，植物透射光、柔和建筑反射与清洁空气感",
+  "optics": "28mm环境广角、自然深焦、克制高光，不做过度梦幻光晕",
+  "composition": "绿色基础设施与人的日常劳动同框，建筑、能源、水循环逻辑可读",
+  "camera_motion": "optimistic crane reveal, smooth bicycle-speed tracking, gentle community observation",
+  "style_instructions": "Grounded solarpunk live-action cinema, regenerative architecture, abundant but believable ecology, human-scale clean technology, optimistic communal life and material realism.",
+  "avoid_instructions": "No sterile utopia showroom, no fantasy floating islands, no generic sci-fi holograms, no excessive lens flare, no watermark.",
+  "style_tag": "GROUNDED SOLARPUNK CINEMA",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "太阳朋克",
+    "生态",
+    "未来",
+    "建筑"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "optimistic crane reveal, smooth bicycle-speed tracking, gentle community observation"
+    }
+  },
+  "image_prompt": "Grounded solarpunk live-action cinema, regenerative architecture, abundant but believable ecology, human-scale clean technology, optimistic communal life and material realism.",
+  "video_prompt": "optimistic crane reveal, smooth bicycle-speed tracking, gentle community observation",
+  "negative_prompt": "No sterile utopia showroom, no fantasy floating islands, no generic sci-fi holograms, no excessive lens flare, no watermark."
+}

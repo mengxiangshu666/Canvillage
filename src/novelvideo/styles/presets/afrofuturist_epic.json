@@ -1,0 +1,30 @@
+{
+  "id": "afrofuturist_epic",
+  "name": "非洲未来史诗",
+  "family": "afrofuturism",
+  "era": "contemporary_speculative",
+  "palette": "深靛蓝、赤陶、曜石黑、黄金与高纯电光色，传统织物色彩与未来材料协调共存",
+  "lighting": "强烈日光、金色轮廓光与可控科技辉光，深色肤质保持准确高光和细节",
+  "optics": "大画幅宽景、低机位英雄构图与细腻肖像镜头交替，建筑和人物尺度关系清晰",
+  "composition": "未来城市、纹样、仪式空间和人物群像构成完整文化系统，避免装饰元素随意拼贴",
+  "camera_motion": "majestic forward glide, ceremonial orbit, low-angle hero rise, sweeping landscape reveal",
+  "style_instructions": "Afrofuturist epic cinema combining African diasporic design intelligence, monumental speculative architecture, advanced technology, textiles and ceremonial visual rhythm into a coherent lived world.",
+  "avoid_instructions": "No generic tribal collage, no safari cliché, no cyberpunk copy, no random glowing face paint, no text or watermark.",
+  "style_tag": "AFROFUTURIST CULTURAL TECHNOLOGY EPIC",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "非洲未来主义",
+    "史诗",
+    "文化科技",
+    "大画幅"
+  ],
+  "image_prompt": "Afrofuturist epic cinema combining African diasporic design intelligence, monumental speculative architecture, advanced technology, textiles and ceremonial visual rhythm into a coherent lived world.",
+  "video_prompt": "majestic forward glide, ceremonial orbit, low-angle hero rise, sweeping landscape reveal",
+  "negative_prompt": "No generic tribal collage, no safari cliché, no cyberpunk copy, no random glowing face paint, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "majestic forward glide, ceremonial orbit, low-angle hero rise, sweeping landscape reveal"
+    }
+  }
+}

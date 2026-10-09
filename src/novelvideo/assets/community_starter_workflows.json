@@ -1,0 +1,362 @@
+[
+  {
+    "id": "community-image-video",
+    "title": "社区高频组合 · imageGenNode + videoNode",
+    "description": "社区快照里 696 个画布用过这组节点（image+video）。插入后是一张可编辑的节点图：接线按语料里出现过的方向连好，但模型、参数与素材都要你自己选 —— 它只复刻结构，不产出媒体。",
+    "template_kind": "community_recipe",
+    "delivery_level": "idea",
+    "required_inputs": [
+      "creative_brief"
+    ],
+    "optional_inputs": [
+      "image_generation"
+    ],
+    "required_roles": [
+      "image_generation",
+      "video_generation"
+    ],
+    "outputs": [
+      "editable_node_graph"
+    ],
+    "does_not_produce": [
+      "video_generation_task",
+      "final_compose_artifact",
+      "audio_mix",
+      "subtitle_track"
+    ],
+    "quality_gates": [
+      "recipe_structure_present"
+    ],
+    "icon": "grid",
+    "nodes": [
+      {
+        "key": "image",
+        "type": "imageGenNode",
+        "offset": {
+          "x": 0,
+          "y": -85.0
+        },
+        "data": {
+          "displayName": "图片 · 关键帧与参考",
+          "prompt": "根据上游文字与参考生成关键帧；保持角色、场景、服装与道具连续，构图服务下游镜头。"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 410,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频生成 · 融合全部上游",
+          "prompt": "以上游图片、文字与音频为素材依据；保持主体与画面连续，聚焦一个主要动作，并在动作完成时收束。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "image",
+        "target": "video"
+      }
+    ],
+    "source_evidence": {
+      "corpus": "社区项目复刻/_topology_all.json + FOR_VILLAGE/node_recipes.json",
+      "combo": "image+video",
+      "projects": 696,
+      "node_count": 2,
+      "canonical_x": {
+        "input": 0,
+        "video": 410
+      },
+      "row_pitch": 170
+    }
+  },
+  {
+    "id": "community-audio-image-video",
+    "title": "社区高频组合 · audioNode + imageGenNode + videoNode",
+    "description": "社区快照里 514 个画布用过这组节点（audio+image+video）。插入后是一张可编辑的节点图：接线按语料里出现过的方向连好，但模型、参数与素材都要你自己选 —— 它只复刻结构，不产出媒体。",
+    "template_kind": "community_recipe",
+    "delivery_level": "idea",
+    "required_inputs": [
+      "creative_brief"
+    ],
+    "optional_inputs": [
+      "image_generation",
+      "audio"
+    ],
+    "required_roles": [
+      "image_generation",
+      "audio",
+      "video_generation"
+    ],
+    "outputs": [
+      "editable_node_graph"
+    ],
+    "does_not_produce": [
+      "video_generation_task",
+      "final_compose_artifact",
+      "audio_mix",
+      "subtitle_track"
+    ],
+    "quality_gates": [
+      "recipe_structure_present"
+    ],
+    "icon": "grid",
+    "nodes": [
+      {
+        "key": "image",
+        "type": "imageGenNode",
+        "offset": {
+          "x": 0,
+          "y": -170.0
+        },
+        "data": {
+          "displayName": "图片 · 关键帧与参考",
+          "prompt": "根据上游文字与参考生成关键帧；保持角色、场景、服装与道具连续，构图服务下游镜头。"
+        }
+      },
+      {
+        "key": "audio",
+        "type": "audioNode",
+        "offset": {
+          "x": 0,
+          "y": 0.0
+        },
+        "data": {
+          "displayName": "音频 · 配乐参考",
+          "audioKind": "music"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 410,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频生成 · 融合全部上游",
+          "prompt": "以上游图片、文字与音频为素材依据；保持主体与画面连续，聚焦一个主要动作，并在动作完成时收束。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "image",
+        "target": "video"
+      },
+      {
+        "source": "audio",
+        "target": "video"
+      }
+    ],
+    "source_evidence": {
+      "corpus": "社区项目复刻/_topology_all.json + FOR_VILLAGE/node_recipes.json",
+      "combo": "audio+image+video",
+      "projects": 514,
+      "node_count": 3,
+      "canonical_x": {
+        "input": 0,
+        "video": 410
+      },
+      "row_pitch": 170
+    }
+  },
+  {
+    "id": "community-image-text-video",
+    "title": "社区高频组合 · imageGenNode + textAnnotationNode + videoNode",
+    "description": "社区快照里 151 个画布用过这组节点（image+text+video）。插入后是一张可编辑的节点图：接线按语料里出现过的方向连好，但模型、参数与素材都要你自己选 —— 它只复刻结构，不产出媒体。",
+    "template_kind": "community_recipe",
+    "delivery_level": "idea",
+    "required_inputs": [
+      "creative_brief"
+    ],
+    "optional_inputs": [
+      "image_generation"
+    ],
+    "required_roles": [
+      "image_generation",
+      "video_generation"
+    ],
+    "outputs": [
+      "editable_node_graph"
+    ],
+    "does_not_produce": [
+      "video_generation_task",
+      "final_compose_artifact",
+      "audio_mix",
+      "subtitle_track"
+    ],
+    "quality_gates": [
+      "recipe_structure_present"
+    ],
+    "icon": "grid",
+    "nodes": [
+      {
+        "key": "image",
+        "type": "imageGenNode",
+        "offset": {
+          "x": 0,
+          "y": -170.0
+        },
+        "data": {
+          "displayName": "图片 · 关键帧与参考",
+          "prompt": "根据上游文字与参考生成关键帧；保持角色、场景、服装与道具连续，构图服务下游镜头。"
+        }
+      },
+      {
+        "key": "text",
+        "type": "textAnnotationNode",
+        "offset": {
+          "x": 0,
+          "y": 0.0
+        },
+        "data": {
+          "displayName": "文字 · 画面与节奏",
+          "content": "写下这一镜的画面、动作与节奏。下游图片/视频会把这段文字当上游依据。"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 410,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频生成 · 融合全部上游",
+          "prompt": "以上游图片、文字与音频为素材依据；保持主体与画面连续，聚焦一个主要动作，并在动作完成时收束。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "image",
+        "target": "video"
+      },
+      {
+        "source": "text",
+        "target": "video"
+      }
+    ],
+    "source_evidence": {
+      "corpus": "社区项目复刻/_topology_all.json + FOR_VILLAGE/node_recipes.json",
+      "combo": "image+text+video",
+      "projects": 151,
+      "node_count": 3,
+      "canonical_x": {
+        "input": 0,
+        "video": 410
+      },
+      "row_pitch": 170
+    }
+  },
+  {
+    "id": "community-audio-image-text-video",
+    "title": "社区高频组合 · audioNode + imageGenNode + textAnnotationNode + videoNode",
+    "description": "社区快照里 130 个画布用过这组节点（audio+image+text+video）。插入后是一张可编辑的节点图：接线按语料里出现过的方向连好，但模型、参数与素材都要你自己选 —— 它只复刻结构，不产出媒体。",
+    "template_kind": "community_recipe",
+    "delivery_level": "idea",
+    "required_inputs": [
+      "creative_brief"
+    ],
+    "optional_inputs": [
+      "image_generation",
+      "audio"
+    ],
+    "required_roles": [
+      "image_generation",
+      "audio",
+      "video_generation"
+    ],
+    "outputs": [
+      "editable_node_graph"
+    ],
+    "does_not_produce": [
+      "video_generation_task",
+      "final_compose_artifact",
+      "audio_mix",
+      "subtitle_track"
+    ],
+    "quality_gates": [
+      "recipe_structure_present"
+    ],
+    "icon": "grid",
+    "nodes": [
+      {
+        "key": "image",
+        "type": "imageGenNode",
+        "offset": {
+          "x": 0,
+          "y": -255.0
+        },
+        "data": {
+          "displayName": "图片 · 关键帧与参考",
+          "prompt": "根据上游文字与参考生成关键帧；保持角色、场景、服装与道具连续，构图服务下游镜头。"
+        }
+      },
+      {
+        "key": "text",
+        "type": "textAnnotationNode",
+        "offset": {
+          "x": 0,
+          "y": -85.0
+        },
+        "data": {
+          "displayName": "文字 · 画面与节奏",
+          "content": "写下这一镜的画面、动作与节奏。下游图片/视频会把这段文字当上游依据。"
+        }
+      },
+      {
+        "key": "audio",
+        "type": "audioNode",
+        "offset": {
+          "x": 0,
+          "y": 85.0
+        },
+        "data": {
+          "displayName": "音频 · 配乐参考",
+          "audioKind": "music"
+        }
+      },
+      {
+        "key": "video",
+        "type": "videoNode",
+        "offset": {
+          "x": 410,
+          "y": 0
+        },
+        "data": {
+          "displayName": "视频生成 · 融合全部上游",
+          "prompt": "以上游图片、文字与音频为素材依据；保持主体与画面连续，聚焦一个主要动作，并在动作完成时收束。"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "image",
+        "target": "video"
+      },
+      {
+        "source": "text",
+        "target": "video"
+      },
+      {
+        "source": "audio",
+        "target": "video"
+      }
+    ],
+    "source_evidence": {
+      "corpus": "社区项目复刻/_topology_all.json + FOR_VILLAGE/node_recipes.json",
+      "combo": "audio+image+text+video",
+      "projects": 130,
+      "node_count": 4,
+      "canonical_x": {
+        "input": 0,
+        "video": 410
+      },
+      "row_pitch": 170
+    }
+  }
+]

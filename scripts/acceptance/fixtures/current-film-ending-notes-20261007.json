@@ -1,0 +1,17 @@
+{
+  "source_sha256": "5067be82e93873d6686aa24f548fa7cfbd14e9b915ab644da07ed6474e8b46f4",
+  "screening_id": "current-film-ending-20261007",
+  "audience": "current canvas693 timeline and sampled frames; dynamic/audio review pending",
+  "issues": [
+    {
+      "issue_id": "landing-to-standing-handoff",
+      "shot_id": "shot_b5de8da095b746488ff286c268bf0702",
+      "category": "continuity",
+      "severity": "medium",
+      "timestamp_seconds": 49,
+      "description": "Current shot14 script ends with four wheels stopped after a semicircular drift; shot15 starts with the rider standing, hands on knees, board tilted beside the feet. At48.6/48.92s samples the rider is still posed on the horizontal board; at49.08/49.4s the rider stands next to the upright board. Recheck continuous source shot14 end and whether the planned ellipsis includes dismount. Static frames do not establish velocity or prove absence of a stop. Preserve current costume/board and shot15 celebration; do not add a generic transition or regenerate the whole film.",
+      "audience_effect": "The landing's resolution and dismount may be missing from the visible causal handoff.",
+      "localized": true
+    }
+  ]
+}

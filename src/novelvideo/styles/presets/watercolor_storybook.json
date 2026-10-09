@@ -1,0 +1,31 @@
+{
+  "id": "watercolor_storybook",
+  "name": "水彩绘本",
+  "label": "水彩绘本",
+  "family": "storybook",
+  "era": "timeless",
+  "palette": "奶油白、天蓝、珊瑚粉、草木绿，透明叠色",
+  "lighting": "soft luminous daylight, watercolor bloom, gentle edge loss toward background",
+  "optics": "storybook illustration depth, tactile paper surface, no photographic lens simulation",
+  "composition": "清晰叙事焦点、手绘边缘、前中后景轻柔分层",
+  "camera_motion": "page-turn-like drift, gentle push toward the story focus, floating background layers",
+  "style_instructions": "European storybook watercolor illustration, lyrical narrative composition, delicate pigment bleeding, tactile paper grain, expressive but readable characters.",
+  "avoid_instructions": "No photorealism, no hard 3D CGI, no muddy anatomy, no printed text or captions, no watermark.",
+  "style_tag": "LYRICAL WATERCOLOR STORYBOOK",
+  "tags": [
+    "绘本",
+    "水彩",
+    "童话",
+    "柔和"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Animate subtle paper-like parallax and gentle character gestures; keep watercolor edges soft without melting identity."
+    }
+  },
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "image_prompt": "European storybook watercolor illustration, lyrical narrative composition, delicate pigment bleeding, tactile paper grain, expressive but readable characters.",
+  "video_prompt": "page-turn-like drift, gentle push toward the story focus, floating background layers",
+  "negative_prompt": "No photorealism, no hard 3D CGI, no muddy anatomy, no printed text or captions, no watermark."
+}

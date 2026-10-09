@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "village-canvas://schemas/canvas-context",
+  "type": "object",
+  "required": ["canvas_id", "project_id", "revision", "nodes", "edges", "node_count", "edge_count"],
+  "properties": {
+    "canvas_id": {"type": "string"},
+    "project_id": {"type": "string"},
+    "revision": {"type": "integer", "minimum": 0},
+    "node_count": {"type": "integer", "minimum": 0},
+    "edge_count": {"type": "integer", "minimum": 0},
+    "nodes": {"type": "array", "items": {"type": "object"}},
+    "edges": {"type": "array", "items": {"type": "object"}},
+    "active_tasks": {"type": "array"},
+    "workflow_runs": {},
+    "models": {"type": "object"}
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "village-canvas-cli",
+  "name": "村长无限画布 CLI",
+  "version": "0.2.0",
+  "description": "通过真实 REST API、回执和 revision 操作村长无限画布。",
+  "entrypoint": "village-canvas.bat",
+  "hidden_entrypoint": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File village_canvas_cli_hidden.ps1",
+  "console": "hidden-relay",
+  "transport": ["stdio-json-rpc", "mcp"],
+  "requires": {
+    "api_base": "http://127.0.0.1:8784/api/v1"
+  }
+}

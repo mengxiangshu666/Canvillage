@@ -1,0 +1,6 @@
+{
+  "_note": "本地宠物目录。加宠物：把精灵图放到 public/petdex/<slug>.webp/png，并在 pets 里加一条。spritesheetUrl 用同源 /petdex/ 路径。仅收录自有或已获授权的角色。",
+  "pets": [
+    { "slug": "zhizhi", "displayName": "枝枝", "spritesheetUrl": "/petdex/zhizhi.webp" }
+  ]
+}

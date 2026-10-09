@@ -1,0 +1,66 @@
+SuperTale CE NOTICE
+
+Modified Distribution Notice
+Canvillage is a modified distribution of the upstream software, maintained by
+mengxiangshu666. Changes include product naming, local runtime, canvas and
+film workflows, Agent capabilities, and source distribution scope.
+Original copyright, license, trademark, and third-party notices are retained.
+
+NOTICE-branding
+Canvillage (Infinite Canvas for Village Chiefs / 村长无限画布) is the current product name.
+SuperTale, Village Infinite Canvas, Village Infinite CanvasAPI, and related product names, logos,
+service names, and visual brand assets are brand identifiers of their
+respective owners. The Elastic License 2.0 grant for this repository does
+not grant trademark rights or permission to remove product attribution,
+branding notices, or other reserved-rights notices from distributed copies.
+
+Upstream partner and sponsor identifiers (including Claymore AI
+Lab, 新飞翔科技 / Neo Flying Technology, 灵山 / L.Shan AI, and 钦新控股 / K-NOVA
+Holding Group) are trademarks of their respective owners. Their upstream
+attribution notices are retained; partner images are excluded from the public
+source package. No trademark rights in those marks
+are granted by the Elastic License 2.0.
+
+Project License
+This repository is licensed under the Elastic License 2.0. See LICENSES/Elastic-2.0.txt.
+
+Third-Party Notices
+This product depends on third-party software. The machine-readable
+source and bundled-file evidence is in license-inventory.csv and sbom.spdx.json.
+Additional dependency reports can be regenerated locally with the command below.
+
+Bundled upstream material:
+- ICT-FaceKit expression head: MIT; Copyright (c) 2020 USC Institute for Creative Technologies.
+  See frontend/public/expression-head/LICENSE.txt for source, conversion notice and license.
+- video-shotcraft original cards, core references, catalog and license: Apache-2.0;
+  Copyright 2026 Wei Yihao. Source: Vincentwei1021/video-shotcraft
+  revision b1534bbfb892c1047f29f3fe63677b961844d37e.
+  See agent_skills/village-canvas-shotcraft/references/upstream/UPSTREAM_LICENSE.txt
+  and manifest.json. The local INDEX and manifest are project adapter files.
+- Camera/lens images, movement previews, login backgrounds and AIGC source notes:
+  owner confirmed self-authorship or redistribution authorization on 2026-10-09.
+  See docs/PUBLIC_SOURCE_RELEASE.md; original notices and license terms prevail.
+
+Selected runtime dependencies requiring attribution:
+- certifi 2026.6.17: MPL-2.0
+- cognee 1.0.5: Apache-2.0
+- da2 0.1.0: Apache-2.0
+- edge-tts 7.2.8: LGPL-3.0-only
+- fastapi 0.138.0: MIT
+- openai 2.43.0: Apache-2.0
+- pillow 11.3.0: MIT-CMU
+- pydantic 2.13.4: MIT
+- sharp 0.1: LicenseRef-Apple-Sample-Code AND LicenseRef-Apple-ML-Research-Model
+- typer 0.26.7: MIT
+- uvicorn 0.49.0: BSD-3-Clause
+- @playcanvas/splat-transform ^2.0.3: MIT; optional world asset conversion tool
+- ffmpeg/ffprobe: external system executables; license depends on the user's system build
+
+Restricted Optional Components
+The optional world feature can use apple/ml-sharp and its model assets. The source
+package includes Apple software and model license files in upstream distributions.
+CE source releases and Docker images must not bundle Apple model weights.
+
+Generated Evidence
+Regenerate these files with:
+  uv run python scripts/compliance/generate_p0b_artifacts.py

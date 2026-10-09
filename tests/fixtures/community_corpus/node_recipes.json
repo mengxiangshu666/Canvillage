@@ -1,0 +1,2710 @@
+{
+ "total": 223,
+ "corpus": {
+  "projects": 4933,
+  "nodes": 591892,
+  "edges": 759028
+ },
+ "recipes": [
+  {
+   "combo": "image+video",
+   "count": 696,
+   "types": [
+    "image",
+    "video"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "audio+image+video",
+   "count": 514,
+   "types": [
+    "audio",
+    "image",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "group+image+video",
+   "count": 506,
+   "types": [
+    "group",
+    "image",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+group+image+video",
+   "count": 461,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "group+image+text+video",
+   "count": 393,
+   "types": [
+    "group",
+    "image",
+    "text",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+group+image+text+video",
+   "count": 338,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "image+text+video",
+   "count": 151,
+   "types": [
+    "image",
+    "text",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "group+image+script+text+video",
+   "count": 138,
+   "types": [
+    "group",
+    "image",
+    "script",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+image+text+video",
+   "count": 130,
+   "types": [
+    "audio",
+    "image",
+    "text",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "group+image+script-v2+text+video",
+   "count": 92,
+   "types": [
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+image+video+video-clip",
+   "count": 87,
+   "types": [
+    "audio",
+    "image",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+group+image+script+text+video",
+   "count": 70,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+group+image+script-v2+text+video",
+   "count": 64,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "image",
+   "count": 56,
+   "types": [
+    "image"
+   ],
+   "nodeCount": 1
+  },
+  {
+   "combo": "audio+group+image+video+video-clip",
+   "count": 47,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+group+image+material-style+text+video",
+   "count": 43,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+group+image+text+video+video-clip",
+   "count": 42,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "video",
+   "count": 40,
+   "types": [
+    "video"
+   ],
+   "nodeCount": 1
+  },
+  {
+   "combo": "group+image+script+video",
+   "count": 40,
+   "types": [
+    "group",
+    "image",
+    "script",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+video",
+   "count": 38,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+material-style+text+video",
+   "count": 38,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "image+video+video-clip",
+   "count": 36,
+   "types": [
+    "image",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+text+video",
+   "count": 29,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+director-console-3d+image+video",
+   "count": 27,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+group+image+script+video",
+   "count": 23,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+script+text+video+video-clip",
+   "count": 22,
+   "types": [
+    "group",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+image+script-v2+video",
+   "count": 22,
+   "types": [
+    "group",
+    "image",
+    "script-v2",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "group+image+text+video+video-clip",
+   "count": 21,
+   "types": [
+    "group",
+    "image",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+group+image+shot-breakdown+video",
+   "count": 21,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "shot-breakdown",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+video+video-clip",
+   "count": 21,
+   "types": [
+    "group",
+    "image",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "director-console-3d+group+image+video",
+   "count": 21,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "image+script+text+video",
+   "count": 19,
+   "types": [
+    "image",
+    "script",
+    "text",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+group+image+shot-breakdown+text+video",
+   "count": 17,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "shot-breakdown",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+image+material-style+text+video",
+   "count": 17,
+   "types": [
+    "audio",
+    "image",
+    "material-style",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+image+text+video+video-clip",
+   "count": 16,
+   "types": [
+    "audio",
+    "image",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+image+script+text+video",
+   "count": 16,
+   "types": [
+    "audio",
+    "image",
+    "script",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+script+text+video+video-story",
+   "count": 16,
+   "types": [
+    "group",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "director-console-3d+image+video",
+   "count": 16,
+   "types": [
+    "director-console-3d",
+    "image",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "group+image+script-v2+text+video+video-clip",
+   "count": 14,
+   "types": [
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+image+script-v2+text+video",
+   "count": 14,
+   "types": [
+    "audio",
+    "image",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+group+image+material-style+video",
+   "count": 14,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+image+material-style+video",
+   "count": 14,
+   "types": [
+    "audio",
+    "image",
+    "material-style",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "image+material-style+text+video",
+   "count": 13,
+   "types": [
+    "image",
+    "material-style",
+    "text",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "group+image+text+video+video-story",
+   "count": 12,
+   "types": [
+    "group",
+    "image",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+material-style+video",
+   "count": 12,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "group+image+video+video-story",
+   "count": 12,
+   "types": [
+    "group",
+    "image",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "image+material-style+video",
+   "count": 11,
+   "types": [
+    "image",
+    "material-style",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+group+image+text+video+video-story",
+   "count": 11,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+group+image+script-v2+video",
+   "count": 11,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script-v2",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "image+video+video-story",
+   "count": 11,
+   "types": [
+    "image",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "image+script-v2+text+video",
+   "count": 11,
+   "types": [
+    "image",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "group+image",
+   "count": 10,
+   "types": [
+    "group",
+    "image"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "audio+group+image+script+text+video+video-clip",
+   "count": 10,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "group+image+material-style+script-v2+text+video",
+   "count": 9,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "image+text+video+video-clip",
+   "count": 9,
+   "types": [
+    "image",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+group+image+script-v2+text+video+video-clip",
+   "count": 9,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+group+image+script+text+video+video-story",
+   "count": 9,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "image+script-v2+video",
+   "count": 8,
+   "types": [
+    "image",
+    "script-v2",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+group+image+material-style+script-v2+text+video",
+   "count": 8,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+script-v2+text+video",
+   "count": 8,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "director-console-3d+group+image+text+video",
+   "count": 8,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "director-console-3d+group+image+script-v2+text+video",
+   "count": 7,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+group+image+video+video-story",
+   "count": 7,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+director-console-3d+image+text+video",
+   "count": 7,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+image+material-style+video+video-clip",
+   "count": 7,
+   "types": [
+    "audio",
+    "image",
+    "material-style",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+text",
+   "count": 7,
+   "types": [
+    "group",
+    "image",
+    "text"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+image+text+video+video-story",
+   "count": 6,
+   "types": [
+    "audio",
+    "image",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+group+image+material-style+text+video+video-clip",
+   "count": 6,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "image+text+video+video-story",
+   "count": 6,
+   "types": [
+    "image",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+image+script-v2+text+video+video-clip",
+   "count": 5,
+   "types": [
+    "audio",
+    "image",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "image+text",
+   "count": 5,
+   "types": [
+    "image",
+    "text"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "audio+image+script-v2+video",
+   "count": 5,
+   "types": [
+    "audio",
+    "image",
+    "script-v2",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "text+video",
+   "count": 5,
+   "types": [
+    "text",
+    "video"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "audio+group+image+shot-breakdown+text+video+video-clip",
+   "count": 4,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "shot-breakdown",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "group+image+script+video+video-story",
+   "count": 4,
+   "types": [
+    "group",
+    "image",
+    "script",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+group+image+script+video+video-story",
+   "count": 4,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "image+script+video",
+   "count": 4,
+   "types": [
+    "image",
+    "script",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+group+image+material-style+script-v2+text+video+video-clip",
+   "count": 4,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "group+image+script+video+video-clip",
+   "count": 4,
+   "types": [
+    "group",
+    "image",
+    "script",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+script+text",
+   "count": 4,
+   "types": [
+    "group",
+    "image",
+    "script",
+    "text"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+group+image+material-style+script+text+video",
+   "count": 4,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "script",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+material-style+text+video",
+   "count": 4,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "material-style",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+group+image+script+text+video+video-clip+video-story",
+   "count": 4,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-clip",
+    "video-story"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "audio+image+video+video-story",
+   "count": 3,
+   "types": [
+    "audio",
+    "image",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "image+material-style+script-v2+text+video",
+   "count": 3,
+   "types": [
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "director-console-3d+image+text+video",
+   "count": 3,
+   "types": [
+    "director-console-3d",
+    "image",
+    "text",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "director-console-3d+group+image+script+text+video",
+   "count": 3,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image",
+    "script",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+script+text+video",
+   "count": 3,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "script",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+image+script+video",
+   "count": 3,
+   "types": [
+    "audio",
+    "image",
+    "script",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+script+script-v2+text+video",
+   "count": 3,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "script",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "video+video-clip",
+   "count": 3,
+   "types": [
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "audio+group+image+shot-breakdown+video+video-clip",
+   "count": 3,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "shot-breakdown",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+image",
+   "count": 3,
+   "types": [
+    "audio",
+    "image"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+material-style+script-v2+text+video",
+   "count": 3,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "audio+director-console-3d+image+script-v2+text+video",
+   "count": 3,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+image+material-style+script+video",
+   "count": 3,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "script",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+script",
+   "count": 3,
+   "types": [
+    "group",
+    "image",
+    "script"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+group+image+script+script-v2+text+video",
+   "count": 2,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+group+image+material-style+video+video-clip",
+   "count": 2,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+image+material-style+video+video-clip",
+   "count": 2,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+image+script+text+video+video-clip",
+   "count": 2,
+   "types": [
+    "audio",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "image+reference+video",
+   "count": 2,
+   "types": [
+    "image",
+    "reference",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "group+image+material-style+script+text+video",
+   "count": 2,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "script",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+image+text",
+   "count": 2,
+   "types": [
+    "audio",
+    "image",
+    "text"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+image+script-v2+shot-breakdown+text+video",
+   "count": 2,
+   "types": [
+    "audio",
+    "image",
+    "script-v2",
+    "shot-breakdown",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+image+material-style+script-v2+text+video",
+   "count": 2,
+   "types": [
+    "audio",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+image+shot-breakdown+text+video",
+   "count": 2,
+   "types": [
+    "group",
+    "image",
+    "shot-breakdown",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+group+image+reference+text+video",
+   "count": 2,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "reference",
+    "text",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "image+script+text+video+video-clip",
+   "count": 2,
+   "types": [
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+group+image+reference+script-v2+text+video",
+   "count": 2,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "reference",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "group+image+material-style+script-v2+video",
+   "count": 2,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+script-v2+text+video+video-story",
+   "count": 2,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "audio+image+script+text+video+video-story",
+   "count": 2,
+   "types": [
+    "audio",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+group+image+script+video+video-clip",
+   "count": 2,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+image+shot-breakdown+video",
+   "count": 2,
+   "types": [
+    "group",
+    "image",
+    "shot-breakdown",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+director-console-3d+image+video+video-clip",
+   "count": 2,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+material-style+text+video+video-clip",
+   "count": 2,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+group+image+script-v2+text+video+video-story",
+   "count": 2,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+shot-breakdown+text+video",
+   "count": 2,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "shot-breakdown",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+video",
+   "count": 2,
+   "types": [
+    "audio",
+    "video"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "audio+image+material-lens+text+video",
+   "count": 2,
+   "types": [
+    "audio",
+    "image",
+    "material-lens",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+script+video",
+   "count": 2,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "script",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+image+material-style+script-v2+text+video+video-clip",
+   "count": 2,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "image+script+text+video+video-story",
+   "count": 2,
+   "types": [
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+script+text+video+video-clip+video-story",
+   "count": 2,
+   "types": [
+    "group",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-clip",
+    "video-story"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "2",
+   "count": 1,
+   "types": [
+    "2"
+   ],
+   "nodeCount": 1
+  },
+  {
+   "combo": "3",
+   "count": 1,
+   "types": [
+    "3"
+   ],
+   "nodeCount": 1
+  },
+  {
+   "combo": "image+material-style+text+video+video-story",
+   "count": 1,
+   "types": [
+    "image",
+    "material-style",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "image+material-style",
+   "count": 1,
+   "types": [
+    "image",
+    "material-style"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "audio+image+material-style+text+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "image",
+    "material-style",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "image+text+video+video-clip+video-story",
+   "count": 1,
+   "types": [
+    "image",
+    "text",
+    "video",
+    "video-clip",
+    "video-story"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+script-v2+video+video-clip",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "script-v2",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "director-console-3d+image+script+text+video+video-story",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "image+script-v2+video+video-clip",
+   "count": 1,
+   "types": [
+    "image",
+    "script-v2",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "group+image+material-lens+video+video-clip",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "material-lens",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+group+image+video+video-clip+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "video",
+    "video-clip",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "director-console-3d+group+image+reference+script+text+video",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image",
+    "reference",
+    "script",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "group+image+text+video+video-clip+video-story",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "text",
+    "video",
+    "video-clip",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+group+image+reference+script-v2+text+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "reference",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "text+video+video-story",
+   "count": 1,
+   "types": [
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+group+image+material-style+reference+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "reference",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+group+image+reference+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "reference",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+video+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "2+3",
+   "count": 1,
+   "types": [
+    "2",
+    "3"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "audio+group+image",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "director-console-3d+group+image+material-style+text+video+video-story",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image",
+    "material-style",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+video+video-clip+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "video",
+    "video-clip",
+    "video-story"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+group+image+material-style+shot-breakdown+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "shot-breakdown",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "image+script+script-v2+text+video",
+   "count": 1,
+   "types": [
+    "image",
+    "script",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+shot-breakdown+text+video+video-clip",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "shot-breakdown",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+group+image+material-lens+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-lens",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+image+script-v2+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "image",
+    "script-v2",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+image+shot-breakdown+text+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "image",
+    "shot-breakdown",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+material-lens+video",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "material-lens",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "director-console-3d+group+image",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+material-lens+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "material-lens",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+text+video+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+director-console-3d+image+material-style+script+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "material-style",
+    "script",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+group+image+material-lens+script-v2+text+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-lens",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+director-console-3d+image+material-lens+material-style+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "material-lens",
+    "material-style",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+material-style+script-v2+text+video+video-clip+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip",
+    "video-story"
+   ],
+   "nodeCount": 10
+  },
+  {
+   "combo": "audio+image+material-style+script-v2+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "image",
+    "material-style",
+    "script-v2",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+image+material-style+text",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "text"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+director-console-3d+image+script+text+video+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+group+image+script-v2+video+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script-v2",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+image+reference+video",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "reference",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+script-v2+text+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "audio+group+image+material-style+script-v2+text+video+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "image+material-style+video+video-clip",
+   "count": 1,
+   "types": [
+    "image",
+    "material-style",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "group+image+material-lens+reference+script-v2+video+video-story",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "material-lens",
+    "reference",
+    "script-v2",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "image+shot-breakdown+video",
+   "count": 1,
+   "types": [
+    "image",
+    "shot-breakdown",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+material-style+script-v2+text+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 9
+  },
+  {
+   "combo": "audio+image+material-lens+material-style+script-v2+text+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "image",
+    "material-lens",
+    "material-style",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "group+image+script+video+video-clip+video-story",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "script",
+    "video",
+    "video-clip",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+image+script-v2+text+video+video-story",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+video",
+   "count": 1,
+   "types": [
+    "group",
+    "video"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "audio+director-console-3d+image+reference+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "reference",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "director-console-3d+image+material-style+text",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "image",
+    "material-style",
+    "text"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+group+image+material-style+script+text+video+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-style",
+    "script",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "shot-breakdown+video",
+   "count": 1,
+   "types": [
+    "shot-breakdown",
+    "video"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "director-console-3d+image",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "image"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "image+script+text",
+   "count": 1,
+   "types": [
+    "image",
+    "script",
+    "text"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+image+reference+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "image",
+    "reference",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "director-console-3d+image+script-v2+video",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "image",
+    "script-v2",
+    "video"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+group+image+script+script-v2+text+video+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script",
+    "script-v2",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "script-v2+text",
+   "count": 1,
+   "types": [
+    "script-v2",
+    "text"
+   ],
+   "nodeCount": 2
+  },
+  {
+   "combo": "director-console-3d+group+image+reference+video+video-clip",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image",
+    "reference",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+image+material-style+script-v2+text+video+video-story",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+script+script-v2+text+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "script",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 9
+  },
+  {
+   "combo": "image+script-v2+text",
+   "count": 1,
+   "types": [
+    "image",
+    "script-v2",
+    "text"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "group+image+material-style+reference+script-v2+text+video",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "material-style",
+    "reference",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+shot-breakdown+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "shot-breakdown",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "image+reference+video+video-clip",
+   "count": 1,
+   "types": [
+    "image",
+    "reference",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+group+image+material-lens+shot-breakdown+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-lens",
+    "shot-breakdown",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "director-console-3d+group+image+script+text+video+video-story",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image",
+    "script",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+group+image+script-v2+shot-breakdown+text+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script-v2",
+    "shot-breakdown",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 8
+  },
+  {
+   "combo": "audio+group+image+material-lens+material-style+text+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "material-lens",
+    "material-style",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "group+image+script-v2+video+video-story",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "script-v2",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "image+script-v2+text+video+video-clip",
+   "count": 1,
+   "types": [
+    "image",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+image+material-lens+shot-breakdown+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "image",
+    "material-lens",
+    "shot-breakdown",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+reference+text+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "reference",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "group+text+video",
+   "count": 1,
+   "types": [
+    "group",
+    "text",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+group+image+script-v2+shot-breakdown+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script-v2",
+    "shot-breakdown",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "director-console-3d+image+material-style+text+video",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "image",
+    "material-style",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "audio+group+image+script-v2+shot-breakdown+text+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script-v2",
+    "shot-breakdown",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "image+material-lens+video",
+   "count": 1,
+   "types": [
+    "image",
+    "material-lens",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "image+material-style+text",
+   "count": 1,
+   "types": [
+    "image",
+    "material-style",
+    "text"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+director-console-3d+image+text+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "group+script-v2+video",
+   "count": 1,
+   "types": [
+    "group",
+    "script-v2",
+    "video"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "director-console-3d+image+video+video-clip",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "image",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "director-console-3d+group+image+script-v2+text+video+video-clip",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image",
+    "script-v2",
+    "text",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "group+image+reference+text+video",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "reference",
+    "text",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "2+3+35+5",
+   "count": 1,
+   "types": [
+    "2",
+    "3",
+    "35",
+    "5"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+director-console-3d+image+shot-breakdown+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "shot-breakdown",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+image+script-v2+text+video+video-story",
+   "count": 1,
+   "types": [
+    "audio",
+    "image",
+    "script-v2",
+    "text",
+    "video",
+    "video-story"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "director-console-3d+group+image+material-style+script-v2+text+video",
+   "count": 1,
+   "types": [
+    "director-console-3d",
+    "group",
+    "image",
+    "material-style",
+    "script-v2",
+    "text",
+    "video"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "group+image+script-v2+text",
+   "count": 1,
+   "types": [
+    "group",
+    "image",
+    "script-v2",
+    "text"
+   ],
+   "nodeCount": 4
+  },
+  {
+   "combo": "audio+director-console-3d+image+material-style+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "image",
+    "material-style",
+    "video"
+   ],
+   "nodeCount": 5
+  },
+  {
+   "combo": "group+video+video-clip",
+   "count": 1,
+   "types": [
+    "group",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 3
+  },
+  {
+   "combo": "audio+group+image+script-v2+shot-breakdown+video+video-clip",
+   "count": 1,
+   "types": [
+    "audio",
+    "group",
+    "image",
+    "script-v2",
+    "shot-breakdown",
+    "video",
+    "video-clip"
+   ],
+   "nodeCount": 7
+  },
+  {
+   "combo": "audio+director-console-3d+group+image+script-v2+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "director-console-3d",
+    "group",
+    "image",
+    "script-v2",
+    "video"
+   ],
+   "nodeCount": 6
+  },
+  {
+   "combo": "audio+image+shot-breakdown+video",
+   "count": 1,
+   "types": [
+    "audio",
+    "image",
+    "shot-breakdown",
+    "video"
+   ],
+   "nodeCount": 4
+  }
+ ]
+}

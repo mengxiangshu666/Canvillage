@@ -1,0 +1,31 @@
+{
+  "id": "realistic",
+  "name": "Realistic Modern",
+  "style_instructions": "Create a live-action image with grounded realism. Use natural lighting and restrained contrast, avoiding glossy fashion-editorial polish. Ensure realistic skin texture with visible pores, subtle imperfections, and no beauty-retouching. Use a natural 50mm cinematic lens feel with moderate depth of field. Keep the final image photographic and human, with subtle film grain and controlled color grading. Follow the beat, scene, character, and prop descriptions for exact era, wardrobe, architecture, technology, and materials.",
+  "avoid_instructions": "FORBIDDEN: anime, cartoon, illustration, painting styles. NOT CGI or 3D rendered. No plastic skin, wax figure, or mannequin appearance. No AI artifacts, uncanny valley effects, or HDR overprocessing. No extra limbs, mutated hands, or deformed features. No text, watermarks, or labels on image.",
+  "style_tag": "NATURAL PHOTOREALISTIC, CLEAN GRADE",
+  "label": "写实现代",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "family": "contemporary_realism",
+  "era": "contemporary",
+  "palette": "natural skin, restrained neutrals and scene-motivated color accents",
+  "lighting": "available daylight or motivated practicals with soft realistic falloff",
+  "optics": "40mm/50mm spherical lens, moderate depth, subtle film grain",
+  "composition": "clean human blocking, authentic location depth, avoid advertising symmetry unless the beat asks for it",
+  "camera_motion": "gentle dolly, observational handheld drift, camera movement motivated by attention",
+  "tags": [
+    "真人",
+    "现代",
+    "写实",
+    "剧情"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Use one motivated camera displacement following gaze or action; keep body motion natural and spatial continuity explicit."
+    }
+  },
+  "image_prompt": "Create a live-action image with grounded realism. Use natural lighting and restrained contrast, avoiding glossy fashion-editorial polish. Ensure realistic skin texture with visible pores, subtle imperfections, and no beauty-retouching. Use a natural 50mm cinematic lens feel with moderate depth of field. Keep the final image photographic and human, with subtle film grain and controlled color grading. Follow the beat, scene, character, and prop descriptions for exact era, wardrobe, architecture, technology, and materials.",
+  "video_prompt": "gentle dolly, observational handheld drift, camera movement motivated by attention",
+  "negative_prompt": "FORBIDDEN: anime, cartoon, illustration, painting styles. NOT CGI or 3D rendered. No plastic skin, wax figure, or mannequin appearance. No AI artifacts, uncanny valley effects, or HDR overprocessing. No extra limbs, mutated hands, or deformed features. No text, watermarks, or labels on image."
+}

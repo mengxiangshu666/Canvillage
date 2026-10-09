@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "packageId": "huabu-sd2",
+  "authority": "seed",
+  "notes": [
+    "画布 / huabu 的 SD 2.0 Fast 家族出线合同。",
+    "实测 sd-2.0-fast 不接受 size 参数（带 size=\"16:9\" 必现 video_generation_failed），所以 ratio_field 必须为 null（不带），而不是让它回落到默认值。",
+    "档位只有 5/10/15 秒：30 秒请求会被对齐到 15（2026-09-12 实测事故），这是产品选择，不是缺陷。",
+    "本包只描述「中性请求怎么落到这家上游」，中性请求模型仍在 Python 代码里。"
+  ],
+  "profiles": [
+    {
+      "profile_id": "huabu",
+      "match_prefixes": [
+        "sd2",
+        "sd-2",
+        "sd_2"
+      ],
+      "match_exact": [
+        "sd-2.0-fast",
+        "sd-2.0-fast-v1"
+      ],
+      "duration_field": "duration",
+      "duration_choices": [
+        5,
+        10,
+        15
+      ],
+      "ratio_field": null,
+      "first_frame_field": "image",
+      "ref_field": null,
+      "audio_field": null,
+      "auto_face_field": null
+    }
+  ]
+}

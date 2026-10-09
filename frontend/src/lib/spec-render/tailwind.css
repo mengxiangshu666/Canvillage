@@ -1,0 +1,13 @@
+/* ===========================================
+   Pre-compiled Tailwind utilities for the built-in Spec Renderer.
+   Scans component source so arbitrary values (w-[148px], h-[198px], …)
+   ship as real CSS to consumers without them having to configure
+   `@source` or `content` on their side.
+
+   Only emits theme + utilities — consumer apps own preflight/base.
+   =========================================== */
+
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
+
+@source "./**/*.{ts,tsx}";

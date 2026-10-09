@@ -1,0 +1,30 @@
+{
+  "id": "technicolor_musical",
+  "name": "三色歌舞电影",
+  "family": "classic_musical",
+  "era": "1930s_1950s",
+  "palette": "宝石红、钴蓝、祖母绿、金黄与奶油白，高饱和但肤色保持自然层次",
+  "lighting": "棚拍硬主光、轮廓背光与可见舞台光区，服装和布景色彩分离清楚",
+  "optics": "经典球面镜头、轻柔扩散与稳定深焦，保留染印电影般浓郁而洁净的色彩",
+  "composition": "正面轴线、几何群舞、完整肢体动作和多层舞台纵深，布景成为叙事的一部分",
+  "camera_motion": "graceful crane rise, lateral ensemble track, measured dolly, choreography-led reframing",
+  "style_instructions": "Classic three-strip Technicolor musical cinema, jewel-toned studio sets, elegant ensemble choreography, theatrical production design and radiant analog color separation.",
+  "avoid_instructions": "No modern music-video neon, no fashion-editorial solo pose, no muted naturalism, no clipped limbs, no text or watermark.",
+  "style_tag": "THREE-STRIP TECHNICOLOR MUSICAL SPECTACLE",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "经典歌舞",
+    "染印色彩",
+    "棚拍",
+    "群舞"
+  ],
+  "image_prompt": "Classic three-strip Technicolor musical cinema, jewel-toned studio sets, elegant ensemble choreography, theatrical production design and radiant analog color separation.",
+  "video_prompt": "graceful crane rise, lateral ensemble track, measured dolly, choreography-led reframing",
+  "negative_prompt": "No modern music-video neon, no fashion-editorial solo pose, no muted naturalism, no clipped limbs, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "graceful crane rise, lateral ensemble track, measured dolly, choreography-led reframing"
+    }
+  }
+}

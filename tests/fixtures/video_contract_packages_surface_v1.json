@@ -1,0 +1,917 @@
+{
+  "profiles": {
+    "happyhorse": {
+      "__responses": [
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/a.mp4",
+          "status": "completed",
+          "task_id": "task-1"
+        },
+        {
+          "error": null,
+          "progress": 42,
+          "result_url": null,
+          "status": "running",
+          "task_id": "task-2"
+        },
+        {
+          "error": "boom",
+          "progress": null,
+          "result_url": null,
+          "status": "failed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/b.mp4",
+          "status": "completed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": null,
+          "status": "pending",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": 7,
+          "result_url": null,
+          "status": "running",
+          "task_id": null
+        },
+        {
+          "error": "plain string error",
+          "progress": null,
+          "result_url": null,
+          "status": "unknown",
+          "task_id": null
+        }
+      ],
+      "audio_field": "audio_setting",
+      "auto_face_field": null,
+      "completed_values": [
+        "completed",
+        "success",
+        "succeeded"
+      ],
+      "create_path": "/v1/videos",
+      "drop_fields": [
+        "seconds"
+      ],
+      "duration_choices": null,
+      "duration_field": "duration",
+      "extra_static": {},
+      "failed_values": [
+        "failed",
+        "error",
+        "failure"
+      ],
+      "first_frame_field": "image_url",
+      "match_exact": [],
+      "match_prefixes": [
+        "happyhorse"
+      ],
+      "profile_id": "happyhorse",
+      "progress_keys": [
+        "progress",
+        "percent"
+      ],
+      "query_path": "/v1/videos/{task_id}",
+      "ratio_field": null,
+      "ref_field": "reference_images",
+      "status_keys": [
+        "status",
+        "state"
+      ],
+      "task_id_keys": [
+        "id",
+        "task_id"
+      ],
+      "url_keys": [
+        "result_url",
+        "download_url",
+        "video_url",
+        "url",
+        "content_url"
+      ]
+    },
+    "huabu": {
+      "__responses": [
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/a.mp4",
+          "status": "completed",
+          "task_id": "task-1"
+        },
+        {
+          "error": null,
+          "progress": 42,
+          "result_url": null,
+          "status": "running",
+          "task_id": "task-2"
+        },
+        {
+          "error": "boom",
+          "progress": null,
+          "result_url": null,
+          "status": "failed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/b.mp4",
+          "status": "completed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": null,
+          "status": "pending",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": 7,
+          "result_url": null,
+          "status": "running",
+          "task_id": null
+        },
+        {
+          "error": "plain string error",
+          "progress": null,
+          "result_url": null,
+          "status": "unknown",
+          "task_id": null
+        }
+      ],
+      "audio_field": null,
+      "auto_face_field": null,
+      "completed_values": [
+        "completed",
+        "success",
+        "succeeded"
+      ],
+      "create_path": "/v1/videos",
+      "drop_fields": [],
+      "duration_choices": [
+        5,
+        10,
+        15
+      ],
+      "duration_field": "duration",
+      "extra_static": {},
+      "failed_values": [
+        "failed",
+        "error",
+        "failure"
+      ],
+      "first_frame_field": "image",
+      "match_exact": [
+        "sd-2.0-fast",
+        "sd-2.0-fast-v1"
+      ],
+      "match_prefixes": [
+        "sd2",
+        "sd-2",
+        "sd_2"
+      ],
+      "profile_id": "huabu",
+      "progress_keys": [
+        "progress",
+        "percent"
+      ],
+      "query_path": "/v1/videos/{task_id}",
+      "ratio_field": null,
+      "ref_field": null,
+      "status_keys": [
+        "status",
+        "state"
+      ],
+      "task_id_keys": [
+        "id",
+        "task_id"
+      ],
+      "url_keys": [
+        "result_url",
+        "download_url",
+        "video_url",
+        "url",
+        "content_url"
+      ]
+    },
+    "kacang_933_fast": {
+      "__responses": [
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/a.mp4",
+          "status": "completed",
+          "task_id": "task-1"
+        },
+        {
+          "error": null,
+          "progress": 42,
+          "result_url": null,
+          "status": "running",
+          "task_id": "task-2"
+        },
+        {
+          "error": "boom",
+          "progress": null,
+          "result_url": null,
+          "status": "failed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/b.mp4",
+          "status": "completed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": null,
+          "status": "pending",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": 7,
+          "result_url": null,
+          "status": "running",
+          "task_id": null
+        },
+        {
+          "error": "plain string error",
+          "progress": null,
+          "result_url": null,
+          "status": "unknown",
+          "task_id": null
+        }
+      ],
+      "audio_field": "generate_audio",
+      "auto_face_field": "auto_face",
+      "completed_values": [
+        "completed",
+        "success",
+        "succeeded"
+      ],
+      "create_path": "/v1/videos",
+      "drop_fields": [
+        "seconds"
+      ],
+      "duration_choices": null,
+      "duration_field": "duration",
+      "extra_static": {
+        "resolution": "480p"
+      },
+      "failed_values": [
+        "failed",
+        "error",
+        "failure"
+      ],
+      "first_frame_field": "image",
+      "match_exact": [
+        "s-videos-f-933-fast-480-2"
+      ],
+      "match_prefixes": [],
+      "profile_id": "kacang_933_fast",
+      "progress_keys": [
+        "progress",
+        "percent"
+      ],
+      "query_path": "/v1/videos/{task_id}",
+      "ratio_field": "ratio",
+      "ref_field": "referenceImages",
+      "status_keys": [
+        "status",
+        "state"
+      ],
+      "task_id_keys": [
+        "id",
+        "task_id"
+      ],
+      "url_keys": [
+        "result_url",
+        "download_url",
+        "video_url",
+        "url",
+        "content_url"
+      ]
+    },
+    "openai_video_default": {
+      "__responses": [
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/a.mp4",
+          "status": "completed",
+          "task_id": "task-1"
+        },
+        {
+          "error": null,
+          "progress": 42,
+          "result_url": null,
+          "status": "running",
+          "task_id": "task-2"
+        },
+        {
+          "error": "boom",
+          "progress": null,
+          "result_url": null,
+          "status": "failed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/b.mp4",
+          "status": "completed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": null,
+          "status": "pending",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": 7,
+          "result_url": null,
+          "status": "running",
+          "task_id": null
+        },
+        {
+          "error": "plain string error",
+          "progress": null,
+          "result_url": null,
+          "status": "unknown",
+          "task_id": null
+        }
+      ],
+      "audio_field": null,
+      "auto_face_field": null,
+      "completed_values": [
+        "completed",
+        "success",
+        "succeeded"
+      ],
+      "create_path": "/v1/videos",
+      "drop_fields": [],
+      "duration_choices": null,
+      "duration_field": "duration",
+      "extra_static": {},
+      "failed_values": [
+        "failed",
+        "error",
+        "failure"
+      ],
+      "first_frame_field": "image",
+      "match_exact": [],
+      "match_prefixes": [],
+      "profile_id": "openai_video_default",
+      "progress_keys": [
+        "progress",
+        "percent"
+      ],
+      "query_path": "/v1/videos/{task_id}",
+      "ratio_field": "size",
+      "ref_field": null,
+      "status_keys": [
+        "status",
+        "state"
+      ],
+      "task_id_keys": [
+        "id",
+        "task_id"
+      ],
+      "url_keys": [
+        "result_url",
+        "download_url",
+        "video_url",
+        "url",
+        "content_url"
+      ]
+    },
+    "prompt_hubs_firefly": {
+      "__responses": [
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/a.mp4",
+          "status": "completed",
+          "task_id": "task-1"
+        },
+        {
+          "error": null,
+          "progress": 42,
+          "result_url": null,
+          "status": "running",
+          "task_id": "task-2"
+        },
+        {
+          "error": "boom",
+          "progress": null,
+          "result_url": null,
+          "status": "failed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/b.mp4",
+          "status": "completed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": null,
+          "status": "pending",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": 7,
+          "result_url": null,
+          "status": "running",
+          "task_id": null
+        },
+        {
+          "error": "plain string error",
+          "progress": null,
+          "result_url": null,
+          "status": "unknown",
+          "task_id": null
+        }
+      ],
+      "audio_field": "generate_audio",
+      "auto_face_field": "auto_face",
+      "completed_values": [
+        "completed",
+        "success",
+        "succeeded"
+      ],
+      "create_path": "/v1/videos",
+      "drop_fields": [
+        "seconds"
+      ],
+      "duration_choices": null,
+      "duration_field": "duration",
+      "extra_static": {
+        "resolution": "480p"
+      },
+      "failed_values": [
+        "failed",
+        "error",
+        "failure"
+      ],
+      "first_frame_field": "image",
+      "match_exact": [],
+      "match_prefixes": [
+        "firefly-seedance2",
+        "firefly-seedance"
+      ],
+      "profile_id": "prompt_hubs_firefly",
+      "progress_keys": [
+        "progress",
+        "percent"
+      ],
+      "query_path": "/v1/videos/{task_id}",
+      "ratio_field": "ratio",
+      "ref_field": "referenceImages",
+      "status_keys": [
+        "status",
+        "state"
+      ],
+      "task_id_keys": [
+        "id",
+        "task_id"
+      ],
+      "url_keys": [
+        "result_url",
+        "download_url",
+        "video_url",
+        "url",
+        "content_url"
+      ]
+    },
+    "prompt_hubs_flex": {
+      "__responses": [
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/a.mp4",
+          "status": "completed",
+          "task_id": "task-1"
+        },
+        {
+          "error": null,
+          "progress": 42,
+          "result_url": null,
+          "status": "running",
+          "task_id": "task-2"
+        },
+        {
+          "error": "boom",
+          "progress": null,
+          "result_url": null,
+          "status": "failed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/b.mp4",
+          "status": "completed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": null,
+          "status": "pending",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": 7,
+          "result_url": null,
+          "status": "running",
+          "task_id": null
+        },
+        {
+          "error": "plain string error",
+          "progress": null,
+          "result_url": null,
+          "status": "unknown",
+          "task_id": null
+        }
+      ],
+      "audio_field": null,
+      "auto_face_field": null,
+      "completed_values": [
+        "completed",
+        "success",
+        "succeeded"
+      ],
+      "create_path": "/v1/videos",
+      "drop_fields": [],
+      "duration_choices": null,
+      "duration_field": "duration",
+      "extra_static": {},
+      "failed_values": [
+        "failed",
+        "error",
+        "failure"
+      ],
+      "first_frame_field": "image",
+      "match_exact": [],
+      "match_prefixes": [
+        "veo-",
+        "kling-",
+        "runway-",
+        "sora-",
+        "gemini-omni"
+      ],
+      "profile_id": "prompt_hubs_flex",
+      "progress_keys": [
+        "progress",
+        "percent"
+      ],
+      "query_path": "/v1/videos/{task_id}",
+      "ratio_field": "ratio",
+      "ref_field": "referenceImages",
+      "status_keys": [
+        "status",
+        "state"
+      ],
+      "task_id_keys": [
+        "id",
+        "task_id"
+      ],
+      "url_keys": [
+        "result_url",
+        "download_url",
+        "video_url",
+        "url",
+        "content_url"
+      ]
+    },
+    "prompt_hubs_sd": {
+      "__responses": [
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/a.mp4",
+          "status": "completed",
+          "task_id": "task-1"
+        },
+        {
+          "error": null,
+          "progress": 42,
+          "result_url": null,
+          "status": "running",
+          "task_id": "task-2"
+        },
+        {
+          "error": "boom",
+          "progress": null,
+          "result_url": null,
+          "status": "failed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/b.mp4",
+          "status": "completed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": null,
+          "status": "pending",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": 7,
+          "result_url": null,
+          "status": "running",
+          "task_id": null
+        },
+        {
+          "error": "plain string error",
+          "progress": null,
+          "result_url": null,
+          "status": "unknown",
+          "task_id": null
+        }
+      ],
+      "audio_field": null,
+      "auto_face_field": "auto_face",
+      "completed_values": [
+        "completed",
+        "success",
+        "succeeded"
+      ],
+      "create_path": "/v1/videos",
+      "drop_fields": [],
+      "duration_choices": null,
+      "duration_field": "duration",
+      "extra_static": {},
+      "failed_values": [
+        "failed",
+        "error",
+        "failure"
+      ],
+      "first_frame_field": null,
+      "match_exact": [],
+      "match_prefixes": [
+        "sd2.",
+        "sd2fast"
+      ],
+      "profile_id": "prompt_hubs_sd",
+      "progress_keys": [
+        "progress",
+        "percent"
+      ],
+      "query_path": "/v1/videos/{task_id}",
+      "ratio_field": "ratio",
+      "ref_field": "referenceImages",
+      "status_keys": [
+        "status",
+        "state"
+      ],
+      "task_id_keys": [
+        "id",
+        "task_id"
+      ],
+      "url_keys": [
+        "result_url",
+        "download_url",
+        "video_url",
+        "url",
+        "content_url"
+      ]
+    },
+    "sd2_5_m_full": {
+      "__responses": [
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/a.mp4",
+          "status": "completed",
+          "task_id": "task-1"
+        },
+        {
+          "error": null,
+          "progress": 42,
+          "result_url": null,
+          "status": "running",
+          "task_id": "task-2"
+        },
+        {
+          "error": "boom",
+          "progress": null,
+          "result_url": null,
+          "status": "failed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/b.mp4",
+          "status": "completed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": null,
+          "status": "pending",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": 7,
+          "result_url": null,
+          "status": "running",
+          "task_id": null
+        },
+        {
+          "error": "plain string error",
+          "progress": null,
+          "result_url": null,
+          "status": "unknown",
+          "task_id": null
+        }
+      ],
+      "audio_field": null,
+      "auto_face_field": null,
+      "completed_values": [
+        "completed",
+        "success",
+        "succeeded"
+      ],
+      "create_path": "/v1/videos",
+      "drop_fields": [],
+      "duration_choices": [
+        5,
+        10,
+        15,
+        30
+      ],
+      "duration_field": "duration",
+      "extra_static": {},
+      "failed_values": [
+        "failed",
+        "error",
+        "failure"
+      ],
+      "first_frame_field": "first_image",
+      "match_exact": [],
+      "match_prefixes": [
+        "sd-2.5-m"
+      ],
+      "profile_id": "sd2_5_m_full",
+      "progress_keys": [
+        "progress",
+        "percent"
+      ],
+      "query_path": "/v1/videos/{task_id}",
+      "ratio_field": null,
+      "ref_field": null,
+      "status_keys": [
+        "status",
+        "state"
+      ],
+      "task_id_keys": [
+        "id",
+        "task_id"
+      ],
+      "url_keys": [
+        "result_url",
+        "download_url",
+        "video_url",
+        "url",
+        "content_url"
+      ]
+    },
+    "seedance2_native": {
+      "__responses": [
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/a.mp4",
+          "status": "completed",
+          "task_id": "task-1"
+        },
+        {
+          "error": null,
+          "progress": 42,
+          "result_url": null,
+          "status": "running",
+          "task_id": "task-2"
+        },
+        {
+          "error": "boom",
+          "progress": null,
+          "result_url": null,
+          "status": "failed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": "https://example.invalid/b.mp4",
+          "status": "completed",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": null,
+          "result_url": null,
+          "status": "pending",
+          "task_id": null
+        },
+        {
+          "error": null,
+          "progress": 7,
+          "result_url": null,
+          "status": "running",
+          "task_id": null
+        },
+        {
+          "error": "plain string error",
+          "progress": null,
+          "result_url": null,
+          "status": "unknown",
+          "task_id": null
+        }
+      ],
+      "audio_field": "generate_audio",
+      "auto_face_field": null,
+      "completed_values": [
+        "completed",
+        "success",
+        "succeeded"
+      ],
+      "create_path": "/v1/video/generations",
+      "drop_fields": [],
+      "duration_choices": null,
+      "duration_field": "duration_seconds",
+      "extra_static": {},
+      "failed_values": [
+        "failed",
+        "error",
+        "failure"
+      ],
+      "first_frame_field": "first_frame_image",
+      "match_exact": [],
+      "match_prefixes": [
+        "seedance-2",
+        "seedance-1.5",
+        "seedance-1.0"
+      ],
+      "profile_id": "seedance2_native",
+      "progress_keys": [
+        "progress",
+        "percent"
+      ],
+      "query_path": "/v1/video/generations/{task_id}",
+      "ratio_field": "aspect_ratio",
+      "ref_field": null,
+      "status_keys": [
+        "status",
+        "state"
+      ],
+      "task_id_keys": [
+        "id",
+        "task_id"
+      ],
+      "url_keys": [
+        "result_url",
+        "download_url",
+        "video_url",
+        "url",
+        "content_url"
+      ]
+    }
+  },
+  "response_sample_count": 7
+}

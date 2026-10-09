@@ -1,0 +1,31 @@
+{
+  "id": "stylized_3d_family",
+  "name": "风格化三维电影",
+  "label": "风格化三维电影",
+  "family": "stylized_3d",
+  "era": "timeless",
+  "palette": "电影级互补色、柔和材质色与受控高光",
+  "lighting": "soft cinematic key, rim separation, ambient occlusion kept subtle, volumetric depth",
+  "optics": "35mm virtual cinema lens, deliberate depth of field, physically plausible materials",
+  "composition": "形体轮廓优先、材质服务角色、背景层级清晰",
+  "camera_motion": "smooth virtual dolly, controlled orbit, gentle crane reveal",
+  "style_instructions": "Premium stylized 3D animated film frame, expressive modeling, refined PBR materials, cinematic lighting, clear readable staging, handcrafted rather than generic game-rendered.",
+  "avoid_instructions": "No low-poly asset look, no toy plastic, no uncanny facial rig, no noisy HDR, no text or watermark.",
+  "style_tag": "STYLIZED 3D CINEMA",
+  "style_family": "animation",
+  "animation_subtype": "3d",
+  "tags": [
+    "动画",
+    "3D",
+    "电影",
+    "角色"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Use a smooth virtual camera move with stable 3D identity, expressive pose arcs, and consistent physically plausible lighting."
+    }
+  },
+  "image_prompt": "Premium stylized 3D animated film frame, expressive modeling, refined PBR materials, cinematic lighting, clear readable staging, handcrafted rather than generic game-rendered.",
+  "video_prompt": "smooth virtual dolly, controlled orbit, gentle crane reveal",
+  "negative_prompt": "No low-poly asset look, no toy plastic, no uncanny facial rig, no noisy HDR, no text or watermark."
+}

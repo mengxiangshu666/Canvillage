@@ -1,0 +1,31 @@
+{
+  "id": "brutalist_future",
+  "name": "粗野主义未来",
+  "label": "粗野主义未来",
+  "family": "brutalist_sci_fi",
+  "era": "near_future",
+  "palette": "混凝土灰、钴蓝、锈橙与冷白荧光",
+  "lighting": "severe top light, narrow skylights, hard architectural shadows, controlled fog",
+  "optics": "21mm rectilinear wide lens, deep focus, crisp verticals",
+  "composition": "巨大混凝土体块、重复模块、人物孤立在尺度深处",
+  "camera_motion": "symmetrical axial push, slow elevator rise, precise architectural pan",
+  "style_instructions": "Brutalist near-future architecture, monumental concrete geometry, severe spatial rhythm, believable human occupation, premium concept-film frame.",
+  "avoid_instructions": "No curved fantasy architecture, no soft lifestyle styling, no random signage, no game HUD, no watermark.",
+  "style_tag": "BRUTALIST FUTURE GEOMETRY",
+  "tags": [
+    "建筑",
+    "未来",
+    "粗野主义",
+    "极简"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Let the camera move on a precise architectural axis; preserve straight lines, scale, and the subject's relationship to the structure."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Brutalist near-future architecture, monumental concrete geometry, severe spatial rhythm, believable human occupation, premium concept-film frame.",
+  "video_prompt": "symmetrical axial push, slow elevator rise, precise architectural pan",
+  "negative_prompt": "No curved fantasy architecture, no soft lifestyle styling, no random signage, no game HUD, no watermark."
+}

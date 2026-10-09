@@ -1,0 +1,31 @@
+{
+  "id": "paper_cut_folk",
+  "name": "民俗剪纸",
+  "label": "民俗剪纸",
+  "family": "paper_cut",
+  "era": "timeless",
+  "palette": "朱红、靛蓝、金黄、墨黑与米白",
+  "lighting": "flat graphic illumination with subtle paper shadow layers",
+  "optics": "layered cut-paper depth, crisp handmade edges, no lens simulation",
+  "composition": "对称与节奏型剪影，民俗纹样围绕清晰主体组织",
+  "camera_motion": "layered parallax, slow lateral slide, gentle reveal of cut-paper depth",
+  "style_instructions": "Refined Chinese folk paper-cut graphic style, layered silhouettes, handcrafted edges, decorative symmetry, festive but cinematic visual rhythm.",
+  "avoid_instructions": "No photorealism, no random ornamental text, no plastic 3D, no muddy edge blending, no watermark.",
+  "style_tag": "FOLK PAPER-CUT GRAPHICS",
+  "style_family": "animation",
+  "animation_subtype": "hybrid",
+  "tags": [
+    "民俗",
+    "剪纸",
+    "平面",
+    "东方"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Animate the layered paper planes with gentle parallax; keep cut edges crisp and the decorative rhythm intact."
+    }
+  },
+  "image_prompt": "Refined Chinese folk paper-cut graphic style, layered silhouettes, handcrafted edges, decorative symmetry, festive but cinematic visual rhythm.",
+  "video_prompt": "layered parallax, slow lateral slide, gentle reveal of cut-paper depth",
+  "negative_prompt": "No photorealism, no random ornamental text, no plastic 3D, no muddy edge blending, no watermark."
+}

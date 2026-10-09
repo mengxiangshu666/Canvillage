@@ -1,0 +1,415 @@
+{
+  "schema": "combat_film_fixture.v1",
+  "fixture_id": "combat-film-30s-1v1",
+  "request": "30秒极限打斗，带高燃台词",
+  "notes": [
+    "一份合格的 30 秒极限打斗片包：6 镜 × 5.0s = 30.0s。",
+    "硬判据①结构族：每镜 5.0s 落在 4.0-15.0s，镜数 6 落在 2-12。",
+    "硬判据②1v1：每镜 cinematic.combat.duel_scope=1v1、combatant_count=2、combatant_ids 均为同两人。",
+    "硬判据③四步因果链：每镜声明 contact→compression→failure→no_recovery（全片因果承诺，逐镜复核）。",
+    "硬判据④五族电影声明跨镜一致：同 axis_id、同主光向+色温、同 look_id、色彩配额和=1.0、节拍 0.3-0.8s。",
+    "战损单调加重：intact×3 → minor → severe → down，任何回退即判不过。",
+    "台词只是声明（cinematic.combat.dialogue_lines），本仓 7 步链没有台词载体，声明不等于送进视频模型。",
+    "本片包不判「打得好不好看」：像素级运动理解不在本仓能力范围内。"
+  ],
+  "title": "雨夜古刹·一击不还",
+  "creative_direction": "雨夜古刹檐廊的一对一短打：三镜建立、两镜升级、一镜收束，全片同一轴线、同一冷雨主光、同一色彩配额，动作因果链每一步都可复核。",
+  "shots": [
+    {
+      "shot_id": "S01",
+      "title": "对峙",
+      "duration_seconds": 5.0,
+      "prompt": "雨夜古刹檐廊，黑袍刀客与白面刺客相隔三步对峙，两人全身同框，雨丝在灯笼光里斜落，镜头缓慢横移确立空间。",
+      "transition": "硬切",
+      "shot_type": "中景",
+      "lens": "35mm",
+      "camera_position": "轴线上方平视",
+      "camera_motion": "缓慢左横移",
+      "subject": "黑袍刀客与白面刺客",
+      "action": "双方起势对峙，刀客压低重心，刺客侧身试探步",
+      "reference_bindings": {
+        "character": ["char-lin", "char-ying"],
+        "scene": ["scene-temple-corridor"],
+        "props": ["prop-blade"],
+        "style": ["style-rain-night-wuxia"]
+      },
+      "video_mode": "allReference",
+      "sound_cues": ["雨打瓦檐的连续底噪", "靴底碾过湿砖的摩擦声"],
+      "cinematic": {
+        "lighting": {
+          "description": "檐廊灯笼顶光加雨夜冷环境光",
+          "source_direction": "画面左后上方",
+          "color_temperature_k": 4300,
+          "key_fill_ratio": "4:1",
+          "motivated_source": "檐廊灯笼",
+          "change_policy": "全片不变"
+        },
+        "color_look": {
+          "look_id": "rain-night-cold-v1",
+          "dominant": "冷灰",
+          "secondary": "暗青",
+          "accent": "灯笼暖橙",
+          "ratios": {"dominant": 0.6, "secondary": 0.3, "accent": 0.1}
+        },
+        "screen_direction": {
+          "axis_id": "corridor-axis",
+          "line_side": "轴线右侧",
+          "subject_facing": "刀客面向画面右，刺客面向画面左",
+          "eyeline": "两人视线相交",
+          "movement_direction": "刺客向左压迫，刀客向右退让",
+          "crossing_policy": "不越轴"
+        },
+        "edit": {
+          "cut_on": "刺客试探步落地时",
+          "match_cut": "雨丝斜线的方向",
+          "rhythm": "对峙慢起",
+          "beat_seconds": 0.6
+        },
+        "sound": {
+          "ambience": ["雨声", "檐廊低频空间声"],
+          "diegetic_sources": ["靴底碾砖", "刀鞘轻响"],
+          "sfx_cues": ["刀鞘轻响"]
+        },
+        "combat": {
+          "duel_scope": "1v1",
+          "combatant_count": 2,
+          "combatant_ids": ["char-lin", "char-ying"],
+          "causality_chain": ["contact", "compression", "failure", "no_recovery"],
+          "damage_state": "intact",
+          "dialogue_lines": [],
+          "stance": "对峙"
+        }
+      }
+    },
+    {
+      "shot_id": "S02",
+      "title": "第一次接触",
+      "duration_seconds": 5.0,
+      "prompt": "刺客抢步突刺，刀客横刀格挡，两件兵器在画面中线相撞并迸出火星，两人全身仍在同一画面内。",
+      "transition": "硬切",
+      "shot_type": "近景",
+      "lens": "50mm",
+      "camera_position": "轴线上方略低",
+      "camera_motion": "短促前推",
+      "subject": "黑袍刀客与白面刺客",
+      "action": "刺客突刺，刀客横刀格挡，兵器接触迸火星",
+      "reference_bindings": {
+        "character": ["char-lin", "char-ying"],
+        "scene": ["scene-temple-corridor"],
+        "props": ["prop-blade"],
+        "style": ["style-rain-night-wuxia"]
+      },
+      "video_mode": "allReference",
+      "sound_cues": ["金属接触的短促撞击声", "火星爆开的爆裂声", "雨打瓦檐的连续底噪"],
+      "cinematic": {
+        "lighting": {
+          "description": "檐廊灯笼顶光加雨夜冷环境光",
+          "source_direction": "画面左后上方",
+          "color_temperature_k": 4300,
+          "key_fill_ratio": "4:1",
+          "motivated_source": "檐廊灯笼",
+          "change_policy": "全片不变"
+        },
+        "color_look": {
+          "look_id": "rain-night-cold-v1",
+          "dominant": "冷灰",
+          "secondary": "暗青",
+          "accent": "灯笼暖橙",
+          "ratios": {"dominant": 0.6, "secondary": 0.3, "accent": 0.1}
+        },
+        "screen_direction": {
+          "axis_id": "corridor-axis",
+          "line_side": "轴线右侧",
+          "subject_facing": "刀客面向画面右，刺客面向画面左",
+          "eyeline": "两人视线相交",
+          "movement_direction": "刺客向左前冲，刀客向右后顶住",
+          "crossing_policy": "不越轴"
+        },
+        "edit": {
+          "cut_on": "兵器接触迸出火星的瞬间",
+          "match_cut": "火星飞散方向",
+          "rhythm": "一次接触一个节拍",
+          "beat_seconds": 0.4
+        },
+        "sound": {
+          "ambience": ["雨声", "檐廊低频空间声"],
+          "diegetic_sources": ["金属兵器接触"],
+          "sfx_cues": ["金属接触的短促撞击声", "火星爆开的爆裂声"]
+        },
+        "combat": {
+          "duel_scope": "1v1",
+          "combatant_count": 2,
+          "combatant_ids": ["char-lin", "char-ying"],
+          "causality_chain": ["contact", "compression", "failure", "no_recovery"],
+          "damage_state": "intact",
+          "dialogue_lines": ["刀客：你只有这一招。"],
+          "stance": "接触"
+        }
+      }
+    },
+    {
+      "shot_id": "S03",
+      "title": "攻防转换",
+      "duration_seconds": 5.0,
+      "prompt": "刀客卸力后反压，刺客收步换手，双方重心在湿砖上交错滑动，镜头跟随重心下压，两人始终同框。",
+      "transition": "硬切",
+      "shot_type": "中近景",
+      "lens": "50mm",
+      "camera_position": "轴线右侧平视",
+      "camera_motion": "跟随重心下压的短推",
+      "subject": "黑袍刀客与白面刺客",
+      "action": "刀客卸力反压，刺客收步换手，重心滑动",
+      "reference_bindings": {
+        "character": ["char-lin", "char-ying"],
+        "scene": ["scene-temple-corridor"],
+        "props": ["prop-blade"],
+        "style": ["style-rain-night-wuxia"]
+      },
+      "video_mode": "allReference",
+      "sound_cues": ["湿砖上重心滑动的摩擦声", "粗重呼吸声", "雨打瓦檐的连续底噪"],
+      "cinematic": {
+        "lighting": {
+          "description": "檐廊灯笼顶光加雨夜冷环境光",
+          "source_direction": "画面左后上方",
+          "color_temperature_k": 4300,
+          "key_fill_ratio": "4:1",
+          "motivated_source": "檐廊灯笼",
+          "change_policy": "全片不变"
+        },
+        "color_look": {
+          "look_id": "rain-night-cold-v1",
+          "dominant": "冷灰",
+          "secondary": "暗青",
+          "accent": "灯笼暖橙",
+          "ratios": {"dominant": 0.6, "secondary": 0.3, "accent": 0.1}
+        },
+        "screen_direction": {
+          "axis_id": "corridor-axis",
+          "line_side": "轴线右侧",
+          "subject_facing": "刀客面向画面右，刺客面向画面左",
+          "eyeline": "两人视线相交",
+          "movement_direction": "刀客向左压上，刺客向右卸力",
+          "crossing_policy": "不越轴"
+        },
+        "edit": {
+          "cut_on": "刀客刀背压住对方兵器的瞬间",
+          "match_cut": "两人重心下压的弧线",
+          "rhythm": "压迫加速",
+          "beat_seconds": 0.5
+        },
+        "sound": {
+          "ambience": ["雨声", "檐廊低频空间声"],
+          "diegetic_sources": ["湿砖摩擦", "两人呼吸"],
+          "sfx_cues": ["湿砖上重心滑动的摩擦声"]
+        },
+        "combat": {
+          "duel_scope": "1v1",
+          "combatant_count": 2,
+          "combatant_ids": ["char-lin", "char-ying"],
+          "causality_chain": ["contact", "compression", "failure", "no_recovery"],
+          "damage_state": "intact",
+          "dialogue_lines": ["刺客：你挡不住第二刀。"],
+          "stance": "压迫"
+        }
+      }
+    },
+    {
+      "shot_id": "S04",
+      "title": "战损出现",
+      "duration_seconds": 5.0,
+      "prompt": "刺客变线切入刀客左臂，刀客衣袖被划开并见血，刀客身体被压得侧倾，手中兵器仍在。",
+      "transition": "硬切",
+      "shot_type": "近景",
+      "lens": "85mm",
+      "camera_position": "轴线右侧过肩",
+      "camera_motion": "跟着伤处的手持轻晃",
+      "subject": "黑袍刀客与白面刺客",
+      "action": "刺客变线划开刀客左臂衣袖，刀客身体侧倾",
+      "reference_bindings": {
+        "character": ["char-lin", "char-ying"],
+        "scene": ["scene-temple-corridor"],
+        "props": ["prop-blade"],
+        "style": ["style-rain-night-wuxia"]
+      },
+      "video_mode": "allReference",
+      "sound_cues": ["布料被划开的撕裂声", "血滴落地的轻响", "雨打瓦檐的连续底噪"],
+      "cinematic": {
+        "lighting": {
+          "description": "檐廊灯笼顶光加雨夜冷环境光",
+          "source_direction": "画面左后上方",
+          "color_temperature_k": 4300,
+          "key_fill_ratio": "4:1",
+          "motivated_source": "檐廊灯笼",
+          "change_policy": "全片不变"
+        },
+        "color_look": {
+          "look_id": "rain-night-cold-v1",
+          "dominant": "冷灰",
+          "secondary": "暗青",
+          "accent": "灯笼暖橙",
+          "ratios": {"dominant": 0.6, "secondary": 0.3, "accent": 0.1}
+        },
+        "screen_direction": {
+          "axis_id": "corridor-axis",
+          "line_side": "轴线右侧",
+          "subject_facing": "刀客面向画面右，刺客面向画面左",
+          "eyeline": "刀客视线下移到自己伤口",
+          "movement_direction": "刺客向左切入，刀客向右后侧倾",
+          "crossing_policy": "不越轴"
+        },
+        "edit": {
+          "cut_on": "衣袖被划开的瞬间",
+          "match_cut": "血线与雨丝方向",
+          "rhythm": "一次伤害一个节拍",
+          "beat_seconds": 0.3
+        },
+        "sound": {
+          "ambience": ["雨声", "檐廊低频空间声"],
+          "diegetic_sources": ["布料撕裂", "血滴落地"],
+          "sfx_cues": ["布料被划开的撕裂声"]
+        },
+        "combat": {
+          "duel_scope": "1v1",
+          "combatant_count": 2,
+          "combatant_ids": ["char-lin", "char-ying"],
+          "causality_chain": ["contact", "compression", "failure", "no_recovery"],
+          "damage_state": "minor",
+          "dialogue_lines": ["刀客：这一刀，记下了。"],
+          "stance": "见血"
+        }
+      }
+    },
+    {
+      "shot_id": "S05",
+      "title": "功能失效",
+      "duration_seconds": 5.0,
+      "prompt": "刺客转身肘击撞进刀客胸口，刀客左臂彻底垂落，兵器脱手落地弹起，身体被压缩成跪姿。",
+      "transition": "硬切",
+      "shot_type": "中景",
+      "lens": "35mm",
+      "camera_position": "轴线上方平视",
+      "camera_motion": "跟随撞击的短促顿挫",
+      "subject": "黑袍刀客与白面刺客",
+      "action": "刺客转身肘击压缩刀客躯干，刀客左臂垂落、兵器脱手",
+      "reference_bindings": {
+        "character": ["char-lin", "char-ying"],
+        "scene": ["scene-temple-corridor"],
+        "props": ["prop-blade"],
+        "style": ["style-rain-night-wuxia"]
+      },
+      "video_mode": "allReference",
+      "sound_cues": ["肘击入肉的闷响", "兵器脱手落地的金属弹跳声", "雨打瓦檐的连续底噪"],
+      "cinematic": {
+        "lighting": {
+          "description": "檐廊灯笼顶光加雨夜冷环境光",
+          "source_direction": "画面左后上方",
+          "color_temperature_k": 4300,
+          "key_fill_ratio": "4:1",
+          "motivated_source": "檐廊灯笼",
+          "change_policy": "全片不变"
+        },
+        "color_look": {
+          "look_id": "rain-night-cold-v1",
+          "dominant": "冷灰",
+          "secondary": "暗青",
+          "accent": "灯笼暖橙",
+          "ratios": {"dominant": 0.6, "secondary": 0.3, "accent": 0.1}
+        },
+        "screen_direction": {
+          "axis_id": "corridor-axis",
+          "line_side": "轴线右侧",
+          "subject_facing": "刀客面向画面右，刺客面向画面左",
+          "eyeline": "刀客视线下坠",
+          "movement_direction": "刺客向左转身发力，刀客向右下沉",
+          "crossing_policy": "不越轴"
+        },
+        "edit": {
+          "cut_on": "肘击撞进躯干的瞬间",
+          "match_cut": "兵器脱手下坠的弧线",
+          "rhythm": "一次重击一个节拍",
+          "beat_seconds": 0.4
+        },
+        "sound": {
+          "ambience": ["雨声", "檐廊低频空间声"],
+          "diegetic_sources": ["肘击入肉", "兵器落地"],
+          "sfx_cues": ["肘击入肉的闷响", "兵器脱手落地的金属弹跳声"]
+        },
+        "combat": {
+          "duel_scope": "1v1",
+          "combatant_count": 2,
+          "combatant_ids": ["char-lin", "char-ying"],
+          "causality_chain": ["contact", "compression", "failure", "no_recovery"],
+          "damage_state": "severe",
+          "dialogue_lines": [],
+          "stance": "功能失效"
+        }
+      }
+    },
+    {
+      "shot_id": "S06",
+      "title": "收束",
+      "duration_seconds": 5.0,
+      "prompt": "刀客跪倒在湿砖上不再起身，刺客收刀后退一步站定，雨继续落在两人之间的空地上，镜头缓慢拉开。",
+      "transition": "渐隐",
+      "shot_type": "全景",
+      "lens": "35mm",
+      "camera_position": "轴线上方平视",
+      "camera_motion": "缓慢后拉",
+      "subject": "黑袍刀客与白面刺客",
+      "action": "刀客倒地不起，刺客收刀站定",
+      "reference_bindings": {
+        "character": ["char-lin", "char-ying"],
+        "scene": ["scene-temple-corridor"],
+        "props": ["prop-blade"],
+        "style": ["style-rain-night-wuxia"]
+      },
+      "video_mode": "allReference",
+      "sound_cues": ["雨落在湿砖上的连续声", "收刀入鞘的金属摩擦声"],
+      "cinematic": {
+        "lighting": {
+          "description": "檐廊灯笼顶光加雨夜冷环境光",
+          "source_direction": "画面左后上方",
+          "color_temperature_k": 4300,
+          "key_fill_ratio": "4:1",
+          "motivated_source": "檐廊灯笼",
+          "change_policy": "全片不变"
+        },
+        "color_look": {
+          "look_id": "rain-night-cold-v1",
+          "dominant": "冷灰",
+          "secondary": "暗青",
+          "accent": "灯笼暖橙",
+          "ratios": {"dominant": 0.6, "secondary": 0.3, "accent": 0.1}
+        },
+        "screen_direction": {
+          "axis_id": "corridor-axis",
+          "line_side": "轴线右侧",
+          "subject_facing": "刀客面向画面右倒地，刺客面向画面左",
+          "eyeline": "刺客视线落在倒地的刀客身上",
+          "movement_direction": "刺客向右后退，镜头向后拉",
+          "crossing_policy": "不越轴"
+        },
+        "edit": {
+          "cut_on": "收刀入鞘完成的瞬间",
+          "match_cut": "雨线垂落的方向",
+          "rhythm": "一击之后不还手",
+          "beat_seconds": 0.8
+        },
+        "sound": {
+          "ambience": ["雨声", "檐廊低频空间声"],
+          "diegetic_sources": ["雨落湿砖", "收刀入鞘"],
+          "sfx_cues": ["收刀入鞘的金属摩擦声"]
+        },
+        "combat": {
+          "duel_scope": "1v1",
+          "combatant_count": 2,
+          "combatant_ids": ["char-lin", "char-ying"],
+          "causality_chain": ["contact", "compression", "failure", "no_recovery"],
+          "damage_state": "down",
+          "dialogue_lines": ["刺客：到此为止。"],
+          "stance": "收束"
+        }
+      }
+    }
+  ]
+}

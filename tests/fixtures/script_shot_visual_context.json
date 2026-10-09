@@ -1,0 +1,30 @@
+[
+  {
+    "name": "nested_material",
+    "row": {
+      "shot_prompt": "[画面构图：侧面全景] + [角色卡：[阿波：红夹克]] + [光影几何：火光照亮[织物 + 金属]，冷色背景] + [视觉风格/质感：手绘轮廓与纸纤维] + [技术参数：35mm，f/8]",
+      "lighting_mood": "火光照亮[织物 + 金属]，冷色背景"
+    },
+    "lines": ["光影几何：火光照亮[织物 + 金属]，冷色背景", "视觉风格/质感：手绘轮廓与纸纤维"]
+  },
+  {
+    "name": "external_body",
+    "row": {"shot_prompt": "[光影几何] 门缝侧光 + [视觉风格/质感] 剪纸轮廓 + [主体状态] 板停在水塔南侧", "lighting_mood": "红门打开后日光进入"},
+    "lines": ["光影几何：门缝侧光", "视觉风格/质感：剪纸轮廓", "本镜光影氛围：红门打开后日光进入"]
+  },
+  {
+    "name": "legacy_explicit_light",
+    "row": {"visual_description": "阿波站在门边，暖色皮肤与蓝色窗户", "lighting_mood": "蜡烛左侧低光"},
+    "lines": ["本镜光影氛围：蜡烛左侧低光"]
+  },
+  {
+    "name": "no_inferred_style",
+    "row": {"shot_prompt": "阿波在雨中，像油画一样看向铜门", "lighting_mood": "无"},
+    "lines": []
+  },
+  {
+    "name": "placeholders",
+    "row": {"shot_prompt": "[光影几何：N/A] + [视觉风格：无] + [质感]", "lighting_mood": "-"},
+    "lines": []
+  }
+]

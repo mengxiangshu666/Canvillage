@@ -1,0 +1,25 @@
+{
+  "source_sha256": "b69b39da3661dbd0c1b416e81fcb471b69f3cf8051671781480c63ed79122ff2",
+  "screening_id": "parkour-cut-windows-20261007",
+  "audience": "人工抽帧观察；非完整动态与声音审片",
+  "issues": [
+    {
+      "issue_id": "parkour-action-reset",
+      "category": "continuity",
+      "severity": "high",
+      "timestamp_seconds": 13.433008,
+      "localized": true,
+      "description": "切前角色在钢梁旁飞行，切后从另一平台上的低身准备姿态开始；目前四帧没有展示路线或时间省略依据。补路径建立镜头或重写下一镜起始动作，而不是只加淡化。",
+      "audience_effect": "同一次跑酷动作看起来重新开始；是否有意省略需回查剧本。"
+    },
+    {
+      "issue_id": "parkour-board-goggles",
+      "category": "prop_state",
+      "severity": "high",
+      "timestamp_seconds": 31.299674,
+      "localized": true,
+      "description": "切前板下为普通深色轮组，护目镜在额头；切后板下为明显蓝色发光结构，额头护目镜未保持。先核对资产锁与当镜首帧，局部修正后再验收。",
+      "audience_effect": "同一角色与同一滑板的连续身份被削弱。"
+    }
+  ]
+}

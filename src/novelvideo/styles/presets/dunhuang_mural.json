@@ -1,0 +1,31 @@
+{
+  "id": "dunhuang_mural",
+  "name": "敦煌壁画",
+  "label": "敦煌壁画",
+  "family": "dunhuang_mural",
+  "era": "historical_fantasy",
+  "palette": "石青、石绿、朱砂、赭石、土黄与风化米白",
+  "lighting": "壁画式平光配合金色神性轮廓，色层温暖而非霓虹",
+  "optics": "壁面二维秩序结合浅浮雕景深，无摄影散景，边缘保留矿物颜料颗粒",
+  "composition": "飞天飘带形成环形动势，中心叙事清晰，边饰与人物层级遵循壁画秩序",
+  "camera_motion": "slow ceremonial push, layered mural parallax, ribbon-led circular reveal",
+  "style_instructions": "Dunhuang mural-inspired cinematic illustration, mineral pigments, weathered plaster texture, graceful flying ribbons, solemn narrative iconography, historically grounded Chinese decorative rhythm.",
+  "avoid_instructions": "No Bollywood ornament, no glossy fantasy CGI, no random religious symbols, no contemporary commercial gloss, no text or watermark.",
+  "style_tag": "DUNHUANG MINERAL MURAL",
+  "style_family": "animation",
+  "animation_subtype": "hybrid",
+  "tags": [
+    "敦煌",
+    "壁画",
+    "东方",
+    "矿物色"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "slow ceremonial push, layered mural parallax, ribbon-led circular reveal"
+    }
+  },
+  "image_prompt": "Dunhuang mural-inspired cinematic illustration, mineral pigments, weathered plaster texture, graceful flying ribbons, solemn narrative iconography, historically grounded Chinese decorative rhythm.",
+  "video_prompt": "slow ceremonial push, layered mural parallax, ribbon-led circular reveal",
+  "negative_prompt": "No Bollywood ornament, no glossy fantasy CGI, no random religious symbols, no contemporary commercial gloss, no text or watermark."
+}

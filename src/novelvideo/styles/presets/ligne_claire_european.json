@@ -1,0 +1,30 @@
+{
+  "id": "ligne_claire_european",
+  "name": "欧式清线漫画",
+  "family": "ligne_claire",
+  "era": "mid_century_modern",
+  "palette": "克制原色、浅米白、天蓝、砖红与草绿，平涂色块均匀干净",
+  "lighting": "极少量明确投影，不使用复杂渐变或写实体积光",
+  "optics": "精确建筑与交通工具透视，中性视角、深景可读、线条宽度一致",
+  "composition": "清晰前中后景、完整场景地理和连续动作，人物与复杂环境具有同等线条精度",
+  "camera_motion": "clean lateral pan, readable wide tracking, restrained push-in, precise establishing reveal",
+  "style_instructions": "European ligne claire comic art, uniform clean contour lines, flat controlled color, exact architectural perspective, readable staging and uncluttered visual storytelling.",
+  "avoid_instructions": "No heavy black ink masses, no cross-hatching, no halftone grit, no anime facial proportions, no painterly gradients, no text or watermark.",
+  "style_tag": "EUROPEAN LIGNE CLAIRE PRECISION",
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "tags": [
+    "清线漫画",
+    "欧洲漫画",
+    "平涂",
+    "精确透视"
+  ],
+  "image_prompt": "European ligne claire comic art, uniform clean contour lines, flat controlled color, exact architectural perspective, readable staging and uncluttered visual storytelling.",
+  "video_prompt": "clean lateral pan, readable wide tracking, restrained push-in, precise establishing reveal",
+  "negative_prompt": "No heavy black ink masses, no cross-hatching, no halftone grit, no anime facial proportions, no painterly gradients, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "clean lateral pan, readable wide tracking, restrained push-in, precise establishing reveal"
+    }
+  }
+}

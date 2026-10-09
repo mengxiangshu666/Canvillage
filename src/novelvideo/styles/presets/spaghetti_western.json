@@ -1,0 +1,31 @@
+{
+  "id": "spaghetti_western",
+  "name": "意式西部片",
+  "label": "意式西部片",
+  "family": "western",
+  "era": "1960s_1970s",
+  "palette": "晒褪土黄、焦褐、尘灰、皮革黑与烈日白",
+  "lighting": "正午硬光、长阴影、尘埃逆光，面部纹理毫不美化",
+  "optics": "24mm荒野宽景与100mm极近面部细节交替，轻微变形与胶片颗粒",
+  "composition": "极端远景和极端特写对置，决斗轴线清楚，地平线压迫人物",
+  "camera_motion": "long tense hold, sudden snap pan, slow lateral duel track, explosive action release",
+  "style_instructions": "Spaghetti Western cinema, sun-scorched frontier, weathered faces and materials, operatic tension, extreme scale contrast and tactile 35mm texture.",
+  "avoid_instructions": "No clean theme-park cowboy look, no modern tactical gear, no glossy orange commercial grade, no text or watermark.",
+  "style_tag": "SPAGHETTI WESTERN OPERATIC TENSION",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "西部",
+    "胶片",
+    "荒野",
+    "决斗"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "long tense hold, sudden snap pan, slow lateral duel track, explosive action release"
+    }
+  },
+  "image_prompt": "Spaghetti Western cinema, sun-scorched frontier, weathered faces and materials, operatic tension, extreme scale contrast and tactile 35mm texture.",
+  "video_prompt": "long tense hold, sudden snap pan, slow lateral duel track, explosive action release",
+  "negative_prompt": "No clean theme-park cowboy look, no modern tactical gear, no glossy orange commercial grade, no text or watermark."
+}

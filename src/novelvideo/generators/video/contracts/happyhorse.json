@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "packageId": "happyhorse",
+  "authority": "seed",
+  "notes": [
+    "HappyHorse 1.0（遗留 t2v / i2v）：字段名与其它家完全不同 —— 首帧是 image_url、参考数组是 reference_images、音频开关是 audio_setting。",
+    "本条不带画幅字段（ratio_field 为 null），并且必须丢弃 seconds。",
+    "之所以单列一包而不是和别家共用：它的字段名没有任何共性，硬套共享基类只会引入映射错误。",
+    "本包只描述「中性请求怎么落到这家上游」，中性请求模型仍在 Python 代码里。"
+  ],
+  "profiles": [
+    {
+      "profile_id": "happyhorse",
+      "match_prefixes": [
+        "happyhorse"
+      ],
+      "duration_field": "duration",
+      "duration_choices": null,
+      "ratio_field": null,
+      "first_frame_field": "image_url",
+      "ref_field": "reference_images",
+      "audio_field": "audio_setting",
+      "auto_face_field": null,
+      "drop_fields": [
+        "seconds"
+      ]
+    }
+  ]
+}

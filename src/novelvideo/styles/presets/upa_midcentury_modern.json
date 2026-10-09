@@ -1,0 +1,30 @@
+{
+  "id": "upa_midcentury_modern",
+  "name": "UPA中世纪现代动画",
+  "family": "midcentury_limited_animation",
+  "era": "1940s_1960s",
+  "palette": "奶油白、芥末黄、砖红、青绿与黑色，严格限制在三至五种平面色",
+  "lighting": "不使用写实体积光，阴影是简洁几何色块，背景保持高度概括",
+  "optics": "平面舞台式空间、不对称负形、细线人物与几何城市透视，拒绝三维镜头质感",
+  "composition": "人物、家具和建筑由少量线条与色块组织，留白积极参与节奏和叙事",
+  "camera_motion": "graphic lateral pan, limited-animation hold, geometric wipe, rhythmic planar reframing",
+  "style_instructions": "UPA-inspired mid-century modern limited animation, thin economical linework, flat geometric color fields, asymmetric negative space, simplified architecture and witty planar staging.",
+  "avoid_instructions": "No anime cel highlights, no rounded 3D family-film volume, no corporate vector template, no paper-cut texture, no realistic gradients, no text or watermark.",
+  "style_tag": "UPA FLAT GEOMETRIC LIMITED ANIMATION",
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "tags": [
+    "UPA",
+    "中世纪现代",
+    "有限动画",
+    "几何平涂"
+  ],
+  "image_prompt": "UPA-inspired mid-century modern limited animation, thin economical linework, flat geometric color fields, asymmetric negative space, simplified architecture and witty planar staging.",
+  "video_prompt": "graphic lateral pan, limited-animation hold, geometric wipe, rhythmic planar reframing",
+  "negative_prompt": "No anime cel highlights, no rounded 3D family-film volume, no corporate vector template, no paper-cut texture, no realistic gradients, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "graphic lateral pan, limited-animation hold, geometric wipe, rhythmic planar reframing"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "packageId": "prompt-hubs-flex",
+  "authority": "seed",
+  "notes": [
+    "Prompt-Hubs 的「弹性」家族：一条前缀同时管 veo / kling / runway / sora / gemini-omni 五个系列。",
+    "时长与画幅由调用方按具体型号归一，这里不写死档位（duration_choices 为 null）。",
+    "与同门 firefly 家族的差别是刻意的：这家不带 auto_face、不带 generate_audio、不强制 480p。",
+    "本包只描述「中性请求怎么落到这家上游」，中性请求模型仍在 Python 代码里。"
+  ],
+  "profiles": [
+    {
+      "profile_id": "prompt_hubs_flex",
+      "match_prefixes": [
+        "veo-",
+        "kling-",
+        "runway-",
+        "sora-",
+        "gemini-omni"
+      ],
+      "duration_field": "duration",
+      "duration_choices": null,
+      "ratio_field": "ratio",
+      "first_frame_field": "image",
+      "ref_field": "referenceImages",
+      "audio_field": null,
+      "auto_face_field": null
+    }
+  ]
+}

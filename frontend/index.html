@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/brand/village-canvas-mark-dark.png" />
+    <link rel="icon" type="image/png" media="(prefers-color-scheme: dark)" href="/brand/village-canvas-mark-light.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>村长无限画布</title>
+    <meta
+      name="description"
+      content="A general-purpose AIGC video engine: script to finished film in one pipeline — dramas, ads, product videos, otome games, and more. | 通用 AIGC 视频引擎 —— 从剧本到成片一条流水线，漫剧、广告、电商、乙游皆可"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="村长无限画布" />
+    <meta property="og:title" content="村长无限画布" />
+    <meta
+      property="og:description"
+      content="A general-purpose AIGC video engine: script to finished film in one pipeline — dramas, ads, product videos, otome games, and more. | 通用 AIGC 视频引擎 —— 从剧本到成片一条流水线，漫剧、广告、电商、乙游皆可"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="村长无限画布" />
+    <meta
+      name="twitter:description"
+      content="A general-purpose AIGC video engine: script to finished film in one pipeline — dramas, ads, product videos, otome games, and more. | 通用 AIGC 视频引擎 —— 从剧本到成片一条流水线，漫剧、广告、电商、乙游皆可"
+    />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("village-app");
+          var theme = "system";
+          if (stored) {
+            var parsed = JSON.parse(stored);
+            if (parsed && parsed.state && parsed.state.theme) {
+              theme = parsed.state.theme;
+            }
+          }
+          var resolved =
+            theme === "system"
+              ? window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light"
+              : theme;
+          document.documentElement.classList.add(resolved);
+          var pathname = window.location.pathname;
+          if (pathname === "/login" || pathname.indexOf("/watch/") === 0) {
+            document.documentElement.classList.add("preauth-shell");
+            document.documentElement.style.backgroundColor = "#181818";
+          }
+        } catch (e) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

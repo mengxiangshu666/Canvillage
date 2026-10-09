@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "project": "archify",
+  "source_repository": "https://github.com/tt-a1i/archify",
+  "source_commit": "39a21139a4661203888049d44e3b8c0da13fa576",
+  "source_version": "2.16.0",
+  "license": "MIT",
+  "imported_at": "2026-08-30",
+  "import_scope": "archify runtime package without node_modules",
+  "local_modifications": [],
+  "commercial_distribution": {
+    "default_included": false,
+    "license_notice_required_if_distributed": true,
+    "runtime_dependency": false
+  }
+}

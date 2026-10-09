@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "project": "awesome-gpt-image-2",
+  "source_repository": "https://github.com/freestylefly/awesome-gpt-image-2",
+  "source_commit": "c7d293963b21c60bf338003915438cc5c39dd3ca",
+  "source_version": "541-case-snapshot",
+  "license": "MIT",
+  "imported_at": "2026-08-31",
+  "import_scope": "data/cases.json, data/style-library.json, GPT-Image2 style Skill and references",
+  "local_modifications": [],
+  "commercial_distribution": {
+    "default_included": true,
+    "license_notice_required_if_distributed": true,
+    "runtime_dependency": false
+  }
+}

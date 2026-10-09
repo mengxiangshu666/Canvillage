@@ -1,0 +1,30 @@
+{
+  "id": "korean_minhwa",
+  "name": "朝鲜民画",
+  "family": "minhwa",
+  "era": "joseon_folk",
+  "palette": "高纯石青、石绿、朱红、粉白与墨黑，纸纤维上的矿物色对比鲜明",
+  "lighting": "平面设色、少量装饰性阴影，不使用真人电影光或西方体积塑形",
+  "optics": "扁平或逆透视空间，器物层叠而保持每一形体可读",
+  "composition": "朴拙比例、装饰平衡和象征性自然/器物母题形成亲切而有秩序的民间画面",
+  "camera_motion": "ornamental lateral drift, layered reverse-perspective reveal, gentle tableau push, motif-led transition",
+  "style_instructions": "Korean minhwa folk painting, bold mineral colors, paper texture, playful naïve proportions, flattened or reverse perspective and balanced symbolic decorative motifs.",
+  "avoid_instructions": "No Chinese paper-cut symmetry, no Japanese woodblock waves, no Western linear realism, no live-action shading, no generic East Asian mashup, no text or watermark.",
+  "style_tag": "KOREAN MINHWA BOLD FOLK DECORATION",
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "tags": [
+    "朝鲜民画",
+    "民间艺术",
+    "逆透视",
+    "矿物色"
+  ],
+  "image_prompt": "Korean minhwa folk painting, bold mineral colors, paper texture, playful naïve proportions, flattened or reverse perspective and balanced symbolic decorative motifs.",
+  "video_prompt": "ornamental lateral drift, layered reverse-perspective reveal, gentle tableau push, motif-led transition",
+  "negative_prompt": "No Chinese paper-cut symmetry, no Japanese woodblock waves, no Western linear realism, no live-action shading, no generic East Asian mashup, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "ornamental lateral drift, layered reverse-perspective reveal, gentle tableau push, motif-led transition"
+    }
+  }
+}

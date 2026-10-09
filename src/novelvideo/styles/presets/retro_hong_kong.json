@@ -1,0 +1,31 @@
+{
+  "id": "retro_hong_kong",
+  "name": "复古港风",
+  "label": "复古港风",
+  "family": "urban_retro",
+  "era": "1980s-1990s",
+  "palette": "钨丝金、霓虹洋红、青绿色阴影、旧胶片褪色",
+  "lighting": "practical neon and tungsten, humid specular highlights, hard backlight, expressive colored spill",
+  "optics": "anamorphic 35mm, star-filter glints, halation, moderate grain, deep urban bokeh",
+  "composition": "狭窄街巷、招牌切割、前景雨幕与快速人物调度，保留城市纵深",
+  "camera_motion": "energetic tracking, whip-pan transitions, low-angle push, occasional handheld urgency",
+  "style_instructions": "Retro Hong Kong urban cinema atmosphere, dense practical lights, rain-slick streets, expressive faces, kinetic yet legible staging.",
+  "avoid_instructions": "No modern LED-clean look, no empty generic city, no unreadable gibberish signage, no plastic CGI, no watermark.",
+  "style_tag": "RETRO HONG KONG NOCTURNE",
+  "tags": [
+    "港风",
+    "都市",
+    "复古",
+    "霓虹"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Use motivated tracking and a short whip-pan only when action changes direction; keep faces and practical lights coherent across motion."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Retro Hong Kong urban cinema atmosphere, dense practical lights, rain-slick streets, expressive faces, kinetic yet legible staging.",
+  "video_prompt": "energetic tracking, whip-pan transitions, low-angle push, occasional handheld urgency",
+  "negative_prompt": "No modern LED-clean look, no empty generic city, no unreadable gibberish signage, no plastic CGI, no watermark."
+}

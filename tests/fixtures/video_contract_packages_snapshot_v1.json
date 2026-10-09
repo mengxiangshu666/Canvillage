@@ -1,0 +1,893 @@
+{
+  "models": {
+    "firefly-seedance2-480p": {
+      "create_path": "/v1/videos",
+      "duration_choices": null,
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "auto_face": true,
+          "duration": 30,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "firefly-seedance2-480p",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        },
+        "duration=30|aspect=9:16": {
+          "auto_face": true,
+          "duration": 30,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "firefly-seedance2-480p",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        },
+        "duration=5|aspect=16:9": {
+          "auto_face": true,
+          "duration": 5,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "firefly-seedance2-480p",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        },
+        "duration=5|aspect=9:16": {
+          "auto_face": true,
+          "duration": 5,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "firefly-seedance2-480p",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        },
+        "duration=8|aspect=16:9": {
+          "auto_face": true,
+          "duration": 8,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "firefly-seedance2-480p",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        },
+        "duration=8|aspect=9:16": {
+          "auto_face": true,
+          "duration": 8,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "firefly-seedance2-480p",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "prompt_hubs_firefly"
+    },
+    "happyhorse-1.0": {
+      "create_path": "/v1/videos",
+      "duration_choices": null,
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "audio_setting": true,
+          "duration": 30,
+          "image_url": "https://example.invalid/first.png",
+          "model": "happyhorse-1.0",
+          "prompt": "画面描述",
+          "reference_images": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=30|aspect=9:16": {
+          "audio_setting": true,
+          "duration": 30,
+          "image_url": "https://example.invalid/first.png",
+          "model": "happyhorse-1.0",
+          "prompt": "画面描述",
+          "reference_images": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=5|aspect=16:9": {
+          "audio_setting": true,
+          "duration": 5,
+          "image_url": "https://example.invalid/first.png",
+          "model": "happyhorse-1.0",
+          "prompt": "画面描述",
+          "reference_images": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=5|aspect=9:16": {
+          "audio_setting": true,
+          "duration": 5,
+          "image_url": "https://example.invalid/first.png",
+          "model": "happyhorse-1.0",
+          "prompt": "画面描述",
+          "reference_images": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=8|aspect=16:9": {
+          "audio_setting": true,
+          "duration": 8,
+          "image_url": "https://example.invalid/first.png",
+          "model": "happyhorse-1.0",
+          "prompt": "画面描述",
+          "reference_images": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=8|aspect=9:16": {
+          "audio_setting": true,
+          "duration": 8,
+          "image_url": "https://example.invalid/first.png",
+          "model": "happyhorse-1.0",
+          "prompt": "画面描述",
+          "reference_images": [
+            "https://example.invalid/ref.png"
+          ]
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "happyhorse"
+    },
+    "kling-3.0-omni": {
+      "create_path": "/v1/videos",
+      "duration_choices": null,
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "duration": 30,
+          "image": "https://example.invalid/first.png",
+          "model": "kling-3.0-omni",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=30|aspect=9:16": {
+          "duration": 30,
+          "image": "https://example.invalid/first.png",
+          "model": "kling-3.0-omni",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=5|aspect=16:9": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "kling-3.0-omni",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=5|aspect=9:16": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "kling-3.0-omni",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=8|aspect=16:9": {
+          "duration": 8,
+          "image": "https://example.invalid/first.png",
+          "model": "kling-3.0-omni",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=8|aspect=9:16": {
+          "duration": 8,
+          "image": "https://example.invalid/first.png",
+          "model": "kling-3.0-omni",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "prompt_hubs_flex"
+    },
+    "s-videos-f-933-fast-480-2": {
+      "create_path": "/v1/videos",
+      "duration_choices": null,
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "auto_face": true,
+          "duration": 30,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "s-videos-f-933-fast-480-2",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        },
+        "duration=30|aspect=9:16": {
+          "auto_face": true,
+          "duration": 30,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "s-videos-f-933-fast-480-2",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        },
+        "duration=5|aspect=16:9": {
+          "auto_face": true,
+          "duration": 5,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "s-videos-f-933-fast-480-2",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        },
+        "duration=5|aspect=9:16": {
+          "auto_face": true,
+          "duration": 5,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "s-videos-f-933-fast-480-2",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        },
+        "duration=8|aspect=16:9": {
+          "auto_face": true,
+          "duration": 8,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "s-videos-f-933-fast-480-2",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        },
+        "duration=8|aspect=9:16": {
+          "auto_face": true,
+          "duration": 8,
+          "generate_audio": true,
+          "image": "https://example.invalid/first.png",
+          "model": "s-videos-f-933-fast-480-2",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ],
+          "resolution": "480p"
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "kacang_933_fast"
+    },
+    "sd-2.0-fast": {
+      "create_path": "/v1/videos",
+      "duration_choices": [
+        5,
+        10,
+        15
+      ],
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "duration": 15,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast",
+          "prompt": "画面描述"
+        },
+        "duration=30|aspect=9:16": {
+          "duration": 15,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=16:9": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=9:16": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=16:9": {
+          "duration": 10,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=9:16": {
+          "duration": 10,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast",
+          "prompt": "画面描述"
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "huabu"
+    },
+    "sd-2.0-fast-v1": {
+      "create_path": "/v1/videos",
+      "duration_choices": [
+        5,
+        10,
+        15
+      ],
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "duration": 15,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast-v1",
+          "prompt": "画面描述"
+        },
+        "duration=30|aspect=9:16": {
+          "duration": 15,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast-v1",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=16:9": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast-v1",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=9:16": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast-v1",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=16:9": {
+          "duration": 10,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast-v1",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=9:16": {
+          "duration": 10,
+          "image": "https://example.invalid/first.png",
+          "model": "sd-2.0-fast-v1",
+          "prompt": "画面描述"
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "huabu"
+    },
+    "sd-2.5-M-720P-v1": {
+      "create_path": "/v1/videos",
+      "duration_choices": [
+        5,
+        10,
+        15,
+        30
+      ],
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "duration": 30,
+          "first_image": "https://example.invalid/first.png",
+          "model": "sd-2.5-M-720P-v1",
+          "prompt": "画面描述"
+        },
+        "duration=30|aspect=9:16": {
+          "duration": 30,
+          "first_image": "https://example.invalid/first.png",
+          "model": "sd-2.5-M-720P-v1",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=16:9": {
+          "duration": 5,
+          "first_image": "https://example.invalid/first.png",
+          "model": "sd-2.5-M-720P-v1",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=9:16": {
+          "duration": 5,
+          "first_image": "https://example.invalid/first.png",
+          "model": "sd-2.5-M-720P-v1",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=16:9": {
+          "duration": 10,
+          "first_image": "https://example.invalid/first.png",
+          "model": "sd-2.5-M-720P-v1",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=9:16": {
+          "duration": 10,
+          "first_image": "https://example.invalid/first.png",
+          "model": "sd-2.5-M-720P-v1",
+          "prompt": "画面描述"
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "sd2_5_m_full"
+    },
+    "sd2": {
+      "create_path": "/v1/videos",
+      "duration_choices": [
+        5,
+        10,
+        15
+      ],
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "duration": 15,
+          "image": "https://example.invalid/first.png",
+          "model": "sd2",
+          "prompt": "画面描述"
+        },
+        "duration=30|aspect=9:16": {
+          "duration": 15,
+          "image": "https://example.invalid/first.png",
+          "model": "sd2",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=16:9": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "sd2",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=9:16": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "sd2",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=16:9": {
+          "duration": 10,
+          "image": "https://example.invalid/first.png",
+          "model": "sd2",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=9:16": {
+          "duration": 10,
+          "image": "https://example.invalid/first.png",
+          "model": "sd2",
+          "prompt": "画面描述"
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "huabu"
+    },
+    "sd2.0-480p": {
+      "create_path": "/v1/videos",
+      "duration_choices": null,
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "auto_face": true,
+          "duration": 30,
+          "model": "sd2.0-480p",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=30|aspect=9:16": {
+          "auto_face": true,
+          "duration": 30,
+          "model": "sd2.0-480p",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=5|aspect=16:9": {
+          "auto_face": true,
+          "duration": 5,
+          "model": "sd2.0-480p",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=5|aspect=9:16": {
+          "auto_face": true,
+          "duration": 5,
+          "model": "sd2.0-480p",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=8|aspect=16:9": {
+          "auto_face": true,
+          "duration": 8,
+          "model": "sd2.0-480p",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=8|aspect=9:16": {
+          "auto_face": true,
+          "duration": 8,
+          "model": "sd2.0-480p",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "prompt_hubs_sd"
+    },
+    "sd2fast": {
+      "create_path": "/v1/videos",
+      "duration_choices": null,
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "auto_face": true,
+          "duration": 30,
+          "model": "sd2fast",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=30|aspect=9:16": {
+          "auto_face": true,
+          "duration": 30,
+          "model": "sd2fast",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=5|aspect=16:9": {
+          "auto_face": true,
+          "duration": 5,
+          "model": "sd2fast",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=5|aspect=9:16": {
+          "auto_face": true,
+          "duration": 5,
+          "model": "sd2fast",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=8|aspect=16:9": {
+          "auto_face": true,
+          "duration": 8,
+          "model": "sd2fast",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=8|aspect=9:16": {
+          "auto_face": true,
+          "duration": 8,
+          "model": "sd2fast",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "prompt_hubs_sd"
+    },
+    "sd_2": {
+      "create_path": "/v1/videos",
+      "duration_choices": [
+        5,
+        10,
+        15
+      ],
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "duration": 15,
+          "image": "https://example.invalid/first.png",
+          "model": "sd_2",
+          "prompt": "画面描述"
+        },
+        "duration=30|aspect=9:16": {
+          "duration": 15,
+          "image": "https://example.invalid/first.png",
+          "model": "sd_2",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=16:9": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "sd_2",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=9:16": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "sd_2",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=16:9": {
+          "duration": 10,
+          "image": "https://example.invalid/first.png",
+          "model": "sd_2",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=9:16": {
+          "duration": 10,
+          "image": "https://example.invalid/first.png",
+          "model": "sd_2",
+          "prompt": "画面描述"
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "huabu"
+    },
+    "seedance-2.0": {
+      "create_path": "/v1/video/generations",
+      "duration_choices": null,
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "aspect_ratio": "16:9",
+          "duration_seconds": 30,
+          "first_frame_image": "https://example.invalid/first.png",
+          "generate_audio": true,
+          "model": "seedance-2.0",
+          "prompt": "画面描述"
+        },
+        "duration=30|aspect=9:16": {
+          "aspect_ratio": "9:16",
+          "duration_seconds": 30,
+          "first_frame_image": "https://example.invalid/first.png",
+          "generate_audio": true,
+          "model": "seedance-2.0",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=16:9": {
+          "aspect_ratio": "16:9",
+          "duration_seconds": 5,
+          "first_frame_image": "https://example.invalid/first.png",
+          "generate_audio": true,
+          "model": "seedance-2.0",
+          "prompt": "画面描述"
+        },
+        "duration=5|aspect=9:16": {
+          "aspect_ratio": "9:16",
+          "duration_seconds": 5,
+          "first_frame_image": "https://example.invalid/first.png",
+          "generate_audio": true,
+          "model": "seedance-2.0",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=16:9": {
+          "aspect_ratio": "16:9",
+          "duration_seconds": 8,
+          "first_frame_image": "https://example.invalid/first.png",
+          "generate_audio": true,
+          "model": "seedance-2.0",
+          "prompt": "画面描述"
+        },
+        "duration=8|aspect=9:16": {
+          "aspect_ratio": "9:16",
+          "duration_seconds": 8,
+          "first_frame_image": "https://example.invalid/first.png",
+          "generate_audio": true,
+          "model": "seedance-2.0",
+          "prompt": "画面描述"
+        }
+      },
+      "query_path": "/v1/video/generations/{task_id}",
+      "resolved_profile_id": "seedance2_native"
+    },
+    "totally-unknown-model": {
+      "create_path": "/v1/videos",
+      "duration_choices": null,
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "duration": 30,
+          "image": "https://example.invalid/first.png",
+          "model": "totally-unknown-model",
+          "prompt": "画面描述",
+          "size": "16:9"
+        },
+        "duration=30|aspect=9:16": {
+          "duration": 30,
+          "image": "https://example.invalid/first.png",
+          "model": "totally-unknown-model",
+          "prompt": "画面描述",
+          "size": "9:16"
+        },
+        "duration=5|aspect=16:9": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "totally-unknown-model",
+          "prompt": "画面描述",
+          "size": "16:9"
+        },
+        "duration=5|aspect=9:16": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "totally-unknown-model",
+          "prompt": "画面描述",
+          "size": "9:16"
+        },
+        "duration=8|aspect=16:9": {
+          "duration": 8,
+          "image": "https://example.invalid/first.png",
+          "model": "totally-unknown-model",
+          "prompt": "画面描述",
+          "size": "16:9"
+        },
+        "duration=8|aspect=9:16": {
+          "duration": 8,
+          "image": "https://example.invalid/first.png",
+          "model": "totally-unknown-model",
+          "prompt": "画面描述",
+          "size": "9:16"
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "openai_video_default"
+    },
+    "veo-3.1": {
+      "create_path": "/v1/videos",
+      "duration_choices": null,
+      "payloads": {
+        "duration=30|aspect=16:9": {
+          "duration": 30,
+          "image": "https://example.invalid/first.png",
+          "model": "veo-3.1",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=30|aspect=9:16": {
+          "duration": 30,
+          "image": "https://example.invalid/first.png",
+          "model": "veo-3.1",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=5|aspect=16:9": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "veo-3.1",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=5|aspect=9:16": {
+          "duration": 5,
+          "image": "https://example.invalid/first.png",
+          "model": "veo-3.1",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=8|aspect=16:9": {
+          "duration": 8,
+          "image": "https://example.invalid/first.png",
+          "model": "veo-3.1",
+          "prompt": "画面描述",
+          "ratio": "16:9",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        },
+        "duration=8|aspect=9:16": {
+          "duration": 8,
+          "image": "https://example.invalid/first.png",
+          "model": "veo-3.1",
+          "prompt": "画面描述",
+          "ratio": "9:16",
+          "referenceImages": [
+            "https://example.invalid/ref.png"
+          ]
+        }
+      },
+      "query_path": "/v1/videos/{task_id}",
+      "resolved_profile_id": "prompt_hubs_flex"
+    }
+  },
+  "responses": {
+    "sample_0": {
+      "error": null,
+      "progress": null,
+      "result_url": "https://example.invalid/a.mp4",
+      "status": "completed",
+      "task_id": "task-1"
+    },
+    "sample_1": {
+      "error": null,
+      "progress": 42,
+      "result_url": null,
+      "status": "running",
+      "task_id": "task-2"
+    },
+    "sample_2": {
+      "error": "boom",
+      "progress": null,
+      "result_url": null,
+      "status": "failed",
+      "task_id": null
+    },
+    "sample_3": {
+      "error": null,
+      "progress": null,
+      "result_url": "https://example.invalid/b.mp4",
+      "status": "completed",
+      "task_id": null
+    }
+  }
+}

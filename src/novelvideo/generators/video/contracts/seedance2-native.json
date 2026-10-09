@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "packageId": "seedance2-native",
+  "authority": "seed",
+  "notes": [
+    "Seedance 2 / 1.5 / 1.0 原生线协议：字段用 snake_case，时长是 duration_seconds，画幅是 aspect_ratio，首帧是 first_frame_image。",
+    "这家与 OpenAI 兼容默认档案不同，创建与查询路径都不在 /v1/videos：创建 /v1/video/generations，查询 /v1/video/generations/{task_id}。",
+    "本包的存在同时证明 schema 能表达「路径模板」这类合同，不只是字段改名。",
+    "本包只描述「中性请求怎么落到这家上游」，中性请求模型仍在 Python 代码里。"
+  ],
+  "profiles": [
+    {
+      "profile_id": "seedance2_native",
+      "match_prefixes": [
+        "seedance-2",
+        "seedance-1.5",
+        "seedance-1.0"
+      ],
+      "duration_field": "duration_seconds",
+      "duration_choices": null,
+      "ratio_field": "aspect_ratio",
+      "first_frame_field": "first_frame_image",
+      "ref_field": null,
+      "audio_field": "generate_audio",
+      "auto_face_field": null,
+      "create_path": "/v1/video/generations",
+      "query_path": "/v1/video/generations/{task_id}"
+    }
+  ]
+}

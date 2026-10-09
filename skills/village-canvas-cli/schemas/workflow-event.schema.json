@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "village-canvas://schemas/workflow-event",
+  "type": "object",
+  "properties": {
+    "seq": {"type": "integer", "minimum": 0},
+    "type": {"type": "string"},
+    "step_id": {"type": "string"},
+    "payload": {"type": "object"},
+    "success": {"type": ["boolean", "null"]},
+    "error": {"type": "string"}
+  }
+}

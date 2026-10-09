@@ -1,0 +1,542 @@
+{
+  "schema_version": 1,
+  "source_configs": {
+    "backend_domains": "scripts/architecture/domain_boundaries.json",
+    "frontend_features": "scripts/architecture/feature_boundaries.json",
+    "file_sizes": "scripts/architecture/file_size_baseline.json"
+  },
+  "owners": [
+    {
+      "id": "backend.api",
+      "platform": "backend",
+      "paths": [
+        "src/novelvideo/api"
+      ],
+      "responsibility": "HTTP boundary, request validation, OpenAPI surface, and thin route composition.",
+      "gates": [
+        "file_sizes",
+        "backend_boundaries"
+      ]
+    },
+    {
+      "id": "backend.agent",
+      "platform": "backend",
+      "paths": [
+        "src/novelvideo/agent_plugins",
+        "src/novelvideo/agents",
+        "src/novelvideo/chat",
+        "src/novelvideo/skills",
+        "src/novelvideo/skills_distill",
+        "src/novelvideo/tool_failure_disposition.py"
+      ],
+      "responsibility": "Agent orchestration, tools, sessions, memory context, and skill execution.",
+      "gates": [
+        "file_sizes",
+        "backend_boundaries"
+      ]
+    },
+    {
+      "id": "backend.canvas",
+      "platform": "backend",
+      "paths": [
+        "src/novelvideo/director_world",
+        "src/novelvideo/freezone"
+      ],
+      "responsibility": "Canvas commands, revisions, node semantics, and durable canvas writes.",
+      "gates": [
+        "file_sizes",
+        "backend_boundaries"
+      ]
+    },
+    {
+      "id": "backend.memory",
+      "platform": "backend",
+      "paths": [
+        "src/novelvideo/cognee"
+      ],
+      "responsibility": "Knowledge ingestion, retrieval, graph memory, and distilled context.",
+      "gates": [
+        "file_sizes",
+        "backend_boundaries"
+      ]
+    },
+    {
+      "id": "backend.model",
+      "platform": "backend",
+      "paths": [
+        "src/novelvideo/embedding_models.py",
+        "src/novelvideo/generators",
+        "src/novelvideo/model_gateway_runtime.py",
+        "src/novelvideo/model_gateway_settings.py"
+      ],
+      "responsibility": "Model discovery, capabilities, protocols, routing, and provider adapters.",
+      "gates": [
+        "file_sizes",
+        "backend_boundaries"
+      ]
+    },
+    {
+      "id": "backend.workflow",
+      "platform": "backend",
+      "paths": [
+        "src/novelvideo/task_backend",
+        "src/novelvideo/workflow_runtime",
+        "src/novelvideo/workflows"
+      ],
+      "responsibility": "Durable workflow runs, task state, queueing, retries, receipts, and verification.",
+      "gates": [
+        "file_sizes",
+        "backend_boundaries"
+      ]
+    },
+    {
+      "id": "backend.production",
+      "platform": "backend",
+      "paths": [
+        "src/novelvideo/creative_execution",
+        "src/novelvideo/production",
+        "src/novelvideo/story_lab"
+      ],
+      "responsibility": "Story production, director admission, shot contracts, and production control.",
+      "gates": [
+        "file_sizes",
+        "backend_boundaries"
+      ]
+    },
+    {
+      "id": "backend.foundation",
+      "platform": "backend",
+      "paths": [
+        "src/novelvideo/assets",
+        "src/novelvideo/audio_request_usage.py",
+        "src/novelvideo/audio",
+        "src/novelvideo/backup",
+        "src/novelvideo/canvas_cli.py",
+        "src/novelvideo/cli.py",
+        "src/novelvideo/config.py",
+        "src/novelvideo/director_rhythm.py",
+        "src/novelvideo/env.py",
+        "src/novelvideo/export",
+        "src/novelvideo/gateway_transport.py",
+        "src/novelvideo/image_request_usage.py",
+        "src/novelvideo/llm_instrumentation.py",
+        "src/novelvideo/manual_shots.py",
+        "src/novelvideo/models.py",
+        "src/novelvideo/newapi_provisioner.py",
+        "src/novelvideo/novel_source.py",
+        "src/novelvideo/official_defaults.py",
+        "src/novelvideo/ports",
+        "src/novelvideo/product_identity.py",
+        "src/novelvideo/project_config.py",
+        "src/novelvideo/project_context.py",
+        "src/novelvideo/release_notes.py",
+        "src/novelvideo/render_plan",
+        "src/novelvideo/research",
+        "src/novelvideo/security",
+        "src/novelvideo/seedance2_i2v",
+        "src/novelvideo/services",
+        "src/novelvideo/shared",
+        "src/novelvideo/sqlite_pragmas.py",
+        "src/novelvideo/sqlite_store.py",
+        "src/novelvideo/stage_asset_tasks.py",
+        "src/novelvideo/storage",
+        "src/novelvideo/story_input_normalizer.py",
+        "src/novelvideo/styles",
+        "src/novelvideo/task_change_pulse.py",
+        "src/novelvideo/task_identity.py",
+        "src/novelvideo/task_jobs.py",
+        "src/novelvideo/task_scopes.py",
+        "src/novelvideo/task_state.py",
+        "src/novelvideo/time_of_day.py",
+        "src/novelvideo/ui",
+        "src/novelvideo/utils",
+        "src/novelvideo/video_request_usage.py",
+        "src/novelvideo/verification"
+      ],
+      "responsibility": "Shared ports, persistence, configuration, security, files, and low-level utilities.",
+      "gates": [
+        "file_sizes",
+        "backend_boundaries"
+      ]
+    },
+    {
+      "id": "frontend.canvas",
+      "platform": "frontend",
+      "paths": [
+        "frontend/src/features/canvas",
+        "frontend/src/stores/canvasStore.ts"
+      ],
+      "responsibility": "Canvas editor, graph semantics, node rendering, interactions, and canvas state.",
+      "gates": [
+        "file_sizes",
+        "frontend_boundaries",
+        "typescript"
+      ]
+    },
+    {
+      "id": "frontend.freezone",
+      "platform": "frontend",
+      "paths": [
+        "frontend/src/features/freezone"
+      ],
+      "responsibility": "Canvas product shell, project navigation, media tasks, and Freezone workflows.",
+      "gates": [
+        "file_sizes",
+        "frontend_boundaries",
+        "typescript"
+      ]
+    },
+    {
+      "id": "frontend.superchat",
+      "platform": "frontend",
+      "paths": [
+        "frontend/src/features/superchat"
+      ],
+      "responsibility": "Agent chat UI, workflow live projection, approvals, and canvas dispatch.",
+      "gates": [
+        "file_sizes",
+        "frontend_boundaries",
+        "typescript"
+      ]
+    },
+    {
+      "id": "frontend.workflow_runs",
+      "platform": "frontend",
+      "paths": [
+        "frontend/src/features/workflow-runs"
+      ],
+      "responsibility": "Durable workflow run projection, progress, recovery, and production-page presentation.",
+      "gates": [
+        "file_sizes",
+        "frontend_boundaries",
+        "typescript"
+      ]
+    },
+    {
+      "id": "frontend.companion",
+      "platform": "frontend",
+      "paths": [
+        "frontend/src/features/companion"
+      ],
+      "responsibility": "Companion assets and presentation state.",
+      "gates": [
+        "file_sizes",
+        "frontend_boundaries",
+        "typescript"
+      ]
+    },
+    {
+      "id": "frontend.viewer_kit",
+      "platform": "frontend",
+      "paths": [
+        "frontend/src/features/viewer-kit"
+      ],
+      "responsibility": "Viewer and 3D inspection tools.",
+      "gates": [
+        "file_sizes",
+        "frontend_boundaries",
+        "typescript"
+      ]
+    },
+    {
+      "id": "frontend.version_update",
+      "platform": "frontend",
+      "paths": [
+        "frontend/src/features/version-update"
+      ],
+      "responsibility": "Version comparison, release notices, and update presentation.",
+      "gates": [
+        "file_sizes",
+        "frontend_boundaries",
+        "typescript"
+      ]
+    },
+    {
+      "id": "frontend.app",
+      "platform": "frontend",
+      "paths": [
+        "frontend/src/features/app"
+      ],
+      "responsibility": "Application shell and top-level feature composition.",
+      "gates": [
+        "file_sizes",
+        "frontend_boundaries",
+        "typescript"
+      ]
+    },
+    {
+      "id": "frontend.routes",
+      "platform": "frontend",
+      "paths": [
+        "frontend/src/routes"
+      ],
+      "responsibility": "Route loading and page-to-feature mounting.",
+      "gates": [
+        "file_sizes",
+        "frontend_boundaries",
+        "typescript"
+      ]
+    },
+    {
+      "id": "frontend.shared",
+      "platform": "frontend",
+      "paths": [
+        "frontend/src/__mocks__",
+        "frontend/src/__tests__",
+        "frontend/src/api",
+        "frontend/src/assets",
+        "frontend/src/commands",
+        "frontend/src/components",
+        "frontend/src/hooks",
+        "frontend/src/i18n",
+        "frontend/src/lib",
+        "frontend/src/pipeline-import",
+        "frontend/src/stores",
+        "frontend/src/task-center",
+        "frontend/src/types"
+      ],
+      "responsibility": "Shared frontend contracts, clients, stores, components, and test infrastructure.",
+      "gates": [
+        "file_sizes",
+        "frontend_boundaries",
+        "typescript"
+      ]
+    },
+    {
+      "id": "governance.engineering",
+      "platform": "governance",
+      "paths": [
+        ".github/workflows",
+        "docs",
+        "scripts",
+        "tests"
+      ],
+      "responsibility": "Executable architecture policy, evidence, tests, CI, and AI continuity surfaces.",
+      "gates": [
+        "architecture_manifest"
+      ]
+    }
+  ],
+  "critical_contracts": [
+    {
+      "id": "http_api_schemas",
+      "owner": "backend.api",
+      "kind": "pydantic-openapi",
+      "path": "src/novelvideo/api/schemas.py",
+      "guarantee": "HTTP request and response shape; API compatibility starts here.",
+      "verification": [
+        "tests/test_api_coverage.py",
+        "tests/contract/test_m09_route_contracts.py"
+      ]
+    },
+    {
+      "id": "task_state",
+      "owner": "backend.foundation",
+      "kind": "state-machine",
+      "path": "src/novelvideo/task_state.py",
+      "guarantee": "Canonical task lifecycle and terminal-state semantics.",
+      "verification": [
+        "tests/test_task_state_timezones.py",
+        "tests/test_task_state_restart_reconcile.py"
+      ]
+    },
+    {
+      "id": "task_receipts",
+      "owner": "backend.workflow",
+      "kind": "receipt-contract",
+      "path": "src/novelvideo/task_backend/receipts.py",
+      "guarantee": "Task completion and error evidence returned across boundaries.",
+      "verification": [
+        "tests/test_task_acceptance_receipt.py"
+      ]
+    },
+    {
+      "id": "canvas_command_gateway",
+      "owner": "backend.canvas",
+      "kind": "typed-command",
+      "path": "src/novelvideo/freezone/canvas_command_gateway.py",
+      "guarantee": "All structural canvas writes converge on command_id, revision, and applied operations.",
+      "verification": [
+        "tests/test_canvas_command_gateway.py"
+      ]
+    },
+    {
+      "id": "canvas_commands_port",
+      "owner": "backend.foundation",
+      "kind": "port",
+      "path": "src/novelvideo/ports/canvas_commands.py",
+      "guarantee": "Workflow and production code depend on a canvas port instead of a concrete gateway.",
+      "verification": [
+        "tests/test_layer_closure_audit.py"
+      ]
+    },
+    {
+      "id": "video_request_contract",
+      "owner": "backend.canvas",
+      "kind": "request-contract",
+      "path": "src/novelvideo/services/_video_request_contract.py",
+      "guarantee": "Video requests reject provider-incompatible values before paid execution.",
+      "verification": [
+        "tests/test_video_request_contract.py"
+      ]
+    },
+    {
+      "id": "video_runtime_contract",
+      "owner": "backend.model",
+      "kind": "provider-contract",
+      "path": "src/novelvideo/generators/video/runtime_contract.py",
+      "guarantee": "Provider capabilities and runtime-supported fields remain explicit.",
+      "verification": [
+        "tests/test_video_provider_adapters.py"
+      ]
+    },
+    {
+      "id": "workflow_schemas",
+      "owner": "backend.workflow",
+      "kind": "workflow-schema",
+      "path": "src/novelvideo/workflow_runtime/schemas.py",
+      "guarantee": "Durable run, item, event, and command contracts.",
+      "verification": [
+        "tests/test_workflow_runtime.py"
+      ]
+    },
+    {
+      "id": "workflow_service",
+      "owner": "backend.workflow",
+      "kind": "application-service",
+      "path": "src/novelvideo/workflow_runtime/service.py",
+      "guarantee": "Single application boundary for run creation, resume, cancellation, and commands.",
+      "verification": [
+        "tests/test_workflow_runtime.py"
+      ]
+    },
+    {
+      "id": "workflow_verifier",
+      "owner": "backend.workflow",
+      "kind": "verification-contract",
+      "path": "src/novelvideo/workflow_runtime/verifier.py",
+      "guarantee": "Completion requires canvas revision, artifact, or declared success evidence.",
+      "verification": [
+        "tests/test_workflow_causal_chain.py"
+      ]
+    },
+    {
+      "id": "cinematic_production_contract",
+      "owner": "backend.production",
+      "kind": "creative-contract",
+      "path": "src/novelvideo/production/cinematic_contract.py",
+      "guarantee": "Lighting, screen direction, color look, edit rhythm, sound design, cross-episode references, and final delivery QC share one deterministic evidence contract.",
+      "verification": [
+        "tests/test_cinematic_contract.py"
+      ]
+    },
+    {
+      "id": "frontend_canvas_nodes",
+      "owner": "frontend.canvas",
+      "kind": "typescript-domain",
+      "path": "frontend/src/features/canvas/domain/canvasNodes.ts",
+      "guarantee": "Frontend node and edge domain model consumed by the canvas and stores.",
+      "verification": [
+        "frontend/src/features/canvas/domain/canvasNodes.contract.test.ts"
+      ]
+    },
+    {
+      "id": "frontend_canvas_ports",
+      "owner": "frontend.canvas",
+      "kind": "typescript-port",
+      "path": "frontend/src/features/canvas/application/ports.ts",
+      "guarantee": "Canvas-side interfaces for commands, events, and external ports.",
+      "verification": [
+        "frontend/src/features/canvas/application/canvasMutationKernel.test.ts"
+      ]
+    },
+    {
+      "id": "frontend_workflow_runtime",
+      "owner": "frontend.shared",
+      "kind": "typescript-contract",
+      "path": "frontend/src/types/workflow-runtime.ts",
+      "guarantee": "Frontend projection of durable workflow state and command contracts.",
+      "verification": [
+        "frontend/src/features/superchat/workflow-run-live.test.ts"
+      ]
+    }
+  ],
+  "invariants": [
+    {
+      "id": "canvas-writes-through-gateway",
+      "statement": "Structural canvas writes do not bypass CanvasCommandGateway.",
+      "enforcement": [
+        "src/novelvideo/ports/canvas_commands.py",
+        "scripts/architecture/check_import_boundaries.py"
+      ]
+    },
+    {
+      "id": "server-truth-over-optimistic-ui",
+      "statement": "UI completion is projected from server receipts, revisions, events, or verified artifacts.",
+      "enforcement": [
+        "src/novelvideo/workflow_runtime/verifier.py",
+        "frontend/src/types/workflow-runtime.ts"
+      ]
+    },
+    {
+      "id": "paid-task-idempotency",
+      "statement": "A repeated paid-task request must reuse its identity or be explicitly rejected before a second provider submission.",
+      "enforcement": [
+        "src/novelvideo/task_backend/receipts.py",
+        "src/novelvideo/task_state.py"
+      ]
+    },
+    {
+      "id": "offline-default-verification",
+      "statement": "Default verification uses mocks, contracts, and local fixtures without paid providers.",
+      "enforcement": [
+        "docs/AI_RUNTIME_CONTRACT.md",
+        "scripts/architecture/check_file_sizes.py"
+      ]
+    },
+    {
+      "id": "boundary-and-size-ratchets",
+      "statement": "New boundary crossings or large-file growth fail until the owning contract and baseline are intentionally updated.",
+      "enforcement": [
+        "scripts/architecture/check_import_boundaries.py",
+        "scripts/architecture/check_feature_boundaries.py",
+        "scripts/architecture/check_file_sizes.py"
+      ]
+    }
+  ],
+  "gates": {
+    "architecture_manifest": {
+      "script": "scripts/architecture/validate_architecture_manifest.py",
+      "args": [
+        "--fail-on",
+        "high"
+      ]
+    },
+    "file_sizes": {
+      "script": "scripts/architecture/check_file_sizes.py",
+      "args": [
+        "--fail-on",
+        "high"
+      ]
+    },
+    "backend_boundaries": {
+      "script": "scripts/architecture/check_import_boundaries.py",
+      "args": [
+        "--fail-on",
+        "high,medium"
+      ]
+    },
+    "frontend_boundaries": {
+      "script": "scripts/architecture/check_feature_boundaries.py",
+      "args": [
+        "--fail-on",
+        "high,medium"
+      ]
+    },
+    "typescript": {
+      "script": "scripts/architecture/check_file_sizes.py",
+      "args": [],
+      "external_command": "pnpm --dir frontend exec tsc -b"
+    }
+  }
+}

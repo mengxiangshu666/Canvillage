@@ -1,0 +1,31 @@
+{
+  "id": "product_cinematic",
+  "name": "电影级商业产品",
+  "label": "电影级商业产品",
+  "family": "commercial",
+  "era": "contemporary",
+  "palette": "根据产品品牌色设定，背景保持干净的深浅对比",
+  "lighting": "large soft key, crisp edge light, controlled reflections, premium tabletop practicals",
+  "optics": "macro/50mm product lens, focus stacking feel, precise perspective",
+  "composition": "产品是唯一视觉主角，几何留白支撑识别与层级，不生成品牌文字",
+  "camera_motion": "slow tabletop orbit, macro push-in, precise reveal of material detail",
+  "style_instructions": "Premium cinematic product commercial, tactile materials, precise surfaces, controlled reflections, clean brand-neutral composition, production-ready hero shot.",
+  "avoid_instructions": "No invented logos or words, no extra products, no dirty surfaces unless requested, no warped geometry, no watermark.",
+  "style_tag": "CINEMATIC PRODUCT HERO",
+  "tags": [
+    "商业",
+    "产品",
+    "广告",
+    "材质"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Use a slow product orbit or macro push that reveals one material feature at a time; keep geometry and reflections stable."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Premium cinematic product commercial, tactile materials, precise surfaces, controlled reflections, clean brand-neutral composition, production-ready hero shot.",
+  "video_prompt": "slow tabletop orbit, macro push-in, precise reveal of material detail",
+  "negative_prompt": "No invented logos or words, no extra products, no dirty surfaces unless requested, no warped geometry, no watermark."
+}

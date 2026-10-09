@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "_comment": "前端边界合同。rules 描述禁止方向，baseline 是各边界当前**文件数**基线（棘轮：只允许下调，上调需在评审中显式改这个数字）。生成命令：python scripts/architecture/check_feature_boundaries.py --print-baseline --format json",
+  "source_root": "frontend/src",
+  "features_dir": "features",
+  "alias_prefix": "@/",
+  "shared_layers": [
+    "api",
+    "assets",
+    "commands",
+    "components",
+    "hooks",
+    "i18n",
+    "lib",
+    "pipeline-import",
+    "stores",
+    "task-center",
+    "types"
+  ],
+  "_shared_layers_note": "routes/ 与 app 外壳不在此列：路由挂载 feature 页面就是正确方向，不属于反向依赖。feature/** 依赖共享层同样是正常方向，因此只登记不设规则。",
+  "rules": [
+    {
+      "id": "shared-to-feature",
+      "severity": "high",
+      "reason": "共享层（components/hooks/lib/stores/api/types）被 feature 反向依赖后无法独立复用，且会让共享层跟着某个 feature 的领域模型走；应由 feature 通过 props/callback 注入，或把真正共享的部分下沉到共享层。"
+    },
+    {
+      "id": "cross-feature",
+      "severity": "medium",
+      "reason": "feature 之间直接互相导入会形成环，让单个 feature 无法独立构建与测试；应通过画布 store 的领域动作、共享类型或应用层门面交互。canvas↔freezone 是历史最深的一条，已有基线只允许下调。"
+    }
+  ],
+  "baseline": {
+    "cross-feature|feature/canvas|feature/app": 1,
+    "cross-feature|feature/canvas|feature/freezone": 27,
+    "cross-feature|feature/canvas|feature/superchat": 2,
+    "cross-feature|feature/canvas|feature/viewer-kit": 12,
+    "cross-feature|feature/companion|feature/canvas": 1,
+    "cross-feature|feature/companion|feature/version-update": 1,
+    "cross-feature|feature/freezone|feature/canvas": 15,
+    "cross-feature|feature/freezone|feature/companion": 1,
+    "cross-feature|feature/freezone|feature/superchat": 7,
+    "cross-feature|feature/freezone|feature/viewer-kit": 2,
+    "cross-feature|feature/superchat|feature/canvas": 9,
+    "cross-feature|feature/superchat|feature/freezone": 2,
+    "cross-feature|feature/viewer-kit|feature/canvas": 1,
+    "shared-to-feature|layer/api|feature/freezone": 2,
+    "shared-to-feature|layer/api|feature/viewer-kit": 1,
+    "shared-to-feature|layer/components|feature/canvas": 2,
+    "shared-to-feature|layer/components|feature/companion": 1,
+    "shared-to-feature|layer/components|feature/freezone": 5,
+    "shared-to-feature|layer/components|feature/superchat": 1,
+    "shared-to-feature|layer/components|feature/viewer-kit": 3,
+    "shared-to-feature|layer/lib|feature/viewer-kit": 2,
+    "shared-to-feature|layer/pipeline-import|feature/canvas": 3,
+    "shared-to-feature|layer/stores|feature/canvas": 3,
+    "shared-to-feature|layer/stores|feature/companion": 1,
+    "shared-to-feature|layer/stores|feature/freezone": 2,
+    "shared-to-feature|layer/task-center|feature/superchat": 2
+  }
+}

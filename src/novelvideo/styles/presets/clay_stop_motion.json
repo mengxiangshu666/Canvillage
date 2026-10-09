@@ -1,0 +1,31 @@
+{
+  "id": "clay_stop_motion",
+  "name": "定格黏土",
+  "label": "定格黏土",
+  "family": "stop_motion",
+  "era": "timeless",
+  "palette": "手工颜料的暖红、芥末黄、青绿与木色",
+  "lighting": "miniature studio lighting, practical softboxes, visible contact shadows, tactile bounce",
+  "optics": "macro 35mm, slight lens breathing, handcrafted miniature scale",
+  "composition": "可见手工布景、层叠道具与明确舞台空间，角色轮廓夸张但稳定",
+  "camera_motion": "incremental stop-motion-like movement, tiny dolly steps, deliberate rack focus",
+  "style_instructions": "Premium handcrafted clay stop-motion aesthetic, tactile fingerprints and fabric, expressive miniature set, cinematic miniature photography, charming physical imperfections.",
+  "avoid_instructions": "No smooth digital plastic, no photoreal human skin, no random deformations, no text or watermark.",
+  "style_tag": "HANDCRAFTED CLAY STOP-MOTION",
+  "tags": [
+    "定格动画",
+    "黏土",
+    "手工",
+    "喜剧"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Use discrete but coherent stop-motion increments; preserve miniature contact shadows and the handcrafted set as the subject moves."
+    }
+  },
+  "style_family": "animation",
+  "animation_subtype": "hybrid",
+  "image_prompt": "Premium handcrafted clay stop-motion aesthetic, tactile fingerprints and fabric, expressive miniature set, cinematic miniature photography, charming physical imperfections.",
+  "video_prompt": "incremental stop-motion-like movement, tiny dolly steps, deliberate rack focus",
+  "negative_prompt": "No smooth digital plastic, no photoreal human skin, no random deformations, no text or watermark."
+}

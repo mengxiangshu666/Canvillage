@@ -1,0 +1,31 @@
+{
+  "id": "graphic_novel",
+  "name": "电影感图像小说",
+  "label": "电影感图像小说",
+  "family": "graphic_novel",
+  "era": "timeless_modern",
+  "palette": "墨线黑、奶油纸白、深红与一处强调色",
+  "lighting": "graphic rim light, hard shadow shapes, selective halftone texture",
+  "optics": "35mm perspective translated into bold panel staging, crisp contour control",
+  "composition": "强剪影、分层前景、画面内叙事线索，单帧即读懂冲突",
+  "camera_motion": "panel-like snap zoom, lateral reveal, controlled impact push",
+  "style_instructions": "Cinematic graphic-novel illustration, confident ink contours, selective color, sophisticated panel composition, readable action and character acting.",
+  "avoid_instructions": "No random speech balloons, no generated captions, no muddy anatomy, no photoreal mismatch, no watermark.",
+  "style_tag": "CINEMATIC GRAPHIC NOVEL",
+  "tags": [
+    "漫画",
+    "图像小说",
+    "动作",
+    "平面"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Animate graphic-novel staging with decisive panel-like camera moves; preserve contour clarity and a single directional action."
+    }
+  },
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "image_prompt": "Cinematic graphic-novel illustration, confident ink contours, selective color, sophisticated panel composition, readable action and character acting.",
+  "video_prompt": "panel-like snap zoom, lateral reveal, controlled impact push",
+  "negative_prompt": "No random speech balloons, no generated captions, no muddy anatomy, no photoreal mismatch, no watermark."
+}

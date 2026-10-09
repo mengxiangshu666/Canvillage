@@ -1,0 +1,31 @@
+{
+  "id": "analog_retro_future",
+  "name": "模拟复古未来",
+  "label": "模拟复古未来",
+  "family": "retro_future",
+  "era": "alternate_1970s",
+  "palette": "烟草棕、CRT绿、氧化橙、工业灰与乳白塑料",
+  "lighting": "荧光灯、CRT屏幕光、钨丝控制台灯，真实低照度噪点",
+  "optics": "32mm球面镜头、轻微色散、模拟录像辉光与35mm颗粒混合",
+  "composition": "实体按钮、磁带、粗大线缆和模块化舱体形成可信工程层次",
+  "camera_motion": "slow inspection dolly, mechanical pan, restrained handheld vibration from machinery",
+  "style_instructions": "Analog retro-futurist live-action cinema, practical miniature-scale engineering, CRT interfaces, tactile switches, worn industrial materials and believable alternate-1970s technology.",
+  "avoid_instructions": "No holographic UI, no clean Apple-like minimalism, no modern LED strips, no generic cyberpunk neon, no watermark.",
+  "style_tag": "ANALOG RETRO-FUTURE ENGINEERING",
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "tags": [
+    "复古未来",
+    "模拟",
+    "科幻",
+    "工业"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "slow inspection dolly, mechanical pan, restrained handheld vibration from machinery"
+    }
+  },
+  "image_prompt": "Analog retro-futurist live-action cinema, practical miniature-scale engineering, CRT interfaces, tactile switches, worn industrial materials and believable alternate-1970s technology.",
+  "video_prompt": "slow inspection dolly, mechanical pan, restrained handheld vibration from machinery",
+  "negative_prompt": "No holographic UI, no clean Apple-like minimalism, no modern LED strips, no generic cyberpunk neon, no watermark."
+}

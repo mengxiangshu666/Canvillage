@@ -1,0 +1,31 @@
+{
+  "id": "pixel_art_cinema",
+  "name": "像素电影",
+  "label": "像素电影",
+  "family": "pixel_art",
+  "era": "timeless",
+  "palette": "受控32至64色色板，明确冷暖分区与逐级明度",
+  "lighting": "像素级体积光、块状阴影、有限抖动纹理，光源方向严格一致",
+  "optics": "横向电影构图、像素透视与分层景深，无平滑矢量边缘",
+  "composition": "角色剪影在低分辨率下仍可识别，前中后景分层清楚，环境叙事密度高",
+  "camera_motion": "tile-based parallax, stepped pan, restrained sprite animation, readable anticipation and impact frames",
+  "style_instructions": "Cinematic high-detail pixel art, disciplined limited palette, crisp pixel clusters, layered environmental storytelling, readable character silhouettes and widescreen staging.",
+  "avoid_instructions": "No blurry upscaling, no vector gradients, no mixed pixel sizes, no generic mobile-game UI, no text or watermark.",
+  "style_tag": "CINEMATIC PIXEL ART",
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "tags": [
+    "像素",
+    "动画",
+    "游戏美术",
+    "电影构图"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "tile-based parallax, stepped pan, restrained sprite animation, readable anticipation and impact frames"
+    }
+  },
+  "image_prompt": "Cinematic high-detail pixel art, disciplined limited palette, crisp pixel clusters, layered environmental storytelling, readable character silhouettes and widescreen staging.",
+  "video_prompt": "tile-based parallax, stepped pan, restrained sprite animation, readable anticipation and impact frames",
+  "negative_prompt": "No blurry upscaling, no vector gradients, no mixed pixel sizes, no generic mobile-game UI, no text or watermark."
+}

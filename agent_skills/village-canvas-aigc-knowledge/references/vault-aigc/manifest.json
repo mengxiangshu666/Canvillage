@@ -1,0 +1,3862 @@
+{
+  "schema_version": 2,
+  "scope": "public_aigc_methodology",
+  "owner": "Village Infinite Canvas",
+  "source": {
+    "name": "xiaoshu-brain",
+    "locator": "vault-relative"
+  },
+  "source_hash": "bcd24e9cb405d34ef8e6a1a4c1ca3c8b0e29708de7a446822c8bb6e861f34f2e",
+  "bundle_hash": "691eed71bfa01836b417f72a0a1f67472abd7f394714f07e1f35448f124c7205",
+  "policy": {
+    "default": "deny",
+    "allowlist": [
+      {
+        "path": "AIGC/剧作结构",
+        "kind": "directory",
+        "category": "storytelling"
+      },
+      {
+        "path": "AIGC/剪辑语言",
+        "kind": "directory",
+        "category": "editing"
+      },
+      {
+        "path": "AIGC/声音设计",
+        "kind": "directory",
+        "category": "audio"
+      },
+      {
+        "path": "AIGC/抖音爆款",
+        "kind": "directory",
+        "category": "short-video-strategy"
+      },
+      {
+        "path": "AIGC/摄影机实拍",
+        "kind": "directory",
+        "category": "cinematography"
+      },
+      {
+        "path": "AIGC/演员表演",
+        "kind": "directory",
+        "category": "performance"
+      },
+      {
+        "path": "AIGC/调色与配乐",
+        "kind": "directory",
+        "category": "post-production"
+      },
+      {
+        "path": "AIGC导演",
+        "kind": "directory",
+        "category": "director-tools"
+      },
+      {
+        "path": "AIGC/01_LibTV完整使用手册_AI版.md",
+        "kind": "file",
+        "category": "canvas-workflow"
+      },
+      {
+        "path": "AIGC/02_生图模型与提示词_AI版.md",
+        "kind": "file",
+        "category": "image-generation"
+      },
+      {
+        "path": "AIGC/03_视频大模型与提示词_AI版.md",
+        "kind": "file",
+        "category": "video-generation"
+      },
+      {
+        "path": "AIGC/04_剧本创作方法论_AI版.md",
+        "kind": "file",
+        "category": "storytelling"
+      },
+      {
+        "path": "AIGC/05_AI注意力机制权威指南_AI版.md",
+        "kind": "file",
+        "category": "agent-context"
+      },
+      {
+        "path": "AIGC/06_v7.0框架总结与兄弟判断框架.md",
+        "kind": "file",
+        "category": "production-framework"
+      },
+      {
+        "path": "AIGC/07_兄弟角色设定表工作流_AI版.md",
+        "kind": "file",
+        "category": "character-workflow"
+      },
+      {
+        "path": "AIGC/08_上下文工程4大支柱映射_AI版.md",
+        "kind": "file",
+        "category": "agent-context"
+      },
+      {
+        "path": "AIGC/10_电影摄影学体系_AI版.md",
+        "kind": "file",
+        "category": "cinematography"
+      },
+      {
+        "path": "AIGC/11_叙事诡计分类学_AI版.md",
+        "kind": "file",
+        "category": "storytelling"
+      },
+      {
+        "path": "AIGC/12_全画风参数体系_AI版.md",
+        "kind": "file",
+        "category": "visual-style"
+      },
+      {
+        "path": "AIGC/12_补充_亚文化视觉.md",
+        "kind": "file",
+        "category": "visual-style"
+      },
+      {
+        "path": "AIGC/12_补充_历史艺术运动.md",
+        "kind": "file",
+        "category": "visual-style"
+      },
+      {
+        "path": "AIGC/12_补充_地域民族艺术.md",
+        "kind": "file",
+        "category": "visual-style"
+      },
+      {
+        "path": "AIGC/12_补充_当代数字艺术.md",
+        "kind": "file",
+        "category": "visual-style"
+      },
+      {
+        "path": "AIGC/13_角色心理学与对话深度_AI版.md",
+        "kind": "file",
+        "category": "character-workflow"
+      },
+      {
+        "path": "AIGC/14_视听叙事学术基础_AI版.md",
+        "kind": "file",
+        "category": "cinematography"
+      },
+      {
+        "path": "AIGC/15_文化与讽刺语法_AI版.md",
+        "kind": "file",
+        "category": "storytelling"
+      },
+      {
+        "path": "AIGC/16_AIGC失败修复手册_实战版.md",
+        "kind": "file",
+        "category": "failure-repair"
+      },
+      {
+        "path": "AIGC/17_AI声音设计与台词提示词.md",
+        "kind": "file",
+        "category": "audio"
+      },
+      {
+        "path": "AIGC/18_ComfyUI工作流体系.md",
+        "kind": "file",
+        "category": "node-workflow"
+      },
+      {
+        "path": "AIGC/19_AI电影全工作流.md",
+        "kind": "file",
+        "category": "production-workflow"
+      },
+      {
+        "path": "AIGC/20_LoRA训练与模型微调.md",
+        "kind": "file",
+        "category": "model-training"
+      },
+      {
+        "path": "AIGC/21_AI 3D 资产生成.md",
+        "kind": "file",
+        "category": "3d-assets"
+      },
+      {
+        "path": "AIGC/22_AI配音调色后制.md",
+        "kind": "file",
+        "category": "post-production"
+      },
+      {
+        "path": "AIGC/23_AI创作者版权合规与商业化.md",
+        "kind": "file",
+        "category": "governance"
+      },
+      {
+        "path": "AIGC/99_权威来源与参考文献.md",
+        "kind": "file",
+        "category": "governance"
+      },
+      {
+        "path": "AIGC/AIGC导演视听语言框架.md",
+        "kind": "file",
+        "category": "cinematography"
+      },
+      {
+        "path": "AIGC/AIGC提示词翻译引擎规则库.md",
+        "kind": "file",
+        "category": "prompt-engineering"
+      },
+      {
+        "path": "AIGC/AIGC画布深度学习-终极大总结.md",
+        "kind": "file",
+        "category": "canvas-workflow"
+      },
+      {
+        "path": "AIGC/AIGC知识体系-总索引.md",
+        "kind": "file",
+        "category": "navigation"
+      },
+      {
+        "path": "AIGC/AIGC短剧全链路能力学习路径.md",
+        "kind": "file",
+        "category": "production-workflow"
+      },
+      {
+        "path": "AIGC/AIGC视频导演实战手册.md",
+        "kind": "file",
+        "category": "video-generation"
+      },
+      {
+        "path": "AIGC/AIGC视频导演通用框架.md",
+        "kind": "file",
+        "category": "video-generation"
+      },
+      {
+        "path": "AIGC/AIGC铁律体系_v1.md",
+        "kind": "file",
+        "category": "production-standards"
+      },
+      {
+        "path": "AIGC/AIGC铁律汇总.md",
+        "kind": "file",
+        "category": "production-standards"
+      },
+      {
+        "path": "AIGC/AIGC铁律索引_v1.0.md",
+        "kind": "file",
+        "category": "production-standards"
+      },
+      {
+        "path": "AIGC/AI漫剧制作全流程-手把手.md",
+        "kind": "file",
+        "category": "production-workflow"
+      },
+      {
+        "path": "AIGC/AI漫剧生态全景-工具与案例.md",
+        "kind": "file",
+        "category": "production-workflow"
+      },
+      {
+        "path": "AIGC/Seedance-2.0-Skill-OS.md",
+        "kind": "file",
+        "category": "video-generation"
+      },
+      {
+        "path": "AIGC/patch-01_seedance-2.5-update.md",
+        "kind": "file",
+        "category": "video-generation"
+      },
+      {
+        "path": "AIGC/patch-02_多角色控制与迭代方法论.md",
+        "kind": "file",
+        "category": "character-workflow"
+      },
+      {
+        "path": "AIGC/patch-03_agentic-ai-video.md",
+        "kind": "file",
+        "category": "agent-context"
+      },
+      {
+        "path": "AIGC/patch-04_视频扩展与帧插值.md",
+        "kind": "file",
+        "category": "video-generation"
+      },
+      {
+        "path": "AIGC/patch-05_场景化提示词模板库.md",
+        "kind": "file",
+        "category": "prompt-engineering"
+      },
+      {
+        "path": "AIGC/patch-06_成本镜头智能优化.md",
+        "kind": "file",
+        "category": "production-workflow"
+      },
+      {
+        "path": "AIGC/patch-07_libtv_模型参数速查表.md",
+        "kind": "file",
+        "category": "canvas-workflow"
+      },
+      {
+        "path": "AIGC/video-reverse-engineering-数字人带货.md",
+        "kind": "file",
+        "category": "short-video-strategy"
+      }
+    ],
+    "allowed_extensions": [
+      ".md",
+      ".txt"
+    ],
+    "max_source_file_bytes": 524288,
+    "excluded_scopes": [
+      "personal-profile",
+      "project-specific",
+      "daily-record",
+      "agent-memory",
+      "remote-operations",
+      "machine-locators",
+      "credentials",
+      "large-or-binary"
+    ],
+    "excluded_paths_are_hashed": true
+  },
+  "summary": {
+    "source_files_seen": 330,
+    "source_bytes_seen": 18400119,
+    "included_files": 60,
+    "included_source_bytes": 804108,
+    "published_bytes": 802278,
+    "redacted_values": 121
+  },
+  "exclusion_audit": {
+    "default_policy": "deny",
+    "excluded_files": 270,
+    "excluded_bytes": 17596011,
+    "reasons": [
+      {
+        "reason": "blocked_scope",
+        "files": 101,
+        "bytes": 612690
+      },
+      {
+        "reason": "disallowed_extension",
+        "files": 1,
+        "bytes": 658317
+      },
+      {
+        "reason": "outside_allowlist",
+        "files": 168,
+        "bytes": 16325004
+      }
+    ],
+    "entries": [
+      {
+        "path_hash": "01fc0a0c24e8427f48c385a86f28958d9745cd31595559e9c297da9c815da33b",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 5924
+      },
+      {
+        "path_hash": "0504f73918f4f8ed2add6afe23d0e9117546fac8bc0313af1d86882cdda41a77",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2980
+      },
+      {
+        "path_hash": "06f134ebb87bb06a7b6c4172edb8293db5723676a8f12173ee6908a3e6e64736",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 9132
+      },
+      {
+        "path_hash": "07265bd8d38626ee2b74a71425aa4ed705e601eb98f74e952d0fcfd0642404a3",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2619
+      },
+      {
+        "path_hash": "074eed66aeaa500351a098de099dc99f4dbdfcac5dd044e0b908efa231348192",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 292
+      },
+      {
+        "path_hash": "08f9979f123d3306ebe6728db15b40332cec7a99f79f3489c9223ba2bdbcab6a",
+        "reason": "disallowed_extension",
+        "extension": ".zip",
+        "size": 658317
+      },
+      {
+        "path_hash": "09367e8330bcab99ec6b9aa045e5e299ad449fab611ba4ab040196179c053d85",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 6259
+      },
+      {
+        "path_hash": "09408f58af7c4ce85039175b8450c4f7dc491aa07d5448a0933627b45aea46ec",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 11371
+      },
+      {
+        "path_hash": "0adb3c62f680276a0f0d5bfd86c61c4e9fd4430ab22407c80e5884a7a7a235f1",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3201
+      },
+      {
+        "path_hash": "0b38c3c12cea1f2a086a027e544b81a62757db47048097b5c794d3c7d7143b92",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 16367
+      },
+      {
+        "path_hash": "0c41953e1e6b3ac282f3e76ec5d628af6ffc05b6579e0e532d5a9e4844445d10",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 5406
+      },
+      {
+        "path_hash": "0ca36d0765ab20cac3e965f042b0e257ff8f1feb742203efe6672444427c64ad",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 11780
+      },
+      {
+        "path_hash": "0e1a23dac175d0dd2722d9cb493e16513322561a2437a66392ae7b1314abdb29",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 14664
+      },
+      {
+        "path_hash": "0f57920f03b52d07ec50a835eab2bda8f3d91be41969894d1872a5ba1ef30623",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 444
+      },
+      {
+        "path_hash": "1157994b5816d15d165e8d7912a4831bf8df4a024413bd077ca48ad22c112c16",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 286
+      },
+      {
+        "path_hash": "14f278570882279a2ed192ad4f56fac9017a3b83d81597b1ebed432ee8a83f48",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 2150
+      },
+      {
+        "path_hash": "15ed7294b23b9443b05f632847492cf3e50c790ad999f24b8a5d5f455cc6e680",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2264
+      },
+      {
+        "path_hash": "16e87d8482ccfe984ee0c471c257f841af90492ff625f855d299d94755fea588",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 35181
+      },
+      {
+        "path_hash": "1718e3dbbb0caf82ea3b6b3e8019cf40745333a7e5c2747216f66e3dcb485274",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 9541
+      },
+      {
+        "path_hash": "17896d1f742a679023387d7840fe510ba69ff520044af1b16b8d189485ac3692",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 6361
+      },
+      {
+        "path_hash": "17e1b675611f4c08974b2f9ee1ad8a675813fbbb0d00134ce63855361cda562e",
+        "reason": "outside_allowlist",
+        "extension": ".js",
+        "size": 4028155
+      },
+      {
+        "path_hash": "18d51fc35c58ef0999a32fa695e757715ad157fdbbda1fefa1b6bd9fc6a3b43c",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 3357
+      },
+      {
+        "path_hash": "18ddba791a238f567cac9bf8684eed13ec54e2456badfbd50a6f559f5ac5b45e",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 39314
+      },
+      {
+        "path_hash": "192b3cb2191b4ac946a844b85f7fc1a29f2d54f0fb492b8a98eaf5fda3009627",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2643
+      },
+      {
+        "path_hash": "19557ea372cdf96126a6433dab52713e1cd2866d019ecf441aed9fa13bf44944",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 12172
+      },
+      {
+        "path_hash": "197919fdb3fce9a5a844ababa5a306167c431dcc687575d7cf565365848093bf",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 267
+      },
+      {
+        "path_hash": "1b92090d33cd80f62f71e0a2e7ec9e893ee1a218071e3bd6b6de999d469c5da5",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 999
+      },
+      {
+        "path_hash": "1bb24192574911f9474c4488c49d41d61dc4988402f5d21172d1f385d1940076",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 11632
+      },
+      {
+        "path_hash": "1d9b484e4ae3884a57e948aa542398432c94ce8668daf71b1e1fdbcd1d27edc3",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 2727
+      },
+      {
+        "path_hash": "1e3ee207b3bd383110aabf5703e919dc6970024ed26685a11a6e84796006a1bf",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 1461
+      },
+      {
+        "path_hash": "1f28bb587400e9522efcd8cb4086fec7782437e8708d0cc7c1d2f4d55d1cdf67",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3392
+      },
+      {
+        "path_hash": "1fbb7ac7e635d3e43d02e894c85a0be950dea77a0cd5f91a8fdbd18fc7e98502",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 288
+      },
+      {
+        "path_hash": "1fd6fc26cb27d73becd3ed6a32b308cd8cb9aac5eb6f2f73ced3a6fd0627e481",
+        "reason": "outside_allowlist",
+        "extension": ".txt",
+        "size": 71447
+      },
+      {
+        "path_hash": "215a895582606ad89c8c95fef69f2bf24af244ae3645f9bd2e0db97c9e32d166",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1140
+      },
+      {
+        "path_hash": "21b0162454463115bc10c4f41498f596a6054473b77076a3022f05fb66546b80",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3082
+      },
+      {
+        "path_hash": "22231076b820821d6cb64e5c45737c53f5ffd22b92844fe5f3e2f4d558cd34c1",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 328
+      },
+      {
+        "path_hash": "241a01cc8ecf19a06105de54594dad933793e53de6490ebf91219e20273fdcbc",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 2110514
+      },
+      {
+        "path_hash": "25b46d627d7e94a23e713c1a1eef9b903dafaac0600206757e53fc87d134de0b",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 305
+      },
+      {
+        "path_hash": "26b28966d1c5de8984e508edea01eb767405e079be7715b2967f6c79271c0c9b",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 3045
+      },
+      {
+        "path_hash": "26e3dd8fa94e9da1bf593d3ae299f9ba8541722c746eb47e13930920ffaee836",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 7094
+      },
+      {
+        "path_hash": "270bef2f71548f03517e71b4e7a1b57472c8c3bb9ff191bb87abb90cf64a3e8f",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 239
+      },
+      {
+        "path_hash": "271cc111c7023e4448703314e3767cd2627c87314173a6ddd77b1964b9cc9657",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 6328
+      },
+      {
+        "path_hash": "27eaab93d38e809870252e205d8b85b0ecb94549692658eb9fd4c510551df89a",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 3759
+      },
+      {
+        "path_hash": "2ae3f68fd8f5078c8157a9e988d329da14928a977a1b44f582e04ebd3cc97f12",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 252
+      },
+      {
+        "path_hash": "2b832cd9570651b5b06c3289d58d1be1812b75597442a65081a3c67719cf3b6e",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 5359
+      },
+      {
+        "path_hash": "2ccb7dcc81e5e8c5e094f0fb357ab61d5720302a3853384e508459aea2aac3a4",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 5606
+      },
+      {
+        "path_hash": "2daa50af1fc0aa0de65ac68b66619d59a6374c9f72158d65e19278559b123565",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 8068
+      },
+      {
+        "path_hash": "2e0aa97b9ef9dd0075c5041fb93b275680aac5ee34dd792e03367e3933338210",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2187
+      },
+      {
+        "path_hash": "2e0df1254ef541c655a68666905ae43f9ba1a5aa32f21b261356bf700e5d514c",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 541
+      },
+      {
+        "path_hash": "2e3038235d7a4a07f97215ee26967993e191df8b8ca5518d519f5fb2d04a967a",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 332
+      },
+      {
+        "path_hash": "2fb531bf7b0718fb698da14ca3588c72dfcd4fb50da287528bd671d95f18fc51",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 891
+      },
+      {
+        "path_hash": "313e2472cf52aaf1b17f0ecd9d206505a91652c85a576c1c40bc0eb72256670e",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 14522
+      },
+      {
+        "path_hash": "313ff70e4eea6ef52c85681137813816fba7f5a89d969e4f5f821a69da2c5f32",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 9857
+      },
+      {
+        "path_hash": "33d9bd92fa07d4114694f07eea64743f610bd3693cbe932ef9e2d7fd99f638ee",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 4728908
+      },
+      {
+        "path_hash": "341672c2545a2aee46ece4172d5439cddf65aebd678bbc7b07b52dd54f9a9e62",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 3588
+      },
+      {
+        "path_hash": "3497e244587204752df33657b0566a7c99e5d277f641ec859e7b8ff33000d403",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2707
+      },
+      {
+        "path_hash": "34aede11939d5c15019a460ba8f34a95c2b4f540b1874ddb65854260541f63de",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 797
+      },
+      {
+        "path_hash": "34d92377abead5f478554a601347e59e39ba7204e19ef220a9249d988c7b5b68",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 5044
+      },
+      {
+        "path_hash": "38c49d17b10b30db4c5a17082062456df359e5205318f7798e754ae85ce82eac",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 5023
+      },
+      {
+        "path_hash": "3a64ad7b2a0f51efac0645df25f67777fd9606b3a2f92166fbe381f6d4d6e0f4",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3323
+      },
+      {
+        "path_hash": "3ad76912c51ad16b07635d9d0dca8c345dff3ed3f311f03b45ce663deec68176",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 272
+      },
+      {
+        "path_hash": "3c34b41596d3994f80fe7fd4487de8012776980fde96f3a7ea6ce518f70070cb",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3761
+      },
+      {
+        "path_hash": "3d094f16352de08d9e3acde21a303a4347b73d537d0491fc63857b044f7d135c",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 31
+      },
+      {
+        "path_hash": "3d2b151d5d00213ae5181b3171bccff084021a988cccb430bd9fc70b242e95ec",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 687
+      },
+      {
+        "path_hash": "3e01bb658914ccbde61d9f9abc62c7693576abaa9af93975ad1655be1cc93573",
+        "reason": "blocked_scope",
+        "extension": ".txt",
+        "size": 645
+      },
+      {
+        "path_hash": "3fcb037119505965b76415d7f281d85148a751d6e6beb0266ebb077c6ab2773d",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 1464410
+      },
+      {
+        "path_hash": "403441cc90137f9f67b64df6a6e19e86e8a3cb1f5fd7277e397b36c71b63c8ca",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 223
+      },
+      {
+        "path_hash": "42596753634702c8e48c0cb81043279b53bbc077adb490c4b00f53d7dae66170",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3165
+      },
+      {
+        "path_hash": "42a5f381e5af131135c463362eb8b248db662d3c7f4d570777b46ab711fc6ad5",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 14764
+      },
+      {
+        "path_hash": "43e01bb9c1e18669c5bc8ea9e65775d5678ce685efa5517592872029a24ecca8",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 271
+      },
+      {
+        "path_hash": "443b0174e22e03f377639691bb3444c67834cfe8cdc83e2c5da4e049294a432e",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 5681
+      },
+      {
+        "path_hash": "45f975f076fd30b5d6d7613ae34fe7ab02ceb2ad3deb45d7625669fbc2100915",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1775
+      },
+      {
+        "path_hash": "46b3a781d7818e876d6baa9a491921c9204337f2519e316e6af305dd461c1890",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 25640
+      },
+      {
+        "path_hash": "4744245086b1ba1b5678c57f4bd46735ecce4c61baabc3aca015f78e3be08d3b",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 8675
+      },
+      {
+        "path_hash": "4877c5e84b757327f89343e6d92bd8f8130b50c1c0c1a04f8b76deee83f913dd",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 267
+      },
+      {
+        "path_hash": "4902c26623cb7e93061dbb7e24cbf2b56dcb8e10a8ef707c054bedb803fb784e",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 239
+      },
+      {
+        "path_hash": "4a78eca9a160996ca092e11c6af6b6441974cc1a71e54e59f1dd565f62df5c9f",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 2
+      },
+      {
+        "path_hash": "4a79a99c0d93ea28932659460bb04770bc4f2a58826707f311e824cda0b73cbe",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1604
+      },
+      {
+        "path_hash": "4afe616a8826242a6decdb3f63e65ec85889941482a4a9dfc2eb75cff5057ebe",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 1036
+      },
+      {
+        "path_hash": "4b91400efa0560258a9a9240a9e05fb8dffe53f03b4cabca5e400e5a8cb52456",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 6823
+      },
+      {
+        "path_hash": "4c06b301baba35097b513a85ca1bb5fe2c5f173a7052d9c7b46f5b66d681c04f",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2678
+      },
+      {
+        "path_hash": "4cdd76dde4a679965cd15012ad12dde1ab2bdf1c816c986bdb0c9f8c7bcdc119",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 442
+      },
+      {
+        "path_hash": "4f860444dcc4a4c2ba771aec1e4fe66e0c680c101d3ccad03b4b7bd29e7d5e5f",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 4244
+      },
+      {
+        "path_hash": "4f9b5573350aa4dfe2ed8d84be692bcfc2344247dc04e6543d0554e0ee81aec0",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 333
+      },
+      {
+        "path_hash": "4fa4d434284b5fb9019da425b6f28211a7c50a528a5b519b61d39a1ad31952ad",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 8948
+      },
+      {
+        "path_hash": "50ef666409c7744da57ceddd844d907e7d2e008126ae5cf70680bccf9fae3ba5",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 10156
+      },
+      {
+        "path_hash": "51227b338a63d44d4b1c9ccda2430ed651ca1a6f590984276544fa8898b36544",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 2815
+      },
+      {
+        "path_hash": "513c5ad5262b86f9c895846bc242ef80284d7274cb19c857c8fcea1488c1c9ff",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 5493
+      },
+      {
+        "path_hash": "5322126cf89b428dd3ba98adfe0f4ac0c87b3f67af52efcd771ed352eccd4930",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2621
+      },
+      {
+        "path_hash": "5341c36707829bf0530d7ccc15b81077fb940acbfcb2f67e40619329795834bd",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 13953
+      },
+      {
+        "path_hash": "54eb1fa930eac151fc595568d49b2b833ad18e1c76e01d6f39ad4662aa4bd154",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 564
+      },
+      {
+        "path_hash": "5514cdb7a513ad02cdeeda48c0c40805df71267ae08ded94e61247b99fb4c0ab",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2233
+      },
+      {
+        "path_hash": "5528aa4049bf56a627c864c96d7a739df0de4a29a9dcfeea18c48bedd71efd17",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1986
+      },
+      {
+        "path_hash": "55f940c3c2117fb0d205a9a440074c88fd05565292d69a187c54a21b2205bc68",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 10765
+      },
+      {
+        "path_hash": "5760a9bdb94105c514c8a729cbc999c4cba2f9512847f8ec5c234b7b9da83f21",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 634
+      },
+      {
+        "path_hash": "57c1ed2fa1dffd2a7024797811e7ad3ac1eeb9051d455d02d5da8eaabb7a1815",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 6686
+      },
+      {
+        "path_hash": "58be33a8487a5c68f43c9b68eaa41bdf090a74c0b85fca58ee9b97128575b286",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2431
+      },
+      {
+        "path_hash": "58bee123f321f3e881d426e43e8fea89f09a1f7afe0fb520b7bfffcc1898a8de",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 7361
+      },
+      {
+        "path_hash": "5929ca91d550df2051e3238df158a5bc9ea5495f97f304160bff05067ef4f90e",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 23917
+      },
+      {
+        "path_hash": "5a2bce721e09886440c7edbdf7b1a0ff8134f4291586f9428d1f3ac44b29126e",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1223
+      },
+      {
+        "path_hash": "5ad4e39b893d39e90a4730f54220bba9a0a25da688f4e4fc44bf776ce08f1ec1",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 8543
+      },
+      {
+        "path_hash": "5ae209eb8d0b77ccade40bbd0e393261d18c0ae703a8524d01acbf94011da4e6",
+        "reason": "outside_allowlist",
+        "extension": ".txt",
+        "size": 35515
+      },
+      {
+        "path_hash": "5b2de32ad0e408e2a897b4def3180fa7b9b1796e1e3d2037fa8ae3778064dc66",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 5446
+      },
+      {
+        "path_hash": "5e0af0b3b0f44564ae84c7b18b74d58d48d0103b2d4d0201dec7dc33071589ea",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 1539
+      },
+      {
+        "path_hash": "5e3c41031d7448a035be20600d9f7e58db7ba7e50c6b2fccc1c5474e0b20811d",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 238
+      },
+      {
+        "path_hash": "5fe05482a959684f1d56a3ece87ceb69f834a42924fe0b5fe35728600cfd2506",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 282
+      },
+      {
+        "path_hash": "6093d2b57995bfda18300800e84f9aba3ecbe1886f304d9313468d49dec97f81",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 7549
+      },
+      {
+        "path_hash": "60a8c54a3623987070e99c188388229a2cc85db1f307bc3d93226804c2439b31",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1676
+      },
+      {
+        "path_hash": "6489648f3d1b557c83f0b66bf88ae05a36d1a2c2dad6e9bb4691107245876a2b",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2561
+      },
+      {
+        "path_hash": "65d694742b42e4586a1187a41db94afea4e57bd2f60770d86696c95ec47615c7",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 15557
+      },
+      {
+        "path_hash": "6606db8addb6d9e762971d084c1af3d5ed1be383cbc063464e34c74df18fdcf2",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 333
+      },
+      {
+        "path_hash": "66f31f04130d7f30d294fe1e522516e7179ad3bf5c7869e69f5e53fedf4bf3e3",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2421
+      },
+      {
+        "path_hash": "67022ea91e7acb6f4e400d31b868e9c512fa04c3e4953d7872038577f525e3e1",
+        "reason": "outside_allowlist",
+        "extension": ".txt",
+        "size": 106856
+      },
+      {
+        "path_hash": "67c7f73120a81523d0978c34794dd4a48dbda9d2a06b97ffe2082a2bae012d83",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 7952
+      },
+      {
+        "path_hash": "6830fff4248855a54544555617d385af786f9458aaf2216d37c19614e8dc3fb3",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3166
+      },
+      {
+        "path_hash": "693677abe4cb2710da2f2a9e0720a2485712d96c89b2d5696325e7a561cf27b1",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 319
+      },
+      {
+        "path_hash": "6e6e5e6407e526e06cea013644e98c20aacfc4c5edbfa51ca83233ed5ceb1bf3",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 285
+      },
+      {
+        "path_hash": "701ac070f829005c979e11b3fc1b52d500d1f03b580e7fcc19c664121cd256fd",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 296
+      },
+      {
+        "path_hash": "705965af494df9d026cb590b9318fea5897a6c732f71c590b31eed0bf16f7ce1",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 4817
+      },
+      {
+        "path_hash": "724b4ce9ec79f7f589f675a913faea824cdc3cb785e6ed19a4aa2d5d8026e56b",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 617
+      },
+      {
+        "path_hash": "734062428de85bc4484fd97bbf4e60d4d432644b5d66aa76eecdc690f8e909be",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 1236
+      },
+      {
+        "path_hash": "741175711c869a310966a7ea4bee8a12f9d9cbbb48185eff76bcb89cd8be9ed7",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2142
+      },
+      {
+        "path_hash": "7833c28b2eb46c47e3ad318f4376d7a4e1d32c32b39d76d5f247fdce1861cf4a",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 3029
+      },
+      {
+        "path_hash": "785dbecedb89c5fef82994cc6333459a010cdaee5f6813d404071db80f73dde2",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2284
+      },
+      {
+        "path_hash": "786085358e9ad5998a570459c7fd9cead2c8831987471e1d86e5d6300b777216",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 11129
+      },
+      {
+        "path_hash": "7882b937c9fa4b189561609ebbcf74b1a54c9e15b50e3efe12197cbdf8c65a8a",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1094
+      },
+      {
+        "path_hash": "7a87de6c957dfea0390af0d7878a6b113acba3b90ab97e641fc5a883dfcc2e54",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2431
+      },
+      {
+        "path_hash": "7b9b58fae9d2af6ceb5aafaeda1fd4b453235fd080d37c44b59b56ada9427885",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 11863
+      },
+      {
+        "path_hash": "7d1dbb369c5e90e1b1eea81de1a5f4d1302468b18b5d08a1313db6363ac561fc",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2356
+      },
+      {
+        "path_hash": "7d941ee7c6cd885e2b2ba9e1cef21b42a476a4c40e42bacfbdb1543f34a908fb",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 19944
+      },
+      {
+        "path_hash": "801d8c4f0e7433ff20ff428cbf4540d6447e6150c7911fb662c7f68f008fa3cd",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 11883
+      },
+      {
+        "path_hash": "80c8e5858102eb2717c9988a26625504ee04e015d1917abc43422e3d2576ed55",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 324
+      },
+      {
+        "path_hash": "81361f65ea68f9f318b9f8f75e7ef794264bd5bf51ab7809e3274c8b4206e296",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2048
+      },
+      {
+        "path_hash": "81ca31c3043aca451b26dba2a5e4a5ddd366e963f01be831121a7de840cc485a",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2613
+      },
+      {
+        "path_hash": "8289c617de709de2067131bf82f0b415c9cb75d756f9e21aeca7af28de9bde06",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 1461
+      },
+      {
+        "path_hash": "844c18d0e2911dc935aa91e9f7444425e67f0aeedb8c8568dbc02a9cb72a9382",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1422
+      },
+      {
+        "path_hash": "846e106fb55bd1a3bcb7c601c645dcd631aaba04c59b44126227e1cdc29e9414",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 300
+      },
+      {
+        "path_hash": "8513430f7c3921df041ffefa721a7ce555628264736861520a24dc3a35f3e319",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 511
+      },
+      {
+        "path_hash": "8654b87c35c99ee06e0a1ecb3dd57218510b1914d41c82eae407000feff42a18",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 2934
+      },
+      {
+        "path_hash": "8741f63084ad11c43e20b7535dd7d8d83efbebb1b0a398f8ea38afc0c59294e0",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 328
+      },
+      {
+        "path_hash": "87dbe0acb4b85db7867289e23ce57bd3588e4957b889294bc6e5bba7084bb838",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 4348
+      },
+      {
+        "path_hash": "8800aa923e04367eb6a3bc076b292a88b69cd0b7bcc13fd0e5273cc8df920d85",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 2376
+      },
+      {
+        "path_hash": "8b6d0d9029a0102317e2ad59c382140dc8464da46c44a891077ee57d6a2277f8",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 21070
+      },
+      {
+        "path_hash": "8b9e1906a8a49ca2906997ab481031fa9a84ec56ac98a597406b13b5fec1b967",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 23069
+      },
+      {
+        "path_hash": "8bce456260743dd3e600602be5b00bf228c73cbf0f8826348a729a311b3e0454",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 409
+      },
+      {
+        "path_hash": "8be175068451246570cd0ab83346be2a050af551727a3da149e56ac39e043b02",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 7807
+      },
+      {
+        "path_hash": "8e368108c915db2678d0be34c5738d69031e5f8e8b025345c7db8acd1085c3a3",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 10443
+      },
+      {
+        "path_hash": "8ead760fc9f0855263ca4c3706dabeaf72d601eb3e4f6e7b9713dc576e90180a",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 2432
+      },
+      {
+        "path_hash": "9355cc1fdcc1f6bca2d49496f3538e8cee8fecf1f7f1322d9f66c6b98dfada7d",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 343
+      },
+      {
+        "path_hash": "937ef52f7c44b20a9d66ec827c84c96c6208264722cdf282fcabe854e14618eb",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 6418
+      },
+      {
+        "path_hash": "95da10155840c750111ee335e6995c77b35a17d88cc6d13374b42a8ea930261c",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 9190
+      },
+      {
+        "path_hash": "960175f2a7dedf2977456f1512245b527e38f0a61d39c20b135c77f6bac06436",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 2451
+      },
+      {
+        "path_hash": "967fd16538b867446e954a43aa580a6a541dfa0cc4744026de0311eea74b4609",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 11870
+      },
+      {
+        "path_hash": "96ab5589422ca0cf70032de27af74879de965a206caab997539015cd762a060b",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 183
+      },
+      {
+        "path_hash": "98c36edd43fa4fbbe6c4b30c02db7213d4e08b1a60e8355f71b6f95892efd9f0",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 152
+      },
+      {
+        "path_hash": "9b39f9322968179a2e78ee96b064f6a645c1ebe1de0cb7f7f60a578758298b66",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 4060
+      },
+      {
+        "path_hash": "9ec5fabd644a107f72e6544906b870f16548d9ae9d11aafa1526798747ceaaa0",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2563
+      },
+      {
+        "path_hash": "9f3dbc17f2eb7e2c6696e99081e5e36d18b0df2398c4c4206360bb9b48ebcf0e",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 265
+      },
+      {
+        "path_hash": "9fe0d5d30dac12365743d8079383f2e13097e4a330cfe0ea75f1642d043bf619",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 344
+      },
+      {
+        "path_hash": "a0ee6aa6a975e0771cb62e25b47e6a653f05a416bd5da82fedfffd105b065ce5",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 301
+      },
+      {
+        "path_hash": "a10b2ad532cd1d19ad9852d99d63f481bf0c3016fb57eef6b087dca9ac1b1017",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1818
+      },
+      {
+        "path_hash": "a123f872820bdbbdd8fdf23eea1d5dcc2f4874935400b3b2ff630e307d517aa1",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 164
+      },
+      {
+        "path_hash": "a17bb016b69584ccdaef15471854aa3abbc98a5e3cf90f0e4c2dfe59b135aae0",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2946
+      },
+      {
+        "path_hash": "a4174ec4e513e5889408c9d8750edaa336390b60b507beaf861880ca2ce53878",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 4995
+      },
+      {
+        "path_hash": "a41bbf83f2d22189d9161b78cf92128cb6050d534fb1c6e54d46ca39d44d2f7c",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 302
+      },
+      {
+        "path_hash": "a43d8edc7562d849ed239b1e2337bbfebb5dd15130cbd3b7e5d698e3a92956c1",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 3616
+      },
+      {
+        "path_hash": "a56578b7b677683c110b0fce7e15a2115e372fd1434bcb649ab82f4fc66fa940",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2871
+      },
+      {
+        "path_hash": "a5848c49893087038e215a4823d9c170ba12a75392e308ce0843907da5eb31cb",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 11115
+      },
+      {
+        "path_hash": "a5d8fd769189a57fe853e1a23de6fa35745f7dfd627f672a9919a3ed2c6acb45",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 4691
+      },
+      {
+        "path_hash": "a66a60e916d01035a54138e63b28558174278aa71ef56a938db8cf98d13c7b5e",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 272
+      },
+      {
+        "path_hash": "a69e49623abdcbf6be9687dfa15dcdb79dac9e01865b950ceb0f3bda691abfce",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 11124
+      },
+      {
+        "path_hash": "a6e859831dfd36161528a7647c29dca9af9491de5f698986d71a813dd28e83b1",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1306
+      },
+      {
+        "path_hash": "a80770d6fde4405b51b6b1386ab46b795c76c78bc4d160ab7fd9e1f2775051d2",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3017
+      },
+      {
+        "path_hash": "a840f6bbcbf352d920ef6032ff8fad52f8a66117285b53957e103ddeb00075b8",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 270
+      },
+      {
+        "path_hash": "a996de7b30062f95ea5fa96b93e639d70a5716006f4debcc3d39c11c23657cbd",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 1747143
+      },
+      {
+        "path_hash": "ab889d3a7e0bd748a402b822c3fc7c331a13db57fa0854954df16a0d62c57592",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1786
+      },
+      {
+        "path_hash": "ac1b2214501a83a93a860aab6a5fbe278dc0d685260dab153525a3d57007385d",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 5105
+      },
+      {
+        "path_hash": "ae50b9b54317fb2a18f40fd1695a277f04a259e60d9bb354cf253019a4f40e7b",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1115
+      },
+      {
+        "path_hash": "af369d865b0587bfa4be5452d44c1923b5d62ea62d3e3532f20305c8fd6ec152",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 11914
+      },
+      {
+        "path_hash": "af5a5f6dd317f32b3f4df0b1f90b498ad4e92c47a01e7f06244ccbea74811900",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3739
+      },
+      {
+        "path_hash": "b11b80175f3f22b9f707269e5cfbd43bc372b697a77adfcccb75dcca5c0e153a",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 7337
+      },
+      {
+        "path_hash": "b1bcd69184e1e877477f46a8643edc1cfb7fcf378e49fde64c725f5a4c09f4cb",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3114
+      },
+      {
+        "path_hash": "b221d2e697f265ed9d5d35efb71b450ca3e1da71130272bb5518476bdaa53143",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 529
+      },
+      {
+        "path_hash": "b28bfbefa4a3126d0fbc81e9ae6884a75506537ca706725801048c792680331a",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 264
+      },
+      {
+        "path_hash": "b637f3e675d08f3ee9ab442c7d45caf7767e7523bdc02b9cd034452b72d31908",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2579
+      },
+      {
+        "path_hash": "b79bc13ce917798c9fc17846b3b16cfbfa4642c5139a8e066f5430123870dfa4",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3286
+      },
+      {
+        "path_hash": "b7e2ded28e20adf5a68593429df1d551ec1d09b35d62085e38f13885e5408f29",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 882
+      },
+      {
+        "path_hash": "b8584c63c0bfeb7a366c9c89f084946127b7ae346232fffe2a41e4a82ce7f120",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 1463
+      },
+      {
+        "path_hash": "b88930f9692697d08934364a49e4d52e57d190549f0d74f9015f09b6c5892bb7",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 154
+      },
+      {
+        "path_hash": "ba24bbd7ef39f580551380b7c922e6f54989f7e1c3c6ee7a6de8e50878f29c76",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 4329
+      },
+      {
+        "path_hash": "bc524c4bfd167be84fa083527293ac15d80fd8954d8521dfaa54a7d41e619928",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 16470
+      },
+      {
+        "path_hash": "bdb945afed7981244ec60efc94a581c51e9a0e01b6f565b37b6384003f00a053",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 184
+      },
+      {
+        "path_hash": "be4eebc0e2b68dec70abd9de1439fbbabf636c4c6c9451c8cd771cea2e359612",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 246
+      },
+      {
+        "path_hash": "bedbfd9fe94a213437916039795eb9a8a629691522ae9133e245a6e5e3303fd6",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 3601
+      },
+      {
+        "path_hash": "beee2a82c0e12a6ce5d973e7c2c28ebe98d975d1d584779b1d61f0987488f3a4",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 2524
+      },
+      {
+        "path_hash": "c2191c0df71666e1018dabdcca4134a54dc46f63b2fdaabc98f6eb2273d935c0",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3441
+      },
+      {
+        "path_hash": "c291fe1406ad6186764fc054a95a37f2272997ba0c681f4f2767a280b181f44e",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2399
+      },
+      {
+        "path_hash": "c2cdb01d9cc5c5809512e2b89f873c88f1b16390090eb038c0f2a63ec37da51a",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1697
+      },
+      {
+        "path_hash": "c2e9d71dcb52cf12b50a821f0e5cab7f7ce2f6c0623af2dedea5bb0ef0ac20e9",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 1125
+      },
+      {
+        "path_hash": "c3f09f4f552825c81594f30eacb9ad8e8345038d636924eb4a6ac06319c671c8",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 3753
+      },
+      {
+        "path_hash": "c5003d59dab1a42900d951ece1c6d628b2f27b9dc5b9110fb2cf93b2c265e34a",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 9708
+      },
+      {
+        "path_hash": "c56dd5dbe794fbe4930f882a9e42acd18b62409e36ed07427433509f7ae603c3",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 549
+      },
+      {
+        "path_hash": "c718ba8958af8824602bfc639fd6640e0bbc96668414853b4c73a3a384662a8d",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 5044
+      },
+      {
+        "path_hash": "c7f0b388eb8a1496cc10a13a68b55e67985d6581272a1b5e1b0625fa98370502",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 241
+      },
+      {
+        "path_hash": "c80583d6a7ba1e1ffb825901b6929c4a20bfc19192030610e31e596d80d27411",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 19980
+      },
+      {
+        "path_hash": "c8e0fbe4ec0141b4b5b3c1a2f01c8b5452fbd4e63b7c86926178c4a7e8548691",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 0
+      },
+      {
+        "path_hash": "c9afdc29baa648fb9496707bd600c0a849f497fd96a6cc60a6ff00b84a7d56e6",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 2868
+      },
+      {
+        "path_hash": "cabbc1e03cd96f28469c389e440e72d5ae7b4354f9d9afe90a7919a7516a5e9b",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 6598
+      },
+      {
+        "path_hash": "cad4cef312505f1565a254a9bfc7bb2b5b1d98e0cba9903583519e87989138f6",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 158
+      },
+      {
+        "path_hash": "caee4e61976497d41783251b32c0b5ea8e0525da1b891c924b80ea7f756c5301",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 16230
+      },
+      {
+        "path_hash": "cb8da01616e65edf48cf0f04252c9060ba26a3ce69049450be946e5cc325006c",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 1343
+      },
+      {
+        "path_hash": "cc5eacd422b8868711912d7bac0a8df99500f100c10d27bfee4f758cc06634dd",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 4869
+      },
+      {
+        "path_hash": "ccb30933efacc249cfe4a5d7e5a8d4bc8d1180cc7a7bf3713701dcbfe504d4fd",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 5682
+      },
+      {
+        "path_hash": "ce08d62d6ce50ad3d889d5a0c9d1efd8a92ec16fa87021eed690f32c3c13898b",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 11263
+      },
+      {
+        "path_hash": "ce53ff6a8152b86b1e289ce16535a78d10edd96fb57dd134548605a8d1d27c99",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 12741
+      },
+      {
+        "path_hash": "cefe46f0174e6aecfab743883b17a2fc98b5480809a6ef1a1ebefe41982c9e20",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2183
+      },
+      {
+        "path_hash": "cf0dec69c8eb1828cdc1c3801c832748e1ceb8f2289eea7b225f198be1ef9a6b",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 302
+      },
+      {
+        "path_hash": "cf7485f45ebb985e969465ebf86ef43ee00114b02fc819a802c1c0c494f6392f",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1418
+      },
+      {
+        "path_hash": "cf94b1dccbb2ceae32f47cdabbd4fb80d297e3fc86417dee6d3d2b7506173a63",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2611
+      },
+      {
+        "path_hash": "d04d5e75765866eabf7947ffe862dca099484e289a76b1f60c76f2fecb4ad25c",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3022
+      },
+      {
+        "path_hash": "d07032f885cf88ecf7b8698f18a3cbe61287e52f5c46c0910b4e76be7f28a0ca",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3665
+      },
+      {
+        "path_hash": "d0a87d212cf6e857ee66e99512858bbfb8e781ccafd77d0323d0484bed18240a",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 321
+      },
+      {
+        "path_hash": "d1e21f75613f38827ee23c4293373f9fe44a81c7d047a2e4ddb9dfbb044410ed",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 4540
+      },
+      {
+        "path_hash": "d2bf9b0730aae30dc7df48ec1fd0e40948291b622f49c1161f671481871c170c",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 182
+      },
+      {
+        "path_hash": "d3be16f525eed077ade73e97134e71bc4c2266e8366d4245ab2fe4983d6ce2dc",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 2221
+      },
+      {
+        "path_hash": "d5fde83cf5063f54adf375337347b8d801e429b931d0481a7029c4c10d2000b8",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 666
+      },
+      {
+        "path_hash": "d617d42b5b8730dee01fab39827e2956f905eb4b3ce33c8cd349b0fe8449b970",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 113
+      },
+      {
+        "path_hash": "d664c2d9d9ac35ebb033a09046243a8d9c74e50031cc7e37ac6506bee5ee1ef3",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2167
+      },
+      {
+        "path_hash": "d705487e01434816a604dc8ed22279fe6221e634f2ebb33e3fa10932fc3746a2",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 188
+      },
+      {
+        "path_hash": "d8e603066a6fa680e605a4649bafd2c92c798aaf18c6886c8fb0ee31335dd7d0",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 219
+      },
+      {
+        "path_hash": "d98a5ac76f5dd4c32782ba874d1db138ea0c44b8820462e8aa386994ffbeed93",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 12911
+      },
+      {
+        "path_hash": "dccf6add98e85356a70eddfe5527adaa5d6c130160b040c6dc42e880985b37d6",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 543
+      },
+      {
+        "path_hash": "dcdf6552bf145d2dee5e2a975af2709d8296f3599fa29697af11c77a389e1f4a",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3493
+      },
+      {
+        "path_hash": "de1ffd0d960e271ad494ab1d7b9391cb95dfac1789f7a748c66b1273c9aa1cac",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 7340
+      },
+      {
+        "path_hash": "deac961682b5af5021890e835605f45fbcf33f5d31a06b95c98a012178480e22",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1520
+      },
+      {
+        "path_hash": "df6269ecaa51bc1b09706d6ccedc1ac12fd787c98fea35ae628a2362a2fd79a3",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 365
+      },
+      {
+        "path_hash": "dfe751a6c8f821e7a890230073acba5f39ffb1402557588de03e49942f666579",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 6555
+      },
+      {
+        "path_hash": "e4db3b46d7ac57493dbdc703192f570bc9c5f11b188385bc5f6102d41949948c",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 46693
+      },
+      {
+        "path_hash": "e64bff675246d63bbb53a6ac010020a7a2393ad357d00f80857e7fb36cd171f1",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 4793
+      },
+      {
+        "path_hash": "e6d3d33e157fb362e5e4bfe87f3f66b2b20046ae715411788cbb6b84c2e6c7bb",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 280
+      },
+      {
+        "path_hash": "e8a1685e31e152ba866650888636499f2ab8796e6e2f898ad382e5afb7b50cbc",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 1791
+      },
+      {
+        "path_hash": "e8c3e36a34d5c5bd331db16dd59bbb802106cf46428ed15aae2eede132ca0a41",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 5205
+      },
+      {
+        "path_hash": "e90eba8dd072ac4fc4cf7c3a2a1e87055634e408b3cf0c9d3acac74e70097899",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 12925
+      },
+      {
+        "path_hash": "ea94d492538b10bd6d881843ff7573aee7dc06de5b532460ec7e49faf830fef2",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 1438073
+      },
+      {
+        "path_hash": "eb0c19a4157ff6a47b5bbc4b9fcb97ac7bbea98c95c2a647664c9d7ad7d73b8f",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 268
+      },
+      {
+        "path_hash": "ec07b1052ee93f7bd991d2c37cc0eea6973a074ee65479f55205f5d8245a9d99",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1510
+      },
+      {
+        "path_hash": "ed692237fb749cd26a1fc2d874378272c344bf71f348ebe279c59d0cafaf5475",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 174
+      },
+      {
+        "path_hash": "ef428dee091cb67d467234969d601d701fc6ef6a5bfb91319b0d083d4602db3c",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2576
+      },
+      {
+        "path_hash": "f062ad0650e1e5457a1eabc58df6a1dc22041b18071e659615f10a2ed24d5eac",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 435
+      },
+      {
+        "path_hash": "f0d6b531891548655601c3adbceca0e084f118bd81e94a0525f2a2f78d3d44b0",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 251
+      },
+      {
+        "path_hash": "f0decedfc36618b7a226d910006044935f611112f16a76354b5e56d56dc9b035",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1858
+      },
+      {
+        "path_hash": "f18092e7d2a32531129d19a2f4d741f663064b1325bf72c3da0c3c6eb989865a",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3024
+      },
+      {
+        "path_hash": "f1a75b570802762f1ec6066573d116da667059b1cbc40abccad61903adb9e483",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 200
+      },
+      {
+        "path_hash": "f2d92157677cacdc66bdbdebbbea7be202e662d8e96f65b7dc1e14bafb2a6fac",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 6917
+      },
+      {
+        "path_hash": "f3b5a36a368c19eac2500c8641b75018f5096ab7e1635690f077f4072c32cef9",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 1648
+      },
+      {
+        "path_hash": "f5648629263aacc47af57421ab757368ababba07b61500eb22035dd925917e6d",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2886
+      },
+      {
+        "path_hash": "f59a1c0e79991afdafb494980c1b04c6e05291d73c40cbca1bff32389925ed7b",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 1161
+      },
+      {
+        "path_hash": "f59b60d623a8f21c4996e9b04802f8674ee301d205eee540ecbefcb08b75a3be",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 9722
+      },
+      {
+        "path_hash": "f843665547e309c58e8b434057422d8e121afed313504c4368ab43edfe792333",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 157
+      },
+      {
+        "path_hash": "f933dd4920c1ea4170b078caacab7172951e82c3fc8f7dacc711761d0ce323e8",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3320
+      },
+      {
+        "path_hash": "f970ded63a6ae31a35532bec415338832d57384b3c7159e1364b8846932da899",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 4124
+      },
+      {
+        "path_hash": "f99317bcb71152e0e3f3d5a6df40255a6d846536bbea2db9b77b2a76e6a32cde",
+        "reason": "blocked_scope",
+        "extension": ".md",
+        "size": 19361
+      },
+      {
+        "path_hash": "fa0253fb85581b6a27abf6d75482c5003e82f62ce562da097fbce5b3a335dca9",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 878
+      },
+      {
+        "path_hash": "fb9f6688d9d0674ffbfe11cb6dedd944237e3998f841cd91bff447a52562409a",
+        "reason": "outside_allowlist",
+        "extension": ".json",
+        "size": 312
+      },
+      {
+        "path_hash": "fd18c47a21e95ddc192b0547db6645bd8504d00f9ed971e8275d5691b98a5d07",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 273
+      },
+      {
+        "path_hash": "fd24d005d45182b08ec82e331f6798265c8061de5fe90187c195f15b1b686558",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 2966
+      },
+      {
+        "path_hash": "fdf2e716c48adbb93f27d013fbb49faee8b55b306f51e632ecab0086ef6785ee",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 11753
+      },
+      {
+        "path_hash": "fdfd3e9a3b0203876a002e2bcace752e4acd6dda911a32dd071ea44de04a4db4",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 3278
+      },
+      {
+        "path_hash": "feeacb08cfe3d8aff92a01a5255e37e62de82041676c8198ed516079101627cc",
+        "reason": "outside_allowlist",
+        "extension": ".md",
+        "size": 11243
+      },
+      {
+        "path_hash": "ff1c583eb464b61c20cc0ef8a46a29addbb9961bc412b62aa00fd29cab5a3dde",
+        "reason": "outside_allowlist",
+        "extension": ".css",
+        "size": 1371
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "AIGC/01_LibTV完整使用手册_AI版.md",
+      "bundle_path": "source/AIGC/01_LibTV完整使用手册_AI版.md",
+      "category": "canvas-workflow",
+      "extension": ".md",
+      "source_size": 15843,
+      "source_sha256": "b938d3b412b041c4a7880c6de490826a89b2bc80eb83d97fac5d85edb78d90e2",
+      "size": 15762,
+      "sha256": "e101decde5d9be7342cffb117f9b7b0612ac765e0fa413d478499a134cbce0f1",
+      "lines": 555,
+      "headings": [
+        "# 文件 1：LibTV 完整使用手册（**AI 看的**）",
+        "## 第 1 章：LibTV 哲学与架构",
+        "### 1.1 LibTV 是什么",
+        "### 1.2 6 大节点类型（**画布添加节点**）",
+        "### 1.3 节点类型 vs 模型（**AI 看的关键**）",
+        "## 第 2 章：CLI 命令完整参考",
+        "### 2.1 登录与账户",
+        "# 浏览器登录",
+        "# 手机验证码登录",
+        "# 退出登录",
+        "# 账户信息",
+        "### 2.2 项目（workspace = 工作区）",
+        "# 列工作区",
+        "# 创建工作区",
+        "# 绑定到工作区（写入 .libtv/project.json）",
+        "### 2.3 画布（project = 真正的画布文件）",
+        "# 列出当前工作区下的画布",
+        "# 创建画布",
+        "# 绑定到画布（写入 .libtv/project.json）",
+        "# 画布摘要（含团队空间）"
+      ],
+      "redactions": {
+        "local_path": 3,
+        "project_reference": 1
+      }
+    },
+    {
+      "path": "AIGC/02_生图模型与提示词_AI版.md",
+      "bundle_path": "source/AIGC/02_生图模型与提示词_AI版.md",
+      "category": "image-generation",
+      "extension": ".md",
+      "source_size": 19926,
+      "source_sha256": "afee5056505ead05fc53aeacb95381781d8eca6a16c7c1f2b229a95a02ee3784",
+      "size": 19875,
+      "sha256": "0a5655702114559b9ffb0478ad529f4411aac3824171492b2085d873b25a3c1d",
+      "lines": 668,
+      "headings": [
+        "# 文件 2：生图模型与提示词深度手册（**AI 看的**）",
+        "## 第 1 章：AI 生图的底层机制（**为什么要\"具体情况具体分析\"**）",
+        "### 1.1 AI 怎么\"看\"提示词",
+        "### 1.2 AI 注意力机制（**核心**）",
+        "### 1.3 AI 注意力预算",
+        "### 1.4 \"具体情况具体分析\"的根本原因",
+        "## 第 2 章：4 大模型深度剖析",
+        "### 2.1 Lib Navo Pro（nebula-ultra）—— **一致性之王**",
+        "### 2.2 Lib Navo 2（nebula-2-flash）—— **文字准确之王**",
+        "### 2.3 悠船 V8.1（mj-v8.1）—— **电影感之王**",
+        "### 2.4 Lib Image（lib-image-2）—— **长文本之王**",
+        "## 第 3 章：3 大资产类型深度剖析",
+        "### 3.1 人物资产（Character Reference）",
+        "### 3.2 场景资产（Environment Reference）",
+        "### 3.3 物品资产（Object Reference）",
+        "## 第 4 章：场景 → 模型决策树（**深度版**）",
+        "## 第 5 章：3 大坑（**必避免**）",
+        "### 坑 1：超长描述（> 50 词）",
+        "### 坑 2：风格矛盾",
+        "### 坑 3：参考图模糊"
+      ],
+      "redactions": {
+        "local_path": 1
+      }
+    },
+    {
+      "path": "AIGC/03_视频大模型与提示词_AI版.md",
+      "bundle_path": "source/AIGC/03_视频大模型与提示词_AI版.md",
+      "category": "video-generation",
+      "extension": ".md",
+      "source_size": 40614,
+      "source_sha256": "14eb88ed16bc52f35dc99099250add25dd64453ab181371c56e519451fa7f90e",
+      "size": 40530,
+      "sha256": "7ff959909de28665aa23366bd236ae7c7efed41b37599959a38857a1292ea28d",
+      "lines": 1049,
+      "headings": [
+        "## 第 1 章：视频大模型底层机制（**为什么不能套模板**）",
+        "### 1.1 视频 AI 不等于\"图片 AI + 运动\"",
+        "### 1.2 视频 AI 注意力机制（**比图片复杂 3 倍**）",
+        "### 1.3 视频 AI 注意力预算（**比图片紧**）",
+        "### 1.4 3DGS / 4DGS 与 AI 动画新范式（2026 新增）",
+        "## 第 2 章：4 大视频模型深度剖析",
+        "### 2.1 Kling O3（kling-v3-omni）—— **真人感之王**",
+        "### 2.2 Seedance 2.0 Mini（star-video2-mini）—— **性价比之王**",
+        "### 2.3 Wan 2.6（wanxiang-v2-6）—— **多机位之王**",
+        "### 2.4 Hailuo 02（MiniMax-Hailuo-o2）—— **运动物理之王**",
+        "## 第 2.5 章：2026 Q1 视频模型新势力（**必读**）",
+        "### 2.5.1 闭源三巨头 2025 Q4 更新",
+        "### 2.5.2 开源三剑客 2026 选型表",
+        "### 2.5.3 空间智能新范式（**颠覆性**）",
+        "### 2.5.4 Adobe MAX 2025 生成式 AI 电影节（行业里程碑）",
+        "### 2.5.5 视频模型选型决策树（2026 Q1 更新版）",
+        "### 2.5.6 来源链接",
+        "## 第 3 章：场景 → 视频模型决策树（**深度版**）",
+        "## 第 4 章：3 大视频类型实战",
+        "### 4.1 类型 A：真人感短片（推荐 Kling O3）"
+      ],
+      "redactions": {
+        "local_path": 2,
+        "trailing_whitespace": 5
+      }
+    },
+    {
+      "path": "AIGC/04_剧本创作方法论_AI版.md",
+      "bundle_path": "source/AIGC/04_剧本创作方法论_AI版.md",
+      "category": "storytelling",
+      "extension": ".md",
+      "source_size": 39214,
+      "source_sha256": "a7181c4f32ba45f520057ac2dbc9a490837c0a7cf0b333129aff4b395e050c01",
+      "size": 39166,
+      "sha256": "99c845a75cf2ea10acc12605b8cff52b79f1b779ab466ef19fd19cacb3c340a8",
+      "lines": 745,
+      "headings": [
+        "## 第 1 章：方法论的 3 层结构",
+        "## 第 1.5 章：起承转合（Kishōtenketsu）—— 非冲突叙事基础",
+        "### 1.5.1 起承转合 4 段功能表",
+        "### 1.5.2 Henry Lien 4×4×4 折叠公式",
+        "### 1.5.3 三国变体的哲学差异",
+        "### 1.5.4 与西方三幕剧的 5 点根本对立",
+        "### 1.5.5 AIGC 应用场景",
+        "### 1.5.6 与三幕剧的关系",
+        "### 1.5.7 来源链接",
+        "## 第 2 章：4 大支柱（**核心**）",
+        "### 支柱 1：立意哲学（最重要的根基）",
+        "### 支柱 2：叙事诡计（结构基因）",
+        "### 支柱 3：视觉哲学（形式基因）",
+        "### 支柱 4：长度节奏（格式基因）",
+        "## 第 3 章：5 步法（**任何剧本都能用**）",
+        "## 第 4 章：6 大可复用组件",
+        "## 第 5 章：5 大应用场景（**跨剧本通用**）",
+        "### 场景 1：商业广告（30-60 秒）",
+        "### 场景 2：MV 音乐视频（3-5 分钟）",
+        "### 场景 3：教育短片（2-5 分钟）"
+      ],
+      "redactions": {
+        "local_path": 1
+      }
+    },
+    {
+      "path": "AIGC/05_AI注意力机制权威指南_AI版.md",
+      "bundle_path": "source/AIGC/05_AI注意力机制权威指南_AI版.md",
+      "category": "agent-context",
+      "extension": ".md",
+      "source_size": 9445,
+      "source_sha256": "8097103559c5f254e86e547d3922f9cc760d9308a561853033fcd8d21959554c",
+      "size": 9389,
+      "sha256": "a268fcfe7de32cf88e828315001751557f78ed6500479ccb2933c3ca620df3b0",
+      "lines": 311,
+      "headings": [
+        "# 文件 5：AI 注意力机制权威指南（**AI 看的**）",
+        "## 第 1 章：AI 注意力机制是什么",
+        "## 第 2 章：图片 AI 注意力 4 维",
+        "### 维度 1：位置权重（**越靠前越高**）",
+        "### 维度 2：词频权重（**高频词强**）",
+        "### 维度 3：上下文权重（**关联词强**）",
+        "### 维度 4：多模态权重（**参考图 30-70%**）",
+        "## 第 3 章：视频 AI 注意力 5 维",
+        "### 维度 1：空间（单帧内）",
+        "### 维度 2：时间（帧间）",
+        "### 维度 3：主体（角色）",
+        "### 维度 4：运动（相机/主体）",
+        "### 维度 5：音频（同步）",
+        "## 第 4 章：跨注意力机制（**核心技术**）",
+        "### 什么是 cross-attention",
+        "### 4 大模型注意力特征",
+        "## 第 5 章：5 大视频架构（**模型特性**）",
+        "### 架构 1：Dual-Branch DiT（双分支）",
+        "### 架构 2：Unified MVL（统一多模态）",
+        "### 架构 3：Multi-Modal DiT（多模态扩展）"
+      ],
+      "redactions": {
+        "local_path": 1
+      }
+    },
+    {
+      "path": "AIGC/06_v7.0框架总结与兄弟判断框架.md",
+      "bundle_path": "source/AIGC/06_v7.0框架总结与兄弟判断框架.md",
+      "category": "production-framework",
+      "extension": ".md",
+      "source_size": 8609,
+      "source_sha256": "43e5dead4d32ed8fc07244c3226c476f043f291e9358e29d6b937f84b16262e5",
+      "size": 8551,
+      "sha256": "45d94198fbe27527d5c32945afa33d1bff33d1e3996a43637a2c618552eec289",
+      "lines": 230,
+      "headings": [
+        "# 文件 6：v7.0.0 框架总结与兄弟判断框架（**AI 看的**）",
+        "## 第 1 章：4 等级权威认证（**核心**）",
+        "### 等级 A：学术共识（**已认证**）",
+        "### 等级 B：工业共识（**已认证**）",
+        "### 等级 C：实战推理（**兄弟判断**）",
+        "### 等级 D：哲学思考（**无法证明**）",
+        "## 第 2 章：v7.0.0 框架的 4 步法（**任何剧本都能用**）",
+        "## 第 3 章：4 大支柱（**核心**）",
+        "### 支柱 1：立意哲学",
+        "### 支柱 2：视觉哲学",
+        "### 支柱 3：长度节奏",
+        "### 支柱 4：5 段结构",
+        "## 第 4 章：兄弟的判断框架（**核心**）",
+        "### 兄弟原话：4 大要求",
+        "### 4 要求 → 4 评估",
+        "### 兄弟的 5 大痛点 → v7.0.0 解决",
+        "## 第 5 章：8 大工具栈（**兄弟实战验证**）",
+        "## 第 6 章：兄弟的 3 大金句（**反复引用**）",
+        "### 金句 1：\"**学到的东西到时候可以用在狠多风格的剧本上，我们现在学习的是方法论**\"",
+        "### 金句 2：\"**我们写的是通用的就好了，你只是参照那个模板对不对？**\""
+      ],
+      "redactions": {
+        "local_path": 1
+      }
+    },
+    {
+      "path": "AIGC/07_兄弟角色设定表工作流_AI版.md",
+      "bundle_path": "source/AIGC/07_兄弟角色设定表工作流_AI版.md",
+      "category": "character-workflow",
+      "extension": ".md",
+      "source_size": 10524,
+      "source_sha256": "c2d7b0767a5d8c17daf577b393989458b61d2424eb955ec9a5cb2b1ce1acfc52",
+      "size": 10398,
+      "sha256": "59ef37115381dac8304c813dd15c5f4cb45b53dc462d12ab3e0dc881b905dfba",
+      "lines": 297,
+      "headings": [
+        "# 文件 7：兄弟角色设定表工作流（**AI 看的**）",
+        "## 第 1 章：兄弟的 3 大金标准（**核心**）",
+        "### 金标准 1：先生成单图（**人介入节点**）",
+        "### 金标准 2：参考图驱动（**70% 注意力**）",
+        "### 金标准 3：1/3 + 2/3 布局（**角色设定表标准**）",
+        "## 第 2 章：5 步工作流（**实战**）",
+        "## 第 3 章：2 步提示词模板（**直接复制**）",
+        "### 提示词 A：正面全身照（Step 1，**试探图**）",
+        "### 提示词 B：角色设定表（Step 5，**参考图驱动**）",
+        "## 第 4 章：兄弟原话逐条对应",
+        "## 第 5 章：v7.0 框架 4 大要点（**实战应用**）",
+        "## 第 6 章：实战工作流（**命令清单**）",
+        "# Step 1：写提示词 A",
+        "# Step 2：生成",
+        "# → 50s 出图，下载预览",
+        "# Step 3：兄弟审核（如果满意 → Step 4；如果不满意 → 改 Step 1）",
+        "# Step 4：用审核通过的图做参考图",
+        "# Step 5：写提示词 B（参考图驱动）",
+        "# → 50s 出图",
+        "## 第 7 章：为什么用 #E8E8E8 而不是 #808080"
+      ],
+      "redactions": {
+        "local_path": 5
+      }
+    },
+    {
+      "path": "AIGC/08_上下文工程4大支柱映射_AI版.md",
+      "bundle_path": "source/AIGC/08_上下文工程4大支柱映射_AI版.md",
+      "category": "agent-context",
+      "extension": ".md",
+      "source_size": 8130,
+      "source_sha256": "bc229501f35b98c3ab6133badbef4a2587e72c33b245a7fef12d8c2a925c43b3",
+      "size": 8072,
+      "sha256": "23c197fc28b11679a84ca4fad9a9dab5460cea5c6ea69aace7f7943021eaed99",
+      "lines": 242,
+      "headings": [
+        "# 文件 8：上下文工程 4 大支柱映射（**AI 看的**）",
+        "## 第 1 章：什么是上下文工程（**核心**）",
+        "## 第 2 章：AIGC 导演文件夹 = 上下文工程系统（**核心发现**）",
+        "## 第 3 章：4 大支柱的实战应用",
+        "### 支柱 1：**Instructions**（系统提示）",
+        "### 支柱 2：**Retrieval**（RAG）",
+        "### 支柱 3：**Memory**（短期 + 长期）",
+        "### 支柱 4：**Tools**（CLI 工具）",
+        "## 第 4 章：4 大支柱 vs 兄弟 4 大要求（**对比**）",
+        "## 第 5 章：升级方案（**最小改动**）",
+        "### 不重写（**节省 75%**）——只加标注",
+        "### 总改动量",
+        "## 第 6 章：v8.0 框架升级（**完整 5 部分**）",
+        "### Part 1：v6.0 基础（22 章）",
+        "### Part 2：v7.0 新增（4 章）",
+        "### Part 3：v8.0 新增（4 大不足补完）",
+        "### Part 4：兄弟决策框架（第 44 章）",
+        "### Part 5：AIGC 导演文件夹（**8 个核心文件**）",
+        "## 第 7 章：兄弟决策框架的 5 步法（**实战应用**）",
+        "### 步骤 0：问题适用性判断"
+      ],
+      "redactions": {
+        "local_path": 1
+      }
+    },
+    {
+      "path": "AIGC/10_电影摄影学体系_AI版.md",
+      "bundle_path": "source/AIGC/10_电影摄影学体系_AI版.md",
+      "category": "cinematography",
+      "extension": ".md",
+      "source_size": 53037,
+      "source_sha256": "2a0c8afeca769c2a575723f81d029df31c5d8e61e7bf4e657d62e8132b56fbb7",
+      "size": 52984,
+      "sha256": "4a5df9fa76b3a4f6e62d29d4f8ce0502a2267aaebca06f9c9bab6624bdcee790",
+      "lines": 1180,
+      "headings": [
+        "## 第 1 章：构图 12 法则（Composition）",
+        "### 1.1 三分法（Rule of Thirds）",
+        "### 1.2 引导线（Leading Lines）",
+        "### 1.3 对称构图（Symmetry）",
+        "### 1.4 框架内框架（Frame Within a Frame）",
+        "### 1.5 负空间（Negative Space）",
+        "### 1.6 黄金比例（Golden Ratio / 1.618:1）",
+        "### 1.7 三角构图（Triangular Composition）",
+        "### 1.8 深度构图（Deep Space Composition）",
+        "### 1.9 平面构图（Flat Composition）",
+        "### 1.10 荷兰角（Dutch Angle / Canted Frame）",
+        "### 1.11 高低角度（High/Low Angle）",
+        "### 1.12 过肩镜头（Over-the-Shoulder / OTS）",
+        "### 1.13 远观即伦理：反特写构图（Kiarostami 物理距离美学）",
+        "## 第 2 章：镜头运动 10 式（Camera Movement）",
+        "### 2.1 推（Push-in / Dolly In）",
+        "### 2.2 拉（Pull-back / Dolly Out）",
+        "### 2.3 摇（Pan）",
+        "### 2.4 俯仰（Tilt）",
+        "### 2.5 跟（Tracking Shot）"
+      ],
+      "redactions": {
+        "local_path": 1,
+        "trailing_whitespace": 5
+      }
+    },
+    {
+      "path": "AIGC/11_叙事诡计分类学_AI版.md",
+      "bundle_path": "source/AIGC/11_叙事诡计分类学_AI版.md",
+      "category": "storytelling",
+      "extension": ".md",
+      "source_size": 11977,
+      "source_sha256": "a8ca221bd9edda61bba4a1098c4be12cd4e2e9b17cedb80e1de96845bccd5668",
+      "size": 11929,
+      "sha256": "3018dbaa0107d87630f5b17fd3e71a06612328baace24aadd9566a221ef3974c",
+      "lines": 303,
+      "headings": [
+        "# 文件 11：叙事诡计分类学（**AI 看的**）",
+        "## 第 1 章：叙事诡计总纲",
+        "### 1.1 什么是叙事诡计",
+        "### 1.2 诡计的 4 层深度",
+        "## 第 2 章：9 大类叙事诡计",
+        "### 类型 1：不可靠叙述者（Unreliable Narrator）",
+        "### 类型 2：非线性叙事（Non-Linear Narrative）",
+        "### 类型 3：视角反转（Perspective Reversal）",
+        "### 类型 4：信息差（Dramatic Irony / Information Asymmetry）",
+        "### 类型 5：红鲱鱼（Red Herring）",
+        "### 类型 6：麦高芬（MacGuffin）",
+        "### 类型 7：元叙事（Meta-Narrative）",
+        "### 类型 8：时间诡计（Temporal Trick）",
+        "### 类型 9：沉默揭示（Silent Revelation）",
+        "## 第 3 章：诡计组合矩阵",
+        "## 第 4 章：AIGC 短片诡计速查",
+        "## 第 5 章：5 段结构 × 诡计植入",
+        "## 第 6 章：叙事诡计 AIGC 提示词速查",
+        "## 第 7 章：诡计失败检查清单",
+        "## 第 8 章：经典诡计案例拆解（AIGC 版）"
+      ],
+      "redactions": {
+        "local_path": 1
+      }
+    },
+    {
+      "path": "AIGC/12_全画风参数体系_AI版.md",
+      "bundle_path": "source/AIGC/12_全画风参数体系_AI版.md",
+      "category": "visual-style",
+      "extension": ".md",
+      "source_size": 41590,
+      "source_sha256": "12ca960c2cfcb9d0b0dcb07fb1efc682fd60c9a8bcd7a92aa8048dd086e99c21",
+      "size": 41537,
+      "sha256": "91feb12318ccaefecb1eeb985fb9ec4c383c665b2083ed7e69b6cc31d627dff7",
+      "lines": 849,
+      "headings": [
+        "## 第 1 章：画风参数 8 层模型",
+        "## 第 2 章：10 大类 60+ 画风全景",
+        "### 类别 1：写实/纪实（Realism）",
+        "### 类别 2：动漫/日式（Anime）",
+        "### 类别 3：美式/西方动画（Western Animation）",
+        "### 类别 4：3D/CGI（Three-Dimensional）",
+        "### 类别 5：2D/插画（2D Illustration）",
+        "### 类别 6：传统绘画（Traditional Fine Art）",
+        "### 类别 7：实验/先锋（Experimental / Avant-Garde）",
+        "### 类别 8：中国画风（Chinese Art Styles）",
+        "### 类别 9：特定视觉流派（Visual Movements）",
+        "### 类别 10：商业/设计（Commercial / Design）",
+        "## 第 3 章：画风混合矩阵",
+        "## 第 4 章：画风 → 模型决策树",
+        "## 第 4.5 章：结构 vs 风格解耦画风法（**2026 新方法论**）",
+        "### 4.5.1 传统画风 prompt 的问题",
+        "### 4.5.2 解耦画风法（结构 + 风格分层）",
+        "### 4.5.3 实战 prompt 模板",
+        "### 4.5.4 6 种风格一键切换示例",
+        "### 4.5.5 与画风 8 层模型的关系"
+      ],
+      "redactions": {
+        "local_path": 1,
+        "trailing_whitespace": 5
+      }
+    },
+    {
+      "path": "AIGC/12_补充_亚文化视觉.md",
+      "bundle_path": "source/AIGC/12_补充_亚文化视觉.md",
+      "category": "visual-style",
+      "extension": ".md",
+      "source_size": 5804,
+      "source_sha256": "c6e8c6eafa44ca0aa572ccf07739586caa6bbc4ab6ce94f9c791ffa6987f9311",
+      "size": 5804,
+      "sha256": "c6e8c6eafa44ca0aa572ccf07739586caa6bbc4ab6ce94f9c791ffa6987f9311",
+      "lines": 78,
+      "headings": [
+        "# 全球视觉风格补遗 - 亚文化视觉",
+        "## 街头与涂鸦",
+        "## 次文化风格",
+        "## 复古与怀旧",
+        "## 网络美学"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/12_补充_历史艺术运动.md",
+      "bundle_path": "source/AIGC/12_补充_历史艺术运动.md",
+      "category": "visual-style",
+      "extension": ".md",
+      "source_size": 6682,
+      "source_sha256": "8383901130da27c7778c43a21b5fabb2c3a2496a588415a20f0b63eb1b0289d9",
+      "size": 6682,
+      "sha256": "8383901130da27c7778c43a21b5fabb2c3a2496a588415a20f0b63eb1b0289d9",
+      "lines": 92,
+      "headings": [
+        "# 全球视觉风格补遗 - 历史艺术运动",
+        "## 古代艺术（公元前3000年-公元5世纪）",
+        "## 中世纪艺术（5-15世纪）",
+        "## 文艺复兴（14-17世纪）",
+        "## 17-18世纪",
+        "## 19世纪",
+        "## 20世纪早期（1900-1945）",
+        "## 20世纪中期（1945-1970）",
+        "## 20世纪晚期（1970-2000）",
+        "## 21世纪（2000至今）"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/12_补充_地域民族艺术.md",
+      "bundle_path": "source/AIGC/12_补充_地域民族艺术.md",
+      "category": "visual-style",
+      "extension": ".md",
+      "source_size": 3414,
+      "source_sha256": "242e97bd4165b7b7883c86640f018543bb67c4698405a214bf497aba4998e75b",
+      "size": 3414,
+      "sha256": "242e97bd4165b7b7883c86640f018543bb67c4698405a214bf497aba4998e75b",
+      "lines": 54,
+      "headings": [
+        "# 全球视觉风格补遗 - 地域/民族艺术",
+        "## 非洲艺术",
+        "## 大洋洲艺术",
+        "## 美洲原住民艺术",
+        "## 中东/伊斯兰艺术",
+        "## 亚洲其他",
+        "## 欧洲民间艺术"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/12_补充_当代数字艺术.md",
+      "bundle_path": "source/AIGC/12_补充_当代数字艺术.md",
+      "category": "visual-style",
+      "extension": ".md",
+      "source_size": 2964,
+      "source_sha256": "a27b8fc5fc9cd529ef4f3f8961581ff3753a3f78069266ef41823477c09af1ea",
+      "size": 2964,
+      "sha256": "a27b8fc5fc9cd529ef4f3f8961581ff3753a3f78069266ef41823477c09af1ea",
+      "lines": 46,
+      "headings": [
+        "# 全球视觉风格补遗 - 当代数字艺术",
+        "## 数字艺术基础",
+        "## 故障与失真",
+        "## 网络文化",
+        "## 朋克变体",
+        "## 新兴数字风格"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/13_角色心理学与对话深度_AI版.md",
+      "bundle_path": "source/AIGC/13_角色心理学与对话深度_AI版.md",
+      "category": "character-workflow",
+      "extension": ".md",
+      "source_size": 9143,
+      "source_sha256": "63bc7c92153e8e2e0a506a83303aa38afc525fff8599a0972c18ff8e06ddd2c4",
+      "size": 9080,
+      "sha256": "e1d025e5938603c1b85b327cbe21cea46b4a4396d284f8779f6adcd7585b0a36",
+      "lines": 241,
+      "headings": [
+        "# 文件 13：角色心理学与对话深度（**AI 看的**）",
+        "## 第 1 章：角色弧线（Character Arc）",
+        "### 1.1 3 种基本弧线",
+        "### 1.2 正向弧 5 阶段",
+        "### 1.3 负向弧 3 种类型",
+        "## 第 2 章：5 种基本冲突",
+        "## 第 3 章：角色动机心理学",
+        "### 3.1 表层动机 vs 深层动机",
+        "### 3.2 3 种动机层次",
+        "### 3.3 角色缺陷（Flaw）的 5 种类型",
+        "## 第 4 章：对话深度——潜台词体系",
+        "### 4.1 对话的 3 层结构",
+        "### 4.2 潜台词 7 种技术",
+        "### 4.3 对话的权力动态",
+        "## 第 5 章：对话节奏控制",
+        "### 5.1 节奏 4 型",
+        "### 5.2 AIGC 视频的对话词数限制",
+        "## 第 6 章：方言与语域（Dialect & Register）",
+        "### 6.1 方言的叙事功能",
+        "### 6.2 语域的 5 级"
+      ],
+      "redactions": {
+        "local_path": 1,
+        "trailing_whitespace": 3
+      }
+    },
+    {
+      "path": "AIGC/14_视听叙事学术基础_AI版.md",
+      "bundle_path": "source/AIGC/14_视听叙事学术基础_AI版.md",
+      "category": "cinematography",
+      "extension": ".md",
+      "source_size": 117795,
+      "source_sha256": "14d6c4c6519c3a3cc2a86f62923ce3491aeb6ab8ce7fca2a50ae7f3c5f4a2865",
+      "size": 117739,
+      "sha256": "02747b4adc1c8cab36bfc30ce3e7ef113cd43e7307fa0fcc1773ceda18cbb60e",
+      "lines": 1906,
+      "headings": [
+        "## 第 1 章：电影符号学（Film Semiotics）",
+        "### 1.1 麦茨（Christian Metz）—— 电影语言系统",
+        "### 1.2 艾柯（Umberto Eco）—— 10 种符码 + 开放文本",
+        "### 1.3 皮尔斯（C.S. Peirce）—— 3 种符号",
+        "## 第 2 章：认知电影理论（Cognitive Film Theory）",
+        "### 2.1 观众不是被动接收者",
+        "### 2.2 情感参与的 3 层模型",
+        "## 第 3 章：声音设计理论",
+        "### 3.1 Chion \"音频-视觉契约\"（Audio-Visual Contract）",
+        "### 3.2 Chion \"附加价值\"（Added Value）",
+        "### 3.3 声音的 4 层空间",
+        "### 3.4 声音设计 5 大元素",
+        "### 3.5 Walter Murch 剪辑六大法则 + Dune 沙虫生物声学",
+        "### 3.6 Bernard Herrmann 的\"听见之图像\"：单一乐器群 + 反旋律 + 拒绝解决 —— AIGC 音视频一体化的作曲家视角",
+        "## 第 4 章：剪辑理论（Editing Theory）",
+        "### 4.1 爱森斯坦 —— 苏联蒙太奇 5 种",
+        "### 4.2 好莱坞连续性剪辑（Continuity Editing）",
+        "### 4.3 跳切（Jump Cut）—— 戈达尔的革命",
+        "### 4.4 今敏式虚实转场（Kon-Style Reality↔Dream Match Cut）—— 动画蒙太奇巅峰",
+        "### 4.5 AIGC 视频的剪辑建议"
+      ],
+      "redactions": {
+        "local_path": 1,
+        "trailing_whitespace": 4
+      }
+    },
+    {
+      "path": "AIGC/15_文化与讽刺语法_AI版.md",
+      "bundle_path": "source/AIGC/15_文化与讽刺语法_AI版.md",
+      "category": "storytelling",
+      "extension": ".md",
+      "source_size": 25695,
+      "source_sha256": "c3835fef3af9966b15cc02bab0bab0c0d3247f1987bcff3b13a45f6dc7f40500",
+      "size": 25646,
+      "sha256": "c9516df2b16e1aa913ac54e11183226834789a5df0b5e3fcacd41b04504dbdbe",
+      "lines": 446,
+      "headings": [
+        "# 文件 15：文化与讽刺语法（**AI 看的**）",
+        "## 第 1 章：讽刺的 7 种形式",
+        "### 1.1 讽刺谱系",
+        "### 1.2 AIGC 短片最适合的讽刺形式",
+        "### 1.3 讽刺的视觉化",
+        "## 第 2 章：6 大文化叙事传统",
+        "### 2.1 西方叙事传统（因果链）",
+        "### 2.2 东方叙事传统（留白与循环）",
+        "### 2.3 拉美叙事传统（魔幻现实主义）",
+        "### 2.4 非洲叙事传统（口头与集体）",
+        "### 2.5 中东叙事传统（嵌套结构）",
+        "### 2.6 中东电影的三重凝视：Kiarostami 减法 / Suleiman 死面 / Ceylan 静帧",
+        "### 2.7 后现代叙事传统（解构一切）",
+        "## 第 3 章：社会评论的隐喻系统",
+        "### 3.1 7 种社会隐喻",
+        "### 3.2 隐喻的 AIGC 执行",
+        "## 第 4 章：文化敏感性指南",
+        "### 4.1 可以挑战的 vs 不能碰的",
+        "### 4.2 讽刺的火候",
+        "## 第 5 章：不同视觉风格的讽刺语法"
+      ],
+      "redactions": {
+        "local_path": 1,
+        "trailing_whitespace": 1
+      }
+    },
+    {
+      "path": "AIGC/16_AIGC失败修复手册_实战版.md",
+      "bundle_path": "source/AIGC/16_AIGC失败修复手册_实战版.md",
+      "category": "failure-repair",
+      "extension": ".md",
+      "source_size": 11651,
+      "source_sha256": "19fadf6b0e4194eaecdeb9ec2af2bb376c0aeb0cc9e714113a0fa38295a27057",
+      "size": 11598,
+      "sha256": "97c64de0644ce57f33a47a5e76b22910aece34f260802f1f45b674c17db44c39",
+      "lines": 313,
+      "headings": [
+        "# 文件 16：AIGC失败修复手册（实战版）",
+        "## 第 1 章：6 大类失败模式速查",
+        "### 1.1 生图失败",
+        "### 1.2 生视频失败",
+        "## 第 2 章：失败修复流程（3步法）",
+        "### 流程 1：1次微调（调1-2个词）",
+        "### 流程 2：换参考图（换视觉输入）",
+        "### 流程 3：换模型（换底层能力）",
+        "## 第 3 章：8个最常见的AI视频广告错误及修复",
+        "## 第 4 章：Adetailer 脸部修复方法",
+        "### Adetailer（最强脸部修复插件）",
+        "### MagicID（浙大最新技术）",
+        "### 手动修复方案（不用插件）",
+        "## 第 5 章：手部修复方法",
+        "### 方案A：躲手法（最快）",
+        "### 方案B：强化提示词法",
+        "### 方案C：Inpaint修复法",
+        "### 方案D：ControlNet法",
+        "## 第 6 章：跨帧一致性问题（视频专用）",
+        "### 问题类型"
+      ],
+      "redactions": {
+        "local_path": 1
+      }
+    },
+    {
+      "path": "AIGC/17_AI声音设计与台词提示词.md",
+      "bundle_path": "source/AIGC/17_AI声音设计与台词提示词.md",
+      "category": "audio",
+      "extension": ".md",
+      "source_size": 9238,
+      "source_sha256": "c72cedf39963cb22286330f4b6b447d60fe6bfdafd47ea0580b6615af6903bad",
+      "size": 9238,
+      "sha256": "c72cedf39963cb22286330f4b6b447d60fe6bfdafd47ea0580b6615af6903bad",
+      "lines": 262,
+      "headings": [
+        "# 17_AI声音设计与台词提示词体系 v1.0",
+        "## 核心概念",
+        "## 一、Seedance 2.0 声音系统（三层架构）",
+        "### 1.1 三层总览",
+        "### 1.2 Dialogue（对白）铁律",
+        "### 1.3 SFX（音效）",
+        "### 1.4 BGM（背景音乐）",
+        "### 1.5 口型同步优化",
+        "## 二、Kling 3.0 声音系统",
+        "### 2.1 对话和音频元素",
+        "### 2.2 教育/教程场景的台词示例",
+        "### 2.3 Kling 3.0 Omni 模式",
+        "### 2.4 Kling 3.0 多机位示例中的音频",
+        "## 三、Suno AI 配乐提示词体系",
+        "### 3.1 有效提示词的 4 要素",
+        "### 3.2 常用提示词模板",
+        "### 3.3 Suno vs Udio 选择建议",
+        "## 四、AI 视频全链路声音控制总结",
+        "### 4.1 三层音轨混合策略",
+        "### 4.2 推荐工作流"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/18_ComfyUI工作流体系.md",
+      "bundle_path": "source/AIGC/18_ComfyUI工作流体系.md",
+      "category": "node-workflow",
+      "extension": ".md",
+      "source_size": 8540,
+      "source_sha256": "420647061098635054ca4851bad9a073632f33b6125c1ec7101ed8e117c8cf13",
+      "size": 8540,
+      "sha256": "420647061098635054ca4851bad9a073632f33b6125c1ec7101ed8e117c8cf13",
+      "lines": 238,
+      "headings": [
+        "# 18_ComfyUI工作流体系 v1.0",
+        "## 核心概念",
+        "## 一、ComfyUI 工作流本质",
+        "### 1.1 什么是工作流",
+        "### 1.2 序列化格式",
+        "### 1.3 节点连接规则",
+        "## 二、20 个工作流阶梯（4 阶成熟度）",
+        "### 第 1 阶：基础生成（Workflows 1-5）",
+        "### 第 2 阶：身份与风格一致（Workflows 6-10）",
+        "### 第 3 阶：生产级管线（Workflows 11-15）",
+        "### 第 4 阶：视频与多模型（Workflows 16-20）",
+        "## 三、生产级部署三件套",
+        "### 3.1 版本固定",
+        "### 3.2 暖 Worker 池",
+        "### 3.3 质量门禁",
+        "## 四、ComfyUI 与视频模型集成",
+        "### 4.1 本地 vs 云端",
+        "### 4.2 典型集成工作流",
+        "### 4.3 Seedance 2.0 ComfyUI 自定义节点",
+        "## 五、工作流查找与版本管理"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/19_AI电影全工作流.md",
+      "bundle_path": "source/AIGC/19_AI电影全工作流.md",
+      "category": "production-workflow",
+      "extension": ".md",
+      "source_size": 6610,
+      "source_sha256": "bdafdb741d2d74676b183dc473add0f4307d2cbb0b031d3deb30342ae737e60f",
+      "size": 6610,
+      "sha256": "bdafdb741d2d74676b183dc473add0f4307d2cbb0b031d3deb30342ae737e60f",
+      "lines": 182,
+      "headings": [
+        "# 19_AI电影全工作流：从剧本到成片",
+        "## 一、核心原则：导演笔记 ≠ 剧本",
+        "## 二、15 分钟短片生产时间线",
+        "## 三、4 层角色一致性锁",
+        "### Layer 1 — Character DNA（蓝图文档）",
+        "### Layer 2 — 角色照片包（视觉锚点）",
+        "### Layer 3 — 镜头关键帧（每场锁定）",
+        "### Layer 4 — 生成 + 精修",
+        "## 四、模型选择决策（2026 年中）",
+        "## 五、常见问题与修复",
+        "## 六、成本参考",
+        "## 七、关键提示词模板",
+        "### 拍摄公式",
+        "### Seedance 人设锁定",
+        "### 一致性提示词附录",
+        "## 来源"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/20_LoRA训练与模型微调.md",
+      "bundle_path": "source/AIGC/20_LoRA训练与模型微调.md",
+      "category": "model-training",
+      "extension": ".md",
+      "source_size": 6561,
+      "source_sha256": "979f8e11a50747dd8f8d590685b6db1ce56a381ec4ee48ffa0d812b44ba51512",
+      "size": 6561,
+      "sha256": "979f8e11a50747dd8f8d590685b6db1ce56a381ec4ee48ffa0d812b44ba51512",
+      "lines": 189,
+      "headings": [
+        "# 20_LoRA训练与模型微调 v1.0",
+        "## 一、核心概念",
+        "## 二、数据集准备（决定成败）",
+        "### 2.1 图片选择标准",
+        "### 2.2 处理流程",
+        "### 2.3 自动化处理命令",
+        "## 三、训练工具选择",
+        "### Kohya SS 参数速查",
+        "## 四、训练参数",
+        "### 字符 LoRA 黄金参数",
+        "### 命令行示例（Kohya SS）",
+        "### 训练监控",
+        "## 五、推理时使用 LoRA",
+        "### 提示词结构",
+        "### 强度控制",
+        "### 否定提示词",
+        "## 六、常见问题与修复",
+        "## 七、字符 LoRA 在 AIGC 电影中的用法",
+        "### 什么时候用 LoRA",
+        "### 什么时候不用 LoRA"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/21_AI 3D 资产生成.md",
+      "bundle_path": "source/AIGC/21_AI 3D 资产生成.md",
+      "category": "3d-assets",
+      "extension": ".md",
+      "source_size": 4717,
+      "source_sha256": "d7a7995342fe00642b81d25c150424880e29a067306865117af67ff825fa8cb6",
+      "size": 4717,
+      "sha256": "d7a7995342fe00642b81d25c150424880e29a067306865117af67ff825fa8cb6",
+      "lines": 133,
+      "headings": [
+        "# 21_AI 3D 资产生成 v1.0",
+        "## 一、概览：6 大工具对比",
+        "### 决策树",
+        "## 二、推荐工具详解",
+        "### 2.1 TRELLIS 2（微软研究院开源）— 首选",
+        "### 2.2 Tripo AI — 功能最全",
+        "### 2.3 Meshy AI — 3D 打印首选",
+        "## 三、在 AIGC 电影中的应用",
+        "### 3.1 应用场景",
+        "### 3.2 推荐管线",
+        "## 四、关键参数",
+        "### TRELLIS 2 参数",
+        "### Meshy API 参数",
+        "## 五、来源"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/22_AI配音调色后制.md",
+      "bundle_path": "source/AIGC/22_AI配音调色后制.md",
+      "category": "post-production",
+      "extension": ".md",
+      "source_size": 4181,
+      "source_sha256": "f2b57a1e07fc370377ea7f6ab4bc5a00fd1cf42b2f099460f870a8bd12c7b3a0",
+      "size": 4176,
+      "sha256": "7a33bc723b18aec8435efd19b1a99a7ac521b4c7667063468937699f017154f8",
+      "lines": 96,
+      "headings": [
+        "# 22_AI 多语言配音与口型同步",
+        "## 一、2026 年 5 大工具对比",
+        "### 核心结论",
+        "## 二、传统配音 vs AI 配音成本",
+        "## 三、AI 视频增强/调色/放大",
+        "### 3.1 AI 调色工具",
+        "### 3.2 AI 视频放大",
+        "### 3.3 后制工作流",
+        "## 四、来源"
+      ],
+      "redactions": {
+        "trailing_whitespace": 5
+      }
+    },
+    {
+      "path": "AIGC/23_AI创作者版权合规与商业化.md",
+      "bundle_path": "source/AIGC/23_AI创作者版权合规与商业化.md",
+      "category": "governance",
+      "extension": ".md",
+      "source_size": 4951,
+      "source_sha256": "69d646d7dd2f0c5598878f0a8a50e073cdb8a975ed7a08ce5891ca88081241de",
+      "size": 4951,
+      "sha256": "69d646d7dd2f0c5598878f0a8a50e073cdb8a975ed7a08ce5891ca88081241de",
+      "lines": 107,
+      "headings": [
+        "# 23_AI创作者版权合规与商业化 v1.0",
+        "## 一、2026 年平台政策",
+        "### 1.1 YouTube",
+        "### 1.2 TikTok",
+        "### 1.3 Facebook",
+        "## 二、创作者实际收入参考",
+        "## 三、10 条变现铁律",
+        "## 四、版权核心原则",
+        "### EU AI Act 2026 状态",
+        "### 实际创作建议",
+        "### 核心判定标准",
+        "## 五、来源"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/99_权威来源与参考文献.md",
+      "bundle_path": "source/AIGC/99_权威来源与参考文献.md",
+      "category": "governance",
+      "extension": ".md",
+      "source_size": 11095,
+      "source_sha256": "6f0fab20dda663b30c01267b226165f785d699d62fa0436394d87898be8fe490",
+      "size": 10963,
+      "sha256": "e5546ec4a897aafff4d5f4ea79f3a54e008acdaf1038d9c96fcfe084ac93f7c3",
+      "lines": 253,
+      "headings": [
+        "# 文件 99：权威来源与参考文献（**AI 看的**）",
+        "## 学术论文（**等级 A 权威**）",
+        "### 1. arXiv 2504.03738 — \"Attention in Diffusion Model: A Survey\"",
+        "### 2. arXiv 2504.16081 — \"Survey of Video Diffusion Models\"",
+        "### 3. PMC12753859 — \"Semantic guidance for precise style control in diffusion image generation\"",
+        "### 4. Emergent Mind — \"Video Transformer Architecture\"",
+        "### 5. arXiv 2606.10183 — \"Making Time Editable in Video Diffusion Transformers\"",
+        "## 工业级官方文档（**等级 B 权威**）",
+        "### 6. Runway Gen-4 官方提示词指南",
+        "### 7. Luma Dream Machine 官方提示词指南",
+        "### 8. Runway Gen-3 Alpha 介绍",
+        "### 9. SIRUI 镜头焦段情感",
+        "### 10. StudioBinder — \"What is Visual Storytelling\"",
+        "### 11. IBM Prompt Engineering 2026",
+        "### 12. PromptingGuide.ai",
+        "### 13. Atlas Cloud — \"Seedance 2.0: A Guide to All-Round Reference\"",
+        "### 14. Filmmakers Academy — \"How to Write a Short Film Script\"",
+        "### 15. Roger Deakins 镜头哲学（来自其论坛）",
+        "## 兄弟的实战验证（**等级 C 权威**）",
+        "### 兄弟 v3.1 — 段 1-7《<PROJECT_CASE>》"
+      ],
+      "redactions": {
+        "local_path": 3,
+        "project_reference": 2
+      }
+    },
+    {
+      "path": "AIGC/AIGC导演视听语言框架.md",
+      "bundle_path": "source/AIGC/AIGC导演视听语言框架.md",
+      "category": "cinematography",
+      "extension": ".md",
+      "source_size": 11996,
+      "source_sha256": "0df4f77ce05fee4e60e9913507b89df03e20c2fbc92b9acda53e2c2a3567cd82",
+      "size": 11996,
+      "sha256": "0df4f77ce05fee4e60e9913507b89df03e20c2fbc92b9acda53e2c2a3567cd82",
+      "lines": 348,
+      "headings": [
+        "# AIGC 导演视听语言框架 v4.0",
+        "## 框架结构（17 章 · 重新组织）",
+        "# 第一章：6 条分镜脚本铁律（最高优先级）",
+        "# 第二章：3 把刀（跨剧本跨风格通用方法论）",
+        "# 第三章：AIGC 工具协作能力（领导力新解）",
+        "# 第四章：资产总表规范",
+        "# 第五章：提示工程三项高级技巧",
+        "# 第六章：风险评估四类法",
+        "# 第七章：成长阶段定位",
+        "# 第八章：视听语言基础",
+        "## 8.1 摄影机参数",
+        "## 8.2 五种景别",
+        "## 8.3 摄影机运动",
+        "# 第九章：镜头语言与构图",
+        "## 9.1 三种构图法则",
+        "## 9.2 光影三要素",
+        "# 第十章：提示词 7 模块结构",
+        "# 第十一章：238 项目终极总结",
+        "# 第十二章：22,584 条 prompt 全量分析",
+        "# 第十三章：摄影机参数实战"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/AIGC提示词翻译引擎规则库.md",
+      "bundle_path": "source/AIGC/AIGC提示词翻译引擎规则库.md",
+      "category": "prompt-engineering",
+      "extension": ".md",
+      "source_size": 43342,
+      "source_sha256": "9e90b2f99de15ca6974bc8d552c61967ffcf902f056c90907e1078696871b46a",
+      "size": 43341,
+      "sha256": "7e1ca79e7881b6cee3cab1c4c27f7ac2754ffb5549eee294a2bd7100bc436ef5",
+      "lines": 1030,
+      "headings": [
+        "# AIGC 提示词翻译引擎规则库",
+        "## 一、翻译引擎核心原则",
+        "### 1.1 兄弟说一句话，我吐出完整 prompt",
+        "### 1.2 七个翻译铁律（跨所有场景）",
+        "### 1.3 提示词权重定律（从课程提炼）",
+        "### 1.4 平台适配指南（2026-06-21 实战验证）",
+        "### 1.5 主观词 → 物理参数翻译铁律",
+        "### 1.6 自检清单机制（强制）",
+        "## 二、万能句式框架",
+        "### 1.7 三条铁律（绝对不可违反）",
+        "### 1.8 7 模块提示词框架（v2 升级版）",
+        "### 1.9 影调叙事决策矩阵（何止维战略层）",
+        "### 1.10 布光叙事决策矩阵（何止维战术层）",
+        "### 1.11 景别黄金律 3:5:2（大黑耗子）",
+        "### 1.12 运镜万能公式（大黑耗子）",
+        "### 1.13 运镜情绪功能对照（大黑耗子）",
+        "### 1.14 声音分层公式（Seedance 2.0）",
+        "### 1.15 越轴检查（180度规则）",
+        "### 1.16 仙剑4 七段/五段结构（最佳写作范式）",
+        "## 二.5 维摩诘三层协议框架（战略级）"
+      ],
+      "redactions": {
+        "trailing_whitespace": 1
+      }
+    },
+    {
+      "path": "AIGC/AIGC画布深度学习-终极大总结.md",
+      "bundle_path": "source/AIGC/AIGC画布深度学习-终极大总结.md",
+      "category": "canvas-workflow",
+      "extension": ".md",
+      "source_size": 5773,
+      "source_sha256": "386328a8f1e55a770caacf67f80d8efd9ee5a4c6ab889bf1801e51607d309a33",
+      "size": 5772,
+      "sha256": "940239470b73f697d92b0f5f6a9973dce0fa55468c7eaf8f1881753cca6c3db7",
+      "lines": 154,
+      "headings": [
+        "# AIGC 画布深度学习 — 终极大总结",
+        "## 一、创作范式：精确型已取代探索型",
+        "### 数据",
+        "### 含义",
+        "## 二、核心工作流：image2image 是氧气",
+        "### 数据",
+        "### 含义",
+        "## 三、模型铁三角：2026 年已固化",
+        "### 标准三件套（220+/238 项目使用）",
+        "### 新涌现的专用工具",
+        "## 四、类别工作流模式",
+        "### TVC/广告（41 个项目）",
+        "### 短片/MV（37 个项目）",
+        "### 教程（14 个项目）",
+        "### 国风/非遗（38 个项目）",
+        "## 五、摄影机参数：被低估的竞争力",
+        "### 顶级使用者（摄影机 prompt >100 条）",
+        "### 含义",
+        "## 六、负面约束：不要什么比要什么重要",
+        "### 顶级使用者（负面约束 >100 条）"
+      ],
+      "redactions": {
+        "trailing_whitespace": 1
+      }
+    },
+    {
+      "path": "AIGC/AIGC知识体系-总索引.md",
+      "bundle_path": "source/AIGC/AIGC知识体系-总索引.md",
+      "category": "navigation",
+      "extension": ".md",
+      "source_size": 4918,
+      "source_sha256": "e93b82f964c44909f4d95bbe540443b3e13390c3856f14d32a88a503bec745ac",
+      "size": 4917,
+      "sha256": "0f3c382dea6c761af202dfe6d452b752e43eaea48627ab6cf8ff0e7daffc20a9",
+      "lines": 139,
+      "headings": [
+        "# AIGC 知识体系 — 总索引",
+        "## 🗺️ 知识地图",
+        "## 📐 框架与理论（4 份）",
+        "### [[AIGC导演视听语言框架]] — 最高优先级",
+        "### [[AIGC提示词翻译引擎规则库]]",
+        "### [[AIGC短剧全链路能力学习路径]]",
+        "### [[AIGC行业发展前景2026]]",
+        "## 🔬 画布深度学习（238 个项目 / 37,721 节点）",
+        "### [[AIGC画布深度学习-终极大总结]]",
+        "### [[AIGC画布深度学习/00_学习索引]]",
+        "## 📊 LibTV 数据分析",
+        "### [[LibTV批量吸收报告]]",
+        "### [[AIGC提示词模式库-22584条分析]]",
+        "## 🎬 项目分析",
+        "### [[回声vs镇关-导演对比分析]]",
+        "## 📝 模板与教程",
+        "### [[AIGC三平台提示词模板包-完整解析]]",
+        "## 🧭 快速导航"
+      ],
+      "redactions": {
+        "trailing_whitespace": 1
+      }
+    },
+    {
+      "path": "AIGC/AIGC短剧全链路能力学习路径.md",
+      "bundle_path": "source/AIGC/AIGC短剧全链路能力学习路径.md",
+      "category": "production-workflow",
+      "extension": ".md",
+      "source_size": 26058,
+      "source_sha256": "6f09d5187f3c396a1ea6409835436f336788d1b55919c25ab24d59cdf5260d08",
+      "size": 26050,
+      "sha256": "66ab3b25eb721d19b0c21c0e9363e40ee61c6f392d283f09fdefd6b206f14715",
+      "lines": 620,
+      "headings": [
+        "# AIGC 影视短剧全链路核心能力 — 学习路径与实践指南",
+        "## 概览：能力金字塔",
+        "## 第一层：文字创作能力（地基）",
+        "### 1.1 编剧 & 剧本架构",
+        "### 1.2 短视频脚本 & 台词写作",
+        "## 第二层：视听叙事能力",
+        "### 2.1 编导统筹",
+        "### 2.2 分镜设计",
+        "### 2.3 摄影摄像 & 镜头语言",
+        "# 摄影机规格模板",
+        "## 第三层：美术设计能力",
+        "### 3.1 角色概念设计 & 三视图",
+        "### 3.2 影视美学 & 风格把控",
+        "# 纪实新闻风",
+        "# 现实犯罪风",
+        "# 写实人像风",
+        "## 第四层：AI 专业技能",
+        "### 4.1 顶级提示词工程",
+        "### 4.2 AI 视频大模型底层思维",
+        "### 4.3 AI 缺陷修正与容错思维"
+      ],
+      "redactions": {
+        "trailing_whitespace": 7
+      }
+    },
+    {
+      "path": "AIGC/AIGC视频导演实战手册.md",
+      "bundle_path": "source/AIGC/AIGC视频导演实战手册.md",
+      "category": "video-generation",
+      "extension": ".md",
+      "source_size": 21975,
+      "source_sha256": "6886dc21b5045797b8c6ed8d695e31ae4b6aad562e055f0667d2eebd064ef13f",
+      "size": 21853,
+      "sha256": "b14d055b30df2e20cebc555181b84371bfd24cc6ddfebeafdac0ff1e1c68811a",
+      "lines": 630,
+      "headings": [
+        "# 🎬 AIGC 视频导演实战手册",
+        "## 目录",
+        "# 1. 核心铁律（17条）",
+        "## 1.1 剧本写作铁律",
+        "### 铁律 1.9：分镜脚本禁止概括词",
+        "### 铁律 1.10：提示词必须写因果链",
+        "### 铁律 1.11：剧本先看资产再写",
+        "### 铁律 1.12：台词要有潜台词",
+        "### 铁律 1.13：短视频必须有开头背景介绍",
+        "### 铁律 1.14：台词信息密度",
+        "### 铁律 1.15：旁白要有细节和画面感",
+        "## 1.2 视频生成铁律",
+        "### 铁律 1.16：15s大段硬上限 + 不切碎",
+        "### 铁律 1.17：提示词 = 因果动作链，不是画面描述",
+        "## 1.3 提示词写法铁律",
+        "### 中文场景必须用中文写",
+        "### @主体标注必须在画面描述里",
+        "### 负面约束要明确",
+        "### 禁止项",
+        "# 2. 剧本写作方法论"
+      ],
+      "redactions": {
+        "local_path": 3,
+        "project_reference": 13,
+        "trailing_whitespace": 1
+      }
+    },
+    {
+      "path": "AIGC/AIGC视频导演通用框架.md",
+      "bundle_path": "source/AIGC/AIGC视频导演通用框架.md",
+      "category": "video-generation",
+      "extension": ".md",
+      "source_size": 23782,
+      "source_sha256": "5e8966c041e78bab1eb35234fea8802cf8539b3b5047aeff6e55ad42858b18e8",
+      "size": 23691,
+      "sha256": "5a8b6dee493fe1e268cd4d189e571a23cc8b2c3a334d5cfa951d812ffe4d9b2f",
+      "lines": 742,
+      "headings": [
+        "# 🎬 AIGC 视频导演通用框架",
+        "## 目录",
+        "# 第一部分：创作方法（剧本无关）",
+        "# 1. 铁律清单",
+        "## 1.1 提示词铁律",
+        "### 铁律 A：物理行为描述（因果链升级版）",
+        "### 铁律 B：禁止概括词",
+        "### 铁律 C：中文写中文场景",
+        "### 铁律 D：@主体标注",
+        "### 铁律 E：负面约束",
+        "### 铁律 F：15s硬上限 + 不切碎",
+        "### 铁律 G：提示词一体",
+        "## 1.2 流程铁律",
+        "### 铁律 H：先看资产再写剧本",
+        "### 铁律 I：先跑一镜再全量",
+        "### 铁律 J：先480p后高清",
+        "## 1.3 内容铁律",
+        "### 铁律 K：台词要有潜台词",
+        "### 铁律 L：短视频必须有开头背景",
+        "### 铁律 M：旁白讲故事不是念档案"
+      ],
+      "redactions": {
+        "local_path": 1,
+        "project_reference": 11,
+        "trailing_whitespace": 3
+      }
+    },
+    {
+      "path": "AIGC/AIGC铁律体系_v1.md",
+      "bundle_path": "source/AIGC/AIGC铁律体系_v1.md",
+      "category": "production-standards",
+      "extension": ".md",
+      "source_size": 6026,
+      "source_sha256": "6a2cce4150a9a9dd67c03f048f14dce7b3d38ca917f70aa00375ea2b3f1cc080",
+      "size": 5988,
+      "sha256": "e0d0c2928bc62eb4007add990eed154230b89806fa2321595b666615c76fb9ad",
+      "lines": 137,
+      "headings": [
+        "# AIGC 铁律体系 v1.0",
+        "## 核心铁律（23条）",
+        "### 1.6 Windows 本机操作只用 Python",
+        "### 1.7 整理笔记必须同步 Obsidian",
+        "### 1.8 AIGC 工具链 = 即梦AI + 可灵 + LibTV + TapNow",
+        "### 1.9 分镜脚本禁止使用概括词",
+        "### 1.10 提示词必须写因果链，不写孤立结果",
+        "### 1.17 提示词 = 物理因果动作链，不是画面描述",
+        "### 1.18 图片生成占 80-90% 重要性",
+        "### 1.19 剧本能力是底基",
+        "### 1.20 物理常识三校验",
+        "### 1.21 物理常识是辅助，不是判决",
+        "### 1.22 GitHub 学习内化标准",
+        "### 1.23 每个大段时间灵活配置",
+        "### 1.25 autonomous-execution 核心",
+        "## AIGC 导演 9 维提示词体系",
+        "## 画风/风格 prompt 工具箱（140+ 风格锚点）",
+        "## 模型选择决策树",
+        "## 俯视调度图 SOP（锁定站位/走位/运镜三要素）",
+        "## 音画同步台词公式"
+      ],
+      "redactions": {
+        "local_path": 1
+      }
+    },
+    {
+      "path": "AIGC/AIGC铁律汇总.md",
+      "bundle_path": "source/AIGC/AIGC铁律汇总.md",
+      "category": "production-standards",
+      "extension": ".md",
+      "source_size": 5958,
+      "source_sha256": "7c00e01526a462c00ca300ebbe35e10782d9f030f3a92927629f1d0a0fbf683c",
+      "size": 5958,
+      "sha256": "7c00e01526a462c00ca300ebbe35e10782d9f030f3a92927629f1d0a0fbf683c",
+      "lines": 151,
+      "headings": [
+        "## ⚠️ 铁律 1.20：物理常识三校验（2026-06-28 13:10 兄弟立规矩）",
+        "### 三校验（写任何含台词的剧本前必走）",
+        "### 校验工具代码",
+        "### 实战教训：段二v7超载38秒",
+        "### 角色字速参考表",
+        "## ⚠️ 铁律 1.21：物理常识是辅助，不是判决（2026-06-28 13:13 兄弟立规矩）",
+        "### 平衡的两个极端",
+        "### v8段二A的临界判断",
+        "### 阈值浮动表（具体情况具体分析）",
+        "### 从单事件抽规律的方法论",
+        "### 跨剧本适用",
+        "### 决策流程图",
+        "### 工具"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/AIGC铁律索引_v1.0.md",
+      "bundle_path": "source/AIGC/AIGC铁律索引_v1.0.md",
+      "category": "production-standards",
+      "extension": ".md",
+      "source_size": 12535,
+      "source_sha256": "6e93ac1bfbeacf7a2103ecc9321fcb10e56e8f0d7368c4712c5e0a795534490b",
+      "size": 12532,
+      "sha256": "bc67946c3079f66963deaddf2d41e15a19b1b23b2698925b24a5bb95c0909e6f",
+      "lines": 304,
+      "headings": [
+        "# AIGC 铁律索引 v1.0.0",
+        "## 📋 应用场景速查",
+        "## A. 工作流工具",
+        "### 1.6 Windows 本机操作只用 Python（2026-06-09）",
+        "### 1.7 整理笔记必须三层同步（2026-07-14 升级）",
+        "### 1.10 提示词必须写因果链（2026-06-27）",
+        "### 1.17 物理行为描述 = 因果动作链（2026-06-28）",
+        "### 1.19 剧本能力是底基（2026-06-28）",
+        "### 1.20 物理常识三校验（2026-06-28）",
+        "### 1.21 物理常识是辅助，不是判决（2026-06-28）",
+        "### 1.22 因果链 + 物理行为双写（2026-06-28）",
+        "## D. 写提示词",
+        "### 1.18 图片生成占 80-90% 重要性（2026-06-28）",
+        "### 1.23 每个大段时间灵活配置（2026-06-28）",
+        "## E. 段间衔接",
+        "### 衔接决策树（待补 · 2026-06-28）",
+        "## 📝 版本历史",
+        "## 🔗 关联文件",
+        "## 💡 自检：上次写剧本/提示词时用了几条铁律？"
+      ],
+      "redactions": {
+        "host_address": 1
+      }
+    },
+    {
+      "path": "AIGC/AI漫剧制作全流程-手把手.md",
+      "bundle_path": "source/AIGC/AI漫剧制作全流程-手把手.md",
+      "category": "production-workflow",
+      "extension": ".md",
+      "source_size": 4761,
+      "source_sha256": "ce7c069ad4f2107e02f832950b57dc35f8021fa1639629708052df5db6023525",
+      "size": 4761,
+      "sha256": "ce7c069ad4f2107e02f832950b57dc35f8021fa1639629708052df5db6023525",
+      "lines": 184,
+      "headings": [
+        "# 手把手: 从0到第一篇AI漫剧",
+        "## 第一步: 用DeepSeek写剧本 (10分钟)",
+        "## 第二步: 用即梦AI生成角色(20分钟)",
+        "### 2.1 定角色形象",
+        "### 2.2 保持角色一致性(最关键!)",
+        "### 2.3 生成每个画面的角色图",
+        "## 第三步: 用可灵AI把图变视频(15分钟)",
+        "### 操作",
+        "## 第四步: 用剪映合成(20分钟)",
+        "### 4.1 导入",
+        "### 4.2 配音",
+        "### 4.3 加字幕(自动)",
+        "### 4.4 加BGM",
+        "### 4.5 加转场/特效(别过度)",
+        "### 4.6 导出",
+        "## 第五步: 发抖音(5分钟)",
+        "### 标题模板(直接改)",
+        "### 关键设置",
+        "## 流水线效率(每人专攻一个环节)",
+        "## 第一天目标"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/AI漫剧生态全景-工具与案例.md",
+      "bundle_path": "source/AIGC/AI漫剧生态全景-工具与案例.md",
+      "category": "production-workflow",
+      "extension": ".md",
+      "source_size": 5717,
+      "source_sha256": "5557349ee08b511c09e6794b967432a1ce9c14d2721298d8c98e30b3b79f97c5",
+      "size": 5717,
+      "sha256": "5557349ee08b511c09e6794b967432a1ce9c14d2721298d8c98e30b3b79f97c5",
+      "lines": 174,
+      "headings": [
+        "# AI漫剧生态全景: 别人都在用什么、怎么做的、挣多少",
+        "## 一、工具全景图 (2026年6月最新)",
+        "### 入门三件套(你现在就该用的)",
+        "### 进阶工具(出了3-5部剧后)",
+        "### 高级玩家(月入过万后)",
+        "## 二、真实案例:别人怎么做的",
+        "### 案例1: 《万兽独尊》— 5人8天60集",
+        "### 案例2: 《霍去病》— 3人4天历史剧",
+        "### 案例3: 《纸手机》— 3天AI清明短片",
+        "### 案例4: 《丧尸清道夫》— 1人4个月2亿播放 ⭐",
+        "### 案例5: 淘宝买家实操",
+        "## 三、挣多少:真实收入数据",
+        "### 平台分成(2026年最新政策)",
+        "### 真实收入参考",
+        "### ⚠️ 残酷真相",
+        "## 四、三种工作流(从简单到高级)",
+        "### 🥇 新手流(2小时出片)",
+        "### 🥈 效率流(30分钟一集,用你已有的Coze)",
+        "### 🥉 工业流(角色完美一致,日产10集)",
+        "## 五、你该做的(立刻行动)"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/Seedance-2.0-Skill-OS.md",
+      "bundle_path": "source/AIGC/Seedance-2.0-Skill-OS.md",
+      "category": "video-generation",
+      "extension": ".md",
+      "source_size": 1981,
+      "source_sha256": "1d18cbabf405e61efd66e3cfb1fea854d02377220dd19e497cacbffe97d03da6",
+      "size": 1860,
+      "sha256": "3194b2cea55337f8b98c161a2cd0351cbd13a2e6452a5e782b18d7b1cf221fa7",
+      "lines": 42,
+      "headings": [
+        "# Seedance 2.0 Skill OS v6.6.0",
+        "## 是什么",
+        "## 核心能力",
+        "## 28 个子技能",
+        "### 核心管线（16个）",
+        "### 治理层（3个）",
+        "### 多语言（9个）",
+        "## 跟我们体系的关系",
+        "## 安装位置"
+      ],
+      "redactions": {
+        "local_path": 3
+      }
+    },
+    {
+      "path": "AIGC/patch-01_seedance-2.5-update.md",
+      "bundle_path": "source/AIGC/patch-01_seedance-2.5-update.md",
+      "category": "video-generation",
+      "extension": ".md",
+      "source_size": 2377,
+      "source_sha256": "71bb6b68271390b2bab4970264c8d021dccd94cddaa1b47f9f519269e549d56e",
+      "size": 2377,
+      "sha256": "71bb6b68271390b2bab4970264c8d021dccd94cddaa1b47f9f519269e549d56e",
+      "lines": 58,
+      "headings": [
+        "# 补丁01 — Seedance 2.5 更新速查",
+        "## Seedance 2.0 → 2.5 变化",
+        "## 三大核心升级",
+        "### 1. 30 秒单片段",
+        "### 2. 50 个参考输入",
+        "### 3. 区域级编辑",
+        "## 操作建议",
+        "## 来源"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/patch-02_多角色控制与迭代方法论.md",
+      "bundle_path": "source/AIGC/patch-02_多角色控制与迭代方法论.md",
+      "category": "character-workflow",
+      "extension": ".md",
+      "source_size": 4001,
+      "source_sha256": "7d915bae31cb31060dc8df4bd41d6c2c410023a5095478b8b486aa833e592131",
+      "size": 3999,
+      "sha256": "029ce5b7c3c5e65adede2677787c596d4328b6040fcc16b00df5910e25f354b9",
+      "lines": 99,
+      "headings": [
+        "# 补丁02 — 多角色控制 + 提示词迭代方法论",
+        "## 一、多角色群戏控制",
+        "### 问题本质",
+        "### 解决方案",
+        "### 提示词具体写法",
+        "## 二、提示词迭代方法论",
+        "### 标准三遍迭代法",
+        "### 失败分类",
+        "### 测试集概念",
+        "## 来源"
+      ],
+      "redactions": {
+        "trailing_whitespace": 2
+      }
+    },
+    {
+      "path": "AIGC/patch-03_agentic-ai-video.md",
+      "bundle_path": "source/AIGC/patch-03_agentic-ai-video.md",
+      "category": "agent-context",
+      "extension": ".md",
+      "source_size": 4555,
+      "source_sha256": "df0e922819b967cdef47ac364430bd440134c250a8ceff07c8eba4d1f3d057b6",
+      "size": 4555,
+      "sha256": "df0e922819b967cdef47ac364430bd440134c250a8ceff07c8eba4d1f3d057b6",
+      "lines": 124,
+      "headings": [
+        "# 补丁03 — Agentic AI 视频制作",
+        "## 一、AI Tool vs AI Agent",
+        "## 二、Agentic Video 架构",
+        "### 典型架构",
+        "### Vizard Agent 的 8 角色模拟",
+        "## 三、ComfyUI Agentic Workflow（LLM 控制节点选择）",
+        "## 四、Hedra — 统一多模态 agent",
+        "## 五、对 AIGC 导演的意义",
+        "### 这意味着什么",
+        "### 局限",
+        "### 推荐策略",
+        "## 来源"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/patch-04_视频扩展与帧插值.md",
+      "bundle_path": "source/AIGC/patch-04_视频扩展与帧插值.md",
+      "category": "video-generation",
+      "extension": ".md",
+      "source_size": 3678,
+      "source_sha256": "81d06f044555080836148f0118b373bd26516c6fb3d6fe9a292f97f5b79c9018",
+      "size": 3678,
+      "sha256": "81d06f044555080836148f0118b373bd26516c6fb3d6fe9a292f97f5b79c9018",
+      "lines": 112,
+      "headings": [
+        "# 补丁04 — AI 视频扩展 / 帧插值 / 慢动作",
+        "## 一、超过模型最大时长怎么办？",
+        "### 方案 A：视频扩展",
+        "### 方案 B：外部拼接",
+        "## 二、帧插值（Frame Interpolation）",
+        "### 什么是帧插值",
+        "### 工具",
+        "### 效果",
+        "## 三、AI 慢动作",
+        "### 生成慢动作的方法",
+        "### 慢动作最佳场景",
+        "## 四、来源"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/patch-05_场景化提示词模板库.md",
+      "bundle_path": "source/AIGC/patch-05_场景化提示词模板库.md",
+      "category": "prompt-engineering",
+      "extension": ".md",
+      "source_size": 5345,
+      "source_sha256": "aff9eb68c9828d88abb38487baa237b0c88948c1532b25ab0f8f39b14fc951aa",
+      "size": 5345,
+      "sha256": "aff9eb68c9828d88abb38487baa237b0c88948c1532b25ab0f8f39b14fc951aa",
+      "lines": 157,
+      "headings": [
+        "# 补丁05 — 场景化提示词模板库",
+        "## 一、通用提示词模板",
+        "## 二、场景化模板",
+        "### B1 雨夜霓虹街",
+        "### B2 赛博朋克追逐",
+        "### B3 医院重症监护室",
+        "### B4 雨中分手",
+        "### B5 复古 diner 场景",
+        "### B6 雾中森林",
+        "### B7 卧室晨光",
+        "### B8 厨房烹饪",
+        "### B9 科幻走廊",
+        "### B10 黄昏海滩",
+        "## 三、广告场景",
+        "## 四、使用建议",
+        "## 来源"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/patch-06_成本镜头智能优化.md",
+      "bundle_path": "source/AIGC/patch-06_成本镜头智能优化.md",
+      "category": "production-workflow",
+      "extension": ".md",
+      "source_size": 4782,
+      "source_sha256": "9e613825a71f29092aa0d668ec0adb930134be166ea783a78c2a0f876eb55daf",
+      "size": 4782,
+      "sha256": "9e613825a71f29092aa0d668ec0adb930134be166ea783a78c2a0f876eb55daf",
+      "lines": 115,
+      "headings": [
+        "# 补丁06 — 成本-镜头智能优化",
+        "## 一、2026 年模型定价完整排行",
+        "## 二、决策树：根据场景推荐最省钱模型",
+        "## 三、实际场景算账",
+        "### 场景：做一个 3 分钟 AI 短片",
+        "### 场景：月产 100 条社交媒体短视频",
+        "## 四、隐性成本",
+        "### 有效成本对比（含 3 次迭代）",
+        "## 五、铁律",
+        "## 六、来源"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/patch-07_libtv_模型参数速查表.md",
+      "bundle_path": "source/AIGC/patch-07_libtv_模型参数速查表.md",
+      "category": "canvas-workflow",
+      "extension": ".md",
+      "source_size": 5363,
+      "source_sha256": "c453b24cec1dd61518d3405aae6e6ce268e5c3f60b973128fa4ece8d91d387eb",
+      "size": 5363,
+      "sha256": "c453b24cec1dd61518d3405aae6e6ce268e5c3f60b973128fa4ece8d91d387eb",
+      "lines": 146,
+      "headings": [
+        "# LibTV 模型参数速查表（地毯级）",
+        "## 一、生图模型（共14个）",
+        "### 生图参数参考",
+        "## 二、视频模型（共14个常用）",
+        "### 视频参数参考",
+        "## 三、音频模型（共5个）",
+        "## 四、文本模型（共4个）",
+        "## 五、模型选型对照表",
+        "### 生图选型",
+        "### 视频选型",
+        "## 六、CLI 铁律操作速查",
+        "# 创建节点（只填参数，不点生成）",
+        "# 写提示词",
+        "# 修改参数",
+        "# 连入边（数据流）",
+        "# 连出边",
+        "# 查看节点",
+        "# 搜模型",
+        "# 分组",
+        "# ⛔ 绝对不用的"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/video-reverse-engineering-数字人带货.md",
+      "bundle_path": "source/AIGC/video-reverse-engineering-数字人带货.md",
+      "category": "short-video-strategy",
+      "extension": ".md",
+      "source_size": 13988,
+      "source_sha256": "d720e41efa870794240a3faccba8206224434d754737819e4ee06de74b61d53d",
+      "size": 13933,
+      "sha256": "058d38e6c3bebe1b2251df4f319d1c53b29c07290d2ede7e81a84f8fdac24c81",
+      "lines": 380,
+      "headings": [
+        "# 逆向工程分析报告 — 9.17秒舞蹈带货视频",
+        "## 一、硬数据汇总（ffprobe + 信号分析）",
+        "## 二、视觉特征分析（从 6 帧画面观察）",
+        "### 2.1 面部特征",
+        "### 2.2 身体特征",
+        "### 2.3 服装与道具",
+        "### 2.4 运动与构图",
+        "## 三、综合判断：4 种可能场景",
+        "### 场景 A：纯 AI 数字人（LoRA + 视频生成）⭐ 概率 35%",
+        "### 场景 B：真人拍摄 + AI 局部增强 ⭐ 概率 30%（最可能）",
+        "### 场景 C：AI 数字人 + 真人参考视频 ⭐ 概率 25%",
+        "### 场景 D：纯真人 + 模板化运营 ⭐ 概率 10%",
+        "## 四、**最可能的工作流（综合 A+C 方案）**",
+        "## 五、**关键的\"虚假信号\"和\"真实信号\"**",
+        "### 5.1 为什么视频看起来像真人？",
+        "### 5.2 为什么本质是 AI？",
+        "### 5.3 用户观察的\"同脸同动作\"如何解释？",
+        "## 六、带货盈利模式分析",
+        "## 七、你能不能做？需要什么？",
+        "### 7.1 必备工具栈"
+      ],
+      "redactions": {
+        "local_path": 2
+      }
+    },
+    {
+      "path": "AIGC/剧作结构/McKee剧作结构5元素.md",
+      "bundle_path": "source/AIGC/剧作结构/McKee剧作结构5元素.md",
+      "category": "storytelling",
+      "extension": ".md",
+      "source_size": 10948,
+      "source_sha256": "339b2a7a9b18b911ad32e205b121bf77655f559d86f6ece5a823fa58efbca295",
+      "size": 10934,
+      "sha256": "12ad967643a2b16f29a9fc2b75b18bfd3b6fba814a49ad49eccff9c09985989d",
+      "lines": 390,
+      "headings": [
+        "# 剧作结构 McKee 学习笔记 - #5 极致参数版",
+        "## 一、McKee 剧作核心 3 元素",
+        "### 元素 1：欲望 (Desire)",
+        "### 元素 2：困难 (Obstacle)",
+        "### 元素 3：行动 (Action)",
+        "## 二、McKee 5 大结构原理",
+        "### 原理 1：单一主角",
+        "### 原理 2：主角欲望必须是具体的",
+        "### 原理 3：困难必须是不可能克服的",
+        "### 原理 4：主角必须行动",
+        "### 原理 5：结局必须是\"二选一\"",
+        "## 三、McKee 价值变化 4 阶段",
+        "### 阶段 1：初始价值（场景 1）",
+        "### 阶段 2：价值正向变化（场景 5-9）",
+        "### 阶段 3：价值负向变化（场景 19-21）",
+        "### 阶段 4：最终价值（场景 22-27）",
+        "## 四、McKee 角色弧 5 类型",
+        "### 类型 1：正向弧 (Positive Arc)",
+        "### 类型 2：负向弧 (Negative Arc)",
+        "### 类型 3：平坦弧 (Flat Arc)"
+      ],
+      "redactions": {
+        "project_reference": 2
+      }
+    },
+    {
+      "path": "AIGC/剪辑语言/剪辑6法则与药神实战.md",
+      "bundle_path": "source/AIGC/剪辑语言/剪辑6法则与药神实战.md",
+      "category": "editing",
+      "extension": ".md",
+      "source_size": 7295,
+      "source_sha256": "3d54dbab94e1d72ecf2dbea7f1b6990c944b5654ca02683b744a3399ffd25428",
+      "size": 7295,
+      "sha256": "3d54dbab94e1d72ecf2dbea7f1b6990c944b5654ca02683b744a3399ffd25428",
+      "lines": 225,
+      "headings": [
+        "# 剪辑语言学习笔记 - #2 极致参数版",
+        "## Walter Murch 剪辑 6 法则（按重要性递减）",
+        "## 切点的 4 维度（每参数不放过）",
+        "## J-Cut 和 L-Cut 实战参数",
+        "### J-Cut（声音先于画面）",
+        "### L-Cut（画面先于声音）",
+        "## 切点节奏 4 模式（药神实战提炼）",
+        "### 模式 1：加速剪辑",
+        "### 模式 2：减速剪辑",
+        "### 模式 3：动静剪辑（药神最常用）",
+        "### 模式 4：交叉剪辑",
+        "## 药神实战案例（5 大经典剪辑）",
+        "### 案例 1：程勇看到吕受益断药（场景 21）—— 情绪切点",
+        "### 案例 2：法庭戏（场景 26）—— 动静剪辑",
+        "### 案例 3：黄毛死（场景 22）—— J-Cut",
+        "### 案例 4：程勇出狱（场景 27）—— 减速剪辑",
+        "### 案例 5：吕受益第一次出场（场景 5）—— 平行剪辑",
+        "## 实战应用 - v17 段三剪辑设计",
+        "### v17 段三 - 18s 剪辑表",
+        "### 3 大剪辑技巧应用"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/声音设计/声音设计5大法则与药神实战.md",
+      "bundle_path": "source/AIGC/声音设计/声音设计5大法则与药神实战.md",
+      "category": "audio",
+      "extension": ".md",
+      "source_size": 8616,
+      "source_sha256": "de8497b8fd4573add57203954ad64e05f485411f5ab3486784d14b1aa5d12ce4",
+      "size": 8616,
+      "sha256": "de8497b8fd4573add57203954ad64e05f485411f5ab3486784d14b1aa5d12ce4",
+      "lines": 283,
+      "headings": [
+        "# 声音设计学习笔记 - #3 极致参数版",
+        "## 一、声音 3 大类型",
+        "### 类型 1：人声 (Dialogue) - 51% 重要性",
+        "### 类型 2：音效 (SFX) - 30% 重要性",
+        "### 类型 3：音乐 (Music) - 19% 重要性",
+        "## 二、声音设计 5 大法则",
+        "### 法则 1：声音先于画面 (Sound Leads)",
+        "### 法则 2：声音延续 (Sound Continues)",
+        "### 法则 3：声音层次 (Sound Layers)",
+        "### 法则 4：声音对比 (Sound Contrast)",
+        "### 法则 5：声音断点 (Sound Break)",
+        "## 三、声音设计 5 层结构",
+        "### 第 1 层：环境音 (Ambience)",
+        "### 第 2 层：拟音 (Foley)",
+        "### 第 3 层：硬音效 (Hard SFX)",
+        "### 第 4 层：人声 (Dialogue)",
+        "### 第 5 层：音乐 (Music)",
+        "## 四、药神 5 大经典声音设计",
+        "### 案例 1：场景 5 吕受益出场 —— 医院环境音",
+        "### 案例 2：场景 22 黄毛死 —— J-Cut 警笛"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/抖音爆款/抖音爆款3大指标.md",
+      "bundle_path": "source/AIGC/抖音爆款/抖音爆款3大指标.md",
+      "category": "short-video-strategy",
+      "extension": ".md",
+      "source_size": 9732,
+      "source_sha256": "e2d22771a74383ce8b87b732af801ed8179f990933314ba5834c3316420a566a",
+      "size": 9718,
+      "sha256": "56f79f5f455d45839adc9c634b713f63e68f5e0a8de206ae54db06c29d058733",
+      "lines": 380,
+      "headings": [
+        "# 抖音爆款学习笔记 - #6 极致参数版",
+        "## 一、抖音爆款 3 大指标",
+        "### 指标 1：完播率 (Completion Rate)",
+        "### 指标 2：互动率 (Engagement Rate)",
+        "### 指标 3：转化率 (Conversion Rate)",
+        "## 二、抖音算法 4 大机制",
+        "### 机制 1：流量池 (Traffic Pool)",
+        "### 机制 2：标签匹配 (Tag Match)",
+        "### 机制 3：发布时间",
+        "### 机制 4：粉丝增长",
+        "## 三、抖音爆款 5 大结构",
+        "### 结构 1：钩子 - 冲突 - 解决 (HSR)",
+        "### 结构 2：反转 - 揭秘 (RT)",
+        "### 结构 3：情绪递进 (EP)",
+        "### 结构 4：悬念 - 揭秘 (SR)",
+        "### 结构 5：情感共鸣 (ER)",
+        "## 四、抖音爆款 5 大情感",
+        "### 情感 1：共鸣 (Resonance)",
+        "### 情感 2：好奇 (Curiosity)",
+        "### 情感 3：争议 (Controversy)"
+      ],
+      "redactions": {
+        "project_reference": 2
+      }
+    },
+    {
+      "path": "AIGC/摄影机实拍/ARRI摄影机完整参数表.md",
+      "bundle_path": "source/AIGC/摄影机实拍/ARRI摄影机完整参数表.md",
+      "category": "cinematography",
+      "extension": ".md",
+      "source_size": 10976,
+      "source_sha256": "9680488d5e9ac07ce629200c838fa699d607ce6eaee82b78a9b0874a84244b9b",
+      "size": 10976,
+      "sha256": "9680488d5e9ac07ce629200c838fa699d607ce6eaee82b78a9b0874a84244b9b",
+      "lines": 399,
+      "headings": [
+        "# 摄影机实拍学习笔记 - #4 极致参数版",
+        "## 一、摄影机机身参数",
+        "### ARRI Alexa Mini LF 完整参数",
+        "### 与其他摄影机对比",
+        "## 二、镜头组参数（Zeiss Supreme Prime）",
+        "### 镜头组完整参数",
+        "### 焦段与景别的对应",
+        "## 三、景别参数",
+        "### 7 大景别",
+        "### 景别的情绪作用",
+        "## 四、光圈参数",
+        "### T 档与 F 档的区别",
+        "### 光圈参数表",
+        "### 光圈与焦段的关系",
+        "## 五、ISO 参数",
+        "### ARRI Alexa Mini LF ISO 表",
+        "## 六、帧率参数",
+        "### 帧率与情绪",
+        "### 快门角度",
+        "## 七、滤光片参数"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/演员表演/Stanislavski表演4核心.md",
+      "bundle_path": "source/AIGC/演员表演/Stanislavski表演4核心.md",
+      "category": "performance",
+      "extension": ".md",
+      "source_size": 11832,
+      "source_sha256": "f0165c676296377b2f2ecdce0085cb9bf09edb3d37e0ac208001fdbd353ae8e3",
+      "size": 11832,
+      "sha256": "f0165c676296377b2f2ecdce0085cb9bf09edb3d37e0ac208001fdbd353ae8e3",
+      "lines": 474,
+      "headings": [
+        "# 演员表演学习笔记 - #8 极致参数版",
+        "## 一、表演 3 大体系",
+        "### 体系 1：斯坦尼斯拉夫斯基 (Stanislavski)",
+        "### 体系 2：布莱希特 (Brecht)",
+        "### 体系 3：梅耶荷德 (Meyerhold)",
+        "## 二、Stanislavski 4 大核心",
+        "### 核心 1：规定情境 (Given Circumstances)",
+        "### 核心 2：最高任务 (Super-objective)",
+        "### 核心 3：贯串动作 (Through-line of Action)",
+        "### 核心 4：情感记忆 (Emotional Memory)",
+        "## 三、表演 4 维度",
+        "### 维度 1：台词 (Voice)",
+        "### 维度 2：表情 (Facial Expression)",
+        "### 维度 3：动作 (Movement)",
+        "### 维度 4：节奏 (Rhythm)",
+        "## 四、台词 4 参数",
+        "### 参数 1：音高",
+        "### 参数 2：音速",
+        "### 参数 3：音量",
+        "### 参数 4：音色"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC/调色与配乐/调色5参数+配乐5流派.md",
+      "bundle_path": "source/AIGC/调色与配乐/调色5参数+配乐5流派.md",
+      "category": "post-production",
+      "extension": ".md",
+      "source_size": 14918,
+      "source_sha256": "428215bda7e86094e22e5cf126b899b395afb7d006fac49ad6b1789837db9173",
+      "size": 14918,
+      "sha256": "428215bda7e86094e22e5cf126b899b395afb7d006fac49ad6b1789837db9173",
+      "lines": 640,
+      "headings": [
+        "# #9 调色 + #10 配乐 学习笔记 - 极致参数版",
+        "# #9 调色",
+        "## 一、调色 3 大体系",
+        "### 体系 1：LUT (Look Up Table)",
+        "### 体系 2：节点调色 (Node-based)",
+        "### 体系 3：AI 自动调色",
+        "## 二、调色 5 大参数",
+        "### 参数 1：Lift (阴影)",
+        "### 参数 2：Gamma (中调)",
+        "### 参数 3：Gain (高光)",
+        "### 参数 4：Saturation (饱和度)",
+        "### 参数 5：Contrast (对比度)",
+        "## 三、色轮 6 色",
+        "### 6 色详解",
+        "### 实战案例",
+        "## 四、5 大电影 LUT",
+        "### LUT 1：Kodak 5219 (500T)",
+        "### LUT 2：Kodak 5207 (250D)",
+        "### LUT 3：Fuji 8563 (F125)",
+        "### LUT 4：Fuji Eterna"
+      ],
+      "redactions": {}
+    },
+    {
+      "path": "AIGC导演/工具库/ai-cinema-studio-engine.md",
+      "bundle_path": "source/AIGC导演/工具库/ai-cinema-studio-engine.md",
+      "category": "director-tools",
+      "extension": ".md",
+      "source_size": 2871,
+      "source_sha256": "8d140239618e8ab7760cc4af38b30eb4a8a48e742909f0929236d04f912e7912",
+      "size": 2794,
+      "sha256": "a4f7a582236ea4b0ddf36bbb345fd9eed6dc0c6d89c86e75a93c1ccd9f010e4a",
+      "lines": 79,
+      "headings": [
+        "# AI Cinema Studio Engine (PopTech Studio)",
+        "## 一句话",
+        "## 五层架构",
+        "## 核心差异化",
+        "## 5 个 N8N 工作流（67 节点）",
+        "## 21 个 LUT 调色文件",
+        "## 15 模型唇形同步排行",
+        "## 基础设施要求",
+        "## 安装（10 步）",
+        "# ... 继续 lighting/effects presets",
+        "## 在 AIGC 导演流程中的位置"
+      ],
+      "redactions": {
+        "local_path": 2
+      }
+    },
+    {
+      "path": "AIGC导演/工具库/ai-video-production-editor.md",
+      "bundle_path": "source/AIGC导演/工具库/ai-video-production-editor.md",
+      "category": "director-tools",
+      "extension": ".md",
+      "source_size": 2142,
+      "source_sha256": "d42a10884efca37e39b770272f10dfd3a850ff3bf0614fd1c9fffb45cf676003",
+      "size": 2059,
+      "sha256": "50e7f05dc4a60c940cea0696ed5572afc54c7450f392c44c30f483da835bc771",
+      "lines": 57,
+      "headings": [
+        "# AI Video Production Editor (LudwigKienle)",
+        "## 一句话",
+        "## 核心工作流",
+        "## 功能亮点",
+        "## 在 AIGC 导演流程中的位置",
+        "## 使用方式",
+        "## 项目结构"
+      ],
+      "redactions": {
+        "local_path": 2
+      }
+    },
+    {
+      "path": "AIGC导演/工具库/awesome-ai-video-production.md",
+      "bundle_path": "source/AIGC导演/工具库/awesome-ai-video-production.md",
+      "category": "director-tools",
+      "extension": ".md",
+      "source_size": 1343,
+      "source_sha256": "e64e85eeb80d7977d8cb85bbd36df5c62c481d000884072304d19e6136ec959b",
+      "size": 1300,
+      "sha256": "db0f7939a292da3b043a7e3438c038ea47f5024a26be294a4ffa5cdcfcf2d21c",
+      "lines": 43,
+      "headings": [
+        "# Awesome AI Video Production (HSG020)",
+        "## 一句话",
+        "## 涵盖领域",
+        "## 核心洞察",
+        "## 在 AIGC 导演流程中的位置"
+      ],
+      "redactions": {
+        "local_path": 1
+      }
+    },
+    {
+      "path": "AIGC导演/工具库/storyai-3d-director-desk.md",
+      "bundle_path": "source/AIGC导演/工具库/storyai-3d-director-desk.md",
+      "category": "director-tools",
+      "extension": ".md",
+      "source_size": 1539,
+      "source_sha256": "aa9f17236704d3979acbf09d6cb292c8cfb2f0088345362025c2ba3f4bbd909a",
+      "size": 1457,
+      "sha256": "f123e4bdfed76e9aecd9dcf86e006c0961a82475175e31f3c34d734d03ce0de5",
+      "lines": 53,
+      "headings": [
+        "# StoryAI 3D Director Desk",
+        "## 一句话",
+        "## 核心功能",
+        "## 技术栈",
+        "## 使用方式",
+        "## 在 AIGC 导演流程中的位置",
+        "## 快捷操作"
+      ],
+      "redactions": {
+        "host_address": 1,
+        "local_path": 2
+      }
+    },
+    {
+      "path": "AIGC导演/段2_融合版_2026-06-30.md",
+      "bundle_path": "source/AIGC导演/段2_融合版_2026-06-30.md",
+      "category": "director-tools",
+      "extension": ".md",
+      "source_size": 5035,
+      "source_sha256": "daf312d43687e8ec9ecf5f20f289d965f6c9082c13e01ac95eee61e8260c447f",
+      "size": 5035,
+      "sha256": "daf312d43687e8ec9ecf5f20f289d965f6c9082c13e01ac95eee61e8260c447f",
+      "lines": 39,
+      "headings": [],
+      "redactions": {}
+    }
+  ]
+}

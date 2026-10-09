@@ -1,0 +1,1391 @@
+/* SPDX-License-Identifier: Elastic-2.0 */
+/* Copyright (c) 2026 ClaymoreLab */
+
+/* Village Agent v4: the only visual contract for the canvas Agent. */
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'] {
+  --agent-v4-panel: #212121;
+  --agent-v4-border: #525252;
+  --agent-v4-fg: #f7f7f7;
+  --agent-v4-muted: #919191;
+  --agent-v4-hover: rgba(255, 255, 255, 0.06);
+  background: var(--agent-v4-panel);
+  border-left: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='docked'] {
+  width: min(370px, calc(100vw - 280px));
+}
+
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='floating'] {
+  isolation: isolate;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 28px;
+  box-shadow:
+    0 34px 100px rgba(0, 0, 0, 0.58),
+    0 0 0 1px rgba(255, 255, 255, 0.025),
+    inset 0 1px 0 rgba(255, 255, 255, 0.065);
+  transform-origin: center top;
+}
+
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='floating']
+  .village-agent-shell-v4,
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='floating']
+  .neo-agent-chat-surface {
+  border-radius: 27px;
+}
+
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='floating']
+  .village-agent-floating-resize::before,
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='floating']
+  .village-agent-floating-resize::after {
+  content: '';
+  position: absolute;
+  right: 7px;
+  bottom: 6px;
+  width: 10px;
+  height: 1px;
+  transform: rotate(-45deg);
+  transform-origin: right center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='floating']
+  .village-agent-floating-resize::after {
+  right: 4px;
+  bottom: 5px;
+  width: 15px;
+}
+
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='floating']
+  .village-agent-floating-resize:hover::before,
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='floating']
+  .village-agent-floating-resize:hover::after {
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'] .canvas-agent-drawer-resize-handle {
+  width: 3px;
+}
+
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'] .canvas-agent-drawer-resize-handle:hover,
+.canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'] .canvas-agent-drawer-resize-handle[data-dragging='true'] {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.village-agent-shell-v4 {
+  background: var(--agent-v4-panel);
+  color: var(--agent-v4-fg);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", Inter, "Noto Sans SC", "Microsoft YaHei", sans-serif;
+}
+
+.village-agent-shell-v4 .neo-agent-chat-surface {
+  background: var(--agent-v4-panel);
+}
+
+.village-agent-shell-v4 .agent-drawer-header.neo-agent-header {
+  height: 52px;
+  min-height: 52px;
+  padding: 10px 12px 10px 16px;
+  gap: 4px;
+  border-bottom: 0;
+  background: var(--agent-v4-panel);
+  backdrop-filter: none;
+}
+
+.village-agent-shell-v4 .village-agent-titlebar {
+  gap: 7px;
+}
+
+.village-agent-shell-v4 .village-agent-title {
+  max-width: 128px;
+  color: var(--agent-v4-fg);
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.village-agent-shell-v4 .village-agent-status-pill {
+  height: 18px;
+  padding: 0 6px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--agent-v4-muted);
+  font-size: 9px;
+}
+
+.village-agent-shell-v4 .village-agent-header-actions {
+  gap: 1px;
+}
+
+.village-agent-shell-v4 .village-agent-header-actions button,
+.village-agent-shell-v4 .neo-agent-header > button {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent !important;
+  color: var(--agent-v4-muted);
+  box-shadow: none;
+}
+
+.village-agent-shell-v4 .village-agent-header-actions button:hover,
+.village-agent-shell-v4 .village-agent-header-actions button[aria-expanded='true'],
+.village-agent-shell-v4 .neo-agent-header > button:hover {
+  background: var(--agent-v4-hover) !important;
+  color: var(--agent-v4-fg);
+}
+
+.village-agent-shell-v4 .village-agent-header-actions .village-agent-header-new { order: 1; }
+.village-agent-shell-v4 .village-agent-header-actions .village-agent-header-history { order: 2; }
+.village-agent-shell-v4 .village-agent-header-actions .village-agent-header-skill { order: 3; }
+.village-agent-shell-v4 .village-agent-header-actions .village-agent-header-cli { order: 4; }
+.village-agent-shell-v4 .village-agent-header-actions .village-agent-header-more { order: 5; }
+
+.village-agent-shell-v4 .village-agent-floating-scroll {
+  padding: 12px 16px 10px;
+  scrollbar-color: rgba(255, 255, 255, 0.17) transparent;
+}
+
+.village-agent-shell-v4 .village-agent-message-list {
+  gap: 18px;
+  padding-bottom: 6px;
+}
+
+.village-agent-shell-v4 .village-agent-message-row--assistant > div:first-child {
+  display: none;
+}
+
+.village-agent-shell-v4 .village-agent-message-bubble--assistant {
+  max-width: 100%;
+  padding: 0 30px 0 0;
+  color: var(--agent-v4-fg);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.village-agent-shell-v4 .village-agent-message-bubble--user {
+  max-width: 82%;
+}
+
+.village-agent-shell-v4 .village-agent-message-bubble--user > div > div:not([data-slot='button']) {
+  border: 0;
+  border-radius: 16px;
+  background: #303030 !important;
+  padding: 9px 13px;
+  color: var(--agent-v4-fg);
+  box-shadow: none;
+}
+
+.village-agent-shell-v4 .agent-composer-dock {
+  padding: 4px 8px 12px;
+  background: var(--agent-v4-panel);
+}
+
+.village-agent-shell-v4 .agent-composer-dock .village-agent-composer-shell {
+  min-height: 122px;
+  overflow: visible;
+  border: 1px solid var(--agent-v4-border);
+  border-radius: 16px;
+  background: var(--agent-v4-panel);
+  box-shadow: none;
+}
+
+.village-agent-shell-v4 .agent-composer-dock .village-agent-composer-shell:focus-within {
+  border-color: #6b6b6b;
+  background: var(--agent-v4-panel);
+  box-shadow: none;
+}
+
+.village-agent-shell-v4 .agent-composer-dock .neo-agent-textarea {
+  min-height: 64px;
+  max-height: min(45vh, 240px);
+  padding: 11px 8px 5px;
+  color: var(--agent-v4-fg);
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.village-agent-shell-v4 .agent-composer-dock .neo-agent-textarea::placeholder {
+  color: #676767;
+}
+
+.village-agent-shell-v4 .agent-composer-dock .village-agent-composer-shell > div:last-child {
+  min-height: 41px;
+  gap: 3px;
+  padding: 1px 7px 8px;
+}
+
+.village-agent-shell-v4 .village-agent-control-strip {
+  flex: 0 1 auto;
+  gap: 3px;
+  overflow: visible;
+}
+
+.village-agent-shell-v4 .village-agent-skill-drawer-button,
+.village-agent-shell-v4 .village-agent-research-toggle,
+.village-agent-shell-v4 .village-agent-select-trigger,
+.village-agent-shell-v4 .neo-agent-voice-action,
+.village-agent-shell-v4 .neo-agent-stop-action,
+.village-agent-shell-v4 .neo-agent-send-action,
+.village-agent-shell-v4 .village-agent-context-ring {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  flex: 0 0 32px;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--agent-v4-muted);
+  box-shadow: none;
+}
+
+.village-agent-shell-v4 .village-agent-skill-drawer-button:hover,
+.village-agent-shell-v4 .village-agent-research-toggle:hover,
+.village-agent-shell-v4 .village-agent-select-trigger:hover,
+.village-agent-shell-v4 .neo-agent-voice-action:hover,
+.village-agent-shell-v4 .neo-agent-stop-action:hover {
+  background: var(--agent-v4-hover);
+  color: var(--agent-v4-fg);
+}
+
+.village-agent-shell-v4 .village-agent-skill-drawer-button > span:not(.village-agent-skill-count),
+.village-agent-shell-v4 .village-agent-research-toggle > span,
+.village-agent-shell-v4 .village-agent-select-trigger > span,
+.village-agent-shell-v4 .village-agent-select-trigger > svg,
+.village-agent-shell-v4 .village-agent-model-picker__empty {
+  display: none;
+}
+
+.village-agent-shell-v4 .village-agent-skill-drawer-button[data-selected='true'],
+.village-agent-shell-v4 .village-agent-research-toggle[aria-pressed='true'] {
+  width: 32px;
+  min-width: 32px;
+  padding: 0;
+  border: 0;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--agent-v4-fg);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.village-agent-shell-v4 .village-agent-skill-drawer-button[data-selected='true'] {
+  background: rgba(251, 191, 36, 0.16);
+  color: #fef3c7;
+  box-shadow:
+    inset 0 0 0 1px rgba(253, 230, 138, 0.28),
+    0 0 14px rgba(251, 191, 36, 0.1);
+}
+
+.village-agent-shell-v4 .village-agent-research-toggle[aria-pressed='true'] {
+  background: rgba(34, 211, 238, 0.16);
+  color: #cffafe;
+  box-shadow:
+    inset 0 0 0 1px rgba(165, 243, 252, 0.3),
+    0 0 14px rgba(34, 211, 238, 0.12);
+}
+
+.village-agent-shell-v4 .village-agent-skill-drawer-button[data-selected='true'] > span:not(.village-agent-skill-count),
+.village-agent-shell-v4 .village-agent-research-toggle[aria-pressed='true'] > span {
+  display: none;
+}
+
+.village-agent-shell-v4 .village-agent-skill-count {
+  right: -1px;
+  top: -1px;
+  min-width: 13px;
+  height: 13px;
+  padding: 0 3px;
+  border: 2px solid var(--agent-v4-panel);
+  background: #f2f2f2;
+  color: #202020;
+  line-height: 9px;
+}
+
+.village-agent-shell-v4 .village-agent-model-picker,
+.village-agent-shell-v4 .village-agent-run-mode-picker {
+  position: relative;
+  width: 32px;
+  min-width: 32px;
+  max-width: 32px;
+  flex: 0 0 32px;
+  border: 0;
+  background: transparent;
+}
+
+.village-agent-shell-v4 .village-agent-model-picker::after,
+.village-agent-shell-v4 .village-agent-run-mode-picker::after {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--agent-v4-muted);
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.village-agent-shell-v4 .village-agent-model-picker::after { content: "模"; }
+.village-agent-shell-v4 .village-agent-run-mode-picker::after { content: "草"; }
+.village-agent-shell-v4 .village-agent-run-mode-picker[data-run-mode='auto']::after { content: "自"; }
+
+.village-agent-shell-v4 .village-agent-model-picker[data-configured='true']::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 2;
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--agent-v4-panel);
+  border-radius: 999px;
+  background: #6ee7b7;
+  pointer-events: none;
+}
+
+.village-agent-shell-v4 .village-agent-run-mode-picker[data-run-mode='auto'] {
+  border-radius: 8px;
+  background: rgba(251, 191, 36, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(253, 230, 138, 0.22);
+}
+
+.village-agent-shell-v4 .village-agent-run-mode-picker[data-run-mode='auto']::after {
+  color: #fef3c7;
+}
+
+.village-agent-shell-v4 .village-agent-model-picker:hover,
+.village-agent-shell-v4 .village-agent-run-mode-picker:hover {
+  border-radius: 8px;
+  background: var(--agent-v4-hover);
+}
+
+.village-agent-shell-v4 .village-agent-model-picker:hover::after,
+.village-agent-shell-v4 .village-agent-run-mode-picker:hover::after {
+  color: var(--agent-v4-fg);
+}
+
+.village-agent-shell-v4 .village-agent-context-ring:hover {
+  background: var(--agent-v4-hover);
+}
+
+.village-agent-shell-v4 .village-agent-context-ring__svg {
+  position: static;
+  width: 18px;
+  height: 18px;
+}
+
+.village-agent-shell-v4 .village-agent-context-ring__track,
+.village-agent-shell-v4 .village-agent-context-ring__value {
+  stroke-width: 1.25;
+}
+
+.village-agent-shell-v4 .village-agent-context-ring__track {
+  stroke: currentColor;
+  opacity: 0.25;
+}
+
+.village-agent-shell-v4 .village-agent-context-ring__value {
+  stroke: currentColor;
+}
+
+.village-agent-shell-v4 .village-agent-context-ring::after,
+.village-agent-shell-v4 .village-agent-context-ring__label {
+  display: none;
+}
+
+.village-agent-shell-v4 .neo-agent-send-action {
+  border-radius: 12px;
+  background: #919191;
+  color: #171717;
+}
+
+.village-agent-shell-v4 .neo-agent-send-action:not(:disabled) {
+  background: #f2f2f2;
+  color: #171717;
+}
+
+.village-agent-shell-v4 .neo-agent-send-action:disabled {
+  opacity: 0.46;
+}
+
+.village-agent-shell-v4 .village-agent-skill-drawer {
+  right: 8px;
+  bottom: calc(100% + 8px);
+  left: 8px;
+  max-height: min(58vh, 430px);
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 14px;
+  background: #292929;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.36);
+}
+
+.village-agent-select-menu,
+.village-agent-history-menu,
+.village-agent-header-menu {
+  border-color: rgba(255, 255, 255, 0.09);
+  background: #292929;
+  color: var(--agent-v4-fg);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
+}
+
+.village-agent-header-menu [data-slot='dropdown-menu-item'],
+.village-agent-history-menu .village-agent-history-item {
+  min-height: 36px;
+  border-radius: 9px;
+  color: rgba(247, 247, 247, 0.82);
+  font-size: 12px;
+}
+
+.village-agent-header-menu [data-slot='dropdown-menu-item']:focus,
+.village-agent-history-menu .village-agent-history-item:focus {
+  background: rgba(255, 255, 255, 0.075);
+  color: var(--agent-v4-fg);
+}
+
+.village-agent-history-row {
+  border-radius: 9px;
+}
+
+.village-agent-history-delete {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: rgba(247, 247, 247, 0.32);
+  opacity: 0.52;
+  transition:
+    opacity 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.village-agent-history-row:hover .village-agent-history-delete,
+.village-agent-history-delete:focus-visible {
+  color: rgba(248, 113, 113, 0.92);
+  opacity: 1;
+}
+
+.village-agent-history-delete:hover:not(:disabled),
+.village-agent-history-delete:focus-visible {
+  border-color: rgba(248, 113, 113, 0.16);
+  background: rgba(248, 113, 113, 0.1);
+  outline: none;
+}
+
+.village-agent-history-delete:disabled {
+  cursor: not-allowed;
+  opacity: 0.18;
+}
+
+.village-agent-history-confirm {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(25, 25, 25, 0.97);
+  color: var(--agent-v4-fg);
+}
+
+.village-agent-select-menu {
+  width: min(280px, calc(100vw - 24px));
+  min-width: 0;
+  max-height: min(54vh, 420px);
+  padding: 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.village-agent-select-menu .village-agent-select-option {
+  min-height: 44px;
+  border-radius: 9px;
+  padding: 7px 34px 7px 10px;
+  color: rgba(247, 247, 247, 0.86);
+}
+
+.village-agent-select-menu .village-agent-select-option:hover,
+.village-agent-select-menu .village-agent-select-option:focus,
+.village-agent-select-menu .village-agent-select-option[data-highlighted],
+.village-agent-select-menu .village-agent-select-option[data-checked] {
+  background: rgba(255, 255, 255, 0.075);
+  color: #f7f7f7;
+}
+
+.village-agent-select-menu .village-agent-select-option > span:last-child {
+  min-width: 0;
+}
+
+.village-agent-select-menu .village-agent-select-option > span:last-child > span:first-child {
+  color: rgba(247, 247, 247, 0.92);
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.village-agent-select-menu .village-agent-select-option > span:last-child > span:last-child {
+  color: rgba(247, 247, 247, 0.46);
+  font-size: 10px;
+  line-height: 15px;
+}
+
+#village-agent-shell-v4 .village-agent-search-bar {
+  min-height: 42px;
+  flex: 0 0 auto;
+  border-color: rgba(255, 255, 255, 0.075);
+  background: #212121;
+  padding: 6px 12px;
+  color: rgba(247, 247, 247, 0.56);
+}
+
+#village-agent-shell-v4 .village-agent-search-bar input {
+  height: 30px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.045);
+  padding: 0 10px;
+  color: rgba(247, 247, 247, 0.9);
+  font-size: 11px;
+  box-shadow: none;
+}
+
+#village-agent-shell-v4 .village-agent-search-bar input:focus {
+  background: rgba(255, 255, 255, 0.065);
+  box-shadow: inset 0 0 0 1px rgba(169, 232, 238, 0.3);
+}
+
+#village-agent-shell-v4 .village-agent-search-bar button {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 8px;
+  color: rgba(247, 247, 247, 0.52);
+}
+
+.village-agent-shell-v4 .village-agent-welcome--libtv {
+  width: min(100%, 720px);
+  margin: 0 auto;
+  padding: 12px 2px 8px;
+}
+
+#village-agent-shell-v4 .village-agent-welcome--libtv {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-libtv-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-eyebrow {
+  margin: 0 0 3px;
+  color: rgba(247, 247, 247, 0.42);
+  font-size: 10px;
+  line-height: 15px;
+  letter-spacing: 0.02em;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-libtv-head h2 {
+  margin: 0;
+  color: var(--agent-v4-fg);
+  font-size: clamp(17px, 1.7vw, 21px);
+  line-height: 1.32;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-refresh {
+  display: inline-flex;
+  min-height: 28px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  padding: 0 7px;
+  color: rgba(247, 247, 247, 0.48);
+  font-size: 10px;
+  line-height: 18px;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-refresh:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(247, 247, 247, 0.9);
+}
+
+.village-agent-shell-v4 .village-agent-welcome-skill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-skill-card {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 58px;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  border-color: rgba(255, 255, 255, 0.055);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 8px;
+  text-align: left;
+  box-shadow: none;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-skill-card:hover,
+.village-agent-shell-v4 .village-agent-welcome-skill-card.is-selected {
+  border-color: rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#village-agent-shell-v4 .village-agent-welcome-skill-card {
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  background: #292929;
+  box-shadow: none;
+  transform: none;
+}
+
+#village-agent-shell-v4 .village-agent-welcome-skill-card:hover:not(:disabled),
+#village-agent-shell-v4 .village-agent-welcome-skill-card.is-selected {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: #303030;
+  box-shadow: none;
+  transform: none;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-skill-card > span:first-child {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  flex: 0 0 36px;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-skill-card > span:nth-child(2) {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-skill-title,
+.village-agent-shell-v4 .village-agent-welcome-skill-tag {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-skill-title {
+  color: rgba(247, 247, 247, 0.9);
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 650;
+}
+
+.village-agent-shell-v4 .village-agent-welcome-skill-tag {
+  color: rgba(247, 247, 247, 0.38);
+  font-size: 9px;
+  line-height: 14px;
+}
+
+#village-agent-shell-v4 .village-agent-primary-actions {
+  height: 32px;
+  align-self: center;
+  align-items: center;
+}
+
+#village-agent-shell-v4 .village-agent-context-ring {
+  position: relative;
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  flex: 0 0 32px;
+  place-items: center;
+  align-self: center;
+  overflow: hidden;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+#village-agent-shell-v4 .village-agent-context-ring__svg {
+  display: block;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 560px) {
+  .village-agent-shell-v4 .village-agent-welcome--libtv {
+    padding-inline: 0;
+  }
+
+  .village-agent-shell-v4 .village-agent-welcome-libtv-head h2 {
+    font-size: 17px;
+  }
+
+  .village-agent-shell-v4 .village-agent-welcome-skill-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .village-agent-shell-v4 .village-agent-welcome-skill-card {
+    min-height: 54px;
+    padding: 7px;
+  }
+}
+
+@media (max-width: 1279px) {
+  .canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='docked'] {
+    width: min(360px, calc(100vw - 220px));
+  }
+}
+
+@media (max-width: 1023px) {
+  .canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'] {
+    inset: 0;
+    display: flex;
+    width: 100% !important;
+    max-width: none;
+  }
+
+  .village-agent-shell-v4 .agent-composer-dock {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .village-agent-shell-v4 *,
+  .canvas-agent-drawer-chat[data-agent-drawer='village-agent-v4-libtv'] * {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+
+/* The shell anchor keeps portal utilities from overriding the compact layout. */
+#village-agent-shell-v4 .agent-drawer-header.neo-agent-header {
+  height: 52px;
+  min-height: 52px;
+  padding: 10px 12px 10px 16px;
+  border-bottom: 0;
+  background: #212121;
+  backdrop-filter: none;
+}
+
+#village-agent-shell-v4 .agent-composer-dock .village-agent-composer-shell {
+  min-height: 122px;
+  border: 1px solid #525252;
+  border-radius: 16px;
+  background: #212121;
+  box-shadow: none;
+}
+
+#village-agent-shell-v4 .agent-composer-dock .village-agent-composer-shell:focus-within {
+  border-color: #6b6b6b;
+  background: #212121;
+}
+
+#village-agent-shell-v4 .agent-composer-dock .neo-agent-textarea {
+  min-height: 64px;
+  padding: 11px 8px 5px;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-button > span:not(.village-agent-skill-count),
+#village-agent-shell-v4 .village-agent-research-toggle > span,
+#village-agent-shell-v4 .village-agent-select-trigger > span,
+#village-agent-shell-v4 .village-agent-select-trigger > svg {
+  display: none;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-button[data-selected='true'],
+#village-agent-shell-v4 .village-agent-research-toggle[aria-pressed='true'] {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  color: #f7f7f7;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-button[data-selected='true'] {
+  background: rgba(251, 191, 36, 0.16);
+  color: #fef3c7;
+  box-shadow: inset 0 0 0 1px rgba(253, 230, 138, 0.28);
+}
+
+#village-agent-shell-v4 .village-agent-research-toggle[aria-pressed='true'] {
+  background: rgba(34, 211, 238, 0.16);
+  color: #cffafe;
+  box-shadow: inset 0 0 0 1px rgba(165, 243, 252, 0.3);
+}
+
+#village-agent-shell-v4 .village-agent-context-ring__svg {
+  position: static;
+  width: 18px;
+  height: 18px;
+}
+
+#village-agent-shell-v4 .village-agent-context-ring__track,
+#village-agent-shell-v4 .village-agent-context-ring__value {
+  stroke-width: 1.25;
+}
+
+#village-agent-shell-v4 [data-agent-compact-status='running'][data-agent-health='waiting'] {
+  border-color: rgba(251, 191, 36, 0.2);
+  background: rgba(120, 82, 18, 0.15);
+}
+
+#village-agent-shell-v4 [data-agent-compact-status='running'][data-agent-health='reconnecting'] {
+  border-color: rgba(251, 113, 133, 0.22);
+  background: rgba(127, 29, 29, 0.14);
+}
+
+#village-agent-shell-v4 .village-agent-context-ring__track {
+  stroke: currentColor;
+  opacity: 0.25;
+}
+
+#village-agent-shell-v4 .village-agent-context-ring__value {
+  stroke: currentColor;
+}
+
+#village-agent-shell-v4 .village-agent-context-ring::after,
+#village-agent-shell-v4 .village-agent-context-ring__label {
+  display: none;
+}
+
+/* Keep the real Skill drawer anchored to the composer and give every
+ * interactive child the same compact v4 contract. */
+#village-agent-shell-v4 .village-agent-composer-shell > .village-agent-skill-drawer {
+  position: absolute;
+  right: 8px;
+  bottom: calc(100% + 8px);
+  left: 8px;
+  z-index: 80;
+  display: flex;
+  max-height: min(58vh, 430px);
+  flex-direction: column;
+  min-height: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: #292929;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.44);
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-head {
+  display: flex;
+  min-height: 28px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 0 8px;
+  color: rgba(247, 247, 247, 0.92);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 650;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-head em {
+  color: rgba(247, 247, 247, 0.48);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 550;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-head button {
+  min-height: 28px;
+  border-color: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05) !important;
+  padding: 0 9px;
+  color: rgba(247, 247, 247, 0.66);
+  font-size: 10px;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-selected {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  max-width: 100%;
+  margin: 0 0 8px;
+  padding: 0 0 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-selected::-webkit-scrollbar {
+  display: none;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-selected-chip {
+  display: inline-flex;
+  min-height: 26px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(169, 232, 238, 0.25);
+  border-radius: 999px;
+  background: rgba(169, 232, 238, 0.1);
+  padding: 0 8px;
+  color: rgba(236, 254, 255, 0.88);
+  font-size: 10px;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-toolbar {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+#village-agent-shell-v4 .village-agent-skill-search {
+  display: flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 6px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0 9px;
+}
+
+#village-agent-shell-v4 .village-agent-skill-search:focus-within {
+  border-color: rgba(169, 232, 238, 0.42);
+  box-shadow: 0 0 0 2px rgba(169, 232, 238, 0.08);
+}
+
+#village-agent-shell-v4 .village-agent-skill-search input {
+  min-width: 0;
+  flex: 1 1 auto;
+  height: 28px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 0;
+  color: rgba(247, 247, 247, 0.9);
+  font-size: 11px;
+  line-height: 20px;
+}
+
+#village-agent-shell-v4 .village-agent-skill-search input::placeholder {
+  color: rgba(255, 255, 255, 0.34);
+}
+
+#village-agent-shell-v4 .village-agent-skill-search-clear {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+#village-agent-shell-v4 .village-agent-skill-filter-row {
+  display: flex;
+  gap: 5px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 1px;
+  scrollbar-width: none;
+}
+
+#village-agent-shell-v4 .village-agent-skill-filter-row::-webkit-scrollbar {
+  display: none;
+}
+
+#village-agent-shell-v4 .village-agent-skill-filter {
+  min-height: 24px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 0 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+#village-agent-shell-v4 .village-agent-skill-filter.is-active {
+  border-color: rgba(169, 232, 238, 0.35);
+  background: rgba(169, 232, 238, 0.12);
+  color: rgba(236, 254, 255, 0.94);
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 6px;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 1px 2px 1px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-item {
+  display: flex;
+  min-width: 0;
+  min-height: 58px;
+  align-items: center;
+  gap: 9px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 7px 8px;
+  text-align: left;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-item:hover:not(:disabled),
+#village-agent-shell-v4 .village-agent-skill-drawer-item.is-selected {
+  border-color: rgba(169, 232, 238, 0.3);
+  background: rgba(169, 232, 238, 0.09);
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-item > span:not(.lucide) {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-item > span:first-child {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  flex: 0 0 44px;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-item > span:nth-child(2) {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-item strong {
+  display: block;
+  overflow: hidden;
+  color: rgba(247, 247, 247, 0.9);
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#village-agent-shell-v4 .village-agent-skill-drawer-item em {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(247, 247, 247, 0.42);
+  font-size: 10px;
+  font-style: normal;
+  line-height: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#village-agent-shell-v4 .village-agent-skill-empty {
+  display: flex;
+  min-height: 80px;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 11px;
+}
+
+/* Smart dispatch remains active in the Agent runtime; hide only its noisy
+ * composer badge and keep manually pinned skills/nodes visible. */
+#village-agent-shell-v4 [data-agent-smart-dispatch='true'] {
+  display: none;
+}
+
+#village-agent-shell-v4 .village-agent-reference-strip:has([data-agent-smart-dispatch='true']):not(:has(.village-agent-skill-chip)):not(:has(.village-agent-node-ref-card)) {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  [data-agent-drawer='village-agent-v4-libtv'][data-agent-presentation='mobile'] {
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+/* Secondary surfaces render through DialogPortal, so they need their own
+ * explicit anchor instead of inheriting styles from the docked Agent shell. */
+[data-agent-dialog='v4'].village-agent-dialog-v4 {
+  --agent-dialog-panel: #212121;
+  --agent-dialog-surface: #292929;
+  --agent-dialog-surface-soft: rgba(255, 255, 255, 0.045);
+  --agent-dialog-border: #525252;
+  --agent-dialog-border-soft: rgba(255, 255, 255, 0.09);
+  --agent-dialog-fg: #f7f7f7;
+  --agent-dialog-muted: #919191;
+  --agent-dialog-accent: #a9e8ee;
+  color-scheme: dark;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--agent-dialog-border-soft);
+  border-radius: 16px;
+  background: var(--agent-dialog-panel);
+  color: var(--agent-dialog-fg);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", Inter, "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.48);
+  scrollbar-color: rgba(255, 255, 255, 0.24) transparent;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 > :is(header, [data-slot='dialog-header'], div:first-child) {
+  border-color: var(--agent-dialog-border-soft);
+  background: var(--agent-dialog-panel);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 [data-slot='dialog-title'] {
+  color: var(--agent-dialog-fg);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 [data-slot='dialog-close'] {
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  color: rgba(247, 247, 247, 0.52);
+  background: transparent;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 [data-slot='dialog-close']:hover,
+[data-agent-dialog='v4'].village-agent-dialog-v4 [data-slot='dialog-close']:focus-visible {
+  color: var(--agent-dialog-fg);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 button,
+[data-agent-dialog='v4'].village-agent-dialog-v4 input,
+[data-agent-dialog='v4'].village-agent-dialog-v4 textarea,
+[data-agent-dialog='v4'].village-agent-dialog-v4 select {
+  font-family: inherit;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 input:not([type='checkbox']),
+[data-agent-dialog='v4'].village-agent-dialog-v4 textarea,
+[data-agent-dialog='v4'].village-agent-dialog-v4 select {
+  border-color: var(--agent-dialog-border-soft);
+  background-color: var(--agent-dialog-surface);
+  color: var(--agent-dialog-fg);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 input:not([type='checkbox']):focus,
+[data-agent-dialog='v4'].village-agent-dialog-v4 textarea:focus,
+[data-agent-dialog='v4'].village-agent-dialog-v4 select:focus {
+  border-color: rgba(169, 232, 238, 0.45);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(169, 232, 238, 0.09);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 ::placeholder {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 :is(input, textarea, [data-slot='scroll-area-viewport'], pre, main, aside) {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 :is(input, textarea, [data-slot='scroll-area-viewport'], pre, main, aside)::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4 :is(input, textarea, [data-slot='scroll-area-viewport'], pre, main, aside)::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  background-clip: padding-box;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--cli {
+  width: min(720px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--cli > div:nth-child(2) {
+  max-height: min(70vh, 620px);
+  background: var(--agent-dialog-panel);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--cli section,
+[data-agent-dialog='v4'].village-agent-dialog-v4--memory article,
+[data-agent-dialog='v4'].village-agent-dialog-v4--memory > div > div > div,
+[data-agent-dialog='v4'].village-agent-dialog-v4--memory > div > div:nth-child(3) {
+  border-color: var(--agent-dialog-border-soft);
+  background: var(--agent-dialog-surface-soft) !important;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--cli section {
+  border-radius: 14px;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--cli pre {
+  border-color: rgba(169, 232, 238, 0.13);
+  background: #181818;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--memory {
+  width: min(760px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--memory > div:last-child {
+  min-height: 0;
+  background: var(--agent-dialog-panel);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--memory article {
+  border-radius: 13px;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--memory article:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--memory button:not([data-slot='dialog-close']):hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--skills {
+  width: min(1120px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  height: min(820px, calc(100dvh - 24px));
+  max-height: calc(100dvh - 24px);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--skills > :is(header, main, aside),
+[data-agent-dialog='v4'].village-agent-dialog-v4--skills main > :is(div, section) {
+  border-color: var(--agent-dialog-border-soft);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--skills main,
+[data-agent-dialog='v4'].village-agent-dialog-v4--skills aside {
+  background: var(--agent-dialog-panel);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--skills article {
+  border-color: var(--agent-dialog-border-soft);
+  border-radius: 14px;
+  background: var(--agent-dialog-surface-soft);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--skills article:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--settings {
+  width: min(1120px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  height: min(820px, calc(100dvh - 24px));
+  max-height: calc(100dvh - 24px);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--settings > :is([data-slot='dialog-header'], nav, div, footer),
+[data-agent-dialog='v4'].village-agent-dialog-v4--settings [data-slot='scroll-area'],
+[data-agent-dialog='v4'].village-agent-dialog-v4--settings [data-slot='scroll-area-viewport'] {
+  border-color: var(--agent-dialog-border-soft);
+  background: var(--agent-dialog-panel);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--settings [aria-current='page'] {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--agent-dialog-fg);
+}
+
+[data-agent-dialog='v4'].village-agent-dialog-v4--settings section {
+  color: var(--agent-dialog-fg);
+}
+
+/* A Portal sits above the canvas, so the draggable mascot must yield while a
+ * secondary surface is open instead of covering its navigation on mobile. */
+body:has([data-agent-dialog='v4']) .mybuddy-companion-floating,
+body:has([data-agent-dialog='v4']) .mybuddy-companion-motion-layer,
+body:has([data-agent-dialog='v4']) .mybuddy-companion-settle-layer,
+body:has([data-agent-dialog='v4']) .mybuddy-companion-drag-handle {
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+body:has([data-agent-drawer='village-agent-v4-libtv'][data-open]) .mybuddy-companion-floating,
+body:has([data-agent-drawer='village-agent-v4-libtv'][data-open]) .mybuddy-companion-motion-layer,
+body:has([data-agent-drawer='village-agent-v4-libtv'][data-open]) .mybuddy-companion-settle-layer,
+body:has([data-agent-drawer='village-agent-v4-libtv'][data-open]) .mybuddy-companion-drag-handle {
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+html[data-village-agent-docked='true'] .mybuddy-companion-floating,
+html[data-village-agent-docked='true'] .mybuddy-companion-motion-layer,
+html[data-village-agent-docked='true'] .mybuddy-companion-settle-layer,
+html[data-village-agent-docked='true'] .mybuddy-companion-drag-handle {
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+@media (max-width: 640px) {
+  [data-agent-dialog='v4'].village-agent-dialog-v4--cli,
+  [data-agent-dialog='v4'].village-agent-dialog-v4--memory {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+  }
+
+  [data-agent-dialog='v4'].village-agent-dialog-v4--skills,
+  [data-agent-dialog='v4'].village-agent-dialog-v4--settings {
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    height: calc(100dvh - 16px);
+    max-height: calc(100dvh - 16px);
+    border-radius: 14px;
+  }
+}

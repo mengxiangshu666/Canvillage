@@ -1,0 +1,16 @@
+[
+  {"id":"action-follow", "text":"固定的中景背影机位，镜头跟随跑者奔跑，速度稳定，无切镜", "camera":"固定的中景背影机位，镜头跟随跑者奔跑，速度稳定，无切镜", "needs_review":false},
+  {"id":"reported-conflict", "text":"固定的中景背影机位，镜头始终跟随跑者奔跑，速度与其节奏同步，跑者起跑后镜头不再移动", "camera":"固定的中景背影机位，镜头始终跟随跑者奔跑，速度与其节奏同步，跑者起跑后镜头不再移动", "needs_review":true},
+  {"id":"dialogue-fixed", "text":"固定在桌边，双人中景全程保持同框，让监听和回应同时可读", "camera":"固定在桌边，双人中景全程保持同框，让监听和回应同时可读", "needs_review":false},
+  {"id":"lyrical-stop", "text":"摄影机先沿岸边缓慢横移，落到水面倒影后停住，保持结束构图", "camera":"摄影机先沿岸边缓慢横移，落到水面倒影后停住，保持结束构图", "needs_review":false},
+  {"id":"product-orbit", "text":"镜头环绕产品，同时缓慢升高，结束保留侧面材质与顶面结构", "camera":"镜头环绕产品，同时缓慢升高，结束保留侧面材质与顶面结构", "needs_review":false},
+  {"id":"always-fixed-conflict", "text":"镜头全程保持静止，镜头随后向左横移揭示门后的人", "camera":"镜头全程保持静止，镜头随后向左横移揭示门后的人", "needs_review":true},
+  {"id":"subject-stops", "text":"镜头始终跟随跑者，跑者停住后镜头不再移动，保持相对距离", "camera":"镜头始终跟随跑者，跑者停住后镜头不再移动，保持相对距离", "needs_review":false},
+  {"id":"phase-scope", "text":"前半段镜头始终跟随跑者，后半段镜头静止，人物自行跑出画面", "camera":"前半段镜头始终跟随跑者，后半段镜头静止，人物自行跑出画面", "needs_review":false},
+  {"id":"negative-example", "text":"镜头固定观察；不要写镜头全程跟随又镜头不再移动", "camera":"镜头固定观察；不要写镜头全程跟随又镜头不再移动", "needs_review":false},
+  {"id":"subject-only", "text":"主体动作：跑者奔跑后停住", "camera":"", "needs_review":false},
+  {"id":"composition-only", "text":"画面构图：固定中景，摄影机在门边", "camera":"", "needs_review":false},
+  {"id":"empty-labelled", "text":"运镜轨迹：", "camera":"", "needs_review":false},
+  {"id":"labelled", "text":"明确的摄影机运镜：从产品右侧开始缓慢横移，落幅保留铭牌", "camera":"从产品右侧开始缓慢横移，落幅保留铭牌", "needs_review":false},
+  {"id":"english-fixed", "text":"camera: locked off on both speakers throughout", "camera":"locked off on both speakers throughout", "needs_review":false}
+]

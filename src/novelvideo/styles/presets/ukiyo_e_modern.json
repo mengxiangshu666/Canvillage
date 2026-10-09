@@ -1,0 +1,31 @@
+{
+  "id": "ukiyo_e_modern",
+  "name": "现代浮世绘",
+  "label": "现代浮世绘",
+  "family": "graphic_print",
+  "era": "timeless_modern",
+  "palette": "靛蓝、朱红、芥末黄、米白与墨线",
+  "lighting": "clean graphic light, limited soft shadows, print-like tonal separation",
+  "optics": "35mm graphic perspective, crisp edge control, subtle paper grain",
+  "composition": "扁平色块、流动轮廓、浪纹和织物节奏，主体剪影一眼可读",
+  "camera_motion": "graphic slide, measured parallax, match-cut-like lateral movement",
+  "style_instructions": "Contemporary ukiyo-e reinterpretation with elegant contour flow, sophisticated flat color planes, rhythmic waves and textile patterns, premium print finish.",
+  "avoid_instructions": "No photorealistic pores, no 3D plastic rendering, no illegible text, no muddy gradients, no watermark.",
+  "style_tag": "UKIYO-E GRAPHICS",
+  "tags": [
+    "浮世绘",
+    "版画",
+    "平面",
+    "东方"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Favor graphic lateral motion and layered parallax; preserve flat color boundaries and silhouette readability."
+    }
+  },
+  "style_family": "animation",
+  "animation_subtype": "hybrid",
+  "image_prompt": "Contemporary ukiyo-e reinterpretation with elegant contour flow, sophisticated flat color planes, rhythmic waves and textile patterns, premium print finish.",
+  "video_prompt": "graphic slide, measured parallax, match-cut-like lateral movement",
+  "negative_prompt": "No photorealistic pores, no 3D plastic rendering, no illegible text, no muddy gradients, no watermark."
+}

@@ -1,0 +1,30 @@
+{
+  "id": "gongbi_heavy_color",
+  "name": "工笔重彩",
+  "family": "gongbi",
+  "era": "classical_chinese",
+  "palette": "石青、石绿、朱砂、赭石、胭脂与局部泥金，多层罩染而不浑浊",
+  "lighting": "非摄影式均匀设色，以线描、罩染和金色层次表达体积与礼仪感",
+  "optics": "散点空间与精密细节并重，衣纹、器物和建筑结构保持工整准确",
+  "composition": "游丝描式细线组织人物关系，服饰纹样、手势和礼仪秩序成为画面核心",
+  "camera_motion": "scroll-like lateral reveal, ceremonial slow push, layered parallax, detail-to-tableau transition",
+  "style_instructions": "Chinese gongbi heavy-color painting, hairline controlled contours, layered mineral pigments, meticulous garments and objects, ceremonial spatial order and restrained gold accents.",
+  "avoid_instructions": "No splash-ink diffusion, no live-action PBR skin, no oil impasto, no woodblock grain, no loose anime linework, no text or watermark.",
+  "style_tag": "GONGBI MINERAL-COLOR METICULOUS PAINTING",
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "tags": [
+    "工笔",
+    "重彩",
+    "矿物颜料",
+    "线描"
+  ],
+  "image_prompt": "Chinese gongbi heavy-color painting, hairline controlled contours, layered mineral pigments, meticulous garments and objects, ceremonial spatial order and restrained gold accents.",
+  "video_prompt": "scroll-like lateral reveal, ceremonial slow push, layered parallax, detail-to-tableau transition",
+  "negative_prompt": "No splash-ink diffusion, no live-action PBR skin, no oil impasto, no woodblock grain, no loose anime linework, no text or watermark.",
+  "model_overrides": {
+    "video": {
+      "video_prompt": "scroll-like lateral reveal, ceremonial slow push, layered parallax, detail-to-tableau transition"
+    }
+  }
+}

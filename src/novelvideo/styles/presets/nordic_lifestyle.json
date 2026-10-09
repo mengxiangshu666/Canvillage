@@ -1,0 +1,31 @@
+{
+  "id": "nordic_lifestyle",
+  "name": "北欧生活方式",
+  "label": "北欧生活方式",
+  "family": "lifestyle",
+  "era": "contemporary",
+  "palette": "暖白、浅木、雾蓝、灰绿与自然肤色",
+  "lighting": "bright diffused northern daylight, soft window bounce, gentle practical warmth",
+  "optics": "35mm/50mm natural perspective, airy depth, subtle grain",
+  "composition": "呼吸感留白、材质层次、真实生活动线，主体清晰而不摆拍",
+  "camera_motion": "gentle handheld follow, slow domestic pan, intimate push toward interaction",
+  "style_instructions": "Nordic lifestyle cinematic photography, breathable interiors, natural wood and textile texture, authentic everyday gestures, tasteful editorial restraint.",
+  "avoid_instructions": "No sterile showroom, no heavy glamour retouching, no extreme wide distortion, no text or watermark.",
+  "style_tag": "NORDIC DOMESTIC NATURALISM",
+  "tags": [
+    "生活方式",
+    "北欧",
+    "室内",
+    "温暖"
+  ],
+  "model_overrides": {
+    "video": {
+      "video_prompt": "Follow a small domestic interaction with gentle handheld continuity; preserve soft daylight and uncluttered spatial breathing room."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Nordic lifestyle cinematic photography, breathable interiors, natural wood and textile texture, authentic everyday gestures, tasteful editorial restraint.",
+  "video_prompt": "gentle handheld follow, slow domestic pan, intimate push toward interaction",
+  "negative_prompt": "No sterile showroom, no heavy glamour retouching, no extreme wide distortion, no text or watermark."
+}

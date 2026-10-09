@@ -1,0 +1,34 @@
+{
+  "id": "fashion_editorial",
+  "name": "高级时装叙事",
+  "label": "高级时装叙事",
+  "family": "fashion",
+  "era": "contemporary",
+  "palette": "黑白主调配一处高纯度强调色，材质反差清晰",
+  "lighting": "sculpted key light, controlled speculars, elegant rim, editorial shadow design",
+  "optics": "85mm portrait compression, 50mm full-body, shallow but intentional depth",
+  "composition": "身体线条、服装结构与几何背景形成主次，姿态具有叙事目的",
+  "camera_motion": "slow dolly, precise orbit, controlled fashion walk tracking",
+  "style_instructions": "High-end fashion editorial cinema, sculptural silhouettes, material-led styling, elegant dramatic light, narrative portraiture rather than catalogue posing.",
+  "avoid_instructions": "No logo text, no plastic skin, no generic influencer look, no cluttered background, no watermark.",
+  "style_tag": "SCULPTURAL FASHION CINEMA",
+  "tags": [
+    "时装",
+    "商业",
+    "人像",
+    "高级感"
+  ],
+  "model_overrides": {
+    "nanobanana": {
+      "image_prompt": "Prioritize garment construction, silhouette, pose, and material response over decorative background detail."
+    },
+    "video": {
+      "video_prompt": "Use a controlled editorial dolly or orbit that reveals garment movement and silhouette; keep pose transitions deliberate."
+    }
+  },
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "High-end fashion editorial cinema, sculptural silhouettes, material-led styling, elegant dramatic light, narrative portraiture rather than catalogue posing.",
+  "video_prompt": "slow dolly, precise orbit, controlled fashion walk tracking",
+  "negative_prompt": "No logo text, no plastic skin, no generic influencer look, no cluttered background, no watermark."
+}

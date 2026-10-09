@@ -1,0 +1,24 @@
+{
+  "commands": [
+    {
+      "type": "create_canvas_node",
+      "node_type": "textAnnotationNode",
+      "text": "角色设定",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "type": "create_image_prompt_node",
+      "display_name": "角色定妆",
+      "prompt": "根据项目上下文补齐角色定妆提示词",
+      "model": "MODEL_ID",
+      "x": 520,
+      "y": 0
+    },
+    {
+      "type": "connect_nodes",
+      "source": "$created:0",
+      "target": "$created:1"
+    }
+  ]
+}

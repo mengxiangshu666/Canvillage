@@ -1,0 +1,61 @@
+{
+  "title": "最后一班渡轮原生对白强化验证",
+  "lines": [
+    {
+      "id": "D1",
+      "speaker": "港口调度员",
+      "text": "水位越过警戒线，七分钟后封港。",
+      "duration": 8,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-01-storyboard.png",
+      "prompt": "暴雨中的旧城港口，空无一人的石街与钟楼，港口警示灯在雨幕中闪烁，镜头缓慢推近钟楼。"
+    },
+    {
+      "id": "D2",
+      "speaker": "苏岚",
+      "text": "林默，船不等人。",
+      "duration": 7,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-04-storyboard.png",
+      "prompt": "钟腹档案室双人近景，苏岚与林默对视，水下漂浮旧报纸，镜头缓慢推近苏岚。"
+    },
+    {
+      "id": "D4",
+      "speaker": "林默",
+      "text": "这是我姐的。",
+      "duration": 6,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-03-storyboard.png",
+      "prompt": "雨夜钟楼横梁，林默跪着托起褪色红发带，镜头极缓慢前推。"
+    },
+    {
+      "id": "D5",
+      "speaker": "林默",
+      "text": "别让这些名字沉下去。",
+      "duration": 8,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-04-storyboard.png",
+      "prompt": "洪水中的钟腹档案室，林默双手托着旧名单，苏岚在画面右侧保持不动，镜头缓慢推近名单。"
+    },
+    {
+      "id": "D6",
+      "speaker": "林默",
+      "text": "如果钟声能让人记住。",
+      "duration": 8,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-05-storyboard.png",
+      "prompt": "钟楼顶层，林默双手握住锈死钟绳，抬头望向铜钟，苏岚在景深处保持不动，镜头缓慢上扬。"
+    },
+    {
+      "id": "D7",
+      "speaker": "苏岚",
+      "text": "那就让全城听见。",
+      "duration": 7,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-05-storyboard.png",
+      "prompt": "钟楼顶层仰角近景，苏岚握住钟绳，侧脸转向林默，林默共同发力拉绳，镜头跟随钟绳震动。"
+    },
+    {
+      "id": "D8",
+      "speaker": "苏岚",
+      "text": "后来，夜航船都能听见它。",
+      "duration": 8,
+      "image": "workspace/artifacts/freezone-film/20260917T170132Z-06-storyboard.png",
+      "prompt": "天亮前的渡轮后甲板，苏岚背对镜头站在栏杆边，回望沉入水线的旧城，林默站在景深处保持不动，镜头缓慢后退。"
+    }
+  ]
+}
