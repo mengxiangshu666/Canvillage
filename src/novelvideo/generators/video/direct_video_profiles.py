@@ -51,6 +51,12 @@ class DirectVideoCapabilityProfile:
     size_slots: tuple[str, ...] = ()
     # 提交时 size 参数名（默认 "size"）。
     size_field: str | None = None
+    # 少数站点的「档位名」与它接受的入参写法不同：SparkCine 的任务记录回显
+    # "768p@16:9"，但 POST /videos 只接受 OpenAI 视频接口的 "WxH" 像素写法
+    # （2026-10-11 免费探测：size=1280x720 / 1080x1920 通过校验，size=720p@16:9 /
+    # 720p / 16:9 / 768p 一律 422）。这里放提交层真正发出去的值；档位名仍按站点
+    # 自己的回显口径发布给设置面板，两边都不撒谎。
+    size_wire_values: tuple[tuple[str, str], ...] = ()
     # Auto-discovery may distinguish canvas modes that share one VideoMode.
     exact_canvas_modes: tuple[str, ...] = ()
     # 空集合表示内置合同四项都明确；非空集合只列出已明确的字段，
@@ -63,6 +69,10 @@ class DirectVideoCapabilityProfile:
     # Number of no-detail ``failed`` polls that may be rechecked for this
     # profile before the task is classified as terminal.
     failure_grace_polls: int | None = None
+    # 少数站点的 OpenAI 兼容校验是严格模式：请求体多一个它没声明的包装字段就整包
+    # 422（SparkCine 实测：真实被接受过的报文只有 model/prompt/seconds/size 四个键）。
+    # 声明 False 后提交层不再携带 metadata 包装。
+    supports_request_metadata: bool = True
 
     def matches(self, upstream_model: str) -> bool:
         return bool(self.pattern.search(upstream_model))
@@ -102,6 +112,20 @@ class DirectVideoCapabilityProfile:
                 best_delta = delta
                 best = slot
         return best
+
+    def wire_size_value(self, slot: object) -> str:
+        """Return the exact size value this profile puts on the wire.
+
+        Slots stay in the channel's own vocabulary ("768p@16:9") because that is
+        what the settings panel and the task records show; endpoints that take a
+        different literal declare the translation here.
+        """
+        text = str(slot or "").strip()
+        wanted = text.lower()
+        for declared, wire in self.size_wire_values:
+            if str(declared).strip().lower() == wanted:
+                return str(wire).strip()
+        return text
 
     def resolve_resolution(self, value: object) -> str:
         """Return a declared resolution, falling back to the balanced preset."""
@@ -167,7 +191,20 @@ def _aspect_to_float(value: str) -> float | None:
 
 
 def _size_slot_ratio(slot: str) -> float | None:
-    return _aspect_to_float(slot)
+    """Return the aspect ratio a declared size slot stands for.
+
+    Slots come in three shapes: a pixel pair (992x432), a bare ratio (16:9)
+    and a resolution-qualified composite (768p@16:9).  The composite form
+    carries the resolution before "@" and the ratio after it; handing the whole
+    string to :func:`_aspect_to_float` splits it on ":" into parts that are not
+    numbers, so no composite slot would ever match and
+    :meth:`DirectVideoCapabilityProfile.resolve_size` would silently fall back
+    to its first slot (a landscape size for every portrait request).
+    """
+    text = str(slot or "").strip()
+    if "@" in text:
+        text = text.rsplit("@", 1)[-1]
+    return _aspect_to_float(text)
 
 
 _CUSTOM_RESOLUTION = re.compile(
@@ -180,6 +217,37 @@ def _valid_resolution_value(value: str) -> bool:
     normalized = str(value or "").strip().lower().replace("×", "x")
     return bool(_CUSTOM_RESOLUTION.fullmatch(normalized))
 
+
+# SparkCine (hi.hi.run) 的 size 有两个口径，必须分开：
+#   * 回显口径（GET {base}/videos 的任务记录）："768p@16:9" 这种「分辨率@比例」。
+#   * 入参口径（POST {base}/videos）：OpenAI 视频接口的 "WxH" 像素，例如 "1280x720"。
+# 2026-10-11 免费探测（未知模型 + 不同 size，看它是 404 还是 422）证明了这个区别：
+# 1280x720 / 1080x1920 通过校验，720p@16:9 / 720p / 16:9 / 768p 全部 422；而完全
+# 不带 size 会被受理并按 768p@16:9 建任务。像素值取自该站任务记录回显的 w/h 与
+# 下载产物 ffprobe 读数，7 个档位一一对应。
+#
+# 槽位名按回显口径声明（设置面板和任务记录都用这个口径），真正发出去的值由
+# _SPARKCINE_H3_VIDEO_SIZE_WIRE 翻译。清单仍是「实测出现过的集合」，不是上游公布的
+# 完整枚举：站点目录只有模型 id，没有任何尺寸字段。
+_SPARKCINE_H3_VIDEO_SIZE_SLOTS = (
+    "720p@16:9",
+    "720p@9:16",
+    "768p@16:9",
+    "768p@9:16",
+    "1080p@16:9",
+    "1080p@9:16",
+    "1080p@1:1",
+)
+
+_SPARKCINE_H3_VIDEO_SIZE_WIRE = (
+    ("720p@16:9", "1280x720"),
+    ("720p@9:16", "720x1280"),
+    ("768p@16:9", "1366x768"),
+    ("768p@9:16", "768x1366"),
+    ("1080p@16:9", "1920x1080"),
+    ("1080p@9:16", "1080x1920"),
+    ("1080p@1:1", "1080x1080"),
+)
 
 # Gemini / Veo 固定六档（上游 size 字段直接传像素值）。
 _GEMINI_OMNI_SIZE_SLOTS = (
@@ -401,6 +469,53 @@ _DIRECT_VIDEO_PROFILES: tuple[DirectVideoCapabilityProfile, ...] = (
         default_aspect_ratio="16:9",
         size_slots=_GEMINI_OMNI_SIZE_SLOTS,
         size_field="size",
+    ),
+    DirectVideoCapabilityProfile(
+        name="sparkcine-h3-video",
+        # 覆盖 h3-video / h3-video-frames / h3-video-2..6：这一族在
+        # GET {base}/models 里的 id 都带「h3 + video」，而目录条目本身不含任何
+        # 时长/分辨率字段，能力只能由渠道实测合同补上。
+        pattern=re.compile(r"h3[-_ ]?video", re.IGNORECASE),
+        # 刻意用中性的 family：没有证据表明它就是 MiniMax H3，套上 H3 的六段式
+        # 方言会把报文改成上游从没见过的形状。
+        family="direct",
+        # 视频能力来自站点自己的原生目录与开发者文档（GET /api/open/v1/models、
+        # POST /api/open/v1/generations），不再只按 OpenAI 兼容层那一条文生视频
+        # 路由推断：原生协议声明了 text_to_video / image_to_video /
+        # multimodal_reference 三个 mode，参考素材最多 9 图 + 1 视频 + 3 音频。
+        modes=(
+            VideoMode.TEXT_TO_VIDEO,
+            VideoMode.IMAGE_TO_VIDEO,
+            VideoMode.REFERENCE_TO_VIDEO,
+        ),
+        # 站点任务记录里真实出现过的秒数是 4/5/6/10/15/20/30（自由整数）。这里按
+        # 连续区间 4..30 声明，保证用户选的 30 秒不会被夹成 6 秒；「区间内每个整数
+        # 都能用」这件事上游没有证实，已记在 T-256 规格的未验证清单里。
+        duration=tuple(range(4, 31)),
+        # 五档分辨率与六个比例都抄自站点原生目录；OpenAI 兼容层只实测过其中
+        # 720p/768p/1080p，原生协议才是这套档位的权威来源。
+        resolution=("480p", "720p", "768p", "960p", "1080p"),
+        aspect=("16:9", "9:16", "21:9", "4:3", "1:1", "3:4"),
+        reference_limits=ReferenceLimits(
+            input_images=1,
+            reference_images=9,
+            reference_videos=1,
+            reference_audios=3,
+        ),
+        # 原生协议目录里有 generate_audio（布尔，站点默认 true），产出的 mp4
+        # 也确实带 AAC 音轨；所以音频是「可选」而不是不支持——画布上的音频
+        # 开关会落成 parameters.generate_audio。
+        native_audio=NativeAudio.OPTIONAL,
+        return_last_frame=False,
+        default_resolution="768p",
+        default_duration_seconds=5,
+        default_aspect_ratio="16:9",
+        size_slots=_SPARKCINE_H3_VIDEO_SIZE_SLOTS,
+        size_field="size",
+        # 站点只认 "WxH" 入参，不认自己的回显写法（见上面的注释）。
+        size_wire_values=_SPARKCINE_H3_VIDEO_SIZE_WIRE,
+        # 站点严格校验请求体：metadata 包装会让提交整包 422。
+        supports_request_metadata=False,
     ),
     DirectVideoCapabilityProfile(
         name="seedance-2.5",

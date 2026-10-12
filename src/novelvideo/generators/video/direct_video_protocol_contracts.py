@@ -19,6 +19,7 @@ DIRECT_VIDEO_PROTOCOL_AUTO = "auto"
 DIRECT_VIDEO_PROTOCOL_OPENAI = "openai-video"
 DIRECT_VIDEO_PROTOCOL_MINIMAX_V2 = "minimax-video-v2"
 DIRECT_VIDEO_PROTOCOL_AUTODL_COMFYUI = "autodl-comfyui"
+DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE = "sparkcine-native"
 DIRECT_VIDEO_PROTOCOL_UNRESOLVED = "unresolved"
 
 _COMMON_VIDEO_ERROR_PATHS = (
@@ -123,6 +124,12 @@ OPENAI_VIDEO_CONTRACT = DirectVideoProtocolContract(
         "result.videos[0].url",
         "outputs[0].url",
         "outputs[0]",
+        # SparkCine (hi.hi.run) 把成品放在任务自己的命名空间里，多一层嵌套：
+        # sparkcine.outputs[0].download_url（同一批 output 还带 asset_id /
+        # mime_type / download_expires_at）。少了这条，任务完成了也取不到视频。
+        "sparkcine.outputs[0].download_url",
+        "sparkcine.outputs[0].url",
+        "sparkcine.outputs[0]",
     ),
     error_paths=_COMMON_VIDEO_ERROR_PATHS,
     completed_statuses=frozenset({"completed", "succeeded", "success", "done"}),
@@ -167,10 +174,35 @@ AUTODL_COMFYUI_CONTRACT = DirectVideoProtocolContract(
 )
 
 
+SPARKCINE_NATIVE_CONTRACT = DirectVideoProtocolContract(
+    protocol_id=DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
+    submit_path="/generations",
+    query_path_template="/generations/{task_id}",
+    task_id_paths=("id", "data.id", "generation.id", "data.generation.id"),
+    status_paths=("status", "data.status", "generation.status"),
+    result_url_paths=(
+        "outputs[0].download_url",
+        "outputs[0].url",
+        "outputs[0]",
+        "data.outputs[0].download_url",
+        "generation.outputs[0].download_url",
+        # OpenAI 兼容层把同一批产物包在 sparkcine 命名空间里，原生层不包；两条
+        # 路由都读同一个站点，这里同时认，避免换协议后取不到成品。
+        "sparkcine.outputs[0].download_url",
+    ),
+    error_paths=("error.message", "error", *_COMMON_VIDEO_ERROR_PATHS),
+    completed_statuses=frozenset({"succeeded"}),
+    failed_statuses=frozenset({"failed", "cancelled", "canceled"}),
+    payload_family="sparkcine-native",
+    base_strategy="sparkcine-native",
+)
+
+
 _CONTRACTS = {
     OPENAI_VIDEO_CONTRACT.protocol_id: OPENAI_VIDEO_CONTRACT,
     MINIMAX_VIDEO_V2_CONTRACT.protocol_id: MINIMAX_VIDEO_V2_CONTRACT,
     AUTODL_COMFYUI_CONTRACT.protocol_id: AUTODL_COMFYUI_CONTRACT,
+    SPARKCINE_NATIVE_CONTRACT.protocol_id: SPARKCINE_NATIVE_CONTRACT,
 }
 
 _UPSTREAM_PROTOCOL_ALIASES = {
@@ -184,6 +216,8 @@ _UPSTREAM_PROTOCOL_ALIASES = {
     "autodl-comfyui": DIRECT_VIDEO_PROTOCOL_AUTODL_COMFYUI,
     "autodl-comfy-ui": DIRECT_VIDEO_PROTOCOL_AUTODL_COMFYUI,
     "comfyui-autodl": DIRECT_VIDEO_PROTOCOL_AUTODL_COMFYUI,
+    "sparkcine": DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
+    "sparkcine-native": DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
 }
 
 
@@ -233,6 +267,13 @@ def get_direct_video_protocol_contract(
 
 def protocol_base_url(base_url: str, contract: DirectVideoProtocolContract) -> str:
     configured = str(base_url or "").strip().rstrip("/")
+    if contract.base_strategy == "sparkcine-native":
+        # 站点把原生协议挂在同一个 origin 的 /api/open/v1 下，而渠道里保存的是可
+        # 发现的 /api/openai/v1 目录。按 origin 重写，操作者不必为原生协议再建一
+        # 条渠道，也不会因为改 base_url 而要求重新粘贴密钥。
+        from novelvideo.generators.video import sparkcine_native
+
+        return sparkcine_native.native_base_url(configured)
     if contract.base_strategy == "configured":
         return configured
     parsed = urlsplit(configured)
@@ -411,6 +452,16 @@ def protocol_capability(protocol: str) -> dict[str, Any]:
             "source": "models-protocol-contract",
             "verificationStatus": "degraded",
             "detectedProtocol": DIRECT_VIDEO_PROTOCOL_UNRESOLVED,
+        }
+    if normalized == DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE:
+        # 站点原生目录声明的 h3-video 视频能力：参考素材上限、参数约束与计费档
+        # 位。它来自站点开发者文档与 GET /api/open/v1/models，属于协议合同，不是
+        # 实测产物，所以标记 contract-resolved。
+        from novelvideo.generators.video import sparkcine_native
+
+        return {
+            "detectedProtocol": DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
+            **sparkcine_native.declared_capability(),
         }
     if normalized != DIRECT_VIDEO_PROTOCOL_MINIMAX_V2:
         if normalized != DIRECT_VIDEO_PROTOCOL_AUTODL_COMFYUI:

@@ -3196,8 +3196,8 @@ export interface FreezonePromptOptimizePayload extends FreezoneNodeContext {
   references?: FreezonePromptOptimizeReference[];
   guidance?: string;
   researchMode?: "quick" | "standard" | "expert";
+  creativeHandoff?: Record<string, unknown> | null;
 }
-
 export interface FreezonePromptOptimizeResult {
   optimized_prompt: string;
   preserved_intent: string;
@@ -3276,6 +3276,7 @@ export async function submitFreezonePromptOptimize(
         references: payload.references ?? [],
         guidance: payload.guidance ?? "",
         research_mode: payload.researchMode ?? "standard",
+        creative_handoff: payload.creativeHandoff ?? {},
         ...nodeContextBody(payload),
       },
     },
@@ -3364,7 +3365,6 @@ export async function submitFreezoneStoryScript(
     { method: "POST", json: body },
   );
 }
-
 
 export async function fetchFreezoneStoryScriptResult(
   project: string,

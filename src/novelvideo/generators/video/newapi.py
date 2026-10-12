@@ -25,6 +25,7 @@ from novelvideo.generators.video import (
 from novelvideo.generators.video.direct_video_protocol_contracts import (
     DIRECT_VIDEO_PROTOCOL_MINIMAX_V2,
     DIRECT_VIDEO_PROTOCOL_OPENAI,
+    DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
     extract_result_url,
     extract_task_error,
     extract_task_id,
@@ -94,6 +95,167 @@ _UPSTREAM_BODY_LOG_LIMIT = 2000
 def _bounded_upstream_body(text: str) -> str:
     """Truncate and redact a raw upstream body before it reaches an error string."""
     return redact_secrets(str(text or ""))[:_UPSTREAM_BODY_LOG_LIMIT]
+
+
+def _declared_size_slot_request(
+    profile: Any, payload: Mapping[str, Any], metadata: Mapping[str, Any]
+) -> str:
+    """Return the exact resolution@ratio size slot this request names, or "".
+
+    Some channels compile the resolution into the size value itself
+    ("768p@16:9"). Matching such slots by aspect ratio alone lets the first
+    slot of that ratio swallow the user's resolution choice, so the exact
+    composite is offered to the profile before the generic candidates. A
+    channel whose slots are plain pixels or plain ratios can never produce this
+    string, so its behaviour is unchanged.
+    """
+
+    resolution = str(
+        metadata.get("resolution")
+        or payload.get("resolution")
+        or payload.get("video_resolution")
+        or ""
+    ).strip().lower()
+    ratio = str(
+        metadata.get("ratio")
+        or payload.get("ratio")
+        or metadata.get("aspect_ratio")
+        or payload.get("aspect_ratio")
+        or ""
+    ).strip().lower()
+    if not resolution:
+        return ""
+    if not ratio:
+        # 只给了解析度、没给比例时不要退回「第一个槽位」：用档案声明的默认比例
+        # 补全，只有补出来的复合槽位确实被声明过才算数。
+        ratio = str(getattr(profile, "default_aspect_ratio", "") or "").strip().lower()
+    if not ratio:
+        return ""
+    declared = {
+        str(slot).strip().lower() for slot in getattr(profile, "size_slots", ()) or ()
+    }
+    composite = f"{resolution}@{ratio}"
+    return composite if composite in declared else ""
+
+
+def _wire_size_value(profile: Any, slot: str) -> str:
+    """Translate a declared size slot into the literal the endpoint accepts.
+
+    Some channels echo one vocabulary but accept another (SparkCine task records
+    show 768p@16:9 while POST /videos only takes the OpenAI video API pixel form
+    1366x768). Channels that declare no mapping keep sending the slot verbatim,
+    so every other profile wire shape is unchanged.
+    """
+    translate = getattr(profile, "wire_size_value", None)
+    if callable(translate):
+        return str(translate(slot))
+    return str(slot)
+
+
+def _apply_sparkcine_native_contract(payload: dict, profile: object) -> dict:
+    """把站点原生协议的参数块编译成 /api/open/v1/generations 的形状。
+
+    站点原生协议用 parameters={duration,resolution,aspect_ratio,...} 表达模型参数，
+    尺寸是 resolution + aspect_ratio 两个字段，而不是 OpenAI 兼容层的 size。这条
+    路径直接沿用画布已经选好的分辨率与比例，不再做 size 槽位映射（那种映射正是
+    画布只敢显示一档分辨率的原因）。
+    """
+    from novelvideo.generators.video import sparkcine_native
+
+    parameters = dict(payload.get("parameters") or {})
+    metadata_value = payload.get("metadata")
+    metadata = dict(metadata_value) if isinstance(metadata_value, dict) else {}
+
+    duration = (
+        parameters.get("duration")
+        or payload.get("duration")
+        or payload.get("seconds")
+        or payload.get("duration_seconds")
+        or metadata.get("duration")
+    )
+    if duration is not None:
+        try:
+            parameters["duration"] = int(round(float(duration)))
+        except (TypeError, ValueError):
+            pass
+
+    resolution = (
+        parameters.get("resolution")
+        or payload.get("resolution")
+        or payload.get("video_resolution")
+        or metadata.get("resolution")
+    )
+    if resolution:
+        parameters["resolution"] = str(resolution)
+    aspect_ratio = (
+        parameters.get("aspect_ratio")
+        or payload.get("aspect_ratio")
+        or payload.get("ratio")
+        or metadata.get("aspect_ratio")
+        or metadata.get("ratio")
+    )
+    if aspect_ratio:
+        parameters["aspect_ratio"] = str(aspect_ratio)
+
+    generate_audio = parameters.get("generate_audio")
+    if generate_audio is None:
+        for source in (payload, metadata):
+            if source.get("generate_audio") is not None:
+                generate_audio = source.get("generate_audio")
+                break
+    if generate_audio is not None:
+        parameters["generate_audio"] = bool(generate_audio)
+
+    default_resolution = getattr(profile, "default_resolution", "") or "768p"
+    default_aspect = getattr(profile, "default_aspect_ratio", "") or "16:9"
+    parameters.setdefault("resolution", default_resolution)
+    parameters.setdefault("aspect_ratio", default_aspect)
+
+    # 组合约束在 generate() 的预检里先判过（那里能返回带 error_code 的失败结果）；
+    # 这里只做形状编译，不再抛异常——本函数也会被「时长对账」以只读方式调用。
+    if sparkcine_native.constraint_error(parameters):
+        return payload
+
+    payload["parameters"] = parameters
+    for key in (
+        "seconds",
+        "duration",
+        "duration_seconds",
+        "size",
+        "ratio",
+        "aspect_ratio",
+        "resolution",
+        "video_resolution",
+    ):
+        payload.pop(key, None)
+    for key in ("size", "ratio", "resolution", "aspect_ratio", "watermark"):
+        metadata.pop(key, None)
+    # 站点要求 metadata 是「字符串→字符串」；保留空对象而不是删掉，是为了让
+    # 提供方额外参数还有地方落，不至于散成顶层未知键被整包拒绝。
+    payload["metadata"] = {
+        str(key)[:64]: str(value)[:500]
+        for key, value in metadata.items()
+        if str(key).strip() and value is not None
+    }
+    # 原生端点对未知键是整包拒绝：实测多一个 "images" 就回 422
+    # {"code":"VALIDATION_FAILED","details":{"issues":[{"code":"unrecognized_keys",
+    # "message":"Unrecognized key: \"images\""}]}}。上游流程还会往报文里塞
+    # OpenAI 兼容层的 images / media_inputs 等字段，它们在原生协议里都由
+    # inputs（asset_id 列表）表达，所以这里按发布合同清掉一切计划外顶层键。
+    native_keys = {
+        "model",
+        "prompt",
+        "inputs",
+        "mode",
+        "parameters",
+        "optimize_prompt",
+        "route_goal",
+        "metadata",
+        "note",
+    }
+    for key in [item for item in payload if item not in native_keys]:
+        payload.pop(key, None)
+    return payload
 
 
 class NewApiVideoGenerator(NewApiGenerateMixin, VideoGeneratorBase):
@@ -659,6 +821,7 @@ class NewApiVideoGenerator(NewApiGenerateMixin, VideoGeneratorBase):
             os.environ.get("NEWAPI_VIDEO_CREATE_PATH", "").strip()
             or str(NEWAPI_VIDEO_CREATE_PATH or "").strip()
         )
+        declared_create_path = ""
         if configured_create_path:
             self.create_path = "/" + configured_create_path.strip("/")
         else:
@@ -671,6 +834,14 @@ class NewApiVideoGenerator(NewApiGenerateMixin, VideoGeneratorBase):
                 self.create_path = "/videos"
             else:
                 self.create_path = "/video/generations"
+        if (
+            self.protocol == DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE
+            and not configured_create_path
+            and not declared_create_path
+        ):
+            # 站点原生协议把创建路径写在协议合同里（/generations）。这里不按
+            # OpenAI 兼容习惯去猜 /videos 或 /video/generations。
+            self.create_path = self.protocol_contract.submit_path
         self.query_path_template = str(query_path_template or "").strip() or (
             self.protocol_contract.query_path_template
         )
@@ -899,6 +1070,10 @@ class NewApiVideoGenerator(NewApiGenerateMixin, VideoGeneratorBase):
         )
         if self.protocol == DIRECT_VIDEO_PROTOCOL_MINIMAX_V2:
             return payload
+        if self.protocol == DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE:
+            # 原生协议的参数在嵌套的 parameters 里，尺寸是 resolution +
+            # aspect_ratio；再走一遍 size 槽位归一反而会把分辨率说小。
+            return _apply_sparkcine_native_contract(dict(payload), profile)
         metadata_value = payload.get("metadata")
         metadata = metadata_value if isinstance(metadata_value, dict) else {}
 
@@ -912,7 +1087,13 @@ class NewApiVideoGenerator(NewApiGenerateMixin, VideoGeneratorBase):
                 or metadata.get("ratio")
                 or profile.default_aspect_ratio
             )
-            resolved_size = profile.resolve_size(requested_size)
+            # 复合槽位（"768p@16:9"）把分辨率编进了 size：只按比例就近匹配会让
+            # 用户挑的 1080p 被同比例的第一个槽位吃掉。先拿「分辨率@比例」原样试
+            # 一次，只有它确实是声明过的槽位时才算数。
+            resolved_size = profile.resolve_size(
+                _declared_size_slot_request(profile, payload, metadata)
+                or requested_size
+            )
             if resolved_size is None:
                 raise ValueError(
                     f"No legal size slot declared for video model: {model_key}"
@@ -921,7 +1102,9 @@ class NewApiVideoGenerator(NewApiGenerateMixin, VideoGeneratorBase):
                 payload.pop(key, None)
                 metadata.pop(key, None)
             payload.pop("size", None)
-            payload[profile.size_field or "size"] = resolved_size
+            payload[profile.size_field or "size"] = _wire_size_value(
+                profile, resolved_size
+            )
         else:
             aspect_parameter_enabled = (
                 self.aspect_ratio_parameter_enabled
@@ -996,6 +1179,10 @@ class NewApiVideoGenerator(NewApiGenerateMixin, VideoGeneratorBase):
 
         if metadata_value is not None:
             payload["metadata"] = metadata
+        if not getattr(profile, "supports_request_metadata", True):
+            # 严格校验的上游只认能力合同里声明过的字段；metadata 是我们的内部包装，
+            # 站点实测会因此回 422「Some fields need attention.」。
+            payload.pop("metadata", None)
         return payload
 
     @staticmethod

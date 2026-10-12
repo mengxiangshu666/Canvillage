@@ -1199,7 +1199,12 @@ def test_direct_video_probe_reads_current_model_contract_without_generation(monk
         }
     assert "http://127.0.0.1:9800/v1/models" in urls
     assert "http://127.0.0.1:9800/v1/models/seedance-direct-fast" in urls
-    assert all("/videos" not in url and "/generate" not in url for url in urls)
+    # 探针只准走读路由：/models 目录、单模型详情，以及合同声明的任务读路由
+    # GET {base}/videos/{id}（站点不发布 openapi.json 时靠它验证密钥是否被接受）。
+    # 提交路由 POST /videos 一旦被碰就会真的建任务扣费，所以这里必须挡死。
+    assert all("/generate" not in url for url in urls)
+    assert not any(url.rstrip("/").endswith("/videos") for url in urls)
+    assert seen["method"] == "GET"
     assert seen["auth"] == "Bearer direct-test-key"
 
 

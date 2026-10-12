@@ -1057,6 +1057,11 @@ async def _run_freezone_prompt_optimize_async(
             if isinstance(payload.get("project_dna"), dict)
             else None
         ),
+        creative_handoff=(
+            dict(payload.get("creative_handoff"))
+            if isinstance(payload.get("creative_handoff"), dict)
+            else None
+        ),
         research_mode=str(payload.get("research_mode") or "standard"),
         # 同步路由一直传 project_dir，异步任务路径漏了它：优化器拿不到项目目录
         # 会直接跳过联网研究，参考图视觉理解也一并失效。
@@ -1593,6 +1598,8 @@ def _finish_freezone_story_script_job(
     out = outputs_dir(project_dir, "freezone_story_script") / f"{job_id}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     payload_data = data.model_dump()
+    if isinstance(payload.get("canvas_source"), dict):
+        payload_data["canvas_source"] = dict(payload["canvas_source"])
     sequence_receipt = contract_report.get("sequence_rewrite")
     if isinstance(sequence_receipt, dict):
         from novelvideo.services.freezone_content import script_rows_fingerprint

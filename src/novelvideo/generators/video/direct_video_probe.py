@@ -13,6 +13,7 @@ from .direct_video_protocol_contracts import (
     DIRECT_VIDEO_PROTOCOL_AUTODL_COMFYUI,
     DIRECT_VIDEO_PROTOCOL_MINIMAX_V2,
     DIRECT_VIDEO_PROTOCOL_OPENAI,
+    DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
     get_direct_video_protocol_contract,
     normalize_direct_video_protocol,
     protocol_capability,
@@ -496,6 +497,7 @@ def discover_direct_video_models(
         upstream_model="",
         base_url=base_url,
         api_key=api_key,
+        protocol=protocol,
         timeout=timeout,
     )
     if not result.get("ok"):
@@ -511,6 +513,179 @@ def discover_direct_video_models(
         }
     return result
 
+
+def _sparkcine_native_probe_base(normalized_base: str) -> str:
+    """站点原生 API 的根：把 OpenAI 兼容前缀换算成 /api/open/v1。"""
+
+    from . import sparkcine_native
+
+    return sparkcine_native.native_base_url(normalized_base)
+
+
+def _sparkcine_native_catalog(
+    *, normalized_base: str, api_key: str, timeout: float
+) -> dict[str, Any]:
+    """读站点原生目录 ``GET {base}/models``，拿权威的能力与参数定义。"""
+
+    import httpx
+
+    from novelvideo.gateway_transport import newapi_httpx_client_kwargs
+
+    base = _sparkcine_native_probe_base(normalized_base)
+    with httpx.Client(
+        **newapi_httpx_client_kwargs(
+            base_url=base, timeout=max(1.0, min(float(timeout), 15.0))
+        )
+    ) as client:
+        response = client.get(
+            f"{base}/models",
+            headers={
+                "Authorization": f"Bearer {str(api_key or '').strip()}",
+                "Accept": "application/json",
+            },
+        )
+    status = int(response.status_code)
+    if not 200 <= status < 300:
+        return {"ok": False, "httpStatus": status, "text": response.text}
+    try:
+        payload = response.json()
+    except ValueError:
+        return {"ok": False, "httpStatus": status, "text": response.text}
+    return {"ok": True, "httpStatus": status, "payload": payload}
+
+
+def _probe_sparkcine_native_model(
+    *, normalized_base: str, upstream_model: str, api_key: str, timeout: float
+) -> dict[str, Any]:
+    """Read the current native catalog; local declarations cannot prove a connection."""
+
+    from . import sparkcine_native
+
+    model_id = str(upstream_model or "").strip()
+    try:
+        catalog_result = _sparkcine_native_catalog(
+            normalized_base=normalized_base, api_key=api_key, timeout=timeout
+        )
+    except Exception:
+        return {
+            **probe_failure("network_error", "原生模型目录连接失败，请检查地址和网络。"),
+            "protocol": DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
+        }
+    if not catalog_result.get("ok"):
+        return {
+            **probe_failure_for_http_status(
+                int(catalog_result.get("httpStatus") or 502),
+                response_body=str(catalog_result.get("text") or ""),
+            ),
+            "protocol": DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
+        }
+    parsed: dict[str, Any] = {}
+    if catalog_result.get("ok"):
+        candidate = sparkcine_native.parse_catalog_capability(
+            catalog_result.get("payload"), model_id
+        )
+        if isinstance(candidate, Mapping):
+            parsed = dict(candidate)
+
+    capability = {**sparkcine_native.declared_capability(), **parsed}
+    capability.update(
+        {
+            "source": (
+                "sparkcine-native-catalog"
+                if parsed
+                else "sparkcine-native-contract"
+            ),
+            "verificationStatus": (
+                "catalog-confirmed" if parsed else "contract-resolved"
+            ),
+            "detectedProtocol": DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
+        }
+    )
+
+    models: list[dict[str, Any]] = []
+    payload = catalog_result.get("payload")
+    if isinstance(payload, Mapping) and isinstance(payload.get("data"), list):
+        for entry in payload["data"]:
+            if not isinstance(entry, Mapping):
+                continue
+            entry_id = str(entry.get("id") or "").strip()
+            if not entry_id:
+                continue
+            metadata: dict[str, Any] = {}
+            display_name = str(entry.get("display_name") or "").strip()
+            if display_name:
+                metadata["displayName"] = display_name
+            output = str(entry.get("output") or "").strip()
+            if output.lower() != "video":
+                continue
+            if output:
+                metadata["output"] = output
+            models.append({"id": entry_id, "metadata": metadata})
+    model_found = any(
+        item["id"].casefold() == model_id.casefold() for item in models
+    )
+
+    native_base = _sparkcine_native_probe_base(normalized_base)
+    task_read_path = _video_task_read_path(
+        protocol=DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE, openapi_task_path=""
+    )
+    task_read_validation = (
+        _probe_video_task_read_credential(
+            base_url=native_base,
+            api_key=api_key,
+            task_path=task_read_path,
+            timeout=timeout,
+        )
+        if model_id
+        else {"status": "unverified", "reason": "video_task_read_route_unavailable"}
+    )
+
+    confidence = 0.95 if parsed else 0.8
+    result: dict[str, Any] = {
+        "ok": not model_id or model_found,
+        "modelFound": model_found,
+        "discoveredModelCount": len(models),
+        "protocol": DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
+        "supportedProtocols": [DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE],
+        "adapterFamily": DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
+        "adapterConfidence": confidence,
+        "adapterEvidence": {
+            "family": DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
+            "confidence": confidence,
+            "sources": (
+                ["native-models-catalog"] if parsed else ["declared-contract"]
+            ),
+        },
+        "openapiUrl": "",
+        "openapiSubmitPath": "",
+        "openapiQueryPath": "",
+        "modelDetail": {},
+        "capabilityDiscovery": {
+            "status": "catalog" if parsed else "contract",
+            "sources": ["models"] if parsed else ["contract"],
+        },
+        "workflowInputs": [],
+        "models": models,
+        "credentialValidation": task_read_validation,
+        "taskReadValidation": task_read_validation,
+        "capability": capability,
+    }
+    if not model_id or not model_found:
+        result["capability"] = {}
+    if model_id and not model_found:
+        result["errorCode"] = "model_not_found"
+        result["error"] = "当前原生模型目录未找到该视频模型，请核对模型 ID。"
+    if task_read_validation.get("status") in {"rejected", "permission_denied"}:
+        result.update(
+            {
+                "ok": False,
+                "errorCode": "VIDEO_AUTH_REJECTED",
+                "httpStatus": task_read_validation.get("httpStatus"),
+                "error": "视频任务查询接口拒绝了当前 Key，请检查密钥和权限。",
+                "capability": {},
+            }
+        )
+    return result
 
 def probe_direct_video_model(
     *,
@@ -558,6 +733,16 @@ def probe_direct_video_model(
             ],
             "capability": capability if workflow_id else {},
         }
+    if requested_protocol == DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE or (
+        requested_protocol == "auto"
+        and urlparse(normalized_base).hostname == "hi.hi.run"
+    ):
+        return _probe_sparkcine_native_model(
+            normalized_base=normalized_base,
+            upstream_model=upstream_model,
+            api_key=api_key,
+            timeout=timeout,
+        )
     endpoint = f"{normalized_base}/models"
     try:
         import httpx
@@ -720,11 +905,14 @@ def probe_direct_video_model(
         capability["openapiSubmitPath"] = openapi_submit_path
     if openapi_task_path:
         capability["openapiQueryPath"] = openapi_task_path
+    task_read_path = _video_task_read_path(
+        protocol=protocol, openapi_task_path=openapi_task_path
+    )
     task_read_validation = (
         _probe_video_task_read_credential(
             base_url=normalized_base,
             api_key=api_key,
-            task_path=openapi_task_path,
+            task_path=task_read_path,
             timeout=timeout,
         )
         if protocol == DIRECT_VIDEO_PROTOCOL_OPENAI and entry is not None
@@ -867,6 +1055,79 @@ def probe_direct_video_model(
     return result
 
 
+def _video_task_read_path(*, protocol: str, openapi_task_path: str) -> str:
+    """Pick the route used to verify read credentials for a channel.
+
+    OpenAPI 文档经常拿不到（这些站点多半不发布机器可读文档）。此时用协议合同
+    自己的查询模板兜底：那才是轮询真正会调的路由。若因为「没有文档」就跳过校验，
+    面板会把一个凭据完全正常的渠道显示成「凭据未验证」。
+    """
+
+    path = str(openapi_task_path or "").strip()
+    if path:
+        return path
+    if protocol in (DIRECT_VIDEO_PROTOCOL_OPENAI, DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE):
+        contract = get_direct_video_protocol_contract(protocol)
+        return str(getattr(contract, "query_path_template", "") or "")
+    return ""
+
+
+_TASK_ID_PLACEHOLDER = re.compile(r"\{[^/{}]+\}$")
+
+
+def _video_task_read_endpoint(*, origin: str, endpoint_path: str, task_id: str) -> str:
+    """把探测用的任务 id 拼进路由模板末尾的占位符。"""
+
+    return f"{origin}{_TASK_ID_PLACEHOLDER.sub(task_id, endpoint_path)}"
+
+
+def _task_read_probe_ids() -> tuple[str, ...]:
+    """探测任务 id 的候选顺序：先 new-api 风格 32 位十六进制，再带横线的 UUID。
+
+    有些站点（例如 SparkCine）会校验 id 必须是合法 UUID，用 32 位十六进制直接吃
+    422「video_id must be a valid UUID」——那既不是「凭据被拒」也不是「路由不存在」，
+    不重试就会把一个正常凭据记成未验证。
+    """
+
+    value = uuid4()
+    return (value.hex, str(value))
+
+
+def _task_read_id_format_rejected(response: Any) -> bool:
+    """响应是否为「任务 id 格式不对」这类校验失败。
+
+    两种站点都要认：一种在文案里直说 uuid（OpenAI 兼容层），另一种只在
+    error.details.field 里点名 generationId/videoId（原生层，文案是中文
+    「部分内容需要检查。」）。漏判会把一个能读任务的凭据记成未验证。
+    """
+
+    try:
+        body = response.json()
+    except (ValueError, AttributeError):
+        return False
+    if not isinstance(body, Mapping):
+        return False
+    detail = " ".join(
+        str(body.get(key) or "") for key in ("detail", "message", "error", "code")
+    ).casefold()
+    if "uuid" in detail:
+        return True
+    error = body.get("error")
+    if isinstance(error, Mapping):
+        details = error.get("details")
+        if isinstance(details, Mapping):
+            field = str(details.get("field") or "").strip().casefold()
+            return field in {
+                "generationid",
+                "generation_id",
+                "videoid",
+                "video_id",
+                "taskid",
+                "task_id",
+            }
+    return False
+
+
 def _probe_video_task_read_credential(
     *,
     base_url: str,
@@ -886,9 +1147,9 @@ def _probe_video_task_read_credential(
         endpoint_path = task_path
     else:
         endpoint_path = f"{base_path}/{task_path.lstrip('/')}"
-    task_path = re.sub(r"\{[^/{}]+\}$", uuid4().hex, endpoint_path)
-    endpoint = f"{origin}{task_path}"
 
+    candidate_ids = _task_read_probe_ids()
+    response = None
     try:
         import httpx
 
@@ -901,14 +1162,27 @@ def _probe_video_task_read_credential(
                 follow_redirects=False,
             )
         ) as client:
-            response = client.get(
-                endpoint,
-                headers={
-                    "Authorization": f"Bearer {str(api_key or '').strip()}",
-                    "Accept": "application/json",
-                },
-            )
+            for index, candidate in enumerate(candidate_ids):
+                endpoint = _video_task_read_endpoint(
+                    origin=origin, endpoint_path=endpoint_path, task_id=candidate
+                )
+                response = client.get(
+                    endpoint,
+                    headers={
+                        "Authorization": f"Bearer {str(api_key or '').strip()}",
+                        "Accept": "application/json",
+                    },
+                )
+                if int(response.status_code) != 422:
+                    break
+                if index + 1 >= len(candidate_ids):
+                    break
+                if not _task_read_id_format_rejected(response):
+                    break
     except Exception:
+        return {"status": "unverified", "reason": "video_task_read_probe_failed"}
+
+    if response is None:
         return {"status": "unverified", "reason": "video_task_read_probe_failed"}
 
     status = int(response.status_code)
@@ -929,7 +1203,16 @@ def _probe_video_task_read_credential(
             ).casefold()
             if any(term in detail for term in ("invalid api key", "invalid key", "unauthorized", "authentication")):
                 return {"status": "rejected", "httpStatus": status}
-            if any(term in detail for term in ("task not found", "video not found", "does not exist", "not_found")):
+            if any(
+                term in detail
+                for term in (
+                    "task not found",
+                    "video not found",
+                    "generation not found",
+                    "does not exist",
+                    "not_found",
+                )
+            ):
                 return {"status": "accepted", "httpStatus": status}
     return {"status": "unverified", "httpStatus": status}
 
@@ -1163,7 +1446,7 @@ def _builtin_video_profile_capability(
     if not modes:
         modes = list(dict.fromkeys(mode_map[mode] for mode in profile.modes))
     limits = profile.reference_limits
-    return {
+    capability = {
         "source": "models-profile-contract",
         "verificationStatus": "contract-resolved",
         "modes": modes,
@@ -1184,6 +1467,12 @@ def _builtin_video_profile_capability(
         },
         "failureGracePolls": profile.failure_grace_polls,
     }
+    if profile.size_slots:
+        # 档案声明了固定尺寸槽位就必须原样上报：调用方（probe 路由）会因为
+        # 「档案没说 sizeSlots」把这两个键删掉，节点面板就看不到可用尺寸。
+        capability["sizeSlots"] = list(profile.size_slots)
+        capability["sizeField"] = profile.size_field or "size"
+    return capability
 
 
 def normalize_probe_base_url(base_url: str) -> str:

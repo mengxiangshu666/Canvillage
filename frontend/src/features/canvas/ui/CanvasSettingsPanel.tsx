@@ -54,7 +54,7 @@ function Divider() {
 interface SettingSwitchProps {
   checked: boolean;
   label: string;
-  description: string;
+  description?: string;
   icon: typeof Settings2;
   onChange: (checked: boolean) => void;
 }
@@ -73,7 +73,7 @@ function SettingSwitch({
       </span>
       <div className="min-w-0 flex-1">
         <div className="text-[12px] font-medium leading-4 text-white/82">{label}</div>
-        <div className="mt-0.5 text-[10px] leading-[15px] text-white/38">{description}</div>
+        {description && <div className="mt-0.5 text-[10px] leading-[15px] text-white/38">{description}</div>}
       </div>
       <button
         type="button"
@@ -370,6 +370,76 @@ function CanvasAppearanceSettings({
   );
 }
 
+function CanvasEdgeFlowSettings() {
+  const settings = useCanvasViewSettingsStore();
+  const flowColor = settings.edgeFlowColor ?? settings.edgeColor;
+  const sliders = [
+    { label: '流动速度', value: settings.edgeFlowSpeed, min: 0.25, max: 4, step: 0.25, unit: 'x', onChange: settings.setEdgeFlowSpeed },
+    { label: '光点大小', value: settings.edgeFlowSize, min: 0.25, max: 3, step: 0.25, unit: 'x', onChange: settings.setEdgeFlowSize },
+    { label: '光点粗细', value: settings.edgeFlowWidth, min: 1, max: 12, step: 0.5, unit: 'px', onChange: settings.setEdgeFlowWidth },
+  ];
+
+  return (
+    <>
+      <SettingSwitch
+        icon={Route}
+        label="流光跟随连线颜色"
+        checked={settings.edgeFlowColor === null}
+        onChange={(follow) => settings.setEdgeFlowColor(follow ? null : flowColor)}
+      />
+      <div className="px-1.5 py-1">
+        <div className="mb-1.5 px-1 text-[11px] font-medium text-white/56">流光色彩</div>
+        <div className="grid grid-cols-5 gap-1.5">
+          {CANVAS_EDGE_COLOR_PRESETS.map((preset) => (
+            <button
+              key={preset.value}
+              type="button"
+              title={preset.label}
+              aria-label={`流光色彩：${preset.label}`}
+              aria-pressed={preset.value === flowColor}
+              onClick={() => settings.setEdgeFlowColor(preset.value)}
+              className={`flex h-8 items-center justify-center rounded-[8px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
+                preset.value === flowColor
+                  ? 'border-white/32 bg-white/[0.09]'
+                  : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.16] hover:bg-white/[0.05]'
+              }`}
+            >
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: preset.value }} />
+            </button>
+          ))}
+        </div>
+        <label className="mt-1.5 flex h-8 cursor-pointer items-center justify-between rounded-[8px] border border-white/[0.06] bg-white/[0.02] px-2.5 text-[11px] text-white/72 transition-colors hover:border-white/[0.16] hover:bg-white/[0.05]">
+          自定义流光色彩
+          <input
+            type="color"
+            aria-label="自定义流光色彩"
+            value={flowColor}
+            onChange={(event) => settings.setEdgeFlowColor(event.target.value)}
+            className="h-5 w-7 cursor-pointer rounded border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          />
+        </label>
+        {sliders.map(({ label, value, min, max, step, unit, onChange }) => (
+          <label key={label} className="mt-3 flex items-center gap-3 px-1 text-[11px] text-white/72">
+            <span className="w-14 shrink-0">{label}</span>
+            <input
+              type="range"
+              aria-label={label}
+              min={min}
+              max={max}
+              step={step}
+              value={value}
+              onChange={(event) => onChange(Number(event.target.value))}
+              className="h-5 min-w-0 flex-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+              style={{ accentColor: flowColor }}
+            />
+            <output className="w-12 shrink-0 text-right tabular-nums text-white/82">{value}{unit}</output>
+          </label>
+        ))}
+      </div>
+    </>
+  );
+}
+
 export function CanvasSettingsPanel({ onClose }: CanvasSettingsPanelProps) {
   const viewSettings = useCanvasViewSettingsStore();
   const snapAlignEnabled = useSnapAlignStore((state) => state.enabled);
@@ -430,6 +500,10 @@ export function CanvasSettingsPanel({ onClose }: CanvasSettingsPanelProps) {
           onCustomCanvasColorChange={viewSettings.setCustomCanvasColor}
           onEdgeColorChange={viewSettings.setEdgeColor}
         />
+
+        <Divider />
+        <SectionLabel icon={Route}>连线流光</SectionLabel>
+        <CanvasEdgeFlowSettings />
 
         <Divider />
         <SectionLabel icon={Mouse}>交互操作</SectionLabel>

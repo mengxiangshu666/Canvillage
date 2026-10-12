@@ -1270,7 +1270,6 @@ export function DirectVideoModelsPanel({
       return next;
     });
   };
-
   const setDefaultModel = (index: number) => {
     setModels((current) => current.map((model, itemIndex) => ({
       ...model,
@@ -1648,6 +1647,7 @@ export function DirectVideoModelsPanel({
                     <option value="openai-video">OpenAI Video</option>
                     <option value="minimax-video-v2">MiniMax Video v2</option>
                     <option value="autodl-comfyui">AutoDL ComfyUI API</option>
+                    <option value="sparkcine-native">SparkCine 原生协议</option>
                   </select>
                   <label className="flex items-center gap-2 text-xs text-muted-foreground">
                     <input

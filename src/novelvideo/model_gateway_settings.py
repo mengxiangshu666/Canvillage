@@ -605,6 +605,7 @@ def _direct_video_protocol_label(protocol: str) -> str:
         DIRECT_VIDEO_PROTOCOL_MINIMAX_V2: "MiniMax Video v2",
         DIRECT_VIDEO_PROTOCOL_UNRESOLVED: "协议待适配",
         DIRECT_VIDEO_PROTOCOL_AUTODL_COMFYUI: "AutoDL ComfyUI API",
+        "sparkcine-native": "SparkCine 原生协议",
         "prediction": "Prediction",
         "queue": "Queue",
         "long-running-operation": "Long-running Operation",

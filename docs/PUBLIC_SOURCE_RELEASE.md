@@ -1,8 +1,8 @@
-# 公开源码候选包
+# 源码公开候选包
 
 主名称为 **Canvillage**，英文全称为 **Infinite Canvas for Village Chiefs**，中文名为 **村长无限画布**。源码仓库为 [mengxiangshu666/Canvillage](https://github.com/mengxiangshu666/Canvillage)，已于 2026-10-09 完成公开前检查并公开。
 
-本项目的开发工作区、私人 Git 历史、公开源码和便携运行包分开保存。
+本项目的开发工作区、私人 Git 历史、已公开的源码和便携运行包分开保存。
 
 运行 `scripts/prepare_public_source.py` 会按 Git 的 `export-ignore` 属性，导出当前工作树中已跟踪的文件及该导出器自己的新增文件。候选包不带 `.git`，不会继承旧提交、旧标签或旧构建归档；它也不会改动现有私有远端。
 

@@ -123,6 +123,11 @@ def extract_wire_duration_seconds_impl(body: object) -> float | None:
     metadata = body.get("metadata")
     if isinstance(metadata, dict):
         containers.append(metadata)
+    # 站点原生协议把秒数放在嵌套的 parameters.duration 里；不认这一层的话，
+    # 「时长对账」会把一次合法提交误判成时长不符。
+    parameters = body.get("parameters")
+    if isinstance(parameters, dict):
+        containers.append(parameters)
     for container in containers:
         for key in ("duration", "duration_seconds", "seconds"):
             if key not in container:

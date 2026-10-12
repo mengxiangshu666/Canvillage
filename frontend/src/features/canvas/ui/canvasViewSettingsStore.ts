@@ -89,6 +89,10 @@ export interface CanvasViewSettings {
   canvasTheme: CanvasThemeId;
   customCanvasColor: string;
   edgeColor: string;
+  edgeFlowColor: string | null;
+  edgeFlowSpeed: number;
+  edgeFlowSize: number;
+  edgeFlowWidth: number;
   showGrid: boolean;
   gridGap: number;
   gridDotSize: number;
@@ -101,6 +105,10 @@ export const DEFAULT_CANVAS_VIEW_SETTINGS: CanvasViewSettings = {
   canvasTheme: 'deepNight',
   customCanvasColor: '#121214',
   edgeColor: '#b0b0b7',
+  edgeFlowColor: null,
+  edgeFlowSpeed: 1,
+  edgeFlowSize: 1,
+  edgeFlowWidth: 4,
   showGrid: true,
   gridGap: 20,
   gridDotSize: 2.4,
@@ -113,6 +121,10 @@ interface CanvasViewSettingsState extends CanvasViewSettings {
   setCanvasTheme: (canvasTheme: CanvasThemeId) => void;
   setCustomCanvasColor: (customCanvasColor: string) => void;
   setEdgeColor: (edgeColor: string) => void;
+  setEdgeFlowColor: (edgeFlowColor: string | null) => void;
+  setEdgeFlowSpeed: (edgeFlowSpeed: number) => void;
+  setEdgeFlowSize: (edgeFlowSize: number) => void;
+  setEdgeFlowWidth: (edgeFlowWidth: number) => void;
   setShowGrid: (showGrid: boolean) => void;
   setGridGap: (gridGap: number) => void;
   setGridDotSize: (gridDotSize: number) => void;
@@ -151,6 +163,12 @@ function normalizeSettings(input: unknown): CanvasViewSettings {
     canvasTheme,
     customCanvasColor,
     edgeColor,
+    edgeFlowColor: typeof raw.edgeFlowColor === 'string' && /^#[0-9a-f]{6}$/i.test(raw.edgeFlowColor)
+      ? raw.edgeFlowColor.toLowerCase()
+      : null,
+    edgeFlowSpeed: clampNumber(raw.edgeFlowSpeed ?? 1, 1, 0.25, 4),
+    edgeFlowSize: clampNumber(raw.edgeFlowSize ?? 1, 1, 0.25, 3),
+    edgeFlowWidth: clampNumber(raw.edgeFlowWidth ?? 4, 4, 1, 12),
     showGrid: typeof raw.showGrid === 'boolean' ? raw.showGrid : true,
     gridGap: clampNumber(raw.gridGap, 20, 8, 48),
     gridDotSize: clampNumber(migratedDotSize, 2.4, 1, 4),
@@ -195,6 +213,10 @@ export const useCanvasViewSettingsStore = create<CanvasViewSettingsState>((set, 
       customCanvasColor,
     }),
     setEdgeColor: (edgeColor) => update({ edgeColor }),
+    setEdgeFlowColor: (edgeFlowColor) => update({ edgeFlowColor }),
+    setEdgeFlowSpeed: (edgeFlowSpeed) => update({ edgeFlowSpeed }),
+    setEdgeFlowSize: (edgeFlowSize) => update({ edgeFlowSize }),
+    setEdgeFlowWidth: (edgeFlowWidth) => update({ edgeFlowWidth }),
     setShowGrid: (showGrid) => update({ showGrid }),
     setGridGap: (gridGap) => update({ gridGap }),
     setGridDotSize: (gridDotSize) => update({ gridDotSize }),

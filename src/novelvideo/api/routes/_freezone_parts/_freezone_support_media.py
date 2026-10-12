@@ -133,6 +133,7 @@ def _start_freezone_prompt_optimize_task(
                 project_dir=project_dir,
                 director_vision=body.director_vision or None,
                 project_dna=body.project_dna or None,
+            creative_handoff=body.creative_handoff or None,
                 research_mode=body.research_mode,
             )
             out = _prompt_optimize_output_path(project_dir, job_id)

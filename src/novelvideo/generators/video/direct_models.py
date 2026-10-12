@@ -1005,6 +1005,37 @@ def direct_video_model_option(model: DirectVideoModel) -> dict[str, Any]:
     envelope_parameters = cached.get("parameters")
     if not isinstance(envelope_parameters, list):
         envelope_parameters = []
+    parameter_definitions = cached.get("parameterDefinitions")
+    parameter_constraints = cached.get("parameterConstraints")
+    pricing = cached.get("pricing")
+    if model.effective_protocol == "sparkcine-native" and not isinstance(
+        parameter_definitions, Mapping
+    ):
+        from .direct_video_protocol_contracts import protocol_capability
+
+        native_contract = protocol_capability(model.effective_protocol)
+        parameter_definitions = native_contract.get("parameterDefinitions")
+        parameter_constraints = native_contract.get("parameterConstraints")
+        pricing = native_contract.get("pricing")
+    if (
+        not envelope_parameters
+        and model.effective_protocol == "sparkcine-native"
+        and isinstance(parameter_definitions, Mapping)
+    ):
+        envelope_parameters = [
+            {
+                "key": str(key),
+                "providerKey": str(key),
+                "provider_key": str(key),
+                **(
+                    dict(value)
+                    if isinstance(value, Mapping)
+                    else {"default": value}
+                ),
+                "source": "protocol-contract",
+            }
+            for key, value in parameter_definitions.items()
+        ]
     envelope_mapping = cached.get("providerMapping")
     if not isinstance(envelope_mapping, Mapping):
         envelope_mapping = cached.get("mapping")
@@ -1224,6 +1255,17 @@ def direct_video_model_option(model: DirectVideoModel) -> dict[str, Any]:
         "capabilityEnvelopeVersion": cached.get("capabilityEnvelopeVersion", 1),
         "capability_envelope_version": cached.get("capabilityEnvelopeVersion", 1),
         "parameters": envelope_parameters,
+        "parameterDefinitions": (
+            dict(parameter_definitions)
+            if isinstance(parameter_definitions, Mapping)
+            else {}
+        ),
+        "parameterConstraints": (
+            list(parameter_constraints)
+            if isinstance(parameter_constraints, list)
+            else []
+        ),
+        "pricing": dict(pricing) if isinstance(pricing, Mapping) else {},
         "providerMapping": dict(envelope_mapping),
         "provider_mapping": dict(envelope_mapping),
         "mapping": dict(envelope_mapping),

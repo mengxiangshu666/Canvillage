@@ -57,6 +57,21 @@ async def freezone_story_script_generate(
         project, user
     )
 
+    canvas_source = None
+    if body.expected_canvas_revision is not None:
+        from novelvideo.services.canvas_commands import bind_canvas_script_source
+
+        if ctx is None:
+            _raise_project_context_required("freezone_story_script")
+        try:
+            canvas_source = bind_canvas_script_source(
+                _canvas_state_project_dir(ctx, project_dir),
+                canvas_id=body.canvas_id, node_id=body.node_id,
+                revision=body.expected_canvas_revision,
+            )
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+
     source_text = body.source_text.strip()
     if not source_text and body.source_url:
         try:
@@ -150,6 +165,7 @@ async def freezone_story_script_generate(
                         "character_refs": character_refs,
                         "character_image_paths": character_image_paths,
                         "current_rows": rewrite_rows,
+                        "canvas_source": canvas_source,
                         "video_feedback": video_feedback,
                         "director_plan": body.director_plan.model_dump() if body.director_plan else None,
                         "rewrite_shot_id": body.rewrite_shot_id,
@@ -194,6 +210,7 @@ async def freezone_story_script_generate(
                 job_id=job_id,
                 payload={
                     "source_text": source_text,
+                    "canvas_source": canvas_source,
                     "prompt": body.prompt,
                     "model": body.model,
                     "video_model": body.video_model,

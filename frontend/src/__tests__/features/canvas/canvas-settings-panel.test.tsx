@@ -54,6 +54,10 @@ describe('CanvasSettingsPanel', () => {
       canvasTheme: 'softGray',
       customCanvasColor: '#334455',
       edgeColor: '#22d3ee',
+      edgeFlowColor: '#f472b6',
+      edgeFlowSpeed: 2,
+      edgeFlowSize: 1.5,
+      edgeFlowWidth: 8,
       showGrid: false,
       gridGap: 12,
       snapToGrid: true,
@@ -74,6 +78,46 @@ describe('CanvasSettingsPanel', () => {
       showNodePrice: true,
       canvasEdgeRoutingMode: 'spline',
     });
+  });
+
+  it('persists independent flow choices and can return to following the line', () => {
+    render(<CanvasSettingsPanel onClose={vi.fn()} />);
+    fireEvent.change(screen.getByLabelText('自定义流光色彩'), { target: { value: '#abcdef' } });
+    fireEvent.change(screen.getByRole('slider', { name: '流动速度' }), { target: { value: '2' } });
+    fireEvent.change(screen.getByRole('slider', { name: '光点大小' }), { target: { value: '1.5' } });
+    fireEvent.change(screen.getByRole('slider', { name: '光点粗细' }), { target: { value: '8' } });
+    fireEvent.click(screen.getByRole('button', { name: '连线色彩：樱粉' }));
+
+    const choices = { edgeColor: '#f472b6', edgeFlowColor: '#abcdef', edgeFlowSpeed: 2, edgeFlowSize: 1.5, edgeFlowWidth: 8 };
+    expect(useCanvasViewSettingsStore.getState()).toMatchObject(choices);
+    expect(JSON.parse(window.localStorage.getItem('canvas.viewSettings.v1')!)).toMatchObject(choices);
+    expect(screen.getByRole('switch', { name: '流光跟随连线颜色' })).toHaveAttribute('aria-checked', 'false');
+
+    fireEvent.click(screen.getByRole('switch', { name: '流光跟随连线颜色' }));
+    expect(useCanvasViewSettingsStore.getState().edgeFlowColor).toBeNull();
+    expect(screen.getByLabelText('自定义流光色彩')).toHaveValue('#f472b6');
+    fireEvent.click(screen.getByRole('button', { name: '流光色彩：极光青' }));
+    expect(useCanvasViewSettingsStore.getState().edgeFlowColor).toBe('#22d3ee');
+  });
+
+  it('bounds numeric flow settings and rejects invalid colors and non-finite numbers', () => {
+    const settings = useCanvasViewSettingsStore.getState();
+    settings.setEdgeFlowSpeed(100);
+    settings.setEdgeFlowSize(-2);
+    settings.setEdgeFlowWidth(100);
+    expect(useCanvasViewSettingsStore.getState()).toMatchObject({ edgeFlowSpeed: 4, edgeFlowSize: 0.25, edgeFlowWidth: 12 });
+    settings.setEdgeFlowColor('url(javascript:bad)');
+    settings.setEdgeFlowSpeed(Number.NaN);
+    settings.setEdgeFlowSize(Number.POSITIVE_INFINITY);
+    settings.setEdgeFlowWidth(Number.NEGATIVE_INFINITY);
+    expect(useCanvasViewSettingsStore.getState()).toMatchObject({ edgeFlowColor: null, edgeFlowSpeed: 1, edgeFlowSize: 1, edgeFlowWidth: 4 });
+  });
+
+  it('migrates saved settings that predate independent flow controls', async () => {
+    window.localStorage.setItem('canvas.viewSettings.v1', JSON.stringify({ edgeColor: '#60a5fa' }));
+    vi.resetModules();
+    const { useCanvasViewSettingsStore: restored } = await import('@/features/canvas/ui/canvasViewSettingsStore');
+    expect(restored.getState()).toMatchObject({ edgeColor: '#60a5fa', edgeFlowColor: null, edgeFlowSpeed: 1, edgeFlowSize: 1, edgeFlowWidth: 4 });
   });
 
   it('keeps grid dots readable and reduces density when zoomed out', () => {

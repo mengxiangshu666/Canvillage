@@ -55,13 +55,13 @@ $env:NOVELVIDEO_DATA_ROOT = Join-Path $PWD '项目资产'
 .venv\Scripts\python.exe -m novelvideo.cli api --host 127.0.0.1 --port 8784
 ```
 
-开发检查使用项目内 `.venv\Scripts\python.exe -m pytest`，前端使用 `pnpm test`。不要把模型 Key、真实项目、日志或构建缓存添加到 Git。更完整的发布边界见 [公开源码说明](docs/PUBLIC_SOURCE_RELEASE.md)。
+开发检查使用项目内 `.venv\Scripts\python.exe -m pytest`，前端使用 `pnpm test`。不要把模型 Key、真实项目、日志或构建缓存添加到 Git。更完整的发布边界见 [源码公开说明](docs/PUBLIC_SOURCE_RELEASE.md)。
 
 模型支持范围以当前连接的上游目录及实际任务验证为准。源码包的准备不代表每个模型、全新机器安装或所有可选功能都已经验证。
 
 ## 许可
 
-本项目当前采用 [Elastic License 2.0](LICENSES/Elastic-2.0.txt)，属于源码可得许可，含使用限制。公开源码不等于切换到 MIT 或 Apache 许可；上游及第三方版权、商标和其他必要声明保留。具体条款以许可证正文为准。
+本项目当前采用 [Elastic License 2.0](LICENSES/Elastic-2.0.txt)，属于源码可得许可，含使用限制。源码公开不等于切换到 MIT 或 Apache 许可；上游及第三方版权、商标和其他必要声明保留。具体条款以许可证正文为准。
 
 ## Notices
 

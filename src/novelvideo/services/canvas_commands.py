@@ -76,16 +76,35 @@ def validate_canvas_script_rows(
     rows: Iterable[Mapping[str, Any]],
     *,
     camera_names: Sequence[str] | None = None,
+    director_plan: Mapping[str, Any] | None = None,
 ) -> Any:
     """Run the script contract rules through the canvas adapter boundary."""
     from novelvideo.freezone.script_contract import (
         validate_script_rows as _validate,
     )
 
-    return _validate(rows, camera_names=camera_names)
+    return _validate(rows, camera_names=camera_names, director_plan=director_plan)
+
+
+def bind_canvas_script_source(
+    state_dir: str | Path, *, canvas_id: str, node_id: str, revision: int
+) -> dict[str, Any]:
+    """Bind an asynchronous script result to a checked, persisted source."""
+    snapshot = read_canvas_snapshot(state_dir, canvas_id)
+    if not snapshot or snapshot.get("revision") != revision:
+        raise ValueError("画布版本已变化，请重新读取脚本后再提交")
+    node = next(
+        (node for node in snapshot.get("nodes", [])
+         if isinstance(node, dict) and node.get("id") == node_id),
+        None,
+    )
+    if not node or node.get("type") != "scriptNode":
+        raise ValueError("来源必须是当前画布中真实存在的脚本节点")
+    return {"canvas_id": canvas_id, "node_id": node_id, "revision": revision}
 
 
 __all__ = [
+    "bind_canvas_script_source",
     "fingerprint_canvas_script_rows",
     "make_canvas_command_port",
     "read_canvas_snapshot",

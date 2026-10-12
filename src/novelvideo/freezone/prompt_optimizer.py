@@ -611,7 +611,7 @@ You are a production prompt compiler, not a generic prose polisher.
 You receive the exact downstream execution model, node mode, generation parameters, references, camera controls, and retrieved local knowledge.
 
 Hard requirements:
-1. Preserve the user's creative intent and every non-negotiable requirement. Never silently simplify away dialogue, brands, text, signature actions, identity, or framing.
+1. Preserve the user's creative intent and every non-negotiable requirement. The source prompt and current user guidance are the creative authority. Never silently simplify away dialogue, brands, text, signature actions, identity, or framing.
 2. Rewrite for the TARGET EXECUTION MODEL, not for yourself. Use its preferred structure, supported reference syntax, timeline, camera, audio, and negative constraints.
 3. Use only reference names that are listed in the request. Never invent @Image/@Video/@Audio assets.
 4. Respect mode semantics. A first-frame image is t=0; do not describe how the scene arrived there. First/last frames require a continuous bridge.
@@ -621,7 +621,8 @@ Hard requirements:
 8. When continuity_in, continuity_out, or a director continuity contract is present, treat them as the shot's state handoff. Start from continuity_in, execute only the current action, and end at continuity_out; never re-stage the previous shot or leak the next shot's action.
 9. For video, compile a production-ready shot recipe with a clear start state, time-budgeted action chain, primary camera movement, physical feedback, and end state. A generic sentence such as "cinematic, dynamic, high quality" is not an acceptable completion.
 10. Fit pacing to the target duration while preserving the supplied causal phases, reactions, pauses and ending. If the requested action cannot credibly fit, report the conflict in warnings; do not silently delete essential phases or invent a longer supported duration. Choose action and camera phase counts from the content and actual capability evidence, not a generic numeric template.
-11. Output structured data only. optimized_prompt must be ready to paste into the target model and must not contain analysis or markdown fences.
+11. Use the director handoff as a compact decision aid, not as a replacement for the user's wording. When it conflicts with the user's explicit request, preserve the request and report the conflict in warnings.
+12. Output structured data only. optimized_prompt must be ready to paste into the target model and must not contain analysis or markdown fences.
 """
 
 _optimizer_agents: dict[tuple[str, str], Agent] = {}
@@ -1509,6 +1510,7 @@ def build_prompt_optimization_task(
     guidance: str = "",
     director_vision: dict[str, Any] | None = None,
     project_dna: dict[str, Any] | None = None,
+    creative_handoff: dict[str, Any] | None = None,
     research_context: str = "",
     director_research_context: str | None = None,
     capability_snapshot: dict[str, Any] | None = None,
@@ -1646,6 +1648,9 @@ DIRECTOR VISION (durable whole-film contract; preserve its locks and invariants)
 PROJECT DNA (project-scoped identity, preferences, and vetoes):
 {json.dumps(project_dna or {}, ensure_ascii=False, sort_keys=True)}
 
+CURRENT SHOT CREATIVE HANDOFF (compact director context; use it to protect continuity and purpose, never to overwrite explicit user intent):
+{json.dumps(creative_handoff or {}, ensure_ascii=False, sort_keys=True)}
+
 FILMCRAFT ATOMIC RULE INJECTION (typed runtime rules, apply only when relevant):
 {craft_knowledge}
 
@@ -1716,6 +1721,7 @@ def _deterministic_prompt_optimization(
     capability_snapshot: dict[str, Any] | None = None,
     reference_manifest: dict[str, Any] | None = None,
     director_recipe_receipt: dict[str, Any] | None = None,
+    creative_handoff: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     source = re.sub(r"\s+", " ", text.strip())
     target_text = _target_text(target_model_id, target_api_model, target_model_label)
@@ -1757,6 +1763,17 @@ def _deterministic_prompt_optimization(
 
     if refs:
         clauses.append(f"参考素材角色：{refs}。")
+    handoff = creative_handoff or {}
+    if isinstance(handoff, dict):
+        purpose = str(handoff.get("shotPurpose") or handoff.get("shot_purpose") or "").strip()
+        start_state = str(handoff.get("startState") or handoff.get("start_state") or "").strip()
+        end_state = str(handoff.get("endState") or handoff.get("end_state") or "").strip()
+        if purpose:
+            clauses.append(f"本镜观看目的：{purpose}。")
+        if start_state:
+            clauses.append(f"本镜起始状态：{start_state}。")
+        if end_state:
+            clauses.append(f"本镜结束状态：{end_state}。")
     visual_summaries = [
         f"{_reference_name(ref, index + 1)}：{str(ref.get('visual_summary') or '').strip()}"
         for index, ref in enumerate(references[:4])
@@ -2012,6 +2029,7 @@ async def optimize_freezone_prompt(
     project_dir: Path | None = None,
     director_vision: dict[str, Any] | None = None,
     project_dna: dict[str, Any] | None = None,
+    creative_handoff: dict[str, Any] | None = None,
     research_mode: str = "standard",
 ) -> dict[str, Any]:
     if not text.strip():
@@ -2101,6 +2119,7 @@ async def optimize_freezone_prompt(
         guidance=guidance,
         director_vision=director_vision,
         project_dna=project_dna,
+        creative_handoff=creative_handoff,
         research_context=str(research.get("research_context") or ""),
         director_research_context=director_research_context,
         capability_snapshot=capability_snapshot,
@@ -2152,6 +2171,7 @@ async def optimize_freezone_prompt(
             capability_snapshot=capability_snapshot,
             reference_manifest=reference_manifest,
             director_recipe_receipt=director_recipe_receipt,
+            creative_handoff=creative_handoff,
         )
     failed_models: list[dict[str, str]] = []
     response = None
@@ -2196,6 +2216,7 @@ async def optimize_freezone_prompt(
             capability_snapshot=capability_snapshot,
             reference_manifest=reference_manifest,
             director_recipe_receipt=director_recipe_receipt,
+            creative_handoff=creative_handoff,
         )
     output = response.output
     optimized = output.optimized_prompt.strip()

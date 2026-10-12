@@ -2047,6 +2047,10 @@ class FreezonePromptOptimizeRequest(BaseModel):
         default_factory=dict,
         description="可选：当前项目的角色、风格、偏好和否决合同",
     )
+    creative_handoff: dict[str, Any] = Field(
+        default_factory=dict,
+        description="可选：脚本导演交接包，描述本镜观看目的、状态、参考职责和连续性",
+    )
     canvas_id: str = Field(default="")
     node_id: str = Field(default="")
 
@@ -2125,6 +2129,7 @@ class FreezoneStoryScriptRepairIssue(BaseModel):
 
 
 class FreezoneStoryScriptGenerateRequest(BaseModel):
+    expected_canvas_revision: int | None = Field(default=None, ge=0)
     video_model: str | None = Field(default=None, max_length=300, description="用于镜头规划的视频模型目录ID；空字符串使用当前默认模型，未提供保留旧行为；能力由服务器读取")
     """Freezone 故事脚本请求。
 

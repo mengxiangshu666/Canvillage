@@ -265,7 +265,6 @@ export function GenModeSelect({ value, modelId, modelFamily, supportedModes, ups
 interface VideoConfigChipProps {
   aspectRatio: FreezoneVideoAspectRatio;
   aspectRatioOptions: readonly FreezoneVideoAspectRatio[];
-  resolutionOptions: readonly string[];
   quality: VideoGenQuality;
   advertisedQualityOptions: readonly VideoGenQuality[];
   rejectedQualityOptions: ReadonlySet<VideoGenQuality>;
@@ -504,7 +503,6 @@ export function VideoAdvancedParametersChip({
 export function VideoConfigChip({
   aspectRatio,
   aspectRatioOptions,
-  resolutionOptions,
   quality,
   advertisedQualityOptions,
   rejectedQualityOptions,
@@ -596,7 +594,6 @@ export function VideoConfigChip({
   }, [isOpen]);
 
   const hasAspectOptions = aspectRatioOptions.length > 0;
-  const hasNativeResolutionOptions = resolutionOptions.length > 0;
 
   return (
     <div className="relative">
@@ -617,7 +614,7 @@ export function VideoConfigChip({
         {aspectRatio ? (
           <span className="text-text-muted/80">·</span>
         ) : null}
-        {!hasNativeResolutionOptions && advertisedQualityOptions.length > 0 ? (
+        {advertisedQualityOptions.length > 0 ? (
           <span>{quality}</span>
         ) : null}
         {durationParameterEnabled ? (
@@ -670,7 +667,7 @@ export function VideoConfigChip({
             </>
           ) : null}
 
-          {!hasNativeResolutionOptions && advertisedQualityOptions.length > 0 ? (
+          {advertisedQualityOptions.length > 0 ? (
             <>
               <div className={VIDEO_PARAM_LABEL_CLASS}>{t("node.videoNode.quality.title")}</div>
               <div className={`grid grid-cols-3 ${VIDEO_PARAM_ROW_CLASS}`}>

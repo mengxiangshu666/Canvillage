@@ -193,6 +193,7 @@ import {
   PromptOptimizationPreview,
   type PromptOptimizationResearchMode,
 } from '@/features/freezone/PromptOptimizationPreview';
+import { PromptOptimizationComposer } from '@/features/freezone/PromptOptimizationComposer';
 import {
   promptOptimizationProgressLabel,
   usePromptOptimizationElapsed,
@@ -407,6 +408,8 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
   } | null>(null);
   const [promptOptimizationRerunningMode, setPromptOptimizationRerunningMode] =
     useState<PromptOptimizationResearchMode | null>(null);
+  const [promptOptimizationGuidance, setPromptOptimizationGuidance] = useState('');
+  const [promptOptimizationComposerOpen, setPromptOptimizationComposerOpen] = useState(false);
   const {
     models: availableModels,
     isLoading: imageModelsLoading,
@@ -676,6 +679,8 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
       style_id: styleTemplateId,
       references: orderedReferenceUrls,
       upstream_text: upstreamTextJoined,
+      creative_handoff: data.scriptCreativeHandoff ?? null,
+      guidance: promptOptimizationGuidance.trim(),
     }),
     [
       aspectRatio,
@@ -689,12 +694,15 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
       size,
       styleTemplateId,
       upstreamTextJoined,
+      data.scriptCreativeHandoff,
+      promptOptimizationGuidance,
     ],
   );
 
   const handleOptimizePrompt = useCallback(
     async (
       researchMode: PromptOptimizationResearchMode = 'standard',
+      guidanceOverride = promptOptimizationGuidance,
       options: { keepPanel?: boolean } = {},
     ) => {
       if (isOptimizingPrompt || isGenerating) return;
@@ -706,6 +714,7 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
         return;
       }
       setIsOptimizingPrompt(true);
+      setPromptOptimizationComposerOpen(false);
       // 换联网深度重跑时保留面板，让按钮上的加载态可见。
       if (!options.keepPanel) setPromptOptimization(null);
     try {
@@ -727,6 +736,9 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
           upstream_text_context: upstreamTextJoined || null,
           upstream_text_is_injected_separately: upstreamTextJoined.length > 0,
         },
+        creativeHandoff: data.scriptCreativeHandoff
+          ? { ...data.scriptCreativeHandoff }
+          : null,
         references: orderedReferenceUrls.map((url, index) => ({
           name: `@图片${index + 1}`,
           kind: 'image',
@@ -740,7 +752,10 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
         })),
         researchMode,
         guidance:
-          '只输出当前图片节点自有提示词。上游文本会在生成提交时自动拼接，不要重复抄入优化稿；只能使用 AVAILABLE REFERENCES 中列出的引用名。',
+          [
+            guidanceOverride.trim(),
+            '只输出当前图片节点自有提示词。上游文本会在生成提交时自动拼接，不要重复抄入优化稿；只能使用 AVAILABLE REFERENCES 中列出的引用名。',
+          ].filter(Boolean).join('\n'),
       };
       const ref = await submitFreezonePromptOptimize(projectId, request);
       await awaitTaskCompletion(ref.task_key, projectId);
@@ -769,6 +784,7 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
     orderedReferenceUrls,
     prompt,
     promptOptimizationContextSignature,
+    promptOptimizationGuidance,
     quality,
     normalizedExpressionControlImageUrl,
     normalizedReferenceImageUrl,
@@ -779,6 +795,7 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
     styleTemplateId,
     t,
     upstreamTextJoined,
+    data.scriptCreativeHandoff,
   ]);
 
   const handleReoptimizePrompt = useCallback(
@@ -786,12 +803,12 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
       if (promptOptimizationRerunningMode) return;
       setPromptOptimizationRerunningMode(mode);
       try {
-        await handleOptimizePrompt(mode, { keepPanel: true });
+        await handleOptimizePrompt(mode, promptOptimizationGuidance, { keepPanel: true });
       } finally {
         setPromptOptimizationRerunningMode(null);
       }
     },
-    [handleOptimizePrompt, promptOptimizationRerunningMode],
+    [handleOptimizePrompt, promptOptimizationGuidance, promptOptimizationRerunningMode],
   );
 
   const applyPromptOptimization = useCallback(() => {
@@ -2414,7 +2431,7 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
               disabled={isOptimizingPrompt || isGenerating || prompt.trim().length === 0}
               onClick={(event) => {
                 event.stopPropagation();
-                void handleOptimizePrompt();
+                setPromptOptimizationComposerOpen(true);
               }}
               className={`${NODE_TEXT_CONTROL_TRIGGER_CLASS} village-prompt-optimization-trigger`}
             >
@@ -2540,6 +2557,16 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
             }
             className={`nodrag nowheel min-h-0 w-full flex-1 overflow-y-auto whitespace-pre-wrap break-words border-none bg-transparent px-3 py-2 text-sm leading-6 text-text-dark outline-none ${CANVAS_NODE_INPUT_PLACEHOLDER_CLASS}`}
           />
+
+          {promptOptimizationComposerOpen && (
+            <PromptOptimizationComposer
+              value={promptOptimizationGuidance}
+              busy={isOptimizingPrompt}
+              onChange={setPromptOptimizationGuidance}
+              onClose={() => setPromptOptimizationComposerOpen(false)}
+              onSubmit={() => void handleOptimizePrompt('standard', promptOptimizationGuidance)}
+            />
+          )}
 
           {promptOptimization && (
             <PromptOptimizationPreview

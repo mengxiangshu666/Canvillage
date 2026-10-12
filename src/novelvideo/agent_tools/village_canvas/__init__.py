@@ -18,6 +18,7 @@ from . import capability_broker as _capability_broker
 from . import core as _core
 from . import judgment_impl as _judgment_impl
 from . import native_registry as _native_registry
+from . import script_operations as _script_operations
 from . import workflow_dispatch as _workflow_dispatch
 from . import workflow_execution as _workflow_execution
 from .runtime import is_runtime_proxy as _is_runtime_proxy
@@ -42,6 +43,7 @@ _IMPLEMENTATION_MODULES = (
     _capability_broker,
     _native_registry,
     _judgment_impl,
+    _script_operations,
 )
 
 # Preserve the old shared-namespace facade without executing source into this

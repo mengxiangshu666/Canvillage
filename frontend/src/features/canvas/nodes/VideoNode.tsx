@@ -266,6 +266,7 @@ import {
   PromptOptimizationPreview,
   type PromptOptimizationResearchMode,
 } from "@/features/freezone/PromptOptimizationPreview";
+import { PromptOptimizationComposer } from "@/features/freezone/PromptOptimizationComposer";
 import { buildVideoPromptOptimizationReferences } from "@/features/freezone/promptOptimizationPayload";
 import {
   promptOptimizationProgressLabel,
@@ -421,6 +422,8 @@ export const VideoNode = memo(
     } | null>(null);
     const [promptOptimizationRerunningMode, setPromptOptimizationRerunningMode] =
       useState<PromptOptimizationResearchMode | null>(null);
+    const [promptOptimizationGuidance, setPromptOptimizationGuidance] = useState("");
+    const [promptOptimizationComposerOpen, setPromptOptimizationComposerOpen] = useState(false);
     const [isCharacterLibraryOpen, setIsCharacterLibraryOpen] = useState(false);
     const [isComposingClip, setIsComposingClip] = useState(false);
     const [clipError, setClipError] = useState<string | null>(null);
@@ -575,13 +578,6 @@ export const VideoNode = memo(
         : aspectRatio;
     const qualityOptions = useMemo(
       () => videoQualityOptionsForModel(capabilityVideoModel),
-      [capabilityVideoModel],
-    );
-    const resolutionOptions = useMemo(
-      () =>
-        capabilityVideoModel?.runtimeResolutionOptions ??
-        capabilityVideoModel?.resolutionOptions ??
-        [],
       [capabilityVideoModel],
     );
     const advertisedQualityOptions = useMemo(
@@ -1307,6 +1303,8 @@ export const VideoNode = memo(
           })),
         ),
         upstream_text: upstreamTextJoined,
+        creative_handoff: data.shotContractFacts?.creativeHandoff ?? null,
+        guidance: promptOptimizationGuidance.trim(),
       }),
       [
         cameraDirection,
@@ -1324,12 +1322,15 @@ export const VideoNode = memo(
         submitAspectRatio,
         effectiveAspectRatio,
         upstreamTextJoined,
+        data.shotContractFacts?.creativeHandoff,
+        promptOptimizationGuidance,
       ],
     );
 
     const handleOptimizePrompt = useCallback(
       async (
         researchMode: PromptOptimizationResearchMode = "standard",
+        guidanceOverride = promptOptimizationGuidance,
         options: { keepPanel?: boolean } = {},
       ) => {
       if (isOptimizingPrompt || isGenerating) return;
@@ -1355,6 +1356,7 @@ export const VideoNode = memo(
         })),
       );
       setIsOptimizingPrompt(true);
+      setPromptOptimizationComposerOpen(false);
       // 换联网深度重跑时保留面板，让按钮上的加载态可见。
       if (!options.keepPanel) setPromptOptimization(null);
       try {
@@ -1375,10 +1377,16 @@ export const VideoNode = memo(
             scene_optimize: sceneOptimize ?? null,
             upstream_text_is_injected_separately: upstreamTextJoined.length > 0,
           },
+          creativeHandoff: data.shotContractFacts?.creativeHandoff
+            ? { ...data.shotContractFacts.creativeHandoff }
+            : null,
           references,
           researchMode,
           guidance:
-            "只输出当前视频节点自有提示词。上游文本会在生成提交时自动拼接，不要重复抄入优化稿；运镜已经在提示词里，保持它、不要另起一段重复描述；只能使用 AVAILABLE REFERENCES 中列出的引用名。",
+            [
+              guidanceOverride.trim(),
+              "只输出当前视频节点自有提示词。上游文本会在生成提交时自动拼接，不要重复抄入优化稿；运镜已经在提示词里，保持它、不要另起一段重复描述；只能使用 AVAILABLE REFERENCES 中列出的引用名。",
+            ].filter(Boolean).join("\n"),
         };
         const ref = await submitFreezonePromptOptimize(project, request);
         await awaitTaskCompletion(ref.task_key, project);
@@ -1418,6 +1426,8 @@ export const VideoNode = memo(
       effectiveAspectRatio,
       t,
       upstreamTextJoined.length,
+      promptOptimizationGuidance,
+      data.shotContractFacts?.creativeHandoff,
     ]);
 
     const handleReoptimizePrompt = useCallback(
@@ -1425,12 +1435,12 @@ export const VideoNode = memo(
         if (promptOptimizationRerunningMode) return;
         setPromptOptimizationRerunningMode(mode);
         try {
-          await handleOptimizePrompt(mode, { keepPanel: true });
+          await handleOptimizePrompt(mode, promptOptimizationGuidance, { keepPanel: true });
         } finally {
           setPromptOptimizationRerunningMode(null);
         }
       },
-      [handleOptimizePrompt, promptOptimizationRerunningMode],
+      [handleOptimizePrompt, promptOptimizationGuidance, promptOptimizationRerunningMode],
     );
 
     const applyPromptOptimization = useCallback(() => {
@@ -2558,7 +2568,7 @@ export const VideoNode = memo(
                     disabled={isOptimizingPrompt || isGenerating || prompt.trim().length === 0}
                     onClick={(event) => {
                       event.stopPropagation();
-                      void handleOptimizePrompt();
+                      setPromptOptimizationComposerOpen(true);
                     }}
                     className={`${NODE_TEXT_CONTROL_TRIGGER_CLASS} village-prompt-optimization-trigger`}
                   >
@@ -2662,6 +2672,16 @@ export const VideoNode = memo(
                 className={`nodrag nowheel min-h-0 w-full flex-1 overflow-y-auto whitespace-pre-wrap break-words border-none bg-transparent px-3 py-2 text-sm leading-6 text-text-dark outline-none ${CANVAS_NODE_INPUT_PLACEHOLDER_CLASS}`}
               />
 
+              {promptOptimizationComposerOpen && (
+                <PromptOptimizationComposer
+                  value={promptOptimizationGuidance}
+                  busy={isOptimizingPrompt}
+                  onChange={setPromptOptimizationGuidance}
+                  onClose={() => setPromptOptimizationComposerOpen(false)}
+                  onSubmit={() => void handleOptimizePrompt("standard", promptOptimizationGuidance)}
+                />
+              )}
+
               {dialogueTiming && (
                 <p
                   role="status"
@@ -2721,7 +2741,6 @@ export const VideoNode = memo(
                   <VideoConfigChip
                     aspectRatio={aspectRatio}
                     aspectRatioOptions={aspectRatioOptions}
-                    resolutionOptions={resolutionOptions}
                     quality={quality}
                     advertisedQualityOptions={advertisedQualityOptions}
                     rejectedQualityOptions={rejectedQualityOptions}

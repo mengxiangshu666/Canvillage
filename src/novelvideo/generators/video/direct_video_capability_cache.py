@@ -104,6 +104,9 @@ _CAPABILITY_FIELDS = (
     "mediaInputs",
     "media_inputs",
     "opaque",
+    "parameterDefinitions",
+    "parameterConstraints",
+    "pricing",
 )
 _lock = threading.Lock()
 _memo: dict[str, Any] | None = None

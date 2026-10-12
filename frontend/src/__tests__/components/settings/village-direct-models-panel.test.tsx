@@ -782,6 +782,25 @@ describe("视频模型的出线合同来源徽标", () => {
     ...patch,
   });
 
+  it("SparkCine 原生协议回显并原样保存", async () => {
+    queryMocks.saveDirectVideoModels.mockReset().mockResolvedValue({ ok: true, data: [] });
+    render(
+      <DirectVideoModelsPanel models={[baseVideo({
+        modelId: "h3-video",
+        baseUrl: "https://hi.hi.run/api/openai/v1",
+        requestedProtocol: "sparkcine-native",
+        protocol: "sparkcine-native",
+      })]} />,
+    );
+    expect(screen.getByLabelText("直连视频模型协议")).toHaveValue("sparkcine-native");
+    expect(screen.getByRole("option", { name: "SparkCine 原生协议" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "保存直连视频模型" }));
+    await waitFor(() => expect(queryMocks.saveDirectVideoModels).toHaveBeenCalledWith({
+      confirmClear: false,
+      models: [expect.objectContaining({ protocol: "sparkcine-native", apiKey: "" })],
+    }));
+  });
+
   it("渠道自带且真实验证过就显示绿色已验证券", () => {
     const badge = videoWireContractBadge(
       baseVideo({

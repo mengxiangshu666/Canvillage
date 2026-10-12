@@ -83,6 +83,10 @@ export const DisconnectableEdge = memo(function DisconnectableEdge(props: EdgePr
   const selectedNodeId = useCanvasStore((state) => state.selectedNodeId);
   const canvasEdgeRoutingMode = useSettingsStore((state) => state.canvasEdgeRoutingMode);
   const edgeColor = useCanvasViewSettingsStore((state) => state.edgeColor);
+  const edgeFlowColor = useCanvasViewSettingsStore((state) => state.edgeFlowColor ?? state.edgeColor);
+  const edgeFlowSpeed = useCanvasViewSettingsStore((state) => state.edgeFlowSpeed);
+  const edgeFlowSize = useCanvasViewSettingsStore((state) => state.edgeFlowSize);
+  const edgeFlowWidth = useCanvasViewSettingsStore((state) => state.edgeFlowWidth);
   const routingSnapshotRef = useRef<ReturnType<typeof selectCanvasRoutingSnapshot> | null>(null);
   // 仅 smartOrthogonal 避障需要路由快照。快照按 nodes 数组 identity 缓存，
   // 每条边只比较一个 snapshot 引用，不再对完整 nodes 数组做 E×N shallow 比较。
@@ -277,6 +281,7 @@ export const DisconnectableEdge = memo(function DisconnectableEdge(props: EdgePr
   const flowPathId = `canvas-data-flow-path-${id.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
   const flowGradientId = `canvas-data-flow-gradient-${id.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
   const flowGlowId = `canvas-data-flow-glow-${id.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+  const flowDuration = 7 / edgeFlowSpeed;
 
   const sourceDotOffset = portDotOffset(sourcePosition ?? Position.Right);
   const targetDotOffset = portDotOffset(targetPosition ?? Position.Left);
@@ -361,21 +366,21 @@ export const DisconnectableEdge = memo(function DisconnectableEdge(props: EdgePr
               x2="48"
               y2="0"
             >
-              <stop offset="0%" stopColor={edgeColor} stopOpacity="0" />
-              <stop offset="42%" stopColor={edgeColor} stopOpacity="0.28" />
-              <stop offset="100%" stopColor={edgeColor} stopOpacity="0.72" />
+              <stop offset="0%" stopColor={edgeFlowColor} stopOpacity="0" />
+              <stop offset="42%" stopColor={edgeFlowColor} stopOpacity="0.28" />
+              <stop offset="100%" stopColor={edgeFlowColor} stopOpacity="0.72" />
             </linearGradient>
             <filter id={flowGlowId} x="-80%" y="-240%" width="260%" height="580%">
               <feGaussianBlur stdDeviation="14" />
             </filter>
           </defs>
-          {[0, -2.33, -4.67].map((begin) => (
+          {[0, -flowDuration / 3, -2 * flowDuration / 3].map((begin, index) => (
             <g
-              key={begin}
+              key={index}
               className="canvas-data-edge__packet"
               style={{ pointerEvents: 'none', opacity: 0.72 }}
             >
-              <g transform="scale(0.45, 1)">
+              <g transform={`scale(${0.45 * edgeFlowSize}, 1)`}>
                 <line
                   x1="-46"
                   y1="0"
@@ -384,7 +389,7 @@ export const DisconnectableEdge = memo(function DisconnectableEdge(props: EdgePr
                   fill="none"
                   stroke={`url(#${flowGradientId})`}
                   strokeLinecap="round"
-                  strokeWidth={12}
+                  strokeWidth={edgeFlowWidth * 3}
                   opacity={0.34}
                   filter={`url(#${flowGlowId})`}
                 />
@@ -396,12 +401,12 @@ export const DisconnectableEdge = memo(function DisconnectableEdge(props: EdgePr
                   fill="none"
                   stroke={`url(#${flowGradientId})`}
                   strokeLinecap="round"
-                  strokeWidth={4}
+                  strokeWidth={edgeFlowWidth}
                 />
               </g>
               <animateMotion
                 className="canvas-data-edge__packet-motion"
-                dur="7s"
+                dur={`${flowDuration}s`}
                 begin={`${begin}s`}
                 repeatCount="indefinite"
                 rotate="auto"

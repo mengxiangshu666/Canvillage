@@ -900,6 +900,13 @@ def _handle_dispatch_canvas_action(args: dict[str, Any], **_: Any) -> Any:
     try:
         project = _project_from_args(args)
         canvas_id = _workflow_canvas_id(args)
+        requested_revision = args.get("expected_canvas_revision")
+        if requested_revision is not None and (
+            not isinstance(requested_revision, int)
+            or isinstance(requested_revision, bool)
+            or requested_revision < 0
+        ):
+            raise ValueError("expected_canvas_revision must be a non-negative integer")
         request = str(args.get("request") or args.get("goal") or "").strip()
         if not request:
             raise ValueError("request is required")
@@ -1430,6 +1437,18 @@ def _handle_dispatch_canvas_action(args: dict[str, Any], **_: Any) -> Any:
                     ledger.get("canvas_revision") if isinstance(ledger, dict) else None
                 )
             if isinstance(route_revision, int) and not isinstance(route_revision, bool):
+                requested_revision = args.get("expected_canvas_revision")
+                if requested_revision is not None and (
+                    not isinstance(requested_revision, int)
+                    or isinstance(requested_revision, bool)
+                    or requested_revision != route_revision
+                ):
+                    return tool_result({
+                        "ok": False,
+                        "error_code": "canvas_revision_conflict",
+                        "error": "来源画布版本已变化，请先核对改稿，不能覆盖当前内容",
+                        "current_revision": route_revision,
+                    })
                 forwarded["expected_canvas_revision"] = route_revision
         forwarded.pop("task", None)
         lane = str(route.get("lane") or "").strip()
@@ -1499,6 +1518,16 @@ def _handle_dispatch_canvas_action(args: dict[str, Any], **_: Any) -> Any:
                             route=route,
                             decision=decision,
                         )
+                    requested_revision = args.get("expected_canvas_revision")
+                    if requested_revision is not None and requested_revision != checkpoint[
+                        "expected_canvas_revision"
+                    ]:
+                        return tool_result({
+                            "ok": False,
+                            "error_code": "canvas_revision_conflict",
+                            "error": "检查期间画布已变化，请先核对改稿，不能覆盖当前内容",
+                            "current_revision": checkpoint["expected_canvas_revision"],
+                        })
                     forwarded["command_id"] = dynamic_command_id
                     forwarded["dynamic_checkpoint"] = checkpoint
                     checkpoint_context = checkpoint.get("execution_context")

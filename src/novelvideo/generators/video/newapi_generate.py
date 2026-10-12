@@ -16,6 +16,7 @@ from novelvideo.generators.video.direct_video_h3_routing import (
 from novelvideo.generators.video.direct_video_protocol_contracts import (
     DIRECT_VIDEO_PROTOCOL_MINIMAX_V2,
     DIRECT_VIDEO_PROTOCOL_OPENAI,
+    DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE,
     build_minimax_video_v2_payload,
 )
 from novelvideo.generators.video.newapi_video_diagnostics import NewApiVideoError
@@ -73,6 +74,105 @@ class NewApiGenerateMixin:
             if declared is not None:
                 return declared
             return resolve_profile(self.upstream_model)
+
+        async def _sparkcine_native_request(
+            self,
+            *,
+            explicit_mode: str,
+            parameters: dict[str, object],
+            image_path: str,
+            last_frame_path: str,
+            references: tuple[object, ...],
+            log: Callable[[str], None],
+        ) -> tuple[dict[str, object], str | None]:
+            """把画布选择编译成站点原生请求的 mode/parameters/inputs。
+
+            参考素材（本地文件/远程 URL/data URL）先走站点自己的上传流程换成
+            asset_id；站点只认 assets 引用，不透传站外链接。
+            """
+
+            from novelvideo.generators.video import sparkcine_native
+
+            assets: list[tuple[str, str, str]] = []
+            if image_path:
+                assets.append(("image", image_path, "reference_image"))
+            if last_frame_path:
+                assets.append(("image", last_frame_path, "reference_image"))
+            for reference in references:
+                value = self._reference_path(reference)
+                if not value:
+                    continue
+                kind = self._reference_kind(reference)
+                # SparkCine accepts transport roles, not Dream/Canvas
+                # semantic labels such as "首帧参考" or "角色参考".
+                role = str(
+                    sparkcine_native.REFERENCE_ROLE_BY_KIND.get(
+                        kind, "reference_image"
+                )
+                )
+                assets.append((kind, value, role))
+
+            image_count = sum(1 for kind, _, _ in assets if kind == "image")
+            audio_count = sum(1 for kind, _, _ in assets if kind == "audio")
+            video_count = sum(1 for kind, _, _ in assets if kind == "video")
+            limit_error = sparkcine_native.reference_limit_error(
+                image_count=image_count,
+                audio_count=audio_count,
+                video_count=video_count,
+            )
+            if limit_error:
+                return {}, limit_error
+            mode = sparkcine_native.native_mode_for(
+                canvas_mode=explicit_mode,
+                image_count=image_count,
+                audio_count=audio_count,
+                video_count=video_count,
+            )
+            mode_error = sparkcine_native.mode_input_error(
+                mode,
+                image_count=image_count,
+                audio_count=audio_count,
+                video_count=video_count,
+            )
+            if mode_error:
+                return {}, mode_error
+            compiled: dict[str, object] = {
+                "mode": mode,
+                "parameters": dict(parameters),
+                "inputs": [],
+            }
+            if not assets:
+                return compiled, None
+
+            import aiohttp
+
+            headers = getattr(self, "headers", {}) or {}
+            authorization = str(headers.get("Authorization") or "").strip()
+            native_base = sparkcine_native.native_base_url(self.base_url)
+            timeout_factory = getattr(self, "_client_timeout", None)
+            session = aiohttp.ClientSession(
+                timeout=timeout_factory() if callable(timeout_factory) else None
+            )
+            inputs: list[dict[str, str]] = []
+            try:
+                for kind, value, role in assets:
+                    log(f"正在把参考素材上传到站点（{kind}）...")
+                    asset_id = await sparkcine_native.upload_media_asset(
+                        session,
+                        base_url=native_base,
+                        authorization=authorization,
+                        media_value=value,
+                        kind=kind,
+                    )
+                    inputs.append({"asset_id": asset_id, "role": role})
+            except sparkcine_native.SparkcineNativeError as error:
+                return {}, str(error)
+            except Exception as error:  # noqa: BLE001 - 上传失败要给用户可读原因
+                return {}, f"参考素材上传失败：{error}"
+            finally:
+                await session.close()
+            compiled["inputs"] = inputs
+            return compiled, None
 
         async def generate(
             self,
@@ -308,6 +408,37 @@ class NewApiGenerateMixin:
                         error_metadata=error_metadata,
                     )
 
+            native_parameters: dict[str, object] = {}
+            if self.protocol == DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE:
+                # 站点原生协议把分辨率/比例/时长放在嵌套 parameters 里，并且对组合
+                # 有硬约束（例如 720p 只允许 16:9 与 9:16、1080p 最长 15 秒）。
+                # 这些组合站点是整包拒绝，所以在花钱之前本地先按同一份合同判一次。
+                from novelvideo.generators.video import sparkcine_native
+
+                native_parameters, native_contract_error = sparkcine_native.resolve_parameters(
+                    resolution=getattr(self, "resolution", "") or "",
+                    aspect_ratio=ratio,
+                    duration=duration,
+                    generate_audio=bool(getattr(self, "generate_audio", False)),
+                    extra=kwargs.get("parameters")
+                    if isinstance(kwargs.get("parameters"), dict)
+                    else None,
+                )
+                if native_contract_error:
+                    log(f"原生协议参数合同不通过：{native_contract_error}")
+                    return VideoGenResult(
+                        status=VideoGenStatus.FAILED,
+                        error=native_contract_error,
+                        error_metadata={
+                            "error_code": "VIDEO_CAPABILITY_CONTRACT_INVALID",
+                            "endpoint_class": "video-request-contract",
+                            "stage": "preflight",
+                            "verification_stage": "contract",
+                            "retryable": False,
+                            "suggested_action": "按该模型的参数约束调整分辨率/比例/时长后重试。",
+                        },
+                    )
+
             metadata: dict[str, object] = {
                 "resolution": self.resolution,
                 "ratio": ratio,
@@ -320,6 +451,44 @@ class NewApiGenerateMixin:
                 "seconds": str(duration),
                 "metadata": metadata,
             }
+            if self.protocol == DIRECT_VIDEO_PROTOCOL_SPARKCINE_NATIVE:
+                # 原生协议的形状是 mode + inputs + parameters：分辨率/比例/时长只能
+                # 落在 parameters 里，参考素材必须先上传换成 asset_id 再放进 inputs。
+                from novelvideo.generators.video import sparkcine_native
+
+                native_request, native_request_error = await self._sparkcine_native_request(
+                    explicit_mode=explicit_video_mode,
+                    parameters=native_parameters,
+                    image_path=image_path,
+                    last_frame_path=last_frame_path,
+                    references=tuple(request_references or ()),
+                    log=log,
+                )
+                if native_request_error:
+                    log(f"原生协议请求准备失败：{native_request_error}")
+                    return VideoGenResult(
+                        status=VideoGenStatus.FAILED,
+                        error=native_request_error,
+                        error_metadata={
+                            "error_code": "VIDEO_REFERENCE_UPLOAD_FAILED",
+                            "endpoint_class": "video-request-contract",
+                            "stage": "preflight",
+                            "verification_stage": "contract",
+                            "retryable": False,
+                            "suggested_action": "按该模型的模式与素材上限调整后重试。",
+                        },
+                    )
+                native_top_level = kwargs.get("top_level")
+                payload = sparkcine_native.build_generation_payload(
+                    model=self.model,
+                    prompt=prompt,
+                    inputs=native_request.get("inputs") or (),
+                    mode=str(native_request.get("mode") or ""),
+                    parameters=native_request.get("parameters") or {},
+                    top_level=native_top_level
+                    if isinstance(native_top_level, dict)
+                    else None,
+                )
             wokey_multipart_fields: dict[str, object] | None = None
             wokey_multipart_files: list[tuple[str, str, bytes, str]] = []
             submit_idempotency_key = self._resolve_submit_idempotency_key(

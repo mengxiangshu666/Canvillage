@@ -21,6 +21,7 @@ from .production import PRODUCTION_SPECS
 from .project import PROJECT_SPECS
 from .research import RESEARCH_SPECS
 from .spec import ToolSpec
+from .script_operations import SCRIPT_OPERATION_SPECS
 from .state import STATE_SPECS
 from .story_lab import STORY_LAB_SPECS
 from .tasks import TASK_SPECS
@@ -37,6 +38,7 @@ SPECS: tuple[ToolSpec, ...] = (
     *CANVAS_WRITE_SPECS,
     *FRONTEND_UI_SPECS,
     *VIDEO_OPERATION_SPECS,
+    *SCRIPT_OPERATION_SPECS,
     *CAMERA_SPECS,
     *DIRECTOR_SPECS,
     *JUDGMENT_SPECS,
