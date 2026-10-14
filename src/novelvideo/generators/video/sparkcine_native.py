@@ -20,6 +20,11 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 from urllib.parse import urlparse
 
+from novelvideo.shared.safe_media_url import (
+    MediaDownloadError,
+    download_public_media,
+)
+
 PROTOCOL_ID = "sparkcine-native"
 NATIVE_PATH_PREFIX = "/api/open/v1"
 
@@ -614,23 +619,26 @@ async def read_media(
     if text.startswith("data:"):
         return decode_data_url(text, kind=kind)
     if text.startswith(("http://", "https://")):
-        filename = Path(urlparse(text).path).name or "reference"
-        content_type = content_type_for(filename, kind=kind)
-        async with session.get(text, timeout=timeout) as resp:
-            if resp.status >= 400:
-                body = await resp.text()
-                raise SparkcineNativeError(
-                    f"下载参考素材失败：HTTP {resp.status} - {body[:200]}",
-                    stage="upload",
-                    error_code="VIDEO_REFERENCE_UPLOAD_FAILED",
-                    http_status=resp.status,
-                    response_text=body[:2000],
-                )
-            data = await resp.read()
-            header_type = (
-                str(resp.headers.get("Content-Type") or "").split(";")[0].strip()
+        try:
+            data, filename, header_type = await download_public_media(
+                session, text, timeout=timeout
             )
-        return data, filename, header_type or content_type
+        except (MediaDownloadError, ValueError) as exc:
+            body = str(getattr(exc, "body", "") or "")
+            status = getattr(exc, "status", None)
+            message = (
+                f"下载参考素材失败：HTTP {status} - {body[:200]}"
+                if status is not None
+                else f"下载参考素材失败：{exc}"
+            )
+            raise SparkcineNativeError(
+                message,
+                stage="upload",
+                error_code="VIDEO_REFERENCE_UPLOAD_FAILED",
+                http_status=int(status) if status is not None else None,
+                response_text=body[:2000],
+            ) from exc
+        return data, filename, header_type or content_type_for(filename, kind=kind)
     path = Path(text)
     if not path.is_file():
         raise SparkcineNativeError(

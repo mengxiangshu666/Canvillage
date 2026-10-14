@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-import ipaddress
 from pathlib import Path
-import socket
-from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
+
+from novelvideo.shared.safe_media_url import (
+    is_internal_address as _vision_url_is_internal,  # noqa: F401
+    validate_public_http_url,
+)
 
 from .core import _agent_context_value
 
@@ -20,50 +22,10 @@ _VISION_MEDIA_TYPES = {
 _VISION_MAX_BYTES = 25 * 1024 * 1024
 _VISION_STATIC_PREFIX = "/static/projects/"
 
-# Clash-style fake-ip resolvers answer for public domains out of these ranges.
-# They must stay fetchable or every ordinary image URL would be judged internal.
-_FAKE_IP_NETWORKS = (
-    ipaddress.ip_network("198.18.0.0/15"),
-    ipaddress.ip_network("fdfe:dcba:9876::/48"),
-)
-
-
-def _vision_url_is_internal(address_text: str) -> bool:
-    """Return whether a resolved address must not be fetched by the vision reader."""
-
-    try:
-        address = ipaddress.ip_address(address_text)
-    except ValueError:
-        # Not a literal address (a hostname mid-resolution): treat as internal so
-        # an unresolvable name cannot slip through to a second, unchecked lookup.
-        return True
-    if any(address in network for network in _FAKE_IP_NETWORKS):
-        return False
-    if address.is_private or address.is_loopback or address.is_link_local:
-        return True
-    if address.is_unspecified or address.is_multicast or address.is_reserved:
-        return True
-    return False
-
-
 def _validate_vision_remote_url(value: str) -> None:
     """Reject a remote vision source that resolves into private address space."""
 
-    parsed = urlsplit(value)
-    if parsed.scheme not in {"http", "https"}:
-        raise ValueError("image_url must be an HTTP(S) URL")
-    host = parsed.hostname
-    if not host:
-        raise ValueError("image_url must include a host")
-    if host.rstrip(".").casefold() in {"localhost", "localhost.localdomain"}:
-        raise ValueError("image_url must not target a local service")
-    try:
-        infos = socket.getaddrinfo(host, None)
-    except OSError as exc:
-        raise ValueError(f"image_url host could not be resolved: {host}") from exc
-    for info in infos:
-        if _vision_url_is_internal(str(info[4][0])):
-            raise ValueError("image_url resolves to a private address")
+    validate_public_http_url(value, field_name="image_url")
 
 
 def _vision_project_media_dir() -> Path | None:

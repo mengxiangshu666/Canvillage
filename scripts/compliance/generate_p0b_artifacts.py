@@ -181,6 +181,10 @@ LOCKED_LICENSE_OVERRIDES = {
     "einops": ("MIT", "package metadata recorded for locked optional dependency"),
     "fonttools": ("MIT", "package metadata recorded for locked optional dependency"),
     "hf-xet": ("Apache-2.0", "package metadata published for locked dependency"),
+    "httpx2-jsfetch": (
+        "BSD-3-Clause",
+        "PyPI license expression for locked Emscripten-only dependency",
+    ),
     "imageio": (
         "BSD-2-Clause",
         "package metadata recorded for locked optional dependency",

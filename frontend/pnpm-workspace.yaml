@@ -16,3 +16,9 @@ allowBuilds:
   protobufjs: false
   sharp: false
   workerd: false
+
+overrides:
+  adm-zip: 0.6.1
+  protobufjs: 7.6.5
+  seroval: 1.6.3
+  sharp: 0.35.5

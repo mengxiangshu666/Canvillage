@@ -22,6 +22,7 @@ from urllib.parse import quote, urlencode, urljoin, urlsplit, urlunsplit
 import aiohttp
 
 from novelvideo.shared.provider_cost import extract_provider_cost_evidence
+from novelvideo.shared.safe_media_url import validate_public_http_url
 from novelvideo.storage.media_relay import (
     IMAGE_TRANSFORM_AI_REFERENCE_JPEG,
     MediaRelayConfigError,
@@ -2375,6 +2376,11 @@ class GenericVideoAdapterGenerator:
         """
         text = str(value or "").strip()
         if text.startswith(("http://", "https://")):
+            validate_public_http_url(
+                text,
+                field_name="media_url",
+                resolve_dns=False,
+            )
             if (
                 self.family is VideoProtocolFamily.TASK_QUERY
                 and not text.startswith("https://")

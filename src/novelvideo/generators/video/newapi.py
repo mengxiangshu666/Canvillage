@@ -54,6 +54,11 @@ from novelvideo.generators.video.video_capability_envelope import (
     canonical_parameter_key,
     compile_video_provider_parameters,
 )
+from novelvideo.shared.safe_media_url import (
+    MediaDownloadError,
+    download_public_media,
+    validate_public_http_url,
+)
 from novelvideo.storage.media_relay import (
     IMAGE_TRANSFORM_AI_REFERENCE_JPEG,
     MediaRelayConfigError,
@@ -1616,25 +1621,29 @@ class NewApiVideoGenerator(NewApiGenerateMixin, VideoGeneratorBase):
             filename = f"reference.{extension}"
         elif parsed.scheme in {"http", "https"}:
             async with aiohttp.ClientSession(timeout=cls._client_timeout()) as session:
-                async with session.get(source) as response:
-                    if response.status < 200 or response.status >= 300:
-                        raise RuntimeError(
-                            "Wokey reference download failed: "
-                            f"HTTP {response.status}; url={cls._safe_url_for_log(source)}"
-                        )
-                    content = await response.read()
-                    response_type = response.headers.get("Content-Type", "")
-            filename = (
-                Path(urllib.parse.unquote(parsed.path)).name
-                or f"reference.{default_extension}"
+                try:
+                    content, filename, response_type = await download_public_media(
+                        session,
+                        source,
+                        timeout=cls._client_timeout(),
+                    )
+                except (MediaDownloadError, ValueError) as exc:
+                    status = getattr(exc, "status", None)
+                    detail = (
+                        f"HTTP {status}"
+                        if status is not None
+                        else str(exc)
+                    )
+                    raise RuntimeError(
+                        "Wokey reference download failed: "
+                        f"{detail}; url={cls._safe_url_for_log(source)}"
+                    ) from exc
+            filename = filename if Path(filename).suffix else f"{filename}.{default_extension}"
+            content_type = (
+                response_type.split(";", 1)[0].strip()
+                if response_type
+                else mimetypes.guess_type(filename)[0] or "application/octet-stream"
             )
-            extension = Path(filename).suffix.lstrip(".") or default_extension
-            if response_type:
-                content_type = response_type.split(";", 1)[0].strip()
-            else:
-                content_type = (
-                    mimetypes.guess_type(filename)[0] or "application/octet-stream"
-                )
             if not content:
                 raise RuntimeError("Wokey reference download returned an empty file")
             return filename, content, content_type
@@ -1950,6 +1959,11 @@ class NewApiVideoGenerator(NewApiGenerateMixin, VideoGeneratorBase):
         if media_value.startswith(("http://", "https://")):
             if require_public_https and not media_value.startswith("https://"):
                 raise ValueError("MiniMax video-v2 requires a public HTTPS media URL")
+            validate_public_http_url(
+                media_value,
+                field_name="media_url",
+                resolve_dns=False,
+            )
             return media_value
 
         if media_value.startswith("data:"):
