@@ -2602,6 +2602,7 @@ src/novelvideo/shared/project_dirs.py,Elastic-2.0,2026 SuperTale contributors,RE
 src/novelvideo/shared/provider_cost.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 src/novelvideo/shared/provider_errors.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 src/novelvideo/shared/runtime_env.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
+src/novelvideo/shared/safe_media_url.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 src/novelvideo/skills/__init__.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 src/novelvideo/skills/director_scene_catalog.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 src/novelvideo/skills/director_skill.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
@@ -3309,6 +3310,7 @@ tests/test_runtime_deploy_parity.py,Elastic-2.0,2026 SuperTale contributors,REUS
 tests/test_runtime_env.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_runtime_route_summary.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_runtime_source_path.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
+tests/test_safe_media_url.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_sandbox_roots.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_scene_gallery_backend_removed.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_scene_name_migration.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
