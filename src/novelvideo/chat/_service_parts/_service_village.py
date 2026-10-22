@@ -33,6 +33,37 @@ def _classify_provider_error(value: object) -> str:
     return ""
 
 
+def _unknown_side_effect_recovery_contract(
+    exc: BaseException,
+    *,
+    has_workflow: bool,
+    provider_task_ids: Sequence[object],
+) -> dict[str, Any] | None:
+    """Fail closed when a stream ends after a possible write dispatch.
+
+    A canvas command or capability invoke may have reached the server before
+    the model stream died.  Without a durable workflow/provider identity the
+    next turn must inspect receipts first; it must not start a new submission.
+    """
+
+    if not bool(getattr(exc, "has_side_effect", False)):
+        return None
+    if has_workflow or provider_task_ids:
+        return None
+    return {
+        "schema": "village_agent_recovery_contract.v1",
+        "action": "inspect_before_action",
+        "allow_new_submission": False,
+        "workflow_run_id": "",
+        "provider_task_ids": [],
+        "pending_steps": [],
+        "reason": (
+            "Agent 流在可能已派发写操作后中断；恢复只能先查询画布或任务回执，"
+            "禁止自动重发。"
+        ),
+    }
+
+
 def _director_prompt_projection(value: object) -> dict[str, Any]:
     """Project the server-owned plan into a compact, non-authoritative prompt view.
 
@@ -1598,6 +1629,11 @@ async def _stream_assistant_reply_village(
                     error_label = redact_secrets(str(exc))[:480]
                     if error_label and error_label not in active_errors:
                         active_errors.append(error_label)
+                    unknown_recovery = _unknown_side_effect_recovery_contract(
+                        exc,
+                        has_workflow=bool(last_workflow_run),
+                        provider_task_ids=provider_task_ids,
+                    )
                     checkpoint_payload = build_checkpoint(
                         state_dir=checkpoint_state_dir,
                         project_id=project,
@@ -1623,14 +1659,22 @@ async def _stream_assistant_reply_village(
                         },
                         orchestration=orchestration_snapshot(),
                         recovery_contract_override=(
-                            authoritative_recovery_contract
-                            if not last_workflow_run
-                            else None
+                            unknown_recovery
+                            if unknown_recovery is not None
+                            else (
+                                authoritative_recovery_contract
+                                if not last_workflow_run
+                                else None
+                            )
                         ),
                         next_action=(
-                            "仅查询已有 provider task，不重新提交；先对账 WorkflowRun 和上游回执。"
-                            if provider_task_ids
-                            else "重建 Agent 工作线程后，先读取当前画布和工作流状态，再继续未完成步骤。"
+                            "先查询画布或任务回执，确认上一步是否已派发；禁止自动重发。"
+                            if unknown_recovery is not None
+                            else (
+                                "仅查询已有 provider task，不重新提交；先对账 WorkflowRun 和上游回执。"
+                                if provider_task_ids
+                                else "重建 Agent 工作线程后，先读取当前画布和工作流状态，再继续未完成步骤。"
+                            )
                         ),
                     )
                     latest_checkpoint = checkpoint_payload
@@ -1661,16 +1705,17 @@ async def _stream_assistant_reply_village(
                         username,
                         project,
                     )
+                possible_side_effect = bool(getattr(exc, "has_side_effect", False))
                 safe_tool_loop_retry = (
                     isinstance(exc, VillageAgentToolLoopError)
-                    and not exc.has_side_effect
+                    and not possible_side_effect
                 )
                 safe_worker_retry = (
                     isinstance(exc, VillageAgentWorkerLostError)
-                    and not exc.has_side_effect
+                    and not possible_side_effect
                     and not assistant_text.strip()
                 )
-                if attempt < 2 and (
+                if attempt < 2 and not possible_side_effect and (
                     not turn_had_effect or safe_tool_loop_retry or safe_worker_retry
                 ):
                     logger.warning(

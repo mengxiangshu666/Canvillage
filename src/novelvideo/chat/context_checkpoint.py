@@ -204,7 +204,13 @@ def _recovery_contract(
             recovery.get("instruction")
             or "付费步骤已被门禁拒绝，先修复前置条件，禁止重放原命令。"
         )
-    elif run_id and status in {"running", "waiting", "waiting_external", "recovering"}:
+    elif run_id and status in {
+        "running",
+        "waiting",
+        "waiting_external",
+        "recovering",
+        "paused",
+    }:
         action = "resume_workflow_run"
         reason = "已有活动 WorkflowRun，恢复应继续原运行并从当前 frontier 前进。"
     elif pending:
@@ -214,7 +220,9 @@ def _recovery_contract(
         action = "inspect_before_action"
         reason = "恢复身份不足，先读取权威状态再决定下一动作。"
     active_run = bool(
-        run_id and status in {"running", "waiting", "waiting_external", "recovering"}
+        run_id
+        and status
+        in {"running", "waiting", "waiting_external", "recovering", "paused"}
     )
     return {
         "schema": "village_agent_recovery_contract.v1",

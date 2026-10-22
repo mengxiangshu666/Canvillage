@@ -188,7 +188,11 @@ def test_recoverable_village_errors_share_retry_contract():
         == 8.0
     )
     assert _tool_calls_are_read_only(())
-    assert _tool_calls_are_read_only(("skill", "village_canvas_capability"))
+    assert _tool_calls_are_read_only(
+        ("skill", ("village_canvas_capability", {"action": "search"}))
+    )
+    # A bare capability name cannot prove the call was a search; it fails closed.
+    assert not _tool_calls_are_read_only(("skill", "village_canvas_capability"))
     assert not _tool_calls_are_read_only(("freezone_emit_canvas_command",))
 
 

@@ -258,6 +258,50 @@ def test_workflow_run_recovery_checkpoint_rebuilds_exact_failed_items() -> None:
     assert checkpoint["workflow"]["run_id"] == "wfr-failed"
 
 
+def test_paused_workflow_recovery_keeps_original_run_without_new_submission(
+    tmp_path,
+) -> None:
+    workflow = {
+        "id": "wfr-paused",
+        "run_id": "wfr-paused",
+        "project_id": "project-a",
+        "canvas_id": "canvas-a",
+        "status": "paused",
+        "current_step": "step-2",
+    }
+    generic = build_checkpoint(
+        state_dir=tmp_path,
+        project_id="project-a",
+        canvas_id="canvas-a",
+        turn_id="turn-paused",
+        logical_session_id="project:project-a:canvas-a",
+        goal="继续暂停的片子",
+        workflow=workflow,
+        pending_steps=["step-2"],
+    )
+    canonical = workflow_run_recovery_checkpoint(
+        workflow,
+        project_id="project-a",
+        canvas_id="canvas-a",
+        requested_run_id="wfr-paused",
+    )
+
+    generic_contract = generic["recovery_contract"]
+    canonical_contract = canonical["recovery_contract"]
+    assert generic_contract["action"] == "resume_workflow_run"
+    assert generic_contract["workflow_run_id"] == "wfr-paused"
+    assert generic_contract["allow_new_submission"] is False
+    assert (
+        canonical_contract["action"],
+        canonical_contract["workflow_run_id"],
+        canonical_contract["allow_new_submission"],
+    ) == (
+        generic_contract["action"],
+        generic_contract["workflow_run_id"],
+        generic_contract["allow_new_submission"],
+    )
+
+
 def test_workflow_run_recovery_checkpoint_fails_closed_for_wrong_scope() -> None:
     checkpoint = workflow_run_recovery_checkpoint(
         {

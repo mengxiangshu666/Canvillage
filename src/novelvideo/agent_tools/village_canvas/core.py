@@ -106,21 +106,40 @@ INDEXED_CANVAS_AGENT_TOOL_NAMES = frozenset(
         "village_canvas_dispatch_action",
     }
 )
+# M04 pilot: a small, strongly typed surface for the common canvas/media lanes.
+# It is opt-in (VILLAGE_CANVAS_TOOL_EXPOSURE_MODE=typed); the default indexed
+# surface and the full diagnostic surface remain unchanged.
+TYPED_CANVAS_AGENT_TOOL_NAMES = frozenset(
+    {
+        "village_canvas_read_compact",
+        "village_canvas_apply_commands",
+        "freezone_run_node",
+        "freezone_retry_node",
+        "freezone_stop_task",
+    }
+)
 CAPABILITY_BROKER_TOOL_NAME = "village_canvas_capability"
 
 
 def _tool_exposure_mode() -> str:
     # Keep the model-facing surface small by default. ``full`` remains an
-    # explicit compatibility switch for diagnostics and rollback.
+    # explicit compatibility switch for diagnostics and rollback; ``typed`` is
+    # the M04 pilot and is never selected implicitly.
     value = str(os.environ.get("VILLAGE_CANVAS_TOOL_EXPOSURE_MODE") or "indexed")
-    return "indexed" if value.strip().lower() == "indexed" else "full"
+    mode = value.strip().lower()
+    if mode in {"indexed", "typed", "full"}:
+        return mode
+    return "indexed"
 
 
 def exposed_canvas_agent_tool_names() -> frozenset[str]:
-    if _tool_exposure_mode() == "indexed":
+    mode = _tool_exposure_mode()
+    if mode == "indexed":
         return frozenset(
             {*INDEXED_CANVAS_AGENT_TOOL_NAMES, CAPABILITY_BROKER_TOOL_NAME}
         )
+    if mode == "typed":
+        return TYPED_CANVAS_AGENT_TOOL_NAMES
     return CANVAS_AGENT_TOOL_NAMES
 
 

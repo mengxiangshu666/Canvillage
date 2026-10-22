@@ -362,6 +362,27 @@ def route_action(
             requires_durable_run=False,
             requires_confirmation=False,
         )
+    # A single fully compiled node creation is already an executable canvas
+    # transaction.  Only incomplete untrusted profiles take this shortcut;
+    # complete profiles keep their existing lane/reason contract, and recovery
+    # or multi-item profiles still fall through to the director checks.
+    if (
+        not profile.director_contract_complete
+        and single_atomic_creation
+        and contains_creation
+        and not profile.existing_run_id
+        and not profile.requires_recovery
+        and profile.step_count <= 1
+        and profile.item_count <= 1
+        and profile.dependency_count == 0
+    ):
+        return ActionRoute(
+            lane="canvas",
+            reason_code="single_canvas_creation",
+            reason="单个已编译节点创建可在一次画布事务内完成，不要求完整导演合同",
+            requires_durable_run=False,
+            requires_confirmation=profile.contains_paid_media,
+        )
     if not profile.director_contract_complete:
         if existing_node_mutation_only and not profile.requires_recovery:
             return ActionRoute(
@@ -557,7 +578,11 @@ def route_canvas_envelope(
             operation="canvas_command",
             requested_lane="workflow" if workflow_run_id else "canvas",
             item_count=max(1, command_count),
-        )
+        ),
+        existing_node_mutation_only=existing_node_mutation_batch(commands),
+        contains_creation=canvas_creation_batch(commands),
+        single_atomic_creation=single_atomic_canvas_creation_batch(commands),
+        existing_node_ids=existing_node_ids,
     )
 
 

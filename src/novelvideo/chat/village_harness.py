@@ -148,15 +148,44 @@ _READ_ONLY_AGENT_TOOLS = frozenset(
     {
         "skill",
         TURN_INTENT_TOOL_NAME,
-        "village_canvas_capability",
         "village_canvas_read_compact",
     }
 )
+# A malformed argument batch can be retried before the handler runs, even for
+# the capability tool.  This is a schema/transport retry, not permission to
+# repeat a dispatched side effect; stream-drop classification below is stricter.
+_RETRYABLE_AGENT_TOOLS = _READ_ONLY_AGENT_TOOLS | {"village_canvas_capability"}
 
 
-def _tool_calls_are_read_only(tool_names: Sequence[object]) -> bool:
-    names = {str(name or "").strip() for name in tool_names if str(name or "").strip()}
-    return names <= _READ_ONLY_AGENT_TOOLS
+def _tool_calls_are_read_only(
+    tool_calls: Sequence[object],
+) -> bool:
+    """Return whether every observed call is provably read-only.
+
+    A bare tool name is not enough for ``village_canvas_capability``: the same
+    tool can search (read) or invoke a write.  Callers that have the actual
+    arguments must pass ``(name, arguments)`` pairs; a name-only capability
+    call fails closed.
+    """
+
+    for item in tool_calls:
+        arguments: Mapping[str, Any] | None = None
+        if isinstance(item, tuple) and len(item) == 2:
+            name = str(item[0] or "").strip()
+            candidate = item[1]
+            if isinstance(candidate, Mapping):
+                arguments = candidate
+        else:
+            name = str(item or "").strip()
+        if not name:
+            continue
+        if arguments is None:
+            if name not in _READ_ONLY_AGENT_TOOLS:
+                return False
+            continue
+        if tool_has_side_effect(name, arguments):
+            return False
+    return True
 
 
 def _is_transport_disconnect_error(exc: BaseException) -> bool:
@@ -836,7 +865,7 @@ def _build_tool(
     )
     # Read-only calls may be retried once when the provider emits a malformed
     # parallel tool batch. Write tools remain single-shot.
-    tool.max_retries = 1 if name in _READ_ONLY_AGENT_TOOLS else 0
+    tool.max_retries = 1 if name in _RETRYABLE_AGENT_TOOLS else 0
     return tool
 
 
@@ -1368,6 +1397,7 @@ class VillageAgentThread:
             final_output = ""
             committed_receipts: list[dict[str, Any]] = []
             seen_tool_names: list[str] = []
+            seen_tool_calls: list[tuple[str, Mapping[str, Any] | None]] = []
             tool_arguments_by_call_id: dict[str, Mapping[str, Any]] = {}
             history = _bounded_history(self._history)
             context = agent_api_context(
@@ -1432,6 +1462,14 @@ class VillageAgentThread:
                                     )
                                 if tool_name:
                                     seen_tool_names.append(tool_name)
+                                    seen_tool_calls.append(
+                                        (
+                                            tool_name,
+                                            dict(tool_arguments)
+                                            if isinstance(tool_arguments, Mapping)
+                                            else None,
+                                        )
+                                    )
                                 yield ChatBackendEvent(
                                     type="tool_update",
                                     thread_id=self.id,
@@ -1533,7 +1571,7 @@ class VillageAgentThread:
                             turn_id=turn_id,
                             tool_names=seen_tool_names,
                             has_side_effect=not _tool_calls_are_read_only(
-                                seen_tool_names
+                                seen_tool_calls
                             ),
                             last_event="agent_stream_transport",
                         ) from exc
