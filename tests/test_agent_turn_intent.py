@@ -10,6 +10,7 @@ from novelvideo.agent_tools.turn_intent import (
     TURN_INTENT_TOOL_SCHEMA,
     canonical_turn_intent_hash,
     freeze_turn_intent,
+    infer_turn_intent_contract,
 )
 from novelvideo.agent_tools.village_canvas import capability_side_effect
 from novelvideo.chat.turn_intent import TurnIntentRuntime, tool_has_side_effect
@@ -195,8 +196,8 @@ def test_runtime_freezes_before_the_first_side_effect() -> None:
     assert runtime.locked is True
     assert runtime.source == "runtime_side_effect_preflight"
     assert runtime.contract is not None
-    assert runtime.contract["delivery"]["mode"] == "async_artifact"
-    assert runtime.contract["delivery"]["media_type"] == "video"
+    assert runtime.contract["delivery"]["mode"] == "state_change"
+    assert runtime.contract["delivery"]["media_type"] is None
     assert runtime.receipt()["status"] == "locked"
     assert runtime.receipt()["contract_hash"] == runtime.contract["contract_hash"]
 
@@ -414,3 +415,76 @@ async def test_harness_turn_intent_tool_does_not_enter_registry() -> None:
     assert payload["turn_intent_receipt"]["source"] == "explicit"
     assert len(payload["turn_intent_receipt"]["contract_hash"]) == 64
     assert registry.calls == []
+
+
+def test_inferred_delivery_ignores_media_words_inside_canvas_prompt() -> None:
+    contract = infer_turn_intent_contract(
+        prompt="把镜头-137 的视频提示词改成雨夜",
+        tool_name="village_canvas_dispatch_action",
+        tool_arguments={
+            "commands": [
+                {
+                    "type": "update_node_prompt",
+                    "node_id": "shot-137",
+                    "prompt": "雨夜视频，镜头缓慢推进",
+                }
+            ]
+        },
+        turn_id="turn-1",
+    )
+
+    assert contract["delivery"]["mode"] == "state_change"
+    assert contract["delivery"]["media_type"] is None
+
+
+def test_inferred_delivery_keeps_real_media_capability() -> None:
+    contract = infer_turn_intent_contract(
+        prompt="生成九宫格草图",
+        tool_name="village_canvas_capability",
+        tool_arguments={
+            "action": "invoke",
+            "capability_id": "creative.generate_sketches",
+        },
+        turn_id="turn-1",
+    )
+
+    assert contract["delivery"]["mode"] == "async_artifact"
+    assert contract["delivery"]["media_type"] == "image"
+
+
+def test_inferred_delivery_keeps_real_media_node_task() -> None:
+    contract = infer_turn_intent_contract(
+        prompt="跑这个视频节点",
+        tool_name="freezone_run_node",
+        tool_arguments={"node_id": "node-1", "node_type": "videoGen"},
+        turn_id="turn-1",
+    )
+
+    assert contract["delivery"]["mode"] == "async_artifact"
+    assert contract["delivery"]["media_type"] == "video"
+
+
+def test_inferred_delivery_keeps_media_command_inside_dispatch() -> None:
+    contract = infer_turn_intent_contract(
+        prompt="跑这个图片节点",
+        tool_name="village_canvas_dispatch_action",
+        tool_arguments={
+            "commands": [{"type": "run_node", "node_type": "imageGen"}]
+        },
+        turn_id="turn-1",
+    )
+
+    assert contract["delivery"]["mode"] == "async_artifact"
+    assert contract["delivery"]["media_type"] == "image"
+
+
+def test_explicit_freeze_fills_missing_reference_resolution() -> None:
+    contract = _contract()
+    contract.pop("reference_resolution")
+
+    frozen = freeze_turn_intent(arguments={"contract": contract})
+
+    assert frozen["ok"] is True
+    assert frozen["contract"]["reference_resolution"] == {
+        "mode": "explicit_freeze"
+    }

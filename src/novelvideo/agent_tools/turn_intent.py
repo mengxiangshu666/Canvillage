@@ -212,7 +212,18 @@ def freeze_turn_intent(
     """Validate one authored contract and return an idempotent frozen envelope."""
 
     args = _mapping(arguments)
-    supplied = _normalize_media_delivery(args.get("contract"))
+    raw_contract = args.get("contract")
+    if isinstance(raw_contract, Mapping) and not isinstance(
+        raw_contract.get("reference_resolution"), Mapping
+    ):
+        # The model may author the goal/delivery/requirements but omit this
+        # provenance object.  It is metadata, not the semantic contract; fill
+        # it instead of failing the whole turn before any side effect.
+        raw_contract = {
+            **dict(raw_contract),
+            "reference_resolution": {"mode": "explicit_freeze"},
+        }
+    supplied = _normalize_media_delivery(raw_contract)
     issues = validate_turn_intent_contract(supplied)
     if issues:
         return _failure(
@@ -286,8 +297,54 @@ def _first_text(value: object, keys: tuple[str, ...], *, depth: int = 0) -> str:
     return ""
 
 
-def _media_hint(tool_name: str, arguments: Mapping[str, Any]) -> str | None:
-    material = f"{tool_name} {json.dumps(arguments, ensure_ascii=False, default=str)}".casefold()
+_MEDIA_TASK_TOOLS = frozenset(
+    {
+        "freezone_run_node",
+        "freezone_retry_node",
+        "village_canvas_start_single_video",
+        "village_canvas_generate_scene_master",
+        "village_canvas_generate_scene_reverse",
+        "village_canvas_generate_portrait",
+        "village_canvas_generate_identity_image",
+        "village_canvas_generate_sketches",
+        "village_canvas_generate_audio",
+        "village_canvas_render_first_frames",
+        "village_canvas_compose_episode",
+        "village_canvas_optimize_video_global",
+        "village_canvas_start_production_run",
+        "village_canvas_command_production_run",
+    }
+)
+_MEDIA_TASK_COMMAND_TYPES = frozenset(
+    {
+        "run_node",
+        "retry_node",
+        "start_single_video",
+        "compose_episode",
+        "generate_scene_master",
+        "generate_scene_reverse",
+        "generate_sketches",
+        "generate_audio",
+        "render_first_frames",
+        "generate_portrait",
+        "generate_identity_image",
+        "optimize_video_global",
+        "start_production_run",
+        "command_production_run",
+    }
+)
+_MEDIA_COMMAND_DEFAULTS = {
+    "start_single_video": "video",
+    "compose_episode": "video",
+    "optimize_video_global": "video",
+    "generate_audio": "audio",
+    "run_node": "",
+    "retry_node": "",
+}
+
+
+def _media_from_text(value: object) -> str | None:
+    material = str(value or "").casefold()
     if any(token in material for token in ("video", "视频", "seedance")):
         return "video"
     if any(token in material for token in ("audio", "音频", "voice", "配音", "music")):
@@ -298,6 +355,81 @@ def _media_hint(tool_name: str, arguments: Mapping[str, Any]) -> str | None:
     ):
         return "image"
     return None
+
+
+def _structural_media_text(name: str, arguments: Mapping[str, Any]) -> str:
+    """Only inspect execution facts, never free-form prompt prose.
+
+    ``update_node_prompt`` arguments legitimately contain words like 视频 or
+    镜头.  Treating those words as evidence of an asynchronous media task made
+    a completed canvas edit look unverified.  Tool identity plus structural
+    fields decide the channel; prompt text does not.
+    """
+
+    parts = [name]
+    for key in (
+        "node_type",
+        "task_type",
+        "media_type",
+        "capability_id",
+        "operation",
+        "kind",
+        "model",
+        "backend",
+        "queue_kind",
+    ):
+        value = arguments.get(key)
+        if isinstance(value, str):
+            parts.append(value)
+    return " ".join(parts)
+
+
+def _media_hint(tool_name: str, arguments: Mapping[str, Any]) -> str | None:
+    name = str(tool_name or "").strip().casefold()
+    if name == "village_canvas_capability":
+        if str(arguments.get("action") or "").strip().lower() != "invoke":
+            return None
+        capability_id = str(arguments.get("capability_id") or "").strip()
+        if not capability_id:
+            return None
+        from novelvideo.agent_tools.village_canvas import capability_side_effect
+
+        if capability_side_effect(capability_id) != "create_task":
+            return None
+        return _media_from_text(capability_id)
+
+    if name in _MEDIA_TASK_TOOLS:
+        return _media_from_text(_structural_media_text(name, arguments))
+
+    if name in {"village_canvas_dispatch_action", "village_canvas_apply_commands"}:
+        capability_id = str(arguments.get("capability_id") or "").strip()
+        if capability_id:
+            from novelvideo.agent_tools.village_canvas import capability_side_effect
+
+            if capability_side_effect(capability_id) == "create_task":
+                return _media_from_text(capability_id)
+        commands = arguments.get("commands")
+        if isinstance(commands, (list, tuple)):
+            for command in commands[:32]:
+                if not isinstance(command, Mapping):
+                    continue
+                command_type = str(command.get("type") or "").strip().casefold()
+                if command_type not in _MEDIA_TASK_COMMAND_TYPES:
+                    continue
+                media = _media_from_text(
+                    " ".join(
+                        str(command.get(key) or "")
+                        for key in ("type", "node_type", "model", "task_type")
+                    )
+                )
+                if media:
+                    return media
+                default = _MEDIA_COMMAND_DEFAULTS.get(command_type, "")
+                if default:
+                    return default
+        return None
+
+    return _media_from_text(_structural_media_text(name, arguments))
 
 
 def infer_turn_intent_contract(
@@ -383,7 +515,14 @@ TURN_INTENT_TOOL_SCHEMA: dict[str, Any] = {
                 "type": "object",
                 "properties": {
                     "version": {"const": 1},
-                    "reference_resolution": {"type": "object"},
+                    "reference_resolution": {
+                        "type": "object",
+                        "description": (
+                            "Optional provenance. When omitted the runtime fills "
+                            "{mode: explicit_freeze}; it is metadata, not the "
+                            "semantic contract."
+                        ),
+                    },
                     "delivery": {
                         "type": "object",
                         "properties": {
@@ -423,7 +562,6 @@ TURN_INTENT_TOOL_SCHEMA: dict[str, Any] = {
                 },
                 "required": [
                     "version",
-                    "reference_resolution",
                     "delivery",
                     "must",
                     "forbid",
