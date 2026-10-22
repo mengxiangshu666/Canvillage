@@ -191,6 +191,25 @@ async def _stream_assistant_reply_village(
     research_enabled: bool = False,
 ) -> dict[str, Any]:
     """Stream through the in-process PydanticAI Village harness."""
+    if project and not image_parts:
+        from novelvideo.chat import tapcanvas_sidecar
+
+        if tapcanvas_sidecar.chat_backend_enabled():
+            # Explicit operator opt-in only.  The sidecar is the agent brain,
+            # while canvas/task/workflow writes still go through the same
+            # native tools and product authorities.
+            return await tapcanvas_sidecar.stream_chat_turn(
+                username,
+                project,
+                prompt,
+                on_event,
+                project_dir=project_dir,
+                project_state_dir=project_state_dir,
+                conversation_id=conversation_id,
+                canvas_id=canvas_id,
+                turn_id=turn_id,
+                model=model,
+            )
     from novelvideo.chat.village_harness import (
         VillageAgentCompressionExhaustedError,
         VillageAgentMessageTooLargeError,

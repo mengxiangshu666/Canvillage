@@ -43,6 +43,7 @@ except Exception:
 from novelvideo.api.routes import (  # noqa: E402
     account,
     agent_memory,
+    agent_sidecar,
     assets,
     auth,
     canvas_templates,
@@ -109,6 +110,7 @@ if not runtime_env.is_ce_effective():
 api_router.include_router(account.router, tags=["account"])
 api_router.include_router(config.router, tags=["config"])
 api_router.include_router(chat.router, tags=["chat"])
+api_router.include_router(agent_sidecar.router, tags=["agent-sidecar"])
 api_router.include_router(chat_paid_media_grants.router, tags=["chat"])
 api_router.include_router(agent_memory.router, tags=["agent-memory"])
 api_router.include_router(

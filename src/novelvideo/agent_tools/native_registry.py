@@ -16,12 +16,22 @@ from .turn_intent import (
     turn_intent_tool_handler,
 )
 from .village_canvas import native_tool_entries
+from .village_canvas.runtime import runtime_attr
 
 
-def build_native_registry() -> PluginRegistry:
+def build_native_registry(*, full: bool = False) -> PluginRegistry:
+    """Build the native registry.
+
+    ``full`` is for trusted in-process bridges (for example the optional
+    TapCanvas sidecar) that pass their own bounded tool list and must be able
+    to invoke every declared native tool regardless of the model-facing
+    exposure mode.  The default harness keeps the exposure-mode surface.
+    """
+
+    entries = runtime_attr("TOOLS") if full else native_tool_entries()
     tools = {
         name: (schema, handler)
-        for name, schema, handler in native_tool_entries()
+        for name, schema, handler in entries
     }
     registry = PluginRegistry()
     registry.register(
