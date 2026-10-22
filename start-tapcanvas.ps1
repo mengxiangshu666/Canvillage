@@ -12,7 +12,7 @@ if (-not $SidecarDir) {
 
 & (Join-Path $root 'scripts\agent_sidecar.ps1') -Action start -Dir $SidecarDir -Port $Port
 
-$env:VILLAGE_CHAT_AGENT_BACKEND = 'tapcanvas'
+$env:VILLAGE_CHAT_AGENT_BACKEND = 'xiaoshu'
 $env:VILLAGE_AGENT_SIDECAR_URL = "http://127.0.0.1:$Port"
 
 # The normal launcher exits early when 8784 is already listening.  This

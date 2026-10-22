@@ -190,7 +190,7 @@ async def agent_sidecar_turn(
         project_id=body.project_id,
         required_role="editor",
     )
-    require_project_home_node(ctx, operation="run TapCanvas sidecar")
+    require_project_home_node(ctx, operation="run 小树 Agent 服务")
     username = str(user.get("username") or user.get("sub") or "local")
     try:
         result = await tapcanvas_sidecar.run_turn(

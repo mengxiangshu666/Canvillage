@@ -160,10 +160,30 @@ async def test_unknown_turn_token_is_rejected() -> None:
 def test_chat_backend_requires_explicit_opt_in(monkeypatch) -> None:
     monkeypatch.delenv("VILLAGE_CHAT_AGENT_BACKEND", raising=False)
     assert tapcanvas_sidecar.chat_backend_enabled() is False
+    monkeypatch.setenv("VILLAGE_CHAT_AGENT_BACKEND", "xiaoshu")
+    assert tapcanvas_sidecar.chat_backend_enabled() is True
     monkeypatch.setenv("VILLAGE_CHAT_AGENT_BACKEND", "tapcanvas")
     assert tapcanvas_sidecar.chat_backend_enabled() is True
     monkeypatch.setenv("VILLAGE_CHAT_AGENT_BACKEND", "village")
     assert tapcanvas_sidecar.chat_backend_enabled() is False
+
+
+def test_vendor_names_are_replaced_in_user_visible_text() -> None:
+    assert (
+        tapcanvas_sidecar.product_text("TapCanvas Harness / DeepSeek Harness 已完成")
+        == "小树 / 小树 已完成"
+    )
+    assert tapcanvas_sidecar.product_text("我是 TapCanvas") == "小树"
+    # User-authored labels are data, not the assistant's identity.
+    assert tapcanvas_sidecar.product_text("TapCanvas 隔离测试") == "TapCanvas 隔离测试"
+    assert (
+        tapcanvas_sidecar.display_tool_name("report_delivery")
+        == "village_delivery_check"
+    )
+    assert (
+        tapcanvas_sidecar.display_tool_name("village_canvas_read_compact")
+        == "village_canvas_read_compact"
+    )
 
 
 @pytest.mark.asyncio
@@ -199,7 +219,8 @@ async def test_stream_chat_turn_projects_trace_and_canvas_patch(monkeypatch) -> 
         }
 
     def fake_add_assistant_message(*args, **kwargs):
-        assert kwargs["metadata"]["backend"] == "tapcanvas"
+        assert kwargs["metadata"]["backend"] == "xiaoshu-sidecar"
+        assert kwargs["metadata"]["backend_thread_id"].startswith("xiaoshu:")
         return {"role": "assistant", "content": "已完成", "turn_id": "turn-1"}
 
     monkeypatch.setattr(tapcanvas_sidecar, "run_turn", fake_run_turn)
