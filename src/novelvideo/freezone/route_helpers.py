@@ -397,6 +397,15 @@ def split_provider_and_model(
 
     if provider:
         return provider, model_text or fallback_model
+    if model_text:
+        # A model-center catalog id or upstream model id must stay on its
+        # configured direct endpoint.  Falling through to the legacy NewAPI
+        # channel here sent real direct image models to the unified gateway.
+        from novelvideo.generators.direct_image_models import resolve_direct_image_model
+
+        direct_model = resolve_direct_image_model(model_text)
+        if direct_model is not None:
+            return "direct", direct_model.registry_id
     if model_text and "/" in model_text:
         provider_token, model_token = model_text.split("/", 1)
         if provider_token in SUPPORTED_FREEZONE_IMAGE_PROVIDERS:

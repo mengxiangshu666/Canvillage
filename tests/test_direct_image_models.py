@@ -1344,3 +1344,50 @@ def test_mask_edit_wrapper_keeps_the_direct_channel_diagnostic(monkeypatch, tmp_
     assert metadata["error_code"] == "DIRECT_IMAGE_CONTENT_MODERATION_FAILED"
     assert metadata["retryable"] is False
     assert "图像擦除失败" in str(excinfo.value)
+
+
+def _direct_image_rows() -> list[dict]:
+    return [
+        {
+            "id": "image-primary",
+            "label": "gpt-image-2.5-sunburst",
+            "modelId": "gpt-image-2.5-sunburst",
+            "baseUrl": "https://primary.example/v1",
+            "apiKey": "sk-test",
+            "protocol": "openai-images",
+            "enabled": True,
+            "isDefault": False,
+        },
+        {
+            "id": "image-default",
+            "label": "gpt-image-2.5-sunburst",
+            "modelId": "gpt-image-2.5-sunburst",
+            "baseUrl": "https://default.example/v1",
+            "apiKey": "sk-test",
+            "protocol": "openai-images",
+            "enabled": True,
+            "isDefault": True,
+        },
+    ]
+
+
+def test_resolve_direct_image_model_accepts_upstream_model_id(monkeypatch):
+    from novelvideo.generators import direct_image_models as module
+
+    monkeypatch.setattr(module, "get_direct_models", lambda _kind: _direct_image_rows())
+
+    resolved = module.resolve_direct_image_model("gpt-image-2.5-sunburst")
+
+    assert resolved is not None
+    assert resolved.registry_id == "image-default"
+
+
+def test_split_provider_and_model_binds_explicit_model_to_direct(monkeypatch):
+    from novelvideo.freezone import route_helpers
+    from novelvideo.generators import direct_image_models as module
+
+    monkeypatch.setattr(module, "get_direct_models", lambda _kind: _direct_image_rows())
+
+    assert route_helpers.split_provider_and_model(
+        None, "gpt-image-2.5-sunburst"
+    ) == ("direct", "image-default")

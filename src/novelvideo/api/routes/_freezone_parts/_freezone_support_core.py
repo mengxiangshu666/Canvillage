@@ -831,7 +831,9 @@ async def _start_or_enqueue_freezone_gen_job(
         if not Path(path_text).exists():
             raise HTTPException(404, f"reference file not found: {path_text}")
     job_id = _new_job_id()
-    resolved_provider, resolved_model = _split_provider_and_model(provider, model)
+    resolved_provider, resolved_model = _split_provider_and_model(
+        provider, model_id or model
+    )
     normalized_provider = _resolve_freezone_image_provider(resolved_provider)
     prompt_text = _merge_prompt_with_style_and_camera(prompt, style, camera)
     display_payload = {
@@ -2197,7 +2199,9 @@ async def _start_or_enqueue_freezone_edit_job(
         else aspect_ratio
     )
     job_id = _new_job_id()
-    resolved_provider, resolved_model = _split_provider_and_model(provider, model)
+    resolved_provider, resolved_model = _split_provider_and_model(
+        provider, model_id or model
+    )
     normalized_provider = _resolve_freezone_image_provider(resolved_provider)
     prompt_text = _merge_prompt_with_style_and_camera(prompt, style, camera)
     display_payload = {

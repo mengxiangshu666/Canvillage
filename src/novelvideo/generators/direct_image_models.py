@@ -349,10 +349,21 @@ def resolve_direct_image_model(model: str | None) -> DirectImageModel | None:
         return next((item for item in models if item.enabled and item.is_default), None) or next(
             (item for item in models if item.enabled), None
         )
-    return next(
+    by_registry_id = next(
         (item for item in models if item.registry_id == value and item.enabled),
         None,
     )
+    if by_registry_id is not None:
+        return by_registry_id
+    # Callers also pass the saved upstream model id (for example
+    # ``gpt-image-2.5-sunburst``).  Prefer the configured default when the
+    # same upstream id appears on more than one endpoint.
+    by_upstream = [
+        item
+        for item in models
+        if item.enabled and item.upstream_model.strip().lower() == value
+    ]
+    return next((item for item in by_upstream if item.is_default), by_upstream[0] if by_upstream else None)
 
 
 def direct_image_model_option(model: DirectImageModel) -> dict[str, Any]:
