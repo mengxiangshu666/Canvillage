@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { TaskListSkeleton } from "@/components/skeletons";
 import { cn } from "@/lib/utils";
+import "@/components/layout/libtv-workbench";
 import { stageForTaskType } from "@/lib/episode-stage-registry";
 import { TASK_TYPES } from "@/lib/task-types";
 import type { Task, TaskStatus } from "@/types/task";
@@ -115,7 +116,7 @@ function TaskRow({
   return (
     <div
       className={cn(
-        "rounded-[8px] border border-white/[0.1]",
+        "rounded-[10px] border border-white/[0.075] bg-[#1d1d1d] transition-colors hover:border-white/[0.13]",
         outOfProject && "border-dashed opacity-70",
       )}
     >
@@ -341,8 +342,8 @@ function TasksPage() {
   const hasCompleted = tasks.some((tk) => tk.status === "completed");
 
   return (
-    <div className="-m-6 flex h-[calc(100%+3rem)] flex-col overflow-hidden">
-      <div className="flex shrink-0 flex-col gap-3 border-b border-border/30 bg-background px-9 py-5 lg:flex-row lg:items-center lg:justify-between">
+    <div className="libtv-workbench -m-6 flex h-[calc(100%+3rem)] flex-col overflow-hidden">
+      <div className="libtv-page-head flex shrink-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <ListChecks className="size-[18px]" />
@@ -399,7 +400,7 @@ function TasksPage() {
             <p className="text-sm text-muted-foreground">{t("tasks.noTasks")}</p>
           </div>
         ) : (
-          <div className="space-y-5">
+          <div className="mx-auto max-w-5xl space-y-2">
             {tasks.map((task, idx) => (
               <TaskRow
                 key={`${task.task_type}-${task.project}-${task.episode}-${idx}`}

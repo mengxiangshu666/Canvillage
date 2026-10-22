@@ -21,7 +21,8 @@ function Stop-PackageProcessTree {
   if (-not $seen.Add($ProcessId)) { return $false }   # already stopped in an earlier pass
   if ($ProcessId -eq $PID) { return $false }          # never kill this script
   # Native taskkill may write "process not found" after a race; never treat as fatal.
-  & cmd.exe /c "taskkill /PID $ProcessId /T /F >nul 2>nul" | Out-Null
+  $taskkill = Join-Path $env:SystemRoot 'System32\taskkill.exe'
+  Start-Process -FilePath $taskkill -ArgumentList @('/PID', $ProcessId, '/T', '/F') -WindowStyle Hidden -Wait -ErrorAction SilentlyContinue
   return $true
 }
 

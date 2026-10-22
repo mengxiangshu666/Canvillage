@@ -235,7 +235,7 @@ export function AgentMemoryDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         data-agent-dialog="v4"
-        className="village-agent-dialog-v4 village-agent-dialog-v4--memory !flex !flex-col w-[calc(100vw-2rem)] max-h-[min(760px,88vh)] !max-w-[calc(100vw-2rem)] overflow-hidden border-white/[0.09] bg-[#111114] p-0 text-white shadow-2xl min-[760px]:!max-w-[760px]"
+        className="village-agent-dialog-v4 village-agent-dialog-v4--memory !flex !flex-col w-[calc(100vw-2rem)] max-h-[min(760px,88vh)] !max-w-[calc(100vw-2rem)] overflow-hidden rounded-[16px] border-white/[0.09] bg-[#141414] p-0 text-white shadow-2xl min-[760px]:!max-w-[760px]"
       >
         <div className="border-b border-white/[0.08] px-6 pb-4 pt-5">
           <DialogTitle className="text-[18px] font-semibold tracking-[-0.02em]">
@@ -283,11 +283,12 @@ export function AgentMemoryDialog({
               <button
                 key={entry.id}
                 type="button"
+                aria-pressed={tab === entry.id}
                 onClick={() => setTab(entry.id)}
                 className={cn(
-                  "min-w-0 w-full whitespace-nowrap rounded-full px-2.5 py-1.5 text-center text-[12px] font-medium transition min-[760px]:px-3",
+                  "min-w-0 w-full whitespace-nowrap rounded-lg px-2.5 py-1.5 text-center text-[12px] font-medium transition min-[760px]:px-3",
                   tab === entry.id
-                    ? "bg-white text-black"
+                    ? "bg-[#303030] text-white"
                     : "text-white/48 hover:bg-white/[0.06] hover:text-white/85",
                 )}
               >
@@ -398,7 +399,7 @@ export function AgentMemoryDialog({
               </div>
             )}
             {visibleItems.map((item) => (
-              <article key={item.id} className="min-w-0 rounded-xl border border-white/[0.075] bg-white/[0.025] p-3.5">
+              <article key={item.id} className="min-w-0 rounded-xl border border-white/[0.075] bg-[#1e1e1e] p-3.5">
                 <div className="flex items-start gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="mb-2 flex flex-wrap items-center gap-1.5 text-[10px] text-white/35">

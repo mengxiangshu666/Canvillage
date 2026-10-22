@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   dismissUpdateAvailable,
-  requestAppUpdateReload,
+  reloadAppWithCacheBust,
   useUpdateAvailable,
 } from "@/lib/app-update-available";
 
@@ -29,7 +29,7 @@ export function AppUpdateAvailable() {
           <Button
             type="button"
             className="h-[31px] min-w-[68px] rounded-[8px] bg-primary px-[11px] text-[12px] font-medium text-primary-foreground shadow-none hover:bg-primary/90 active:bg-primary/80"
-            onClick={() => requestAppUpdateReload()}
+            onClick={reloadAppWithCacheBust}
           >
             {t("app.updateAvailable.refresh")}
           </Button>

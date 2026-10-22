@@ -112,11 +112,11 @@
 
 .heroPrimary,
 .heroSecondary {
-  min-width: 146px !important;
-  height: 48px !important;
-  padding: 0 30px !important;
-  border-radius: 14px !important;
-  font-size: 17px !important;
+  min-width: 128px !important;
+  height: 40px !important;
+  padding: 0 24px !important;
+  border-radius: 11px !important;
+  font-size: 15px !important;
   letter-spacing: 0.02em !important;
 }
 
@@ -331,10 +331,10 @@
 
   .heroPrimary,
   .heroSecondary {
-    min-width: 124px !important;
-    height: 42px !important;
-    padding: 0 22px !important;
-    border-radius: 12px !important;
+    min-width: 116px !important;
+    height: 40px !important;
+    padding: 0 20px !important;
+    border-radius: 10px !important;
     font-size: 15px !important;
     letter-spacing: 0.02em !important;
   }

@@ -122,6 +122,7 @@ import {
   selectLiveModel,
 } from '@/features/canvas/domain/videoModelSelection';
 import {
+  requestableImageSize,
   runtimeImageModelFromOption,
   UNCONFIGURED_IMAGE_MODEL,
 } from '@/features/canvas/models/runtimeImageModels';
@@ -238,7 +239,6 @@ import {
   AdvancedParamsChip,
   AspectSizeChip,
   CameraChip,
-  CountSelect,
   StyleChip,
 } from './ImageGenParameterChips';
 
@@ -502,7 +502,12 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
   );
   const imageSizeOptions = useMemo(
     () => {
-      const options = runtimeImageModel.resolutions.map((option) => option.value as ImageSize);
+      const options = Array.from(new Set<ImageSize>([
+        '1K',
+        '2K',
+        '4K',
+        ...runtimeImageModel.resolutions.map((option) => option.value as ImageSize),
+      ]));
       if (
         runtimeImageModel.supportsCustomResolution &&
         rawSize &&
@@ -522,7 +527,23 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
     : defaultAspectRatio;
   const size = imageSizeOptions.includes(rawSize as ImageSize)
     ? rawSize as ImageSize
-    : defaultSize;
+    : defaultSize || '2K';
+  const supportedImageSizes = useMemo(
+    () => {
+      const options = runtimeImageModel.resolutions.map((option) => option.value);
+      if (
+        runtimeImageModel.supportsCustomResolution
+        && rawSize
+        && isValidImageSize(rawSize)
+        && !options.includes(rawSize)
+      ) {
+        options.push(rawSize);
+      }
+      return options;
+    },
+    [rawSize, runtimeImageModel],
+  );
+  const requestImageSize = requestableImageSize(size, supportedImageSizes);
   const qualityOptions = runtimeImageModel.qualityOptions ?? [];
   const supportsQuality = qualityOptions.length > 0;
   const quality = qualityOptions.some(({ value }) => value === data.quality)
@@ -549,7 +570,10 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
     imageModelsLoading || imageModelsFallback ? null : selectedModel?.apiModel ?? null;
   const imageCreditCost = useGenerationCreditCost('image_selection', imageSelectionForCost, {
     surface: 'canvas',
-    params: supportsQuality ? { size, quality } : { size },
+    params: {
+      ...(requestImageSize ? { size: requestImageSize } : {}),
+      ...(supportsQuality ? { quality } : {}),
+    },
     quantity: clampGenerationBatchCount(effectiveCount),
   });
   const totalCreditCostDisplay = useMemo(() => {
@@ -1395,7 +1419,7 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
           imageAspectOptions.find((option) => option.value !== 'auto')?.value ?? '1:1',
         ) as typeof aspectRatio
         : '',
-      imageSize: size,
+      ...(requestImageSize ? { imageSize: requestImageSize } : {}),
       // 画质仅在模型合同声明 qualityOptions 时下发。
       quality: supportsQuality ? quality : null,
       // 模型合同声明的高级参数（MJ 系开关等）。后端按合同过滤，未知键不透传。
@@ -1442,7 +1466,7 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
       generationQueueCompleted: 0,
       generationQueueConcurrency: Math.min(GENERATION_CONCURRENCY_DEFAULT, total),
       // Freeze request tier for the honesty badge (requested vs actual pixels).
-      lastRequestedImageSize: size,
+      lastRequestedImageSize: requestImageSize ?? null,
       lastRequestedImageQuality: supportsQuality ? quality : null,
       lastRequestedAspectRatio: genPayload.aspectRatio,
     });
@@ -2159,7 +2183,7 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
                     }}
                     onPointerDown={(event) => event.stopPropagation()}
                     title="新建一个上游图片节点用作参考"
-                    className="nodrag -mx-2 inline-flex items-center gap-3 rounded-lg px-2 py-2 text-sm text-text-dark transition-colors hover:bg-white/[0.08]"
+                    className="nodrag -mx-2 inline-flex h-8 items-center gap-2.5 rounded-[7px] px-2 text-xs font-medium text-text-dark transition-colors hover:bg-[#292929] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45"
                   >
                     <Upload className="h-4 w-4 text-text-muted/90" />
                     <span>图生图</span>
@@ -2392,7 +2416,7 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
             onToggle={() => setPanelExpanded((v) => !v)}
             className="absolute right-2 top-2 z-20"
           />
-          <div className="shrink-0 border-b border-white/[0.08] px-3 pb-2 pr-10 pt-3">
+          <div className="shrink-0 border-b border-white/[0.07] px-3 pb-2 pr-10 pt-2.5">
             <div className="flex min-w-0 items-center gap-2 overflow-x-auto">
             <StyleChip
               selectedId={styleTemplateId}
@@ -2456,7 +2480,7 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
               />
             ))}
             </div>
-            <div className="mt-2 flex min-h-9 flex-wrap items-center gap-x-2 gap-y-1.5">
+            <div className="mt-1.5 flex min-h-8 flex-wrap items-center gap-x-2 gap-y-1.5">
               <span className="shrink-0 text-[11px] font-medium text-text-muted/85">参考素材</span>
             {orderedReferenceUrls.length > 0 ? (
               <div className="flex min-w-0 flex-wrap items-center gap-1.5">
@@ -2581,7 +2605,7 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
             />
           )}
 
-          <div className="flex shrink-0 items-center justify-between gap-2 border-t border-white/[0.08] px-3 py-2">
+          <div className="flex shrink-0 items-center justify-between gap-2 border-t border-white/[0.07] px-3 py-2">
             <div className="flex min-w-0 items-center gap-2">
               <ProviderModelPicker
                 selectedModelId={modelId}
@@ -2596,13 +2620,11 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
               <AspectSizeChip
                 aspectRatio={aspectRatio}
                 aspectOptions={imageAspectOptions}
+                size={size}
+                supportedSizes={supportedImageSizes}
                 quality={quality}
-                qualityOptions={qualityOptions.map((option) => ({
-                  value: option.value as ImageQuality,
-                  label: option.label,
-                }))}
-                supportsCustomAspectRatio={runtimeImageModel.supportsCustomAspectRatio}
-                showQuality={supportsQuality}
+                supportedQualities={qualityOptions.map((option) => option.value)}
+                count={count}
                 onChange={(patch) => updateNodeData(id, patch)}
               />
               <AdvancedParamsChip
@@ -2618,12 +2640,6 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
                   })
                 }
               />
-              {!canAutoCommitOnGenerate && (
-                <CountSelect
-                  value={count}
-                  onChange={(nextCount) => updateNodeData(id, { count: nextCount })}
-                />
-              )}
               <button
                 type="button"
                 title="翻译提示词（中英文互译）"

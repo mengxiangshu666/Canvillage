@@ -35,6 +35,7 @@ import { readUrl } from '@/lib/url-params';
 import { NODE_TOOLBAR_CLASS } from './nodeToolbarConfig';
 import { CANVAS_NODE_TOOLBAR_PILL_CLASS } from './nodeFrameStyles';
 import { ZoomScaledToolbar } from './ZoomScaledToolbar';
+import { NodeToolbarViewportBoundary } from './NodeToolbarViewportBoundary';
 import {
   NODE_FLOATING_PANEL_SURFACE_CLASS,
   NODE_GENERATE_BUTTON_BASE_CLASS,
@@ -219,8 +220,9 @@ export const Scene360Overlay = memo(
         offset={12}
         className={NODE_TOOLBAR_CLASS}
       >
-        {/* 操作区跟随画布缩放（align=center → 锚点顶边中点，贴节点底边）。 */}
-        <ZoomScaledToolbar origin="top center">
+        {/* 操作区保持可读尺寸，锚点顶边中点贴住节点底边。 */}
+        <NodeToolbarViewportBoundary>
+        <ZoomScaledToolbar origin="top center" mode="counter" counterMax={1}>
           <div
           className={`flex min-w-[420px] items-center gap-2 ${CANVAS_NODE_TOOLBAR_PILL_CLASS}`}
           onClick={(event) => event.stopPropagation()}
@@ -260,6 +262,7 @@ export const Scene360Overlay = memo(
           </button>
         </div>
         </ZoomScaledToolbar>
+        </NodeToolbarViewportBoundary>
       </ReactFlowNodeToolbar>
     );
   },

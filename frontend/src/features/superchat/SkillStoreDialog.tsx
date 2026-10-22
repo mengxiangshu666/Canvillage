@@ -167,11 +167,11 @@ export function SkillStoreDialog({
       <DialogContent
         showCloseButton={false}
         data-agent-dialog="v4"
-        className="village-agent-dialog-v4 village-agent-dialog-v4--skills skill-store-dialog flex h-[min(88vh,820px)] w-[min(94vw,1120px)] max-w-none flex-col gap-0 overflow-hidden rounded-[22px] border border-white/[0.10] bg-[#101012]/98 p-0 text-white shadow-[0_30px_100px_rgba(0,0,0,0.62)] backdrop-blur-2xl sm:max-w-none"
+        className="village-agent-dialog-v4 village-agent-dialog-v4--skills skill-store-dialog flex h-[min(88vh,820px)] w-[min(94vw,1120px)] max-w-none flex-col gap-0 overflow-hidden rounded-[16px] border border-white/[0.09] bg-[#141414]/98 p-0 text-white shadow-[0_30px_100px_rgba(0,0,0,0.62)] backdrop-blur-2xl sm:max-w-none"
       >
         <header className="flex shrink-0 items-start justify-between gap-5 border-b border-white/[0.07] px-5 py-4">
           <div className="flex min-w-0 items-start gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-[13px] border border-violet-300/20 bg-violet-400/[0.11] text-violet-100">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-[9px] border border-white/[0.09] bg-[#242424] text-cyan-200">
               <Store className="size-5" aria-hidden />
             </span>
             <div className="min-w-0">
@@ -198,7 +198,7 @@ export function SkillStoreDialog({
               type="button"
               onClick={() => uploadRef.current?.click()}
               disabled={busyId !== null}
-              className="inline-flex h-9 items-center gap-2 rounded-full border border-white/[0.10] bg-white/[0.045] px-3.5 text-[12px] font-medium text-white/72 transition hover:border-white/[0.20] hover:bg-white/[0.08] hover:text-white disabled:opacity-45"
+              className="inline-flex h-8 items-center gap-2 rounded-lg border border-white/[0.10] bg-[#202020] px-3 text-[12px] font-medium text-white/72 transition hover:border-white/[0.20] hover:bg-[#272727] hover:text-white disabled:opacity-45"
             >
               {busyId === "__upload__" ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
               上传技能
@@ -206,7 +206,7 @@ export function SkillStoreDialog({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex size-9 items-center justify-center rounded-full text-white/42 transition hover:bg-white/[0.07] hover:text-white/80"
+              className="flex size-8 items-center justify-center rounded-lg text-white/42 transition hover:bg-white/[0.07] hover:text-white/80"
               aria-label="关闭技能商店"
             >
               <X className="size-4" />
@@ -223,9 +223,9 @@ export function SkillStoreDialog({
                   type="button"
                   onClick={() => setFilter(item.id)}
                   className={cn(
-                    "flex h-9 w-full items-center justify-between rounded-[10px] px-3 text-left text-[12px] transition",
+                    "flex h-8 w-full items-center justify-between rounded-lg px-3 text-left text-[12px] transition",
                     filter === item.id
-                      ? "bg-white/[0.09] font-medium text-white"
+                      ? "bg-[#303030] font-medium text-white"
                       : "text-white/48 hover:bg-white/[0.045] hover:text-white/75",
                   )}
                 >
@@ -261,7 +261,7 @@ export function SkillStoreDialog({
 
           <main className="flex min-w-0 flex-1 flex-col">
             <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-white/[0.055] px-4 py-3">
-              <label className="flex h-9 min-w-[220px] flex-1 items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.035] px-3 text-white/45 focus-within:border-white/[0.18] focus-within:bg-white/[0.055]">
+              <label className="flex h-8 min-w-[220px] flex-1 items-center gap-2 rounded-lg border border-white/[0.08] bg-[#202020] px-3 text-white/45 focus-within:border-white/[0.18] focus-within:bg-[#252525]">
                 <Search className="size-3.5 shrink-0" aria-hidden />
                 <span className="sr-only">搜索技能</span>
                 <input
@@ -278,7 +278,7 @@ export function SkillStoreDialog({
                     key={item.id}
                     type="button"
                     onClick={() => setFilter(item.id)}
-                    className={cn("rounded-full px-2.5 py-1.5 text-[10px]", filter === item.id ? "bg-white/[0.10] text-white" : "text-white/42")}
+                    className={cn("rounded-md px-2.5 py-1.5 text-[10px]", filter === item.id ? "bg-[#303030] text-white" : "text-white/42")}
                   >
                     {item.label}
                   </button>
@@ -308,7 +308,7 @@ export function SkillStoreDialog({
                       <article
                         key={item.id}
                         className={cn(
-                          "group flex min-h-[210px] flex-col rounded-[16px] border bg-white/[0.022] p-4 transition",
+                          "group flex min-h-[210px] flex-col rounded-xl border bg-[#1e1e1e] p-4 transition",
                           item.installed ? "border-cyan-300/[0.18]" : "border-white/[0.075] hover:border-white/[0.15] hover:bg-white/[0.035]",
                         )}
                       >
@@ -326,7 +326,7 @@ export function SkillStoreDialog({
                           </div>
                         )}
                         <div className="flex items-start justify-between gap-3">
-                          <span className="flex size-9 shrink-0 items-center justify-center rounded-[12px] border border-white/[0.08] bg-gradient-to-br from-violet-400/20 to-cyan-400/[0.06] text-white/80">
+                          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-[#272727] text-white/80">
                             {item.source === "custom" ? <Sparkles className="size-4" /> : <Store className="size-4" />}
                           </span>
                           <div className="flex items-center gap-1.5 text-[9px]">
@@ -366,7 +366,7 @@ export function SkillStoreDialog({
                               disabled={isBusy || item.admission?.can_install === false}
                               onClick={() => void runMutation(item.id, () => installSkillStoreItem(item.id), `已启用 ${item.name}`)}
                               title={item.admission?.can_install === false ? "准入检查未通过，修复来源、执行合同或引用后才能启用" : "启用技能"}
-                              className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-full bg-white text-[11px] font-semibold text-black transition hover:bg-white/88 disabled:cursor-not-allowed disabled:opacity-45"
+                              className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg bg-[#09caf5] text-[11px] font-semibold text-[#07161b] transition hover:bg-[#20d2fa] disabled:cursor-not-allowed disabled:opacity-45"
                             >
                               {isBusy ? <Loader2 className="size-3.5 animate-spin" /> : <Power className="size-3.5" />}
                               {item.admission?.can_install === false ? "需复核" : "启用"}
@@ -378,7 +378,7 @@ export function SkillStoreDialog({
                                 disabled={isBusy}
                                 onClick={() => onToggleMount(skillStoreAgentId(item.id))}
                                 className={cn(
-                                  "inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-full border text-[11px] font-semibold transition disabled:opacity-45",
+                                  "inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg border text-[11px] font-semibold transition disabled:opacity-45",
                                   isMounted
                                     ? "border-cyan-300/25 bg-cyan-400/[0.10] text-cyan-50"
                                     : "border-white/[0.12] bg-white/[0.055] text-white/75 hover:bg-white/[0.09]",
@@ -394,7 +394,7 @@ export function SkillStoreDialog({
                                   if (isMounted) onToggleMount(skillStoreAgentId(item.id));
                                   void runMutation(item.id, () => uninstallSkillStoreItem(item.id), `已停用 ${item.name}`);
                                 }}
-                                className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/[0.09] text-white/38 transition hover:bg-white/[0.06] hover:text-white/70 disabled:opacity-40"
+                                className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.09] text-white/38 transition hover:bg-white/[0.06] hover:text-white/70 disabled:opacity-40"
                                 aria-label={`停用 ${item.name}`}
                                 title="停用"
                               >
@@ -410,7 +410,7 @@ export function SkillStoreDialog({
                                 if (isMounted) onToggleMount(skillStoreAgentId(item.id));
                                 void runMutation(item.id, () => deleteSkillStoreItem(item.id), `已删除 ${item.name}`);
                               }}
-                              className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/[0.09] text-white/30 transition hover:border-red-300/20 hover:bg-red-400/[0.07] hover:text-red-100/70 disabled:opacity-40"
+                              className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.09] text-white/30 transition hover:border-red-300/20 hover:bg-red-400/[0.07] hover:text-red-100/70 disabled:opacity-40"
                               aria-label={`删除 ${item.name}`}
                               title="删除自定义技能"
                             >

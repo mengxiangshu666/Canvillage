@@ -876,7 +876,7 @@ export const TextAnnotationNode = memo(({
                         event.stopPropagation();
                         handlePickMode(item.key);
                       }}
-                      className="-mx-2 inline-flex items-center gap-3 rounded-lg px-2 py-2 text-sm text-text-dark transition-colors hover:bg-white/[0.08]"
+                      className="-mx-2 inline-flex h-8 items-center gap-2.5 rounded-[7px] px-2 text-xs font-medium text-text-dark transition-colors hover:bg-[#292929] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45"
                     >
                       <Icon className="h-4 w-4 text-text-muted/90" />
                       <span>{t(item.labelKey)}</span>

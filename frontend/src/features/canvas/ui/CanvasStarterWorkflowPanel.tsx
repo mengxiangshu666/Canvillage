@@ -91,10 +91,10 @@ export function CanvasStarterWorkflowPanel({
         <button
           type="button"
           onClick={() => setCategory('mine')}
-          className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] transition-colors ${
+          className={`h-7 shrink-0 rounded-[6px] px-2.5 text-[10px] transition-colors ${
             category === 'mine'
-              ? 'bg-white/[0.13] text-white'
-              : 'bg-white/[0.035] text-white/50 hover:bg-white/[0.075] hover:text-white/80'
+              ? 'bg-[#303033] text-white'
+              : 'bg-transparent text-white/50 hover:bg-[#292929] hover:text-white/82'
           }`}
         >
           我的模板{userTemplates.length > 0 ? ` ${userTemplates.length}` : ''}
@@ -102,10 +102,10 @@ export function CanvasStarterWorkflowPanel({
         <button
           type="button"
           onClick={() => setCategory('all')}
-          className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] transition-colors ${
+          className={`h-7 shrink-0 rounded-[6px] px-2.5 text-[10px] transition-colors ${
             category === 'all'
-              ? 'bg-white/[0.13] text-white'
-              : 'bg-white/[0.035] text-white/50 hover:bg-white/[0.075] hover:text-white/80'
+              ? 'bg-[#303033] text-white'
+              : 'bg-transparent text-white/50 hover:bg-[#292929] hover:text-white/82'
           }`}
         >
           全部
@@ -115,10 +115,10 @@ export function CanvasStarterWorkflowPanel({
             key={item.id}
             type="button"
             onClick={() => setCategory(item.id)}
-            className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] transition-colors ${
+            className={`h-7 shrink-0 rounded-[6px] px-2.5 text-[10px] transition-colors ${
               category === item.id
-                ? 'bg-white/[0.13] text-white'
-                : 'bg-white/[0.035] text-white/50 hover:bg-white/[0.075] hover:text-white/80'
+                ? 'bg-[#303033] text-white'
+                : 'bg-transparent text-white/50 hover:bg-[#292929] hover:text-white/82'
             }`}
           >
             {item.label}

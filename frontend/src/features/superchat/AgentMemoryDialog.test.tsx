@@ -209,7 +209,7 @@ describe("AgentMemoryDialog", () => {
       locked: true,
     }));
     expect(await screen.findByText("视频节点默认关闭原生音频。", { exact: true })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /执行规则 ·/ })).toHaveClass("bg-white");
+    expect(screen.getByRole("button", { name: /执行规则 ·/ })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "手动添加" })).toBeInTheDocument();
   });
 

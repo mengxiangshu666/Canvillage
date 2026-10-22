@@ -220,6 +220,78 @@ def test_gpt_image_2_direct_request_preserves_canvas_resolution_contract():
     }
 
 
+def test_agnes_image_family_is_not_sent_the_gpt_image_quality_field():
+    """2026-10-15 真机：agnes 型号名里的 image-2 命中 gpt-image 合同后会被塞
+    `quality`，上游直接 400 "quality is not supported by text image queue"；
+    同一个请求去掉该字段就正常出图。比例和尺寸上游接受，不能一起剪掉。"""
+
+    model = _model("agnes-image-2.5-flash")
+    fields = _direct_image_request_fields(
+        model=model,
+        prompt="电影感古寺",
+        aspect_ratio="16:9",
+        image_size="2K",
+        quality="medium",
+    )
+
+    assert model.profile.name == "agnes-image"
+    assert "quality" not in fields
+    assert fields["size"] == "2048x1152"
+    assert fields["response_format"] == "b64_json"
+    assert model.profile.resolution_options == ("1K", "2K", "3K", "4K")
+    assert model.profile.aspect_ratio_options
+
+
+def test_agnes_image_references_travel_as_json_data_uri_not_multipart(
+    monkeypatch, tmp_path
+):
+    """2026-10-15 真机：agnes 的 /images/edits 对 multipart 直接 503
+    "no available server"，并且只收 JSON。参考图必须走 /images/generations
+    的 JSON ``image`` 字段（data URI），上游才会把它排进 image 队列。"""
+
+    import httpx
+    import respx
+
+    import novelvideo.generators.direct_image_models as direct_images
+
+    reference = tmp_path / "ref.png"
+    reference.write_bytes(b"reference-bytes")
+    output = tmp_path / "edited.png"
+    seen: dict[str, object] = {}
+
+    def capture(request):
+        seen["url"] = str(request.url)
+        seen["content_type"] = request.headers.get("content-type", "")
+        seen["body"] = json.loads(request.content.decode("utf-8"))
+        return httpx.Response(200, json={"data": [{"b64_json": "aGVsbG8="}]})
+
+    with respx.mock(assert_all_called=False) as router:
+        router.post("https://image.test/v1/images/generations").mock(
+            side_effect=capture
+        )
+        router.post("https://image.test/v1/images/edits").mock(
+            side_effect=AssertionError("agnes 参考图不得再走 multipart 编辑端点")
+        )
+        _run(
+            direct_images.generate_direct_image(
+                model=_model("agnes-image-2.5-flash"),
+                prompt="加一个红点",
+                output_path=output,
+                aspect_ratio="1:1",
+                image_size="1K",
+                quality=None,
+                reference_paths=[str(reference)],
+            )
+        )
+
+    assert seen["url"].endswith("/images/generations")
+    assert seen["content_type"].startswith("application/json")
+    assert seen["body"]["image"] == "data:image/png;base64,cmVmZXJlbmNlLWJ5dGVz"
+    assert seen["body"]["response_format"] == "b64_json"
+    assert "quality" not in seen["body"]
+    assert output.read_bytes() == b"hello"
+
+
 def test_direct_image_picker_contract_exposes_model_center_default():
     from novelvideo.generators.direct_image_models import direct_image_model_option
 
@@ -816,6 +888,9 @@ def _run_direct_image_against(
     monkeypatch.setattr(
         direct_images, "DIRECT_IMAGE_RESPONSE_RETRY_BACKOFF_SECONDS", (0.0, 0.0)
     )
+    monkeypatch.setattr(
+        direct_images, "DIRECT_IMAGE_CAPACITY_RETRY_BACKOFF_SECONDS", (0.0,) * 5
+    )
     output = tmp_path / "direct.png"
 
     with respx.mock(assert_all_called=False) as router:
@@ -950,6 +1025,38 @@ def test_upstream_5xx_resend_can_be_disabled_by_operator(monkeypatch, tmp_path):
 
     assert outcome["calls"] == 1
     assert "HTTP 504" in str(outcome["error"])
+
+
+# --- 上游图片队列满（503 + 「请稍后重试」）--------------------------------------
+# 2026-10-15 真机：agnes 的图片队列满时正文就是 ``image queue is full, please
+# retry later``，一次画布生成连续 6 次全部死在通用 3 次/80 秒上限里。这类 503 是
+# 「还没排到」而不是「失败」，而且没有计费，所以单独给它更长的等待上限。
+
+QUEUE_FULL_BODY = (
+    '{"error":{"message":"image queue is full, please retry later '
+    '(request id: 20261015143423706721752QuewU6VD)",'
+    '"type":"","param":"","code":null}}'
+)
+
+
+def test_queue_full_503_waits_past_the_generic_5xx_limit(monkeypatch, tmp_path):
+    outcome = _run_direct_image_against(
+        monkeypatch, [(503, QUEUE_FULL_BODY)] * 4 + [None], tmp_path
+    )
+
+    assert outcome["calls"] == 5
+    assert outcome["path"].read_bytes() == b"hello"
+
+
+def test_queue_full_503_gives_up_as_a_readable_queue_error(monkeypatch, tmp_path):
+    outcome = _run_direct_image_against(
+        monkeypatch, [(503, QUEUE_FULL_BODY)] * 6, tmp_path
+    )
+
+    assert outcome["calls"] == 6
+    error = outcome["error"]
+    assert error.error_code == "DIRECT_IMAGE_QUEUE_BUSY"
+    assert "队列已满" in str(error.provider_error_metadata["suggested_action"])
 
 
 def test_explicit_moderation_still_never_resends_alongside_5xx_retry(

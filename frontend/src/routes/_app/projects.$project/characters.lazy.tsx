@@ -149,7 +149,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"; import "@/components/layout/libtv-workbench";
 import type { Character, CharacterAssetHistory, CharacterAssetHistoryEntry, CharacterAssetKind, Identity, IdentityAttempts } from "@/types/character";
 
 // ─── constants ───────────────────────────────────────────────────────────────
@@ -554,7 +554,7 @@ function CharactersPageHeader({
   const isCharactersTab = activeTab === "characters";
 
   return (
-    <div className="flex shrink-0 flex-col gap-3 border-b border-border/30 bg-background px-9 py-5 lg:flex-row lg:items-center lg:justify-between">
+    <div className="libtv-page-head flex shrink-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex min-w-0 items-start gap-3">
         <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <Waves className="size-[18px]" />
@@ -641,7 +641,7 @@ function AssetTabs({
   ];
 
   return (
-    <div className="flex shrink-0 justify-center border-b border-border/30 bg-background px-9 py-3">
+    <div className="flex shrink-0 justify-center border-b border-white/[0.07] bg-[#141414] px-4 py-2 lg:px-6">
       <SlidingTabs
         items={tabs.map(({ value: tab, icon }) => ({
           value: tab,
@@ -650,7 +650,7 @@ function AssetTabs({
         }))}
         value={value}
         onValueChange={onChange}
-        aria-label={t("nav.assets")}
+        aria-label={t("nav.assets")} className="justify-center"
       />
     </div>
   );
@@ -3125,11 +3125,11 @@ function CharactersSplit({
   }
 
   return (
-    <div className="min-h-0 flex-1 flex overflow-hidden bg-background">
-      <div className="flex w-80 shrink-0 flex-col overflow-hidden border-r border-border/30 bg-background">
+    <div className="flex min-h-0 flex-1 overflow-hidden bg-[#141414]">
+      <div className="flex w-[320px] shrink-0 flex-col overflow-hidden border-r border-white/[0.07] bg-[#181818]">
         {listPane}
       </div>
-      <div className="min-w-0 flex-1 overflow-hidden bg-background">
+      <div className="min-w-0 flex-1 overflow-hidden bg-[#171717]">
         {detailPane}
       </div>
     </div>
@@ -3275,7 +3275,7 @@ function CharactersPageContent() {
 
   return (
     <AssetHeaderActionsSlotProvider>
-      <div className="-m-6 flex h-[calc(100%+3rem)] flex-col overflow-hidden">
+      <div className="libtv-workbench -m-6 flex h-[calc(100%+3rem)] flex-col overflow-hidden">
       <CharactersPageHeader
         onRebuild={() => setRebuildDialogOpen(true)}
         rebuildDisabled={rebuildDisabled}

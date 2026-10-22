@@ -43,6 +43,7 @@ import { generationTaskDescriptor } from '@/features/canvas/application/resumeGe
 import { readUrl } from '@/lib/url-params';
 import { NODE_TOOLBAR_CLASS } from './nodeToolbarConfig';
 import { CANVAS_NODE_TOOLBAR_PILL_CLASS } from './nodeFrameStyles';
+import { NodeToolbarViewportBoundary } from './NodeToolbarViewportBoundary';
 import {
   NODE_GENERATE_BUTTON_BASE_CLASS,
   NODE_CREDIT_PILL_FLAT_CLASS,
@@ -93,11 +94,11 @@ const PAINT_FILL = 'rgba(239, 68, 68, 0.55)';
 const PAINT_STROKE = 'rgba(239, 68, 68, 0.55)';
 const RESULT_STACK_GAP = 24;
 const ERASE_TOOLBAR_CLASS =
-  'flex items-center gap-1 rounded-full border border-white/[0.12] bg-[#282828]/95 px-1.5 py-1 shadow-[0_10px_24px_rgba(0,0,0,0.32)] backdrop-blur-md';
+  'flex max-w-[calc(100dvw-16px)] flex-wrap items-center gap-1 rounded-[12px] border border-white/[0.10] bg-[#1d1d20]/97 px-1.5 py-1 shadow-[0_10px_26px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl';
 const ERASE_TOOLBAR_BUTTON_CLASS =
-  'nodrag inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50';
+  'nodrag inline-flex h-8 w-8 items-center justify-center rounded-[8px] transition-colors disabled:cursor-not-allowed disabled:opacity-50';
 const ERASE_SLIDER_CLASS =
-  'nodrag nopan h-0.5 w-24 cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#5b8cff] [&::-webkit-slider-thumb]:shadow-none [&::-moz-range-thumb]:h-2.5 [&::-moz-range-thumb]:w-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#5b8cff]';
+  'nodrag nopan h-0.5 w-24 cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#7de6ff] [&::-webkit-slider-thumb]:shadow-none [&::-moz-range-thumb]:h-2.5 [&::-moz-range-thumb]:w-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#7de6ff]';
 
 function imageModelSupportsQuality(apiModel: string | null | undefined): boolean {
   if (!apiModel) return false;
@@ -631,7 +632,7 @@ export const EraseOverlay = memo(({ node, imageSource, onClose }: EraseOverlayPr
   }, [tool]);
   const brushPercent = ((brushSize - BRUSH_MIN) / (BRUSH_MAX - BRUSH_MIN)) * 100;
   const brushSliderStyle = {
-    background: `linear-gradient(to right, #5b8cff 0%, #5b8cff ${brushPercent}%, rgba(255,255,255,0.28) ${brushPercent}%, rgba(255,255,255,0.28) 100%)`,
+    background: `linear-gradient(to right, #09caf5 0%, #09caf5 ${brushPercent}%, rgba(255,255,255,0.22) ${brushPercent}%, rgba(255,255,255,0.22) 100%)`,
   };
 
   return (
@@ -683,6 +684,7 @@ export const EraseOverlay = memo(({ node, imageSource, onClose }: EraseOverlayPr
         offset={16}
         className={NODE_TOOLBAR_CLASS}
       >
+        <NodeToolbarViewportBoundary>
         <div
           className={ERASE_TOOLBAR_CLASS}
           onClick={(event) => event.stopPropagation()}
@@ -741,6 +743,7 @@ export const EraseOverlay = memo(({ node, imageSource, onClose }: EraseOverlayPr
             <Redo2 className="h-4 w-4" />
           </IconBtn>
         </div>
+        </NodeToolbarViewportBoundary>
       </ReactFlowNodeToolbar>
 
       {/* 底部生成控制条：比例 / 分辨率 / 张数 / 提交（无模型选择、无提示词）。 */}
@@ -752,8 +755,9 @@ export const EraseOverlay = memo(({ node, imageSource, onClose }: EraseOverlayPr
         offset={12}
         className={NODE_TOOLBAR_CLASS}
       >
+        <NodeToolbarViewportBoundary>
         <div
-          className={`flex items-center gap-1 ${CANVAS_NODE_TOOLBAR_PILL_CLASS}`}
+          className={`flex max-w-[calc(100dvw-16px)] flex-wrap items-center gap-1 ${CANVAS_NODE_TOOLBAR_PILL_CLASS}`}
           onClick={(event) => event.stopPropagation()}
         >
           <EraseDropdown<FreezoneRedrawAspectRatio>
@@ -796,6 +800,7 @@ export const EraseOverlay = memo(({ node, imageSource, onClose }: EraseOverlayPr
             <ArrowUp className="h-4 w-4" />
           </button>
         </div>
+        </NodeToolbarViewportBoundary>
       </ReactFlowNodeToolbar>
     </>
   );
@@ -831,7 +836,7 @@ function ToolBtn({
       className={
         `${ERASE_TOOLBAR_BUTTON_CLASS} ` +
         (active
-          ? 'text-[#5b8cff]'
+          ? 'bg-[#09caf5]/12 text-[#7de6ff]'
           : 'text-text-dark/42 hover:bg-white/[0.08] hover:text-text-dark/72')
       }
     >
@@ -920,7 +925,7 @@ function EraseDropdown<T extends string | number>({
           event.stopPropagation();
           setIsOpen((prev) => !prev);
         }}
-        className="inline-flex h-8 items-center gap-1 rounded-full px-2.5 text-xs font-medium text-text-dark transition-colors hover:bg-white/[0.08]"
+        className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2.5 text-xs font-medium text-text-dark transition-colors hover:bg-white/[0.08]"
       >
         <span>{renderLabel(value)}</span>
         <ChevronDown className="h-3 w-3 text-text-muted" />
@@ -930,7 +935,7 @@ function EraseDropdown<T extends string | number>({
           ref={popoverRef}
           role="listbox"
           data-canvas-floating-popover="true"
-          className="fixed z-[10000] w-[120px] rounded-xl border border-white/10 bg-surface-dark/95 p-1 shadow-2xl backdrop-blur-md"
+          className="fixed z-[10000] w-[120px] rounded-[12px] border border-white/10 bg-[#202023] p-1 shadow-[0_12px_30px_rgba(0,0,0,0.36)]"
           style={{
             left: popoverPosition.left,
             top: popoverPosition.top,
@@ -953,9 +958,9 @@ function EraseDropdown<T extends string | number>({
                   onChange(option);
                   setIsOpen(false);
                 }}
-                className={`flex w-full items-center rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                className={`flex h-8 w-full items-center rounded-[7px] px-2.5 text-xs font-medium transition-colors ${
                   isActive
-                    ? 'bg-[rgb(var(--accent-rgb))] text-white'
+                    ? 'bg-[#09caf5]/12 text-[#7de6ff]'
                     : 'text-text-muted hover:bg-white/[0.08] hover:text-text-dark'
                 }`}
               >

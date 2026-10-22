@@ -816,6 +816,11 @@ def run_project_task_core_sync(
             scope=scope,
         )
     ):
+        cancel_metadata = {
+            **run_metadata,
+            "cancel_local_cleanup": "completed",
+            "cancel_upstream_status": "not_started",
+        }
         asyncio.run(
             _refund_feature_credit_reservation(
                 feature_reservation_id,
@@ -829,13 +834,13 @@ def run_project_task_core_sync(
             beat_num=beat_num,
             scope=scope,
             progress=0.0,
-            current_task="任务已取消",
+            current_task="任务已取消（未派发）",
             metadata=with_production_cost_receipt(
-                run_metadata,
+                cancel_metadata,
                 finalize_production_cost_receipt(
                     cost_receipt,
                     status="cancelled",
-                    metadata=run_metadata,
+                    metadata=cancel_metadata,
                 ),
             ),
             status="cancelled",
@@ -907,6 +912,11 @@ def run_project_task_core_sync(
                 result = runner(envelope, ctx)
             except BaseException as exc:
                 if isinstance(exc, TaskCancelled):
+                    cancel_metadata = {
+                        **run_metadata,
+                        "cancel_local_cleanup": "completed",
+                        "cancel_upstream_status": "unknown",
+                    }
                     asyncio.run(
                         _refund_feature_credit_reservation(
                             feature_reservation_id,
@@ -920,13 +930,13 @@ def run_project_task_core_sync(
                         beat_num=beat_num,
                         scope=scope,
                         progress=0.0,
-                        current_task="任务已取消",
+                        current_task="任务已取消（上游停止未确认）",
                         metadata=with_production_cost_receipt(
-                            run_metadata,
+                            cancel_metadata,
                             finalize_production_cost_receipt(
                                 cost_receipt,
                                 status="cancelled",
-                                metadata=run_metadata,
+                                metadata=cancel_metadata,
                             ),
                         ),
                         status="cancelled",

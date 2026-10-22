@@ -29,7 +29,7 @@ export function ImageViewerModal({
 }: ImageViewerModalProps): ReactElement | null {
   const { t } = useTranslation();
   const viewerControlClass =
-    'inline-flex h-10 items-center justify-center rounded-full border border-white/20 bg-black/60 px-4 text-sm text-white backdrop-blur-xl';
+    'inline-flex h-8 items-center justify-center rounded-[8px] border border-white/10 bg-white/[0.055] px-3 text-xs tabular-nums text-white/82 transition-colors hover:bg-white/[0.09] hover:text-white';
   const [isVisible, setIsVisible] = useState(false);
   const [overlayOpacity, setOverlayOpacity] = useState(0);
   const [displayImageUrl, setDisplayImageUrl] = useState(imageUrl);
@@ -125,7 +125,7 @@ export function ImageViewerModal({
 
   return (
     <div
-      className={`fixed ${UI_CONTENT_OVERLAY_INSET_CLASS} z-[100] overflow-hidden bg-[#282828] backdrop-blur-lg`}
+      className={`fixed ${UI_CONTENT_OVERLAY_INSET_CLASS} z-[100] overflow-hidden bg-[#111214]/97 backdrop-blur-sm`}
       style={{
         opacity: overlayOpacity,
         transition: 'opacity 400ms ease',
@@ -146,8 +146,9 @@ export function ImageViewerModal({
         <button
           type="button"
           onClick={onClose}
-          className={`absolute right-6 top-6 z-20 ${MEDIA_VIEWER_CLOSE_BUTTON_CLASS}`}
+          className={`absolute right-5 top-5 z-20 ${MEDIA_VIEWER_CLOSE_BUTTON_CLASS}`}
           title={t('common.close', '关闭')}
+          aria-label={t('common.close', '关闭')}
         >
           <X className={MEDIA_VIEWER_CLOSE_ICON_CLASS} />
         </button>
@@ -162,7 +163,7 @@ export function ImageViewerModal({
               opacity: viewerOpacity * overlayOpacity,
               transformOrigin: 'center',
               width: '95vw',
-              height: '95vh',
+              height: 'calc(100dvh - 96px)',
               objectFit: 'contain',
             }}
             onLoad={handleImageLoad}
@@ -179,48 +180,51 @@ export function ImageViewerModal({
           />
         </div>
 
-        <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3">
+        <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-[12px] border border-white/10 bg-[#1d1d20]/92 p-1 text-white shadow-[0_12px_32px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-2xl">
           {imageList.length > 1 && (
-            <div className="flex items-center gap-3">
+            <>
               <button
+                type="button"
                 onClick={() => onNavigate('prev')}
                 disabled={currentIndex <= 0}
-                className="rounded-full bg-zinc-800/80 p-2 text-white backdrop-blur-sm transition-all duration-200 hover:bg-zinc-700/80 disabled:cursor-not-allowed disabled:opacity-50"
+                className={`${viewerControlClass} w-8 px-0 disabled:cursor-not-allowed disabled:opacity-35`}
                 title={t('viewer.prev', '上一张')}
+                aria-label={t('viewer.prev', '上一张')}
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-4 w-4" />
               </button>
-              <button
-                onClick={() => onNavigate('next')}
-                disabled={currentIndex >= imageList.length - 1}
-                className="rounded-full bg-zinc-800/80 p-2 text-white backdrop-blur-sm transition-all duration-200 hover:bg-zinc-700/80 disabled:cursor-not-allowed disabled:opacity-50"
-                title={t('viewer.next', '下一张')}
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
-            </div>
-          )}
-
-          <div className="flex items-center gap-4">
-            {imageList.length > 1 && (
-              <div className={viewerControlClass}>
+              <div className={`${viewerControlClass} min-w-[64px]`}>
                 {currentIndex + 1} / {imageList.length}
               </div>
-            )}
-            <div
-              ref={scaleDisplayRef}
-              className={`${viewerControlClass} min-w-[74px]`}
-            >
-              100%
-            </div>
-            <button
-              onClick={resetView}
-              className={`${viewerControlClass} transition-colors hover:bg-white/10`}
-              title={t('viewer.reset', '重置视图')}
-            >
-              <RotateCcw className="h-4 w-4" />
-            </button>
+            </>
+          )}
+          <div
+            ref={scaleDisplayRef}
+            className={`${viewerControlClass} min-w-[64px] pointer-events-none`}
+          >
+            100%
           </div>
+          <button
+            type="button"
+            onClick={resetView}
+            className={viewerControlClass}
+            title={t('viewer.reset', '重置视图')}
+            aria-label={t('viewer.reset', '重置视图')}
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+          </button>
+          {imageList.length > 1 && (
+            <button
+              type="button"
+              onClick={() => onNavigate('next')}
+              disabled={currentIndex >= imageList.length - 1}
+              className={`${viewerControlClass} w-8 px-0 disabled:cursor-not-allowed disabled:opacity-35`}
+              title={t('viewer.next', '下一张')}
+              aria-label={t('viewer.next', '下一张')}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>

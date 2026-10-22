@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { ModelOption } from '@/features/canvas/ui/ProviderModelPicker';
 
-import { runtimeImageModelFromOption } from './runtimeImageModels';
+import { requestableImageSize, runtimeImageModelFromOption } from './runtimeImageModels';
 
 function model(overrides: Partial<ModelOption> = {}): ModelOption {
   return {
@@ -104,6 +104,11 @@ describe('runtime image capability mapping', () => {
     expect(runtime.supportsCustomAspectRatio).toBe(true);
     expect(runtime.supportsCustomResolution).toBe(true);
     expect(runtime.capabilitySource).toBe('upstream');
+  });
+
+  it('only forwards image sizes accepted by the current capability contract', () => {
+    expect(requestableImageSize('2K', ['1K', '2K'])).toBe('2K');
+    expect(requestableImageSize('4K', ['1K', '2K'])).toBeUndefined();
   });
 
   it('does not resurrect text-to-image for an explicit image-edit-only contract', () => {

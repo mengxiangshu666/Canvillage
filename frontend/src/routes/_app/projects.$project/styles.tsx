@@ -44,6 +44,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import "@/components/layout/libtv-workbench";
 import { SidebarListSkeleton, DetailPaneSkeleton } from "@/components/skeletons";
 import type { Style } from "@/types/style";
 import { stylePreviewUrl } from "@/lib/style-preview-url";
@@ -255,7 +256,7 @@ function TopBar({ onCreate, onRefresh, refreshing }: { onCreate: () => void; onR
   const { t } = useTranslation();
 
   return (
-    <div className="flex shrink-0 flex-col gap-3 border-b border-border/30 bg-background px-9 py-5 lg:flex-row lg:items-center lg:justify-between">
+    <div className="libtv-page-head flex shrink-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex min-w-0 items-start gap-3">
         <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <Paintbrush className="size-[18px]" />
@@ -1193,7 +1194,7 @@ function StylesPage() {
   const isProjectDefault = !!selectedStyle && projectVisualStyle === selectedStyle.id;
 
   return (
-    <div className="-m-6 flex h-[calc(100%+3rem)] flex-col overflow-hidden">
+    <div className="libtv-workbench -m-6 flex h-[calc(100%+3rem)] flex-col overflow-hidden">
       <TopBar
         onCreate={() => setCreateOpen(true)}
         onRefresh={async () => {
@@ -1205,10 +1206,10 @@ function StylesPage() {
         refreshing={isRefetching}
       />
 
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col bg-[#141414] lg:flex-row">
         {/* LEFT: list */}
-        <div className="flex max-h-[45vh] w-full shrink-0 flex-col overflow-hidden border-b border-border/30 lg:max-h-none lg:w-[360px] lg:border-b-0 lg:border-r lg:border-border/30">
-          <div className="flex-1 overflow-y-auto p-3">
+        <div className="flex max-h-[42vh] w-full shrink-0 flex-col overflow-hidden border-b border-white/[0.07] bg-[#181818] lg:max-h-none lg:w-[320px] lg:border-b-0 lg:border-r">
+          <div className="flex-1 overflow-y-auto p-2.5">
             {isLoading ? (
               <SidebarListSkeleton label={t("common.loading")} />
             ) : styles.length === 0 ? (
@@ -1238,7 +1239,7 @@ function StylesPage() {
         </div>
 
         {/* RIGHT: detail */}
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#171717]">
           {selectedStyle ? (
             <StyleDetailPanel
               key={selectedStyle.id}

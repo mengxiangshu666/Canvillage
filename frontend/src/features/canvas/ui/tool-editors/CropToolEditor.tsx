@@ -14,6 +14,8 @@ import type { VisualToolEditorProps } from './types';
 const VIEWPORT_PADDING_PX = 20;
 const VIEWPORT_MIN_WIDTH_PX = 220;
 const VIEWPORT_MIN_HEIGHT_PX = 180;
+const CROP_RATIO_BUTTON_CLASS =
+  'inline-flex h-8 items-center justify-center rounded-[8px] border px-3 text-xs transition-colors';
 
 function parsePresetRatio(value: string): number | null {
   if (!value.includes(':')) {
@@ -356,10 +358,10 @@ export function CropToolEditor({ plugin, sourceImageUrl, options, onOptionsChang
             <button
               key={item.value}
               type="button"
-              className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
+              className={`${CROP_RATIO_BUTTON_CLASS} ${
                 active
-                  ? 'border-white/[0.18] bg-white/[0.10] text-text-dark'
-                  : 'border-white/[0.12] text-text-dark/55 hover:bg-white/[0.06] hover:text-text-dark'
+                  ? 'border-[#09caf5]/28 bg-[#09caf5]/12 text-[#9beeff]'
+                  : 'border-white/[0.10] bg-white/[0.025] text-text-dark/58 hover:border-white/[0.16] hover:bg-white/[0.06] hover:text-text-dark'
               }`}
               onClick={() =>
                 onOptionsChange({
@@ -375,10 +377,10 @@ export function CropToolEditor({ plugin, sourceImageUrl, options, onOptionsChang
 
         <button
           type="button"
-          className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
+          className={`${CROP_RATIO_BUTTON_CLASS} ${
             aspectMode === 'custom'
-              ? 'border-white/[0.18] bg-white/[0.10] text-text-dark'
-              : 'border-white/[0.12] text-text-dark/55 hover:bg-white/[0.06] hover:text-text-dark'
+              ? 'border-[#09caf5]/28 bg-[#09caf5]/12 text-[#9beeff]'
+              : 'border-white/[0.10] bg-white/[0.025] text-text-dark/58 hover:border-white/[0.16] hover:bg-white/[0.06] hover:text-text-dark'
           }`}
           onClick={() =>
             onOptionsChange({
@@ -406,7 +408,7 @@ export function CropToolEditor({ plugin, sourceImageUrl, options, onOptionsChang
               });
             }}
             placeholder="输入比例，如 3:2 或 1.5"
-            className="h-8 w-[220px] rounded-[8px] border border-white/[0.10] bg-bg-dark/42 px-3 text-sm text-text-dark outline-none transition-colors placeholder:text-text-dark/52 focus:border-white/[0.18]"
+            className="h-8 w-[220px] rounded-[8px] border border-white/[0.10] bg-[#151518] px-3 text-xs text-text-dark outline-none transition-colors placeholder:text-text-dark/52 focus:border-[#09caf5]/40"
           />
           {customRatioError && <span className="text-xs text-red-400">{customRatioError}</span>}
         </div>
@@ -414,7 +416,7 @@ export function CropToolEditor({ plugin, sourceImageUrl, options, onOptionsChang
 
       <div
         ref={viewportRef}
-        className="relative h-[min(46vh,450px)] rounded-[10px] border border-white/[0.10] bg-[#111214]/80"
+        className="relative h-[min(46vh,450px)] overflow-hidden rounded-[12px] border border-white/[0.10] bg-[#151518] shadow-[inset_0_1px_0_rgba(255,255,255,0.025)]"
       >
         <div className="flex h-full w-full items-center justify-center p-3">
           {renderedImageSize && (

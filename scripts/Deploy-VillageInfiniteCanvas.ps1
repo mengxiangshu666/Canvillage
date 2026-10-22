@@ -280,7 +280,7 @@ if ($changes.Count -gt 0 -or $staleFiles.Count -gt 0 -or (Test-Path -LiteralPath
 }
 
 if ($wasHealthy) {
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $stopScript
+    & (Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe') -NoProfile -ExecutionPolicy Bypass -File $stopScript
     for ($attempt = 0; $attempt -lt 30 -and (Test-ApiHealthy); $attempt++) {
         Start-Sleep -Milliseconds 500
     }

@@ -90,6 +90,16 @@ DIRECT_IMAGE_TRANSIENT_BACKOFF_SECONDS = (0.8, 1.6, 3.2)
 DIRECT_IMAGE_RESPONSE_RETRY_MAX_ATTEMPTS = 3
 DIRECT_IMAGE_RESPONSE_RETRY_BACKOFF_SECONDS = (20.0, 60.0)
 DIRECT_IMAGE_RESPONSE_RETRY_ENV = "VILLAGE_CANVAS_DIRECT_IMAGE_5XX_RETRY"
+#: 队列满是上面那条「重发就是再付一次费」的例外：上游在队列门口就把提交退回来，
+#: 既没出图也没计费，多等只花时间。2026-10-15 画布真机连续 6 次生成全部死在
+#: 3 次/80 秒的上限里，而 503 正文一直写着「请稍后重试」。
+DIRECT_IMAGE_CAPACITY_RETRY_MAX_ATTEMPTS = 6
+DIRECT_IMAGE_CAPACITY_RETRY_BACKOFF_SECONDS = (30.0, 60.0, 90.0, 120.0, 120.0)
+_DIRECT_IMAGE_CAPACITY_REJECTION_MARKERS = (
+    "queue is full",
+    "please retry later",
+    "队列已满",
+)
 DIRECT_IMAGE_TRANSIENT_STATUS_CODES = frozenset(
     {408, 425, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524}
 )
@@ -138,6 +148,15 @@ def _direct_image_relay_side_failure(body: str) -> bool:
     return any(
         marker.lower() in text for marker in _DIRECT_IMAGE_RELAY_SIDE_FAILURE_MARKERS
     )
+
+
+def _direct_image_capacity_rejection(body: str, *, status: int) -> bool:
+    """上游在队列门口退回提交时为真（没出图、没计费，可以多等一会儿）。"""
+
+    if status not in DIRECT_IMAGE_TRANSIENT_STATUS_CODES:
+        return False
+    text = str(body or "").lower()
+    return any(marker in text for marker in _DIRECT_IMAGE_CAPACITY_REJECTION_MARKERS)
 
 
 def _direct_image_is_transient_transport_exception(exc: BaseException) -> bool:
@@ -479,6 +498,10 @@ def _direct_image_request_fields(
         "model": model.upstream_model,
         "prompt": str(prompt or "").strip(),
     }
+    # Some families serve the finished image from a CDN that is not readable
+    # right after the submit; those declare an inline response format instead.
+    if profile.response_format:
+        fields["response_format"] = profile.response_format
     # An upstream catalog may intentionally omit a resolution contract.  Do
     # not turn that omission into an invalid ``size: ""`` request; the
     # provider can then apply its own native default.
@@ -748,6 +771,21 @@ def _direct_image_uploaded_failure(
             request_contract=contract,
         )
 
+    if _direct_image_capacity_rejection(body, status=status):
+        return DirectImageUpstreamError(
+            message,
+            error_code="DIRECT_IMAGE_QUEUE_BUSY",
+            stage="submit",
+            retryable=True,
+            suggested_action=(
+                "上游图片队列已满（它自己在正文里写着「请稍后重试」），本地按上限等待重发"
+                "仍未轮到这张图。这不是提示词或内容问题，也没有计费；过一会儿再点生成即可。"
+            ),
+            http_status=status,
+            protocol=model.protocol,
+            request_contract=contract,
+        )
+
     return None
 
 
@@ -1011,6 +1049,19 @@ async def _generate_direct_image_once(
             advanced_settings=resolved_advanced,
         )
     )
+    # A family that declares a JSON reference field carries its references on
+    # the invoke endpoint; only the multipart families use the edit endpoint.
+    inline_references: dict[str, Any] = {}
+    if references and profile.json_reference_field and not is_gemini_image:
+        data_uris = [
+            f"data:{mime};base64,{base64.b64encode(payload).decode('ascii')}"
+            for _field, (_name, payload, mime) in _image_files(
+                references, field_name=profile.json_reference_field
+            )
+        ]
+        inline_references[profile.json_reference_field] = (
+            data_uris[0] if len(data_uris) == 1 else data_uris
+        )
 
     async with httpx.AsyncClient(
         **newapi_httpx_client_kwargs(
@@ -1026,6 +1077,15 @@ async def _generate_direct_image_once(
                     _gemini_image_endpoint(model.base_url, model.upstream_model),
                     headers={**headers, "Content-Type": "application/json"},
                     json=fields,
+                )
+            if inline_references:
+                return await client.post(
+                    join_contract_endpoint(
+                        model.base_url,
+                        contract.endpoints.invoke_path,
+                    ),
+                    headers={**headers, "Content-Type": "application/json"},
+                    json={**fields, **inline_references},
                 )
             if references:
                 return await client.post(
@@ -1147,9 +1207,25 @@ async def _generate_direct_image_once(
                 and failure.provider_error_metadata.get("error_code")
                 == "DIRECT_IMAGE_UPSTREAM_SIDE_FAILURE"
             )
+            # 队列满没出图也没计费，比通用 5xx 多给几次机会。
+            capacity_busy = (
+                failure is not None
+                and failure.provider_error_metadata.get("error_code")
+                == "DIRECT_IMAGE_QUEUE_BUSY"
+            )
+            response_retry_limit = (
+                DIRECT_IMAGE_CAPACITY_RETRY_MAX_ATTEMPTS
+                if capacity_busy
+                else DIRECT_IMAGE_RESPONSE_RETRY_MAX_ATTEMPTS
+            )
+            response_retry_backoff = (
+                DIRECT_IMAGE_CAPACITY_RETRY_BACKOFF_SECONDS
+                if capacity_busy
+                else DIRECT_IMAGE_RESPONSE_RETRY_BACKOFF_SECONDS
+            )
             retryable_server_error = (
                 (transient_server_error or relay_side_failure)
-                and response_attempt < DIRECT_IMAGE_RESPONSE_RETRY_MAX_ATTEMPTS
+                and response_attempt < response_retry_limit
                 and _direct_image_response_retry_enabled()
             )
             if retryable_block:
@@ -1161,11 +1237,8 @@ async def _generate_direct_image_once(
                 )
                 await asyncio.sleep(DIRECT_IMAGE_SAFETY_RETRY_BACKOFF_SECONDS)
             elif retryable_server_error:
-                delay = DIRECT_IMAGE_RESPONSE_RETRY_BACKOFF_SECONDS[
-                    min(
-                        response_attempt - 1,
-                        len(DIRECT_IMAGE_RESPONSE_RETRY_BACKOFF_SECONDS) - 1,
-                    )
+                delay = response_retry_backoff[
+                    min(response_attempt - 1, len(response_retry_backoff) - 1)
                 ]
                 logger.warning(
                     "direct image upstream returned a transient HTTP %s%s; "
@@ -1174,7 +1247,7 @@ async def _generate_direct_image_once(
                     response.status_code,
                     " (relay-side failure)" if relay_side_failure else "",
                     response_attempt + 1,
-                    DIRECT_IMAGE_RESPONSE_RETRY_MAX_ATTEMPTS,
+                    response_retry_limit,
                     delay,
                     model.upstream_model,
                     model.protocol,

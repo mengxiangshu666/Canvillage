@@ -176,7 +176,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
       <DialogContent
         showCloseButton
         data-agent-dialog="v4"
-        className="village-agent-dialog-v4 village-agent-dialog-v4--settings village-settings-dialog flex h-[min(86vh,820px)] max-w-[calc(100%-1.5rem)] flex-col gap-0 overflow-hidden rounded-[20px] border border-white/[0.11] bg-[#111113]/98 p-0 shadow-[0_30px_100px_rgba(0,0,0,0.58)] ring-0 backdrop-blur-2xl sm:max-w-[1120px]"
+        className="village-agent-dialog-v4 village-agent-dialog-v4--settings village-settings-dialog flex h-[min(86vh,820px)] max-w-[calc(100%-1.5rem)] flex-col gap-0 overflow-hidden rounded-[16px] border border-white/[0.09] bg-[#141414]/98 p-0 shadow-[0_30px_100px_rgba(0,0,0,0.58)] ring-0 backdrop-blur-2xl sm:max-w-[1120px]"
       >
         <DialogHeader className="village-settings-dialog__header border-b border-white/[0.08] px-5 py-4">
           <DialogTitle>{t("settings.title")}</DialogTitle>
@@ -185,16 +185,16 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
         <div className="flex min-h-0 flex-1">
           <nav
             aria-label={t("settings.navigationLabel")}
-            className="village-settings-dialog__nav flex w-14 shrink-0 flex-col gap-1 border-r border-white/[0.08] px-2 py-4 sm:w-44 sm:px-3"
+            className="village-settings-dialog__nav flex w-14 shrink-0 flex-col gap-1 border-r border-white/[0.08] bg-[#181818] px-2 py-3 sm:w-40 sm:px-3"
           >
             <button
               type="button"
               aria-current={page === "models" ? "page" : undefined}
               onClick={() => setPage("models")}
               className={cn(
-                "relative flex h-10 items-center justify-center gap-2 rounded-md px-2 text-sm font-medium transition-colors sm:justify-start sm:px-3",
+                "relative flex h-8 items-center justify-center gap-2 rounded-lg px-2 text-[12px] font-medium transition-colors sm:justify-start sm:px-3",
                 page === "models"
-                  ? "bg-white/[0.09] text-foreground"
+                  ? "bg-[#303030] text-foreground"
                   : "text-muted-foreground hover:bg-white/[0.05] hover:text-foreground",
               )}
             >
@@ -207,9 +207,9 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               aria-current={page === "storage" ? "page" : undefined}
               onClick={() => setPage("storage")}
               className={cn(
-                "relative flex h-10 items-center justify-center gap-2 rounded-md px-2 text-sm font-medium transition-colors sm:justify-start sm:px-3",
+                "relative flex h-8 items-center justify-center gap-2 rounded-lg px-2 text-[12px] font-medium transition-colors sm:justify-start sm:px-3",
                 page === "storage"
-                  ? "bg-white/[0.09] text-foreground"
+                  ? "bg-[#303030] text-foreground"
                   : "text-muted-foreground hover:bg-white/[0.05] hover:text-foreground",
               )}
             >

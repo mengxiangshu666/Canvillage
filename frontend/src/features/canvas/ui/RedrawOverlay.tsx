@@ -92,7 +92,7 @@ const REDRAW_SELECT_CLASS =
 const REDRAW_PROMPT_CLASS =
   'h-[72px] w-full resize-none rounded-[8px] border border-white/[0.08] bg-bg-dark/42 px-3 py-2 text-sm text-text-dark outline-none transition-colors placeholder:text-text-dark/52 focus:border-white/[0.16]';
 const BRUSH_SLIDER_CLASS =
-  'h-0.5 w-24 cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#5b8cff] [&::-webkit-slider-thumb]:shadow-none [&::-moz-range-thumb]:h-2.5 [&::-moz-range-thumb]:w-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#5b8cff]';
+  'h-0.5 w-24 cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#09caf5] [&::-webkit-slider-thumb]:shadow-none [&::-moz-range-thumb]:h-2.5 [&::-moz-range-thumb]:w-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#09caf5]';
 const REDRAW_CONFIRM_BUTTON_CLASS =
   'inline-flex h-8 items-center justify-center rounded-[8px] bg-white px-4 text-sm font-medium text-bg-dark transition-colors hover:bg-white/90 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-text-muted/40';
 
@@ -612,7 +612,7 @@ export const RedrawOverlay = memo(({ node, imageSource, onClose }: RedrawOverlay
   const submitLabel = hasMask ? '局部重绘' : '整体重绘';
   const brushPercent = ((brushSize - BRUSH_MIN) / (BRUSH_MAX - BRUSH_MIN)) * 100;
   const brushSliderStyle = {
-    background: `linear-gradient(to right, #5b8cff 0%, #5b8cff ${brushPercent}%, rgba(255,255,255,0.28) ${brushPercent}%, rgba(255,255,255,0.28) 100%)`,
+    background: `linear-gradient(to right, #09caf5 0%, #09caf5 ${brushPercent}%, rgba(255,255,255,0.28) ${brushPercent}%, rgba(255,255,255,0.28) 100%)`,
   };
 
   const overlay = (
@@ -838,7 +838,7 @@ function ToolBtn({
       className={
         'flex h-8 w-8 items-center justify-center rounded-full transition-colors ' +
         (active
-          ? 'text-[#5b8cff]'
+          ? 'text-[#09caf5]'
           : 'text-text-dark/42 hover:bg-white/[0.06] hover:text-text-dark/76')
       }
     >

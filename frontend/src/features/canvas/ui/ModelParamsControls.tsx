@@ -33,6 +33,7 @@ import {
 import {
   normalizeImageAspectRatioValue,
 } from '@/features/canvas/models/imageCapabilityValues';
+import { balancedOptionGridStyle } from '@/features/canvas/ui/nodeControlStyles';
 
 interface ModelParamsControlsProps {
   imageModels: ImageModelDefinition[];
@@ -609,7 +610,10 @@ export const ModelParamsControls = memo(({
           <UiPanel className={paramsPanelClassName}>
             <div>
               <div className="mb-2 text-xs text-text-muted">{t('modelParams.aspectRatio')}</div>
-              <div className={`grid grid-cols-5 gap-1 ${optionGroupClassName}`}>
+              <div
+                className={`grid gap-0.5 ${optionGroupClassName}`}
+                style={balancedOptionGridStyle(aspectRatioOptions.length, 6)}
+              >
                 {aspectRatioOptions.map((item) => {
                   const active = item.value === selectedAspectRatio.value;
                   const previewStyle = getRatioPreviewStyle(

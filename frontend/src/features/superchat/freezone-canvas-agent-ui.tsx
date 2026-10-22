@@ -226,7 +226,7 @@ export function SkillGlyph({
     <span
       className={cn(
         "flex shrink-0 items-center justify-center rounded-[13px] border border-white/10 bg-gradient-to-br text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]",
-        skillCoverClass({ id: skillId } as CanvasAgentSkill),
+        coverImage ? skillCoverClass({ id: skillId } as CanvasAgentSkill) : "bg-[#292929]",
         className,
       )}
       aria-hidden
@@ -434,7 +434,7 @@ export function FreezoneWelcomeSkills({
                   className={cn(
                     LIBTV_SKILL_CARD_CLASS,
                     "min-h-[54px] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
-                    selected && "border-cyan-300/50 bg-cyan-400/[0.10] ring-1 ring-cyan-200/25",
+                    selected && "border-[#09caf5]/45 bg-[#292929] ring-1 ring-[#09caf5]/20",
                     disabled && "pointer-events-none opacity-40",
                   )}
                 >

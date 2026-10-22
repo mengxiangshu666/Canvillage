@@ -29,6 +29,12 @@
     "subtitle": "输入角色冲突或世界观，让村长无限画布拆成镜头节点并持续延展。",
     "placeholder": "说说你想做什么，比如：续写这个项目的故事…",
     "composerHint": "手动确认",
+    "recentProjects": "最近项目",
+    "continueWork": "接着上次",
+    "activeCount": "{{count}} 个进行中",
+    "loadingProjects": "正在整理项目…",
+    "noRecentProjects": "还没有正在进行的项目",
+    "noRecentProjectsHint": "在左边写下第一句，工作会从这里开始。",
     "modelMode": "Auto",
     "submit": "开启无限创作",
     "skillHint": "技能",
@@ -357,6 +363,9 @@
     "sectionEpisode": "剧集",
     "switchProject": "切换项目",
     "allProjects": "所有项目",
+    "projectLibrary": "项目库",
+    "taskHub": "任务",
+    "sectionCurrentProject": "当前项目",
     "collapse": "收起",
     "creation": "创作",
     "production": "制作",
@@ -842,9 +851,9 @@
     "nameExistsArchived": "归档中已有同名项目，请先取消归档或更换名称",
     "nameExistsDeleted": "回收站中已有同名项目，请永久删除后再创建",
     "noProjects": "还没有项目，点击创建",
-    "dashboardTitle": "项目管理中心",
+    "dashboardTitle": "项目库",
     "dashboardReturn": "返回项目管理中心",
-    "dashboardSubtitle": "管理你的短剧项目和脚本",
+    "dashboardSubtitle": "继续上次的工作，或从剧本、素材和角色开始一条新制作线。",
     "emptyTitle": "开启你的第一个故事",
     "emptyDescription": "创建项目以开始撰写剧本、生成分镜、制作视频",
     "heroTitle": "开启你的创作之旅",
@@ -925,6 +934,17 @@
       "description": "项目将被移至回收站，在永久删除之前你可以随时恢复。",
       "confirm": "移到回收站"
     },
+    "bulk": {
+      "selectAll": "全选",
+      "selectAllLabel": "全选回收站项目",
+      "selectProject": "选择项目「{{name}}」",
+      "selectedCount": "已选 {{count}} 项",
+      "deleteSelected": "永久删除所选",
+      "purgeDialog": {
+        "title": "永久删除 {{count}} 个项目？",
+        "description": "这 {{count}} 个项目的所有脚本、草图、音频和视频都将被移除。此操作无法撤销。"
+      }
+    },
     "purgeDialog": {
       "title": "永久删除「{{name}}」？",
       "description": "该项目的所有脚本、草图、音频、视频都将被移除。此操作无法撤销。",
@@ -938,6 +958,8 @@
       "deleted": "已将「{{name}}」移至回收站",
       "restored": "已恢复「{{name}}」",
       "purged": "已永久删除「{{name}}」",
+      "bulkPurged": "已永久删除 {{count}} 个项目",
+      "bulkPurgePartial": "已永久删除 {{purged}} 个项目；{{failed}} 个项目未删除，已保留勾选，可重试",
       "undo": "撤销"
     },
     "title": "项目管理",

@@ -31,6 +31,7 @@ import { useGenerationCreditCost } from '@/lib/queries/generation-credit-cost';
 import { readUrl } from '@/lib/url-params';
 import { NODE_TOOLBAR_CLASS } from './nodeToolbarConfig';
 import { CANVAS_NODE_TOOLBAR_PILL_CLASS } from './nodeFrameStyles';
+import { NodeToolbarViewportBoundary } from './NodeToolbarViewportBoundary';
 
 export type GridActionKey =
   | 'multiCameraGrid'
@@ -225,8 +226,9 @@ export const GridActionConfirmOverlay = memo(
         offset={12}
         className={NODE_TOOLBAR_CLASS}
       >
+        <NodeToolbarViewportBoundary>
         <div
-          className={`flex min-w-[420px] items-center gap-2 ${CANVAS_NODE_TOOLBAR_PILL_CLASS}`}
+          className={`flex w-[min(420px,calc(100vw-16px))] min-w-0 items-center gap-2 ${CANVAS_NODE_TOOLBAR_PILL_CLASS}`}
           onClick={(event) => event.stopPropagation()}
         >
           <button
@@ -256,6 +258,7 @@ export const GridActionConfirmOverlay = memo(
             <ArrowUp className="h-4 w-4" />
           </button>
         </div>
+        </NodeToolbarViewportBoundary>
       </ReactFlowNodeToolbar>
     );
   }

@@ -58,6 +58,7 @@ import { dataUrlToBlob, resolveImageDisplayUrl } from '@/features/canvas/applica
 import { CANVAS_NODE_PANEL_SURFACE_CLASS, canvasNodeFrameClass } from '@/features/canvas/ui/nodeFrameStyles';
 import { NODE_INLINE_ERROR_MESSAGE_CLASS } from '@/features/canvas/ui/nodeControlStyles';
 import { uploadLocalImageToBackend } from '@/features/canvas/application/uploadToolOutput';
+import { NodeToolbarViewportBoundary } from '@/features/canvas/ui/NodeToolbarViewportBoundary';
 import { useUpstreamNodes } from '@/features/canvas/application/useUpstreamGraph';
 import { useCanvasStore } from '@/stores/canvasStore';
 import {
@@ -1020,6 +1021,7 @@ export const Pano360ViewerNode = memo(({ id, data, selected, width, height }: Pa
         offset={16}
         className="pointer-events-auto"
       >
+        <NodeToolbarViewportBoundary>
         <div className="flex items-center gap-1 rounded-full border border-white/[0.12] bg-[#282828]/95 px-1.5 py-1 shadow-[0_10px_24px_rgba(0,0,0,0.32)] backdrop-blur-md">
           <PanoToolbarButton onClick={snapCurrent} disabled={isCapturing} title="当前视角截图">
             {isCapturing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
@@ -1045,6 +1047,7 @@ export const Pano360ViewerNode = memo(({ id, data, selected, width, height }: Pa
             <RotateCcw className="h-4 w-4" />
           </PanoToolbarButton>
         </div>
+        </NodeToolbarViewportBoundary>
       </ReactFlowNodeToolbar>
 
       <NodeHeader

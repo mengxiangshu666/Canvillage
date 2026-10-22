@@ -32,6 +32,7 @@ import { NODE_TOOLBAR_CLASS } from './nodeToolbarConfig';
 import { CANVAS_NODE_TOOLBAR_CARD_CLASS } from './nodeFrameStyles';
 import { NODE_CREDIT_PILL_FLAT_CLASS } from './nodeControlStyles';
 import { ZoomScaledToolbar } from './ZoomScaledToolbar';
+import { NodeToolbarViewportBoundary } from './NodeToolbarViewportBoundary';
 import { useAnchoredNodePopoverPosition } from './anchoredPopover';
 
 const SCALE_FACTORS: FreezoneUpscaleScaleFactor[] = [2, 4, 6];
@@ -234,9 +235,9 @@ export const UpscaleEditorOverlay = memo(({ node }: UpscaleEditorOverlayProps) =
       offset={12}
       className={NODE_TOOLBAR_CLASS}
     >
-      {/* 操作区按画布缩放同步缩放：面板挂在节点下方，锚点取顶边（贴着节点底边），
-          画布缩小时面板朝节点收缩、视觉上与节点同比变小。 */}
-      <ZoomScaledToolbar origin="top center">
+      {/* 面板挂在节点下方，保持可读尺寸；画布缩小时只跟随节点位置。 */}
+      <NodeToolbarViewportBoundary>
+      <ZoomScaledToolbar origin="top center" mode="counter" counterMax={1}>
         <div
           className={`w-[400px] p-4 ${CANVAS_NODE_TOOLBAR_CARD_CLASS}`}
           onClick={(event) => event.stopPropagation()}
@@ -247,7 +248,7 @@ export const UpscaleEditorOverlay = memo(({ node }: UpscaleEditorOverlayProps) =
           </div>
           <button
             type="button"
-            className="text-xs text-text-muted transition-colors hover:text-text-dark"
+            className="inline-flex h-7 items-center rounded-[7px] px-2 text-xs text-text-muted transition-colors hover:bg-white/[0.06] hover:text-text-dark"
             onClick={handleCancel}
             title={t('upscaleEditor.cancel')}
           >
@@ -288,7 +289,7 @@ export const UpscaleEditorOverlay = memo(({ node }: UpscaleEditorOverlayProps) =
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting || Boolean(modelUnavailableReason)}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-bg-dark transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-white text-bg-dark transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             title={modelUnavailableReason ?? t('upscaleEditor.submit')}
           >
             <ArrowUp className="h-4 w-4" />
@@ -296,6 +297,7 @@ export const UpscaleEditorOverlay = memo(({ node }: UpscaleEditorOverlayProps) =
         </div>
         </div>
       </ZoomScaledToolbar>
+      </NodeToolbarViewportBoundary>
     </ReactFlowNodeToolbar>
   );
 });
@@ -351,7 +353,7 @@ function QualityPicker({ value, options, onChange }: QualityPickerProps) {
         ref={triggerRef}
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-text-dark transition-colors hover:bg-white/[0.08]"
+        className="inline-flex h-8 items-center gap-1.5 rounded-[8px] border border-white/10 bg-white/[0.04] px-2.5 text-xs text-text-dark transition-colors hover:bg-white/[0.08]"
       >
         <Sparkles className="h-3.5 w-3.5 text-text-muted" />
         <span className="font-medium">{title}</span>
@@ -362,7 +364,7 @@ function QualityPicker({ value, options, onChange }: QualityPickerProps) {
       {isOpen && popoverPosition && typeof document !== 'undefined' && createPortal(
         <div
           ref={popoverRef}
-          className="fixed z-[10000] w-[240px] rounded-xl border border-white/10 bg-surface-dark/95 p-3 shadow-2xl backdrop-blur-md"
+          className="fixed z-[10000] w-[240px] rounded-[12px] border border-white/10 bg-[#202023] p-2 shadow-[0_12px_30px_rgba(0,0,0,0.36)]"
           style={{
             left: popoverPosition.left,
             top: popoverPosition.top,
@@ -382,9 +384,9 @@ function QualityPicker({ value, options, onChange }: QualityPickerProps) {
                     onChange(size);
                     setIsOpen(false);
                   }}
-                  className={`inline-flex h-8 flex-1 items-center justify-center gap-1 rounded-full px-3 text-xs font-medium transition-colors ${
+                  className={`inline-flex h-8 flex-1 items-center justify-center gap-1 rounded-[7px] px-3 text-xs font-medium transition-colors ${
                     isActive
-                      ? 'bg-[rgb(var(--accent-rgb))] text-white'
+                      ? 'bg-[#09caf5]/12 text-[#7de6ff]'
                       : 'bg-white/[0.06] text-text-dark hover:bg-white/[0.12]'
                   }`}
                 >
@@ -418,7 +420,7 @@ function ScaleFactorPicker({ value, onChange }: ScaleFactorPickerProps) {
             onClick={() => onChange(factor)}
             className={`flex h-7 w-12 items-center justify-center rounded-md text-xs font-medium transition-colors ${
               isActive
-                ? 'bg-white text-bg-dark'
+                ? 'bg-[#09caf5]/14 text-[#8cecff]'
                 : 'text-text-muted hover:bg-white/[0.06] hover:text-text-dark'
             }`}
           >

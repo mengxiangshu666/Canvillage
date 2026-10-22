@@ -59,7 +59,11 @@ import {
   ProjectSwitcher,
   ProjectWorkflowMenu,
 } from "@/components/layout/project-header-navigation";
-import { projectModeFromPath } from "@/components/layout/project-navigation-routes";
+import {
+  projectModeFromPath,
+  projectSectionFromPath,
+} from "@/components/layout/project-navigation-routes";
+import { COMPANION_MANAGER_EVENT } from "@/components/layout/app-sidebar";
 const ACCOUNT_PANEL_TRANSITION_MS = 350;
 
 export function resolveCompanionManagerEntryCopy(
@@ -113,6 +117,7 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
   const companionPet = useAppStore((s) => s.companionPet);
   const setCompanion = useAppStore((s) => s.setCompanion);
   const setLanguage = useAppStore((s) => s.setLanguage);
+  const projectLibraryOpen = useAppStore((s) => s.projectLibraryOpen);
   const showLogout = authRequired();
   const ceRuntime = isCeRuntime();
   const displayName = username ?? "User";
@@ -150,6 +155,10 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
   const isCanvasWorkspace = canvasOnlyProduct && /^\/projects\/[^/]+\/freezone$/.test(pathname);
   const isWorkflowWorkspace = canvasOnlyProduct
     && projectModeFromPath(pathname) === "workflow";
+  const activeProjectSection = projectSectionFromPath(pathname);
+  const activeSectionLabel = activeProjectSection
+    ? ({ freezone: "画布", production: "总控", storyLab: "故事", characters: "资产", episodes: "分镜", making: "制作", tasks: "任务", styles: "风格", ingest: "导入", assistant: "助理" } as const)[activeProjectSection]
+    : "";
 
   useEffect(() => {
     return () => {
@@ -157,6 +166,12 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
       clearAccountUnmountTimer();
       clearAccountOpenFrame();
     };
+  }, []);
+
+  useEffect(() => {
+    const openCompanionManager = () => setCompanionOpen(true);
+    window.addEventListener(COMPANION_MANAGER_EVENT, openCompanionManager);
+    return () => window.removeEventListener(COMPANION_MANAGER_EVENT, openCompanionManager);
   }, []);
 
 
@@ -253,7 +268,8 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
     <div
       className={cn(
         "relative z-20 shrink-0 text-sidebar-foreground",
-        canvasOnlyProduct && "village-app-header",
+        "village-app-header",
+        !canvasOnlyProduct && "village-app-header--shell",
         isCanvasWorkspace && "village-app-header--canvas",
         isWorkflowWorkspace && "village-app-header--workflow",
       )}
@@ -289,10 +305,17 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
           ) : null}
           <div className={cn("flex min-w-0 items-center gap-6", showBrand && "ml-[22px]")}>
             {project ? (
-              <ProjectSwitcher current={project} />
+              <>
+                <ProjectSwitcher current={project} />
+                {activeSectionLabel ? <span className="village-header-section"><ChevronRight className="size-3" aria-hidden="true" />{activeSectionLabel}</span> : null}
+              </>
             ) : (
               <span className="truncate text-[13px] font-medium text-sidebar-foreground/62">
-                {pathname === "/" ? t("nav.home", "首页") : appBrandName}
+                {pathname !== "/"
+                  ? appBrandName
+                  : projectLibraryOpen
+                    ? t("nav.projectLibrary", "项目库")
+                    : t("nav.home", "首页")}
               </span>
             )}
           </div>

@@ -462,13 +462,13 @@ export function CanvasSettingsPanel({ onClose }: CanvasSettingsPanelProps) {
   return (
     <section
       aria-label="画布设置"
-      className={`nopan nowheel ${CANVAS_TOOL_SURFACE_CLASS} relative flex max-h-[min(74vh,620px)] w-[372px] max-w-[calc(100vw-24px)] flex-col overflow-hidden rounded-[16px] text-white`}
+      className={`nopan nowheel ${CANVAS_TOOL_SURFACE_CLASS} relative flex max-h-[min(74vh,620px)] w-[356px] max-w-[calc(100vw-24px)] flex-col overflow-hidden rounded-[12px] text-white`}
     >
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.14] to-transparent"
       />
-      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.07] px-4 py-3">
+      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.07] px-3.5 py-2.5">
         <div className="flex min-w-0 items-center gap-2.5">
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px] border border-white/[0.07] bg-white/[0.05] text-white/74">
             <Settings2 className="h-[15px] w-[15px]" aria-hidden="true" />
@@ -484,7 +484,7 @@ export function CanvasSettingsPanel({ onClose }: CanvasSettingsPanelProps) {
           type="button"
           onClick={onClose}
           aria-label="关闭画布设置"
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] text-white/38 transition-colors hover:bg-white/[0.075] hover:text-white/84"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] text-white/48 transition-colors hover:bg-[#292929] hover:text-white/88 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45"
         >
           <X className="h-3.5 w-3.5" aria-hidden="true" />
         </button>

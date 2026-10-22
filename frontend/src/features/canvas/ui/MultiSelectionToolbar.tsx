@@ -47,17 +47,18 @@ const STORYBOARD_IMAGE_NODE_TYPES = new Set<string>([
 const STORYBOARD_MAX_NODES = 25;
 import { downloadUrlAsFile } from '@/lib/browserDownload';
 import { ZoomScaledToolbar } from '@/features/canvas/ui/ZoomScaledToolbar';
+import { NodeToolbarViewportBoundary } from '@/features/canvas/ui/NodeToolbarViewportBoundary';
 
 // Gap (in flow units) kept between nodes when arranging.
 const ARRANGE_GAP = 32;
 // Fallback height when a node has not been measured yet.
 const DEFAULT_NODE_HEIGHT = 320;
 const MULTI_TOOLBAR_BUTTON_CLASS =
-  'flex h-9 items-center gap-1.5 rounded-[12px] px-3 text-sm text-text-dark transition-colors hover:bg-[rgba(255,255,255,0.075)]';
+  'flex h-8 items-center gap-1.5 rounded-[8px] px-2.5 text-xs text-text-dark transition-colors hover:bg-[rgba(255,255,255,0.075)]';
 const MULTI_TOOLBAR_SEPARATOR_CLASS =
-  'mx-1 h-4 w-px shrink-0 bg-[rgba(255,255,255,0.14)]';
+  'mx-0.5 h-4 w-px shrink-0 bg-[rgba(255,255,255,0.12)]';
 const MULTI_TOOLBAR_MENU_ITEM_CLASS =
-  'flex h-11 w-full items-center gap-2.5 rounded-[10px] px-3 text-left text-sm text-text-dark transition-colors hover:bg-[rgba(255,255,255,0.075)]';
+  'flex h-8 w-full items-center gap-2 rounded-[7px] px-2.5 text-left text-xs text-text-dark transition-colors hover:bg-[rgba(255,255,255,0.075)]';
 
 type ArrangeMode = 'graph' | 'horizontal' | 'vertical';
 
@@ -374,9 +375,10 @@ export const MultiSelectionToolbar = memo(({ projectId }: { projectId?: string }
       {/* counter 模式：抵消画布缩放，让批量菜单保持恒定的屏幕尺寸——画布缩得越小，
           菜单相对越大越清晰，不再像 follow 模式那样跟着一起缩到看不清。counterMax
           与通用节点工具栏(NodeActionToolbar)一致封在 1，避免放大画布时反而变大。 */}
+      <NodeToolbarViewportBoundary>
       <ZoomScaledToolbar origin="bottom left" mode="counter" counterMax={1}>
       <div ref={arrangeMenuRef} className="relative" onClick={(event) => event.stopPropagation()}>
-        <div className="flex items-center gap-1.5 rounded-[18px] border border-white/10 bg-[#242426]/95 px-2 py-1.5 text-sm shadow-[0_10px_24px_rgba(0,0,0,0.28)] backdrop-blur-2xl [&_svg]:h-4 [&_svg]:w-4">
+        <div className="flex max-w-[calc(100dvw-16px)] flex-wrap items-center gap-1 rounded-[12px] border border-white/10 bg-[#1d1d20]/97 px-1.5 py-1 text-sm shadow-[0_10px_26px_rgba(0,0,0,0.26),inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl [&_svg]:h-4 [&_svg]:w-4">
           <button
             type="button"
             className={MULTI_TOOLBAR_BUTTON_CLASS}
@@ -437,7 +439,7 @@ export const MultiSelectionToolbar = memo(({ projectId }: { projectId?: string }
             </button>
 
             {groupMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 min-w-[160px] overflow-hidden rounded-xl border border-white/10 bg-[#242426]/95 p-1.5 text-text-dark shadow-none backdrop-blur-3xl">
+              <div className="absolute right-0 top-full mt-2 min-w-[160px] overflow-hidden rounded-[12px] border border-white/10 bg-[#202023] p-1 text-text-dark shadow-[0_12px_30px_rgba(0,0,0,0.36)]">
                 <button
                   type="button"
                   className={MULTI_TOOLBAR_MENU_ITEM_CLASS}
@@ -465,7 +467,7 @@ export const MultiSelectionToolbar = memo(({ projectId }: { projectId?: string }
                     <span>合并分镜组</span>
                   </button>
                   {!canMergeStoryboard ? (
-                    <div className="pointer-events-none absolute right-0 top-full z-10 mt-1.5 hidden w-max max-w-[240px] rounded-lg border border-white/10 bg-[#1c1c1e]/95 px-3 py-1.5 text-xs leading-relaxed text-white/80 shadow-[0_10px_24px_rgba(0,0,0,0.35)] backdrop-blur-2xl group-hover/sb:block">
+                      <div className="pointer-events-none absolute right-0 top-full z-10 mt-1.5 hidden w-max max-w-[240px] rounded-[10px] border border-white/10 bg-[#1d1d20] px-3 py-2 text-[11px] leading-5 text-white/76 shadow-[0_10px_24px_rgba(0,0,0,0.35)] group-hover/sb:block">
                       分镜组仅支持图片节点，且组内节点数量不可超过25个
                     </div>
                   ) : null}
@@ -494,7 +496,7 @@ export const MultiSelectionToolbar = memo(({ projectId }: { projectId?: string }
 
         {arrangeMenuOpen && (
           <div
-            className="absolute left-0 top-full z-[10000] mt-2 min-w-[150px] overflow-hidden rounded-xl border border-white/10 bg-[#242426]/95 p-1.5 text-text-dark shadow-none backdrop-blur-3xl"
+            className="absolute left-0 top-full z-[10000] mt-2 min-w-[150px] overflow-hidden rounded-[12px] border border-white/10 bg-[#202023] p-1 text-text-dark shadow-[0_12px_30px_rgba(0,0,0,0.36)]"
             onMouseEnter={openArrangeMenu}
             onMouseLeave={scheduleArrangeMenuClose}
           >
@@ -526,6 +528,7 @@ export const MultiSelectionToolbar = memo(({ projectId }: { projectId?: string }
         )}
       </div>
       </ZoomScaledToolbar>
+      </NodeToolbarViewportBoundary>
       </ReactFlowNodeToolbar>
     ) : null}
     <SaveCanvasTemplateDialog

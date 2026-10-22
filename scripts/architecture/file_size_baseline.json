@@ -7,7 +7,7 @@
     "frontend/src/features/canvas/Canvas.tsx": 5505,
     "frontend/src/features/viewer-kit/three-d/ThreeDDirectorDialog.tsx": 3245,
     "frontend/src/routes/_app/projects.$project/characters.lazy.tsx": 3389,
-    "frontend/src/stores/canvasStore.ts": 4290,
+    "frontend/src/stores/canvasStore.ts": 4285,
     "src/novelvideo/api/production_orchestrator.py": 3175,
     "src/novelvideo/api/routes/chat.py": 4006,
     "src/novelvideo/api/routes/generation.py": 5734,

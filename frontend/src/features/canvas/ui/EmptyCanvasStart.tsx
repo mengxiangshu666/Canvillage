@@ -20,12 +20,12 @@ export function EmptyCanvasStart() {
 
   return (
     <div className="pointer-events-none absolute inset-0 z-[46] flex items-center justify-center">
-      <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.06] px-4 py-2 backdrop-blur-xl">
+      <div className="inline-flex h-9 items-center gap-2 rounded-[8px] border border-white/[0.09] bg-[#1d1d20]/96 px-3.5 shadow-[0_10px_28px_rgba(0,0,0,0.24)]">
         <MousePointerClick
           className="h-3.5 w-3.5 shrink-0 text-white/60"
           aria-hidden="true"
         />
-        <span className="text-sm text-white/70">
+        <span className="text-xs text-white/68">
           {t('canvas.emptyHintBeforeTab')}
           <span className="text-primary">Tab</span>
           {t('canvas.emptyHintAfterTab')}

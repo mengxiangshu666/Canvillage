@@ -125,7 +125,7 @@ export function NodeGenerationOverlay({
         {onCancel && (
           <button
             type="button"
-            className="nodrag nowheel pointer-events-auto mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/45 px-3 py-1.5 text-[11px] font-medium text-white/85 shadow-lg backdrop-blur-md transition-colors hover:border-red-300/55 hover:bg-red-950/55 hover:text-white disabled:cursor-wait disabled:opacity-70"
+            className="nodrag nowheel pointer-events-auto mt-4 inline-flex h-8 items-center gap-1.5 rounded-[7px] border border-white/15 bg-[#1d1d20] px-2.5 text-[11px] font-medium text-white/85 shadow-[0_8px_20px_rgba(0,0,0,0.24)] transition-colors hover:border-red-300/45 hover:bg-[#292929] hover:text-white disabled:cursor-wait disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45"
             onPointerDown={(event) => event.stopPropagation()}
             onClick={(event) => {
               event.stopPropagation();

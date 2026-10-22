@@ -64,7 +64,7 @@ export function CanvasOrphanNodesPanel() {
     return (
       <button
         type="button"
-        className={`nopan nowheel absolute left-3 top-24 z-[10000] flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[11px] text-text/85 transition hover:text-text ${CANVAS_CONTROL_GLASS_CLASS}`}
+        className={`nopan nowheel absolute left-3 top-24 z-[10000] flex h-8 items-center gap-1.5 rounded-[7px] px-2.5 text-[11px] text-text/85 transition hover:text-text ${CANVAS_CONTROL_GLASS_CLASS}`}
         onClick={() => setOpen(true)}
         title="查看没有连线的孤立节点"
       >
@@ -76,13 +76,13 @@ export function CanvasOrphanNodesPanel() {
 
   return (
     <div
-      className={`nopan nowheel absolute left-3 top-24 z-[10000] flex max-h-[60vh] w-72 flex-col overflow-hidden rounded-lg ${CANVAS_CONTROL_GLASS_CLASS}`}
+      className={`nopan nowheel absolute left-3 top-24 z-[10000] flex max-h-[60vh] w-72 flex-col overflow-hidden rounded-[10px] border border-white/[0.08] bg-[#1d1d20] shadow-[0_12px_30px_rgba(0,0,0,0.3)]`}
     >
       <header className="flex items-center justify-between border-b border-[var(--ui-border-soft)] px-3 py-2">
         <div className="flex items-center gap-1.5 text-[12px] font-medium text-text">
           <Unlink className="h-3.5 w-3.5" />
           <span>孤立节点</span>
-          <span className="rounded-full bg-white/10 px-1.5 text-[10px] text-text/70">
+          <span className="rounded-[5px] bg-[#292929] px-1.5 text-[10px] text-text/72">
             {count}
           </span>
         </div>
@@ -107,7 +107,7 @@ export function CanvasOrphanNodesPanel() {
         {orphans.map((orphan) => (
           <li
             key={orphan.id}
-            className="group flex items-center gap-2 rounded-md px-1.5 py-1.5 transition hover:bg-white/[0.06]"
+            className="group flex min-h-9 items-center gap-2 rounded-[6px] px-1.5 py-1 transition hover:bg-[#292929]"
           >
             <button
               type="button"
@@ -147,14 +147,14 @@ export function CanvasOrphanNodesPanel() {
             <span className="flex items-center gap-1">
               <button
                 type="button"
-                className="rounded px-2 py-1 text-[11px] text-rose-300 transition hover:bg-rose-500/15"
+                className="h-7 rounded-[6px] px-2 text-[11px] text-rose-300 transition hover:bg-rose-500/15"
                 onClick={clearAll}
               >
                 确认删除
               </button>
               <button
                 type="button"
-                className="rounded px-2 py-1 text-[11px] text-text/60 transition hover:bg-white/10"
+                className="h-7 rounded-[6px] px-2 text-[11px] text-text/60 transition hover:bg-[#292929]"
                 onClick={() => setConfirmingClear(false)}
               >
                 取消
@@ -164,7 +164,7 @@ export function CanvasOrphanNodesPanel() {
         ) : (
           <button
             type="button"
-            className="w-full rounded px-2 py-1 text-[11px] text-text/70 transition hover:bg-white/10 hover:text-text"
+            className="h-8 w-full rounded-[6px] text-[11px] text-text/70 transition hover:bg-[#292929] hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45"
             onClick={() => setConfirmingClear(true)}
           >
             一键清理全部

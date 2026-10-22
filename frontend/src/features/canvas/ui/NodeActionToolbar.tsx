@@ -4,7 +4,6 @@ import {
   memo,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -119,6 +118,7 @@ import { getNodeToolPlugins } from "@/features/canvas/tools";
 import type { ToolIconKey } from "@/features/canvas/tools";
 import { UiChipButton, UiPanel } from "@/components/ui";
 import { ZoomScaledToolbar } from "@/features/canvas/ui/ZoomScaledToolbar";
+import { NodeToolbarViewportBoundary } from "@/features/canvas/ui/NodeToolbarViewportBoundary";
 import { copyImageSourceToClipboard } from "@/commands/image";
 import { resolveImageDisplayUrl } from "@/features/canvas/application/imageData";
 import { useSettingsStore } from "@/stores/settingsStore";
@@ -175,16 +175,16 @@ const toolIconMap: Record<ToolIconKey, typeof Crop> = {
   split: Scissors,
 };
 
-const TOOLBAR_BUTTON_RADIUS_CLASS = "rounded-[12px]";
+const TOOLBAR_BUTTON_RADIUS_CLASS = "rounded-[8px]";
 // 扁平菜单项：去掉独立边框与胶囊背景，融入工具栏整条；仅靠 hover 高亮区分。
 const TOOLBAR_NEUTRAL_BUTTON_CLASS =
   "!border-transparent !bg-transparent text-text-dark hover:!bg-[rgba(255,255,255,0.075)] focus:!border-transparent focus:!bg-transparent focus:!shadow-none focus-visible:!outline-none focus-visible:!ring-0 data-[state=open]:!border-transparent data-[state=open]:!shadow-none";
 const TOOLBAR_TEXT_BUTTON_CLASS =
-  `h-9 ${TOOLBAR_BUTTON_RADIUS_CLASS} px-3 text-sm ${TOOLBAR_NEUTRAL_BUTTON_CLASS}`;
+  `h-8 ${TOOLBAR_BUTTON_RADIUS_CLASS} px-2.5 text-xs ${TOOLBAR_NEUTRAL_BUTTON_CLASS}`;
 const TOOLBAR_MENU_CONTENT_CLASS =
-  "z-[120] border-white/10 bg-[#242426]/50 text-text-dark shadow-none backdrop-blur-3xl";
+  "z-[120] border-white/10 bg-[#202023] text-text-dark shadow-[0_10px_28px_rgba(0,0,0,0.35)]";
 const TOOLBAR_MENU_ITEM_CLASS =
-  "gap-2 rounded-[10px] text-text-dark focus:bg-[rgba(255,255,255,0.075)] focus:text-text-dark";
+  "gap-2 rounded-[7px] text-text-dark focus:bg-[#2b2b2e] focus:text-text-dark";
 
 type BeatMainlineContext = MainlineContext & {
   projectId: string;
@@ -435,7 +435,7 @@ function ToolbarIconChip({
       <UiChipButton
         title={label}
         aria-label={label}
-        className={`h-9 w-9 justify-center !px-0 ${TOOLBAR_BUTTON_RADIUS_CLASS} text-sm ${TOOLBAR_NEUTRAL_BUTTON_CLASS} ${extraButtonClass}`}
+        className={`h-8 w-8 justify-center !px-0 ${TOOLBAR_BUTTON_RADIUS_CLASS} text-xs ${TOOLBAR_NEUTRAL_BUTTON_CLASS} ${extraButtonClass}`}
         onClick={onClick}
       >
         <Icon className="h-4 w-4" />
@@ -472,28 +472,6 @@ export const NodeActionToolbar = memo(
     // renders, so reading `node.id` at the call site fails to type-check.
     const nodeId = node.id;
     const isUngroupableGroup = isGroupNode(node) && !isProtectedProjectionGroupNode(node);
-    // 工具栏是「以节点为中心」浮出来的，节点贴近视口左/右边缘时整条会被切在屏幕外
-    // —— 那就是用户说的「隐藏」。这里量一次实际宽度，装不下就把对齐方式换成
-    // start / end，让面板朝视口内侧展开。只在真的需要换边时才 setState（拖动过程中
-    // 反复测量，值不变就不重渲染）。
-    const toolbarBoxRef = useRef<HTMLDivElement | null>(null);
-    const [toolbarAlign, setToolbarAlign] = useState<
-      typeof NODE_TOOLBAR_ALIGN | 'start' | 'end'
-    >(NODE_TOOLBAR_ALIGN);
-    useLayoutEffect(() => {
-      const box = toolbarBoxRef.current;
-      if (!box) return;
-      const rect = box.getBoundingClientRect();
-      if (rect.width === 0) return;
-      const MARGIN = 8;
-      const next =
-        rect.left < MARGIN
-          ? 'start'
-          : rect.right > window.innerWidth - MARGIN
-            ? 'end'
-            : NODE_TOOLBAR_ALIGN;
-      setToolbarAlign((current) => (current === next ? current : next));
-    }, [node.id, node.position.x, node.position.y]);
     // 同 nodeId:在 node 仍是完整类型时捕获组背景色。下方过宽的类型守卫会把 node
     // 收窄成 never,到 ungroup 按钮渲染处再读 node.data 会编译失败(tsc -b)。
     const groupBackgroundColor = isGroupNode(node)
@@ -1085,15 +1063,15 @@ export const NodeActionToolbar = memo(
           nodeId={node.id}
           isVisible
           position={NODE_TOOLBAR_POSITION}
-          align={toolbarAlign}
+          align={NODE_TOOLBAR_ALIGN}
           offset={NODE_TOOLBAR_OFFSET}
           className={NODE_TOOLBAR_CLASS}
         >
-          <div ref={toolbarBoxRef}>
+          <NodeToolbarViewportBoundary>
           <ZoomScaledToolbar origin="bottom center" mode="counter" counterMax={1}>
           {/* 节点激活时，顶部菜单从节点上沿淡入+轻微上滑浮现（而非生硬地直接出现），
               与下方操作区的入场动画呼应。motion-reduce 下退化为无动画。 */}
-          <UiPanel className="village-node-action-toolbar flex animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2 items-center gap-1.5 rounded-[18px] !border-white/10 !bg-[#242426]/95 px-2 py-1.5 text-sm shadow-[0_10px_24px_rgba(0,0,0,0.28)] backdrop-blur-2xl duration-200 ease-out motion-reduce:animate-none [&_svg]:h-4 [&_svg]:w-4">
+          <UiPanel className="village-node-action-toolbar flex animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2 items-center gap-1 rounded-[12px] !border-white/10 !bg-[#1d1d20]/97 px-1.5 py-1 text-sm shadow-[0_10px_26px_rgba(0,0,0,0.26),inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl duration-200 ease-out motion-reduce:animate-none [&_svg]:h-4 [&_svg]:w-4">
             {/* 一行放不下时**整条工具栏换行显示**，不做滚动 / 折叠 / 「更多」菜单。
                 用户 2026-10-02 明确要求「每个功能肯定要展现全，你不要隐藏」：上一版
                 把前半段做成可横向滚动，入口被切在框外，等于隐藏。 */}
@@ -1106,7 +1084,7 @@ export const NodeActionToolbar = memo(
             {isPresetLocked && (
               <span
                 key="mainline-lock-pill"
-                className="rounded-full bg-amber-500/15 px-3 py-1.5 text-sm text-amber-100"
+                className="h-8 rounded-[7px] bg-[#292929] px-2.5 text-xs text-white/78"
               >
                 主线投影 · 锁定
               </span>
@@ -1114,7 +1092,7 @@ export const NodeActionToolbar = memo(
             {isPresetLocked && workbenchTarget && (
               <UiChipButton
                 key="mainline-open-workbench"
-                className={`h-9 ${TOOLBAR_BUTTON_RADIUS_CLASS} border-cyan-300/45 bg-cyan-400/12 px-3 text-sm text-cyan-100 hover:bg-cyan-300/20 disabled:opacity-50`}
+                className={`h-8 ${TOOLBAR_BUTTON_RADIUS_CLASS} border-white/10 bg-[#292929] px-2.5 text-xs text-foreground hover:bg-[#323235] disabled:opacity-50`}
                 disabled={openingWorkbench}
                 onClick={(event) => {
                   event.stopPropagation();
@@ -1141,7 +1119,7 @@ export const NodeActionToolbar = memo(
                 <DropdownMenuTrigger asChild>
                   <UiChipButton
                     key="node-capability-hub"
-                    className="village-node-action-toolbar__capabilities h-9 rounded-[12px] border-indigo-300/35 bg-gradient-to-r from-indigo-500/20 to-fuchsia-500/20 px-3 text-sm text-indigo-100 hover:from-indigo-500/30 hover:to-fuchsia-500/30"
+                    className="village-node-action-toolbar__capabilities h-8 rounded-[8px] border-white/10 bg-[#292929] px-2.5 text-xs text-foreground hover:bg-[#323235]"
                     onClick={(event) => event.stopPropagation()}
                   >
                     <Sparkles className="h-3.5 w-3.5" />
@@ -2704,7 +2682,7 @@ export const NodeActionToolbar = memo(
             )}
           </UiPanel>
           </ZoomScaledToolbar>
-          </div>
+          </NodeToolbarViewportBoundary>
         </ReactFlowNodeToolbar>
       </>
     );

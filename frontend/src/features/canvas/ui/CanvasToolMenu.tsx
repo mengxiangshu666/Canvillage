@@ -34,7 +34,7 @@ export function CanvasToolMenu({ onSelect }: CanvasToolMenuProps) {
     <div
       role="menu"
       aria-label={t('canvas.toolbar.toolGroupLabel')}
-      className={`${CANVAS_TOOL_SURFACE_CLASS} w-[196px] p-1.5`}
+      className={`${CANVAS_TOOL_SURFACE_CLASS} w-[184px] p-1.5`}
     >
       {CANVAS_TOOL_ITEMS.map(({ tool: value, Icon, labelKey, shortcut }) => {
         const active = tool === value;
@@ -56,7 +56,7 @@ export function CanvasToolMenu({ onSelect }: CanvasToolMenuProps) {
           >
             <Icon className={CANVAS_MENU_ICON_CLASS} />
             <span className="flex-1">{t(labelKey)}</span>
-            <span className="text-[12px] tabular-nums text-white/38">{shortcut}</span>
+            <span className="text-[11px] tabular-nums text-white/42">{shortcut}</span>
           </button>
         );
       })}

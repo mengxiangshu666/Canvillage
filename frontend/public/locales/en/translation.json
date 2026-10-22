@@ -29,6 +29,12 @@
     "subtitle": "Describe a character conflict or a world, and let Village Infinite Canvas unfold it into connected shots.",
     "placeholder": "Tell me what you want to make, for example: continue the story of this project…",
     "composerHint": "Manual approval",
+    "continueWork": "Pick up where you left off",
+    "activeCount": "{{count}} active",
+    "loadingProjects": "Organizing projects…",
+    "noRecentProjects": "No active projects yet",
+    "noRecentProjectsHint": "Write the first line on the left. Your work starts here.",
+    "recentProjects": "Recent projects",
     "modelMode": "Auto",
     "submit": "Start creating",
     "skillHint": "Skills",
@@ -357,6 +363,9 @@
     "sectionEpisode": "Episode",
     "switchProject": "Switch Project",
     "allProjects": "All Projects",
+    "projectLibrary": "Project Library",
+    "taskHub": "Tasks",
+    "sectionCurrentProject": "Current Project",
     "collapse": "Collapse",
     "creation": "Creation",
     "production": "Production",
@@ -842,9 +851,9 @@
     "nameExistsArchived": "An archived project already uses this name. Unarchive it or choose another name.",
     "nameExistsDeleted": "A project with this name is in Trash. Restore or permanently delete it before creating a new one.",
     "noProjects": "No projects yet. Click to create one.",
-    "dashboardTitle": "Project Management Center",
+    "dashboardTitle": "Project Library",
     "dashboardReturn": "Back to Project Management",
-    "dashboardSubtitle": "Manage your drama productions and scripts.",
+    "dashboardSubtitle": "Continue where you left off, or start from a script, reference, or character.",
     "emptyTitle": "Start your first story",
     "emptyDescription": "Create a project to begin scripting, generating sketches, and producing episodes.",
     "heroTitle": "Start your creative journey",
@@ -925,6 +934,17 @@
       "description": "The project will be moved to Trash. You can restore it anytime before deleting it permanently.",
       "confirm": "Move to Trash"
     },
+    "bulk": {
+      "selectAll": "Select all",
+      "selectAllLabel": "Select all projects in Trash",
+      "selectProject": "Select project \"{{name}}\"",
+      "selectedCount": "{{count}} selected",
+      "deleteSelected": "Delete selected",
+      "purgeDialog": {
+        "title": "Permanently delete {{count}} projects?",
+        "description": "All scripts, sketches, audio, and video for these {{count}} projects will be removed. This cannot be undone."
+      }
+    },
     "purgeDialog": {
       "title": "Permanently delete \"{{name}}\"?",
       "description": "All scripts, sketches, audio, and video for this project will be removed. This cannot be undone.",
@@ -938,6 +958,8 @@
       "deleted": "Moved \"{{name}}\" to Trash",
       "restored": "Restored \"{{name}}\"",
       "purged": "Permanently deleted \"{{name}}\"",
+      "bulkPurged": "Permanently deleted {{count}} projects",
+      "bulkPurgePartial": "Permanently deleted {{purged}} projects; {{failed}} could not be deleted and remain selected for retry",
       "undo": "Undo"
     },
     "title": "Projects",

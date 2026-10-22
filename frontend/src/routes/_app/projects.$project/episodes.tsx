@@ -76,6 +76,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import "@/components/layout/libtv-workbench";
 import { TOP_TABS } from "@/lib/episode-nav";
 import type { Episode } from "@/types/episode";
 
@@ -309,7 +310,7 @@ function TopBar({
     : t("episode.list.subtitle");
 
   return (
-    <div className="flex shrink-0 flex-col gap-3 border-b border-border/30 bg-background px-9 py-5 lg:flex-row lg:items-center lg:justify-between">
+    <div className="libtv-page-head flex shrink-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex min-w-0 items-start gap-3">
         <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <Clapperboard className="size-[18px]" />
@@ -452,20 +453,20 @@ function EpisodeStatsStrip({
   ];
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-2 py-1.5">
+    <div className="grid grid-cols-2 divide-white/[0.07] overflow-hidden rounded-lg border border-white/[0.075] bg-[#1b1b1b] sm:grid-cols-3 lg:grid-cols-6 lg:divide-x">
       {items.map(({ key, label, value, icon: Icon, tone }) => (
-        <div key={key} className="flex items-center gap-2">
+        <div key={key} className="flex min-w-0 items-center gap-2 border-b border-white/[0.07] px-3 py-2.5 last:border-b-0 lg:border-b-0">
           <Icon
             className={cn(
-              "size-3.5 shrink-0 text-muted-foreground",
+              "size-3.5 shrink-0 text-muted-foreground/75",
               tone === "ready" && "text-emerald-600 dark:text-emerald-300",
             )}
           />
-          <div className="flex items-center gap-5">
+          <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
             <span className="truncate text-[11px] text-muted-foreground">
               {label}
             </span>
-            <span className="shrink-0 text-xs font-medium tabular-nums text-foreground">
+            <span className="shrink-0 text-[13px] font-semibold tabular-nums text-foreground">
               {value}
             </span>
           </div>
@@ -715,8 +716,8 @@ function EpisodeListItem({
         }
       }}
       className={cn(
-        "flex h-full min-h-[13rem] w-full flex-col gap-2 rounded-[10px] border border-white/[0.06] bg-white/[0.025] p-3 text-left transition-all duration-200 ease-out",
-        "hover:scale-[1.01] hover:border-white/[0.12] hover:bg-white/[0.04]",
+        "flex h-full min-h-[13rem] w-full flex-col gap-2 rounded-xl border border-white/[0.075] bg-[#1d1d1d] p-3 text-left transition-colors duration-150",
+        "hover:border-white/[0.14] hover:bg-[#222222]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
       )}
     >
@@ -972,7 +973,7 @@ function EpisodesPage() {
 
   return (
     <HeaderCollapseProvider>
-    <div className="-m-6 flex h-[calc(100%+3rem)] flex-col overflow-hidden">
+    <div className="libtv-workbench -m-6 flex h-[calc(100%+3rem)] flex-col overflow-hidden">
       {selectedEpisode ? (
         <CollapsibleHeaderRegion>{topBar}</CollapsibleHeaderRegion>
       ) : (
@@ -1011,7 +1012,7 @@ function EpisodesPage() {
         ) : (
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             {!isLoading && (
-              <div className="shrink-0 border-b border-border/30 bg-background px-3 py-3 lg:px-9">
+              <div className="shrink-0 border-b border-white/[0.07] bg-[#141414] px-3 py-3 lg:px-6">
                 <EpisodeStatsStrip
                   stats={stats}
                   totalCharacters={totalCharacters}
@@ -1019,26 +1020,25 @@ function EpisodesPage() {
                 />
               </div>
             )}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 lg:p-6">
               {isLoading ? (
                 <EpisodeListSkeleton label={t("common.loading")} />
               ) : displayEpisodes.length === 0 ? (
-                <div className="mx-auto mt-16 flex max-w-md flex-col items-center gap-3 text-center">
-                  <div className="flex size-16 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.035]">
-                    <Clapperboard className="size-6 text-muted-foreground" />
+                <div className="mx-auto mt-10 flex max-w-md flex-col items-center rounded-xl border border-white/[0.075] bg-[#1d1d1d] px-6 py-8 text-center">
+                  <div className="flex size-10 items-center justify-center rounded-[10px] border border-white/[0.08] bg-white/[0.04]">
+                    <Clapperboard className="size-5 text-muted-foreground" />
                   </div>
-                  <h2 className="text-sm font-semibold text-foreground">
+                  <h2 className="mt-3 text-sm font-semibold text-foreground">
                     {t("episode.list.noEpisodes")}
                   </h2>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="mt-1.5 max-w-sm text-xs leading-5 text-muted-foreground">
                     {t("episode.list.noEpisodesHint")}
                   </p>
                   <Button
-                    variant="outline"
                     size="sm"
                     onClick={handlePlan}
                     disabled={planPending}
-                    className="mt-2 h-8 gap-1.5 rounded-[8px] border-white/10 bg-transparent px-3 text-xs font-normal shadow-none hover:bg-white/[0.04] dark:bg-transparent"
+                    className="mt-4 h-8 gap-1.5 rounded-[8px] bg-primary px-3 text-xs font-medium text-primary-foreground shadow-none hover:bg-primary/85"
                   >
                     {planPending ? (
                       <Loader2 className="size-3.5 animate-spin" />
@@ -1054,7 +1054,7 @@ function EpisodesPage() {
                 // 注册表宿主。列表不绑定单集，用 episode=0 作为宿主 scope；每张卡
                 // 片的 key 里带自己的集数，彼此互不干扰。
                 <TaskControllerProvider project={project} episode={0}>
-                  <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3">
+                  <div className="mx-auto grid max-w-[1200px] grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2.5">
                     {displayEpisodes.map((ep) => (
                       <EpisodeListItem
                         project={project}

@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import contextvars
+import logging
 import os
 import signal
 import subprocess
@@ -14,6 +15,8 @@ from collections.abc import Iterator, Sequence
 from typing import Any
 
 from novelvideo.task_backend.cancel import TaskCancelled, TaskTimedOut, is_cancel_requested
+
+logger = logging.getLogger("novelvideo.task_backend.subprocesses")
 
 _TASK_PROCESS_SCOPE: contextvars.ContextVar[dict[str, Any] | None] = contextvars.ContextVar(
     "project_task_subprocess_scope",
@@ -106,24 +109,48 @@ def _kill_process_group(proc: subprocess.Popen) -> None:
     if os.name == "nt":
         # Windows 没有 killpg;taskkill /T 按父子关系终止整棵进程树,
         # 对齐 POSIX 进程组语义(cancel/deadline 必须连孙进程一起杀)。
-        with contextlib.suppress(Exception):
+        try:
             subprocess.run(
                 ["taskkill", "/PID", str(proc.pid), "/T", "/F"],
                 capture_output=True,
                 check=False,
                 timeout=15,
             )
+        except subprocess.TimeoutExpired:
+            logger.warning(
+                "taskkill timed out after 15s for pid=%s; falling back to proc.kill()",
+                proc.pid,
+            )
+        except Exception as exc:
+            logger.warning(
+                "taskkill failed for pid=%s (%s); falling back to proc.kill()",
+                proc.pid,
+                type(exc).__name__,
+            )
         if proc.poll() is None:
-            with contextlib.suppress(Exception):
+            try:
                 proc.kill()
+            except Exception as exc:
+                logger.warning(
+                    "proc.kill() failed for pid=%s (%s)", proc.pid, type(exc).__name__
+                )
         return
     try:
         os.killpg(proc.pid, signal.SIGKILL)
     except ProcessLookupError:
         return
-    except Exception:
-        with contextlib.suppress(Exception):
+    except Exception as exc:
+        logger.warning(
+            "killpg failed for pid=%s (%s); falling back to proc.kill()",
+            proc.pid,
+            type(exc).__name__,
+        )
+        try:
             proc.kill()
+        except Exception as kill_exc:
+            logger.warning(
+                "proc.kill() failed for pid=%s (%s)", proc.pid, type(kill_exc).__name__
+            )
 
 
 def kill_task_processes(task_id: str) -> int:

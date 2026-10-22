@@ -113,7 +113,7 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
 
 function Keycap({ token }: { token: string }) {
   return (
-    <kbd className="inline-flex h-6 min-w-[24px] items-center justify-center rounded-md border border-white/[0.12] bg-white/[0.06] px-1.5 text-[12px] font-medium leading-none text-white/82">
+    <kbd className="inline-flex h-6 min-w-[24px] items-center justify-center rounded-[5px] border border-white/[0.1] bg-[#292929] px-1.5 text-[11px] font-medium leading-none text-white/82">
       {token}
     </kbd>
   );
@@ -142,14 +142,14 @@ export function CanvasShortcutsPanel({ onClose }: CanvasShortcutsPanelProps) {
         type="button"
         onClick={onClose}
         aria-label={t('common.close')}
-        className="absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full text-white/55 transition-colors hover:bg-white/10 hover:text-white"
+        className="absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-[6px] text-white/55 transition-colors hover:bg-[#292929] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45"
       >
         <X className="h-4 w-4" />
       </button>
-      <div className="ui-scrollbar grid max-h-[70vh] grid-cols-2 gap-x-8 gap-y-6 overflow-y-auto px-7 py-6 md:grid-cols-4">
+      <div className="ui-scrollbar grid max-h-[70vh] grid-cols-2 gap-x-7 gap-y-5 overflow-y-auto px-6 py-5 md:grid-cols-4">
         {SHORTCUT_GROUPS.map((group) => (
           <div key={group.titleKey} className="min-w-0">
-            <div className="mb-3 text-[13px] font-semibold leading-none text-white/72">
+            <div className="mb-2.5 text-[12px] font-semibold leading-none text-white/78">
               {t(group.titleKey)}
             </div>
             <div className="flex flex-col gap-3">

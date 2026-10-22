@@ -428,19 +428,19 @@ export function CanvasHistoryAssetsModal({
         onClick={onClose}
         aria-hidden
       />
-      <div className={`${CANVAS_TOOL_SURFACE_CLASS} relative z-10 flex h-[88vh] w-[92vw] max-w-[1440px] flex-col overflow-hidden`}>
+      <div className={`${CANVAS_TOOL_SURFACE_CLASS} relative z-10 flex h-[88vh] w-[92vw] max-w-[1440px] flex-col overflow-hidden !rounded-[16px] !border-white/10 !bg-[#18181b]`}>
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 px-6 py-4">
-        <h2 className="text-[20px] font-semibold leading-none text-white">
+      <div className="flex min-h-[56px] items-center justify-between gap-4 border-b border-white/[0.07] px-5 py-3">
+        <h2 className="text-[16px] font-semibold leading-none text-white">
           {t('canvas.history.title')}
         </h2>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 rounded-full border border-white/[0.12] bg-white/[0.04] px-1 py-0.5">
+          <div className="flex h-8 items-center gap-0.5 rounded-[8px] border border-white/[0.09] bg-[#242427] p-0.5">
             <button
               type="button"
               aria-label={t('canvas.toolbar.zoomOut')}
               onClick={() => setZoom((value) => Math.max(ZOOM_MIN, value - ZOOM_STEP))}
-              className="flex h-6 w-6 items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white"
+              className="flex h-7 w-7 items-center justify-center rounded-[6px] text-white/65 transition-colors hover:bg-[#333336] hover:text-white"
             >
               <Minus className="h-3.5 w-3.5" />
             </button>
@@ -451,7 +451,7 @@ export function CanvasHistoryAssetsModal({
               type="button"
               aria-label={t('canvas.toolbar.zoomIn')}
               onClick={() => setZoom((value) => Math.min(ZOOM_MAX, value + ZOOM_STEP))}
-              className="flex h-6 w-6 items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white"
+              className="flex h-7 w-7 items-center justify-center rounded-[6px] text-white/65 transition-colors hover:bg-[#333336] hover:text-white"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
@@ -460,7 +460,7 @@ export function CanvasHistoryAssetsModal({
             type="button"
             onClick={onClose}
             aria-label={t('common.close')}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-[8px] text-white/65 transition-colors hover:bg-[#292929] hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
@@ -468,7 +468,7 @@ export function CanvasHistoryAssetsModal({
       </div>
 
       {/* Tabs + tools */}
-      <div className="flex items-center justify-between gap-4 px-6 pb-3">
+      <div className="flex min-h-[48px] flex-wrap items-center justify-between gap-3 border-b border-white/[0.07] px-5 py-2.5">
         <div className="flex items-center gap-5">
           {tabOrder.map((tab) => {
             const active = tab === activeTab;
@@ -532,7 +532,7 @@ export function CanvasHistoryAssetsModal({
                   ? 'canvas.history.searchPlaceholder'
                   : 'canvas.history.searchPlaceholderName',
               )}
-              className="h-8 w-44 rounded-lg border border-white/[0.12] bg-white/[0.04] pl-8 pr-7 text-[13px] text-white/85 outline-none transition-colors placeholder:text-white/35 focus:border-white/30 focus:bg-white/[0.07] [&::-webkit-search-cancel-button]:appearance-none"
+              className="h-8 w-48 rounded-[8px] border border-white/[0.09] bg-[#242427] pl-8 pr-7 text-[12px] text-white/85 outline-none transition-colors placeholder:text-white/35 focus:border-[#09caf5]/55 focus:bg-[#292929] [&::-webkit-search-cancel-button]:appearance-none"
             />
             {query && (
               <button
@@ -542,7 +542,7 @@ export function CanvasHistoryAssetsModal({
                   setSearchTerm('');
                 }}
                 aria-label={t('canvas.history.clearSearch')}
-                className="absolute right-2 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded-full text-white/40 transition-colors hover:bg-white/10 hover:text-white"
+                className="absolute right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-[5px] text-white/45 transition-colors hover:bg-[#323235] hover:text-white"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -584,18 +584,18 @@ export function CanvasHistoryAssetsModal({
       </div>
 
       {/* Body */}
-      <div className="ui-scrollbar min-h-0 flex-1 overflow-y-auto px-6 pb-8">
+      <div className="ui-scrollbar min-h-0 flex-1 overflow-y-auto px-5 pb-8 pt-4">
         {/* 加载态判据用**未过滤**的桶:搜索无命中时后台若刚好在 refetch(如删掉某个节点触发
             重新拉取),用 activeAssets 会把已经确定的「没有匹配」换成「加载中」,暗示结果
             还可能出现。 */}
         {useHistory && isLoading && buckets[activeTab].length === 0 ? (
-          <div className="flex h-full items-center justify-center text-[14px] text-white/40">
+          <div className="flex h-full items-center justify-center text-[13px] text-white/48">
             {t('common.loading')}
           </div>
         ) : activeAssets.length === 0 ? (
           <div
             aria-live="polite"
-            className="flex h-full items-center justify-center px-6 text-center text-[14px] text-white/40"
+            className="flex h-full items-center justify-center px-6 text-center text-[13px] text-white/48"
           >
             {!normalizedQuery
               ? t('canvas.history.empty')
@@ -642,7 +642,7 @@ export function CanvasHistoryAssetsModal({
       {/* 批量操作栏：进入选择模式且至少选中一项时，从底部浮出。下载 / 使用 / 删除。 */}
       {selectionMode && selectedAssets.length > 0 && (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-5">
-          <div className="canvas-tool-surface pointer-events-auto flex items-center gap-2 rounded-full border px-2.5 py-2">
+          <div className="canvas-tool-surface pointer-events-auto flex items-center gap-1 rounded-[10px] border px-2 py-1.5">
             <span className="px-2 text-[13px] text-white/70">
               {t('canvas.history.selectedCount', { n: selectedAssets.length })}
             </span>
@@ -651,7 +651,7 @@ export function CanvasHistoryAssetsModal({
               type="button"
               onClick={handleBatchDownload}
               disabled={isDownloading}
-              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium text-white/85 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-8 items-center gap-1.5 rounded-[7px] px-2.5 text-[12px] font-medium text-white/85 transition-colors hover:bg-[#323235] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isDownloading ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -663,7 +663,7 @@ export function CanvasHistoryAssetsModal({
             <button
               type="button"
               onClick={handleBatchUse}
-              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium text-white/85 transition-colors hover:bg-white/10 hover:text-white"
+              className="flex h-8 items-center gap-1.5 rounded-[7px] px-2.5 text-[12px] font-medium text-white/85 transition-colors hover:bg-[#323235] hover:text-white"
             >
               <Plus className="h-3.5 w-3.5" />
               {t('canvas.history.batchUse')}
@@ -728,7 +728,7 @@ export function CanvasHistoryAssetsModal({
                 type="button"
                 onClick={() => setPromptDialogText(null)}
                 aria-label={t('common.close')}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-white/65 transition-colors hover:bg-white/10 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-[7px] text-white/65 transition-colors hover:bg-[#292929] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -834,8 +834,8 @@ function AssetCard({
           stay the same total height and short prompts get a bigger video. */}
       <div className="relative min-h-0 flex-1 overflow-hidden">
       {isAudio ? (
-        <div className="relative flex h-full w-full items-center justify-center bg-gradient-to-br from-cyan-500/15 to-purple-500/15">
-          <Volume2 className="h-7 w-7 text-cyan-200/35" />
+        <div className="relative flex h-full w-full items-center justify-center bg-[#242427]">
+          <Volume2 className="h-7 w-7 text-white/35" />
           <audio
             ref={audioRef}
             src={asset.url}
@@ -863,8 +863,8 @@ function AssetCard({
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-cyan-500/15 to-purple-500/15">
-            <BoxIcon className="h-7 w-7 text-cyan-200/35" />
+          <div className="flex h-full w-full items-center justify-center bg-[#242427]">
+            <BoxIcon className="h-7 w-7 text-white/35" />
           </div>
         )
       ) : asset.kind === 'video' && !asset.previewUrl ? (

@@ -55,7 +55,7 @@ const DEFAULT_LINE_WIDTH_PERCENT = 0.4;
 const MIN_LINE_WIDTH_PERCENT = 0.1;
 const MAX_LINE_WIDTH_PERCENT = 3;
 const ANNOTATE_RANGE_CLASS =
-  'h-0.5 w-28 cursor-pointer appearance-none rounded-full bg-[rgba(255,255,255,0.36)] accent-[#5b8cff] [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#8ec5ff] [&::-webkit-slider-thumb]:shadow-none [&::-moz-range-thumb]:h-2.5 [&::-moz-range-thumb]:w-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#8ec5ff]';
+  'h-0.5 w-28 cursor-pointer appearance-none rounded-full bg-[rgba(255,255,255,0.36)] accent-[#09caf5] [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#7de6ff] [&::-webkit-slider-thumb]:shadow-none [&::-moz-range-thumb]:h-2.5 [&::-moz-range-thumb]:w-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#7de6ff]';
 const ANNOTATE_TOOL_BUTTON_BASE_CLASS =
   'inline-flex h-7 items-center gap-1.5 px-1 text-[12px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-35';
 const ANNOTATE_ACTION_BUTTON_BASE_CLASS =
@@ -1363,8 +1363,8 @@ export function AnnotateToolEditor({ options, onOptionsChange, sourceImageUrl }:
                     return newBox;
                   }}
                   rotateEnabled={false}
-                  borderStroke="#3b82f6"
-                  anchorStroke="#3b82f6"
+                  borderStroke="#09caf5"
+                  anchorStroke="#09caf5"
                   anchorFill="#ffffff"
                   anchorSize={8}
                   ignoreStroke

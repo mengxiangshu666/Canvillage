@@ -61,9 +61,9 @@ export const CANVAS_NODE_BADGES: Partial<Record<CanvasNodeType, 'beta' | 'hd' | 
 };
 
 export const CANVAS_TOOL_SURFACE_CLASS =
-  "canvas-tool-surface rounded-[14px] border";
+  "canvas-tool-surface rounded-[12px] border";
 export const CANVAS_MENU_ROW_CLASS =
-  "canvas-tool-row flex min-h-10 w-full items-center gap-3 rounded-[9px] px-2.5 py-2 text-left text-[13px] font-medium leading-5 transition-[background-color,color,transform] duration-150 ease-out";
+  "canvas-tool-row flex min-h-9 w-full items-center gap-2.5 rounded-[7px] px-2.5 py-1.5 text-left text-[12px] font-medium leading-5 transition-[background-color,color] duration-150 ease-out";
 export const CANVAS_MENU_ICON_CLASS = "canvas-tool-icon h-[18px] w-[18px] shrink-0";
 export const CANVAS_MENU_DIVIDER_CLASS = "canvas-tool-divider h-px w-full";
 

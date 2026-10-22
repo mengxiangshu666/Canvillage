@@ -184,7 +184,6 @@ import {
 import {
   CameraMovementChip,
   CharacterLibraryChip,
-  CountPicker,
   ExternalAssetChip,
   GenModeSelect,
   ReferenceMediaRow,
@@ -2220,13 +2219,13 @@ export const VideoNode = memo(
                 onClick={(event) => event.stopPropagation()}
               />
               <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between gap-2 p-2">
-                  <span className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[11px] text-white/90 backdrop-blur">
+                  <span className="pointer-events-auto inline-flex items-center gap-1.5 rounded-[6px] bg-[#18181b]/86 px-2 py-1 text-[11px] text-white/90 backdrop-blur">
                    <Loader2 className="h-3 w-3 animate-spin" />
                    {upstreamPreviewUrl ? "上游已生成，正在缓存…" : "新视频生成中…"}
                  </span>
                 <button
                   type="button"
-                  className="nodrag pointer-events-auto inline-flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-[11px] text-white/90 backdrop-blur transition-colors hover:bg-black/75"
+                  className="nodrag pointer-events-auto inline-flex h-7 items-center gap-1 rounded-[6px] bg-[#18181b]/86 px-2 text-[11px] text-white/90 backdrop-blur transition-colors hover:bg-[#292929]"
                   onClick={(event) => {
                     event.stopPropagation();
                     setHistoryPreviewUrl(null);
@@ -2538,9 +2537,9 @@ export const VideoNode = memo(
                 onToggle={() => setPanelExpanded((v) => !v)}
                 className="absolute right-2 top-2 z-20"
               />
-              <div className="shrink-0 border-b border-white/[0.08] px-3 pb-2 pr-10 pt-3">
-                <div className="flex min-w-0 items-center justify-between gap-3 overflow-x-auto">
-                <div className="flex shrink-0 items-center gap-2">
+              <div className="shrink-0 border-b border-white/[0.08] px-3 pb-2.5 pr-10 pt-3">
+                <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+                <div className="flex min-w-0 flex-wrap items-center gap-1">
                   <CameraMovementChip
                     templates={cameraTemplates}
                     isLoading={cameraTemplatesLoading}
@@ -2594,7 +2593,7 @@ export const VideoNode = memo(
                     onOpen={() => externalAssetInputRef.current?.click()}
                   />
                 </div>
-                <div className="ml-3 flex shrink-0 items-center gap-3">
+                <div className="ml-auto flex shrink-0 items-center gap-2">
                   <GenModeSelect
                     value={genMode}
                     modelId={capabilityVideoModel?.apiModel ?? capabilityVideoModel?.id ?? modelId}
@@ -2741,6 +2740,7 @@ export const VideoNode = memo(
                   <VideoConfigChip
                     aspectRatio={aspectRatio}
                     aspectRatioOptions={aspectRatioOptions}
+                    count={count}
                     quality={quality}
                     advertisedQualityOptions={advertisedQualityOptions}
                     rejectedQualityOptions={rejectedQualityOptions}
@@ -2766,12 +2766,6 @@ export const VideoNode = memo(
                     opaque={capabilityVideoModel?.opaque ?? []}
                     values={data.parameters ?? {}}
                     onChange={(parameters) => updateNodeData(id, { parameters })}
-                  />
-                  <CountPicker
-                    value={count}
-                    onChange={(nextCount) =>
-                      updateNodeData(id, { count: nextCount })
-                    }
                   />
                   <button
                     type="button"

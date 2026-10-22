@@ -1,5 +1,32 @@
 // SPDX-License-Identifier: Elastic-2.0
 // Copyright (c) 2026 ClaymoreLab
+import type { CSSProperties } from 'react';
+
+export function balancedOptionGridStyle(
+  itemCount: number,
+  maxColumns = 5,
+): CSSProperties {
+  const count = Math.max(0, Math.floor(itemCount));
+  const limit = Math.max(1, Math.min(count, maxColumns));
+  let columns = limit;
+  let bestGap = Number.POSITIVE_INFINITY;
+
+  for (let candidate = 2; candidate <= limit; candidate += 1) {
+    const rows = Math.ceil(count / candidate);
+    const lastRowCount = count - (rows - 1) * candidate;
+    if (lastRowCount === 1) continue;
+    const gap = lastRowCount === 0 ? 0 : candidate - lastRowCount;
+    if (gap <= bestGap) {
+      bestGap = gap;
+      columns = candidate;
+    }
+  }
+
+  return {
+    gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+  };
+}
+
 export const NODE_CONTROL_CHIP_CLASS =
   '!h-7 !gap-1.5 !rounded !border-transparent !bg-transparent !px-1 !text-xs !shadow-none text-text-dark/90 hover:!bg-transparent hover:!text-white';
 
@@ -13,7 +40,7 @@ export const NODE_CONTROL_PRIMARY_BUTTON_CLASS =
 export const NODE_CONTROL_ICON_CLASS = 'h-3 w-3';
 
 export const NODE_TEXT_CONTROL_TRIGGER_CLASS =
-  'nodrag inline-flex h-7 items-center gap-1.5 rounded px-1 text-xs font-medium text-text-dark/88 transition-colors hover:text-text-dark';
+  'nodrag inline-flex h-7 items-center gap-1.5 rounded-[6px] px-1.5 text-xs font-medium text-text-dark/86 transition-colors hover:bg-[#292929] hover:text-text-dark';
 
 export const NODE_TEXT_CONTROL_ICON_CLASS = 'h-3.5 w-3.5 text-text-muted/90';
 
@@ -30,12 +57,12 @@ export const NODE_INLINE_ERROR_MESSAGE_CLASS =
   'min-w-0 max-w-full overflow-hidden rounded-[8px] border border-red-300/20 bg-red-500/10 px-3 py-2 text-xs leading-5 text-red-100 whitespace-pre-wrap break-words [overflow-wrap:anywhere]';
 
 export const NODE_INLINE_ICON_BUTTON_CLASS =
-  'nodrag inline-flex h-7 w-7 items-center justify-center rounded-md text-text-dark/72 transition-colors hover:bg-white/[0.08] hover:text-text-dark disabled:cursor-not-allowed disabled:opacity-45';
+  'nodrag inline-flex h-7 w-7 items-center justify-center rounded-[6px] text-text-dark/72 transition-colors hover:bg-[#292929] hover:text-text-dark disabled:cursor-not-allowed disabled:opacity-45';
 
 export const NODE_INLINE_ICON_BUTTON_ACTIVE_CLASS = 'bg-white/[0.12] text-text-dark';
 
 export const NODE_FLOATING_PANEL_SURFACE_CLASS =
-  'rounded-[10px] border border-white/[0.12] bg-[#282828]/96 shadow-[0_14px_34px_rgba(0,0,0,0.42)] backdrop-blur-md';
+  'rounded-[10px] border border-white/[0.1] bg-[#202023] shadow-[0_12px_30px_rgba(0,0,0,0.36)] backdrop-blur-md';
 
 export const NODE_COUNT_POPOVER_CLASS =
   `nodrag nowheel absolute bottom-full right-0 z-[10000] mb-2 w-[88px] overflow-hidden p-1 ${NODE_FLOATING_PANEL_SURFACE_CLASS}`;
@@ -43,7 +70,7 @@ export const NODE_COUNT_POPOVER_CLASS =
 export const NODE_CREDIT_PILL_FLAT_CLASS = 'rounded-none bg-transparent px-0';
 
 export const NODE_GENERATE_BUTTON_BASE_CLASS =
-  'nodrag relative z-20 inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors';
+  'nodrag relative z-20 inline-flex h-8 w-8 items-center justify-center rounded-[8px] transition-colors';
 
 export const NODE_GENERATE_BUTTON_ENABLED_CLASS = 'bg-white text-bg-dark hover:bg-white/90';
 

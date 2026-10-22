@@ -34,7 +34,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/shadcn/dropdown-menu";
-import { WorkflowRunOverview } from "@/features/workflow-runs/workflow-run-overview";
 import {
   useProductionControl,
   useProductionOverview,
@@ -48,6 +47,7 @@ import {
 } from "@/lib/queries/model-gateway";
 import { requiresPaidMediaConfirmation } from "@/lib/api-errors";
 import { cn } from "@/lib/utils";
+import "@/components/layout/libtv-workbench";
 import type {
   ProductionAspectRatio,
   ProductionChildExecution,
@@ -793,10 +793,12 @@ function ProductionCommandCenter() {
   };
 
   return (
-    <main className="village-workflow-page -m-6 min-h-[calc(100%+3rem)] bg-[#0b0b0c] px-6 py-7 text-white sm:px-8">
-      <div className="mx-auto w-full max-w-6xl space-y-5">
-        <header className="flex flex-wrap items-start justify-between gap-4">
-          <div>
+    <main className="libtv-workbench village-workflow-page village-production-page -m-6 min-h-[calc(100%+3rem)] bg-[#141414] px-4 py-5 text-white sm:px-6">
+      <div className="village-production-layout w-full space-y-3">
+        <header className="village-production-head flex flex-wrap items-start justify-between gap-4">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-[9px] border border-white/10 bg-white/[0.04] text-primary"><Layers3 className="size-4" /></span>
+            <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-primary">村长工作流 · 总控</span>
               {run ? (
@@ -805,16 +807,18 @@ function ProductionCommandCenter() {
                 </Badge>
               ) : null}
             </div>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight">项目制作总控</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <h1 className="mt-1.5 text-xl font-semibold tracking-tight">项目制作总控</h1>
+            <p className="mt-1 text-xs text-muted-foreground">
               一个主运行贯穿故事、资产、分镜和制作；模型自动取自模型中心。
             </p>
+            </div>
           </div>
           <Button
             size="sm"
             variant="ghost"
             onClick={() => void Promise.all([control.refetch(), overview.refetch()])}
             disabled={control.isFetching || overview.isFetching}
+            className="h-8 rounded-lg border border-white/10 px-3 text-xs text-muted-foreground hover:bg-white/[0.05] hover:text-white"
           >
             <RefreshCw
               className={cn(
@@ -826,9 +830,7 @@ function ProductionCommandCenter() {
           </Button>
         </header>
 
-        <WorkflowRunOverview projectId={project} />
-
-        {control.isLoading || overview.isLoading ? (
+{control.isLoading || overview.isLoading ? (
           <div className="h-56 animate-pulse rounded-2xl border border-white/[0.06] bg-white/[0.02]" />
         ) : control.isError || overview.isError || !snapshot ? (
           <section className="rounded-2xl border border-red-400/20 bg-red-400/[0.04] p-6">
@@ -840,6 +842,8 @@ function ProductionCommandCenter() {
           </section>
         ) : (
           <>
+            <div className="village-production-grid">
+            <div className="village-production-main">
             <section
               id="workflow-progress"
               className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] shadow-[0_20px_80px_-60px_rgba(255,255,255,0.28)]"
@@ -1012,7 +1016,9 @@ function ProductionCommandCenter() {
               costSummary={snapshot.cost_summary}
               finalComposeReceipt={snapshot.final_compose_receipt}
             />
+            </div>
 
+            <aside className="village-production-side">
             <section className="grid gap-3 lg:grid-cols-2">
               <details className="group rounded-2xl border border-white/[0.07] bg-white/[0.018] p-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
@@ -1271,6 +1277,8 @@ function ProductionCommandCenter() {
                 </div>
               </details>
             ) : null}
+            </aside>
+            </div>
           </>
         )}
       </div>

@@ -84,7 +84,7 @@ export function CanvasSkillQuickPickPanel({
       role="dialog"
       aria-label="创作技能"
     >
-      <div className="flex items-start justify-between gap-4 border-b border-white/[0.07] px-4 py-3">
+      <div className="flex items-start justify-between gap-4 border-b border-white/[0.07] px-4 py-2.5">
         <div className="flex min-w-0 items-start gap-2.5">
           <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border border-white/[0.09] bg-white/[0.045] text-white/68">
             <Sparkles className="size-3.5" />
@@ -100,7 +100,7 @@ export function CanvasSkillQuickPickPanel({
           type="button"
           onClick={onClose}
           aria-label="关闭创作技能"
-          className="rounded-md p-1 text-white/45 transition-colors hover:bg-white/[0.08] hover:text-white/80"
+          className="flex h-7 w-7 items-center justify-center rounded-[6px] text-white/48 transition-colors hover:bg-[#292929] hover:text-white/86 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45"
         >
           <X className="size-4" />
         </button>
@@ -114,7 +114,7 @@ export function CanvasSkillQuickPickPanel({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="搜索技能、用途或能力"
-          className="h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] pl-8 pr-3 text-xs text-white/85 outline-none placeholder:text-white/30 focus:border-white/[0.18] focus:bg-white/[0.065]"
+          className="h-8 w-full rounded-[7px] border border-white/[0.08] bg-[#242427] pl-8 pr-3 text-xs text-white/85 outline-none placeholder:text-white/30 focus:border-[#09caf5]/50 focus:bg-[#292929]"
         />
       </label>
 
@@ -127,13 +127,13 @@ export function CanvasSkillQuickPickPanel({
                   type="button"
                   aria-label={`插入技能：${displayName}`}
                   onClick={() => onSelect(skill)}
-                  className="group min-h-[82px] w-full rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 text-left transition-colors hover:border-white/[0.14] hover:bg-white/[0.06]"
+                  className="group min-h-[76px] w-full rounded-[10px] border border-white/[0.07] bg-[#202023] p-2.5 text-left transition-colors hover:border-white/[0.15] hover:bg-[#27272a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45"
                 >
                   <span className="mb-1.5 flex items-center justify-between gap-2">
                     <span className="truncate text-xs font-medium text-white/88 group-hover:text-white">
                       {displayName}
                     </span>
-                    <span className="shrink-0 rounded-full border border-white/[0.08] bg-black/15 px-1.5 py-0.5 text-[9px] text-white/45">
+                    <span className="shrink-0 rounded-[4px] bg-[#292929] px-1.5 py-0.5 text-[9px] text-white/52">
                       {PROVIDER_LABELS[skill.provider]}
                     </span>
                   </span>

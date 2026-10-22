@@ -12,7 +12,7 @@ const DEFAULT_LINE_THICKNESS_PERCENT = 0.5;
 const MAX_LINE_THICKNESS_PERCENT = 20;
 const LEGACY_DEFAULT_LINE_THICKNESS_PX = 6;
 const SPLIT_RANGE_CLASS =
-  'h-0.5 w-full cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#5b8cff] [&::-webkit-slider-thumb]:shadow-none [&::-moz-range-thumb]:h-2.5 [&::-moz-range-thumb]:w-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#5b8cff]';
+  'h-0.5 w-full cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#7de6ff] [&::-webkit-slider-thumb]:shadow-none [&::-moz-range-thumb]:h-2.5 [&::-moz-range-thumb]:w-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#7de6ff]';
 
 interface OverlayRect {
   x: number;
@@ -426,7 +426,7 @@ export function SplitStoryboardToolEditor({ sourceImageUrl, options, onOptionsCh
     <div className="grid h-full min-h-0 gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
       <div className="min-h-0">
         <div
-          className="relative flex h-full min-h-[420px] items-center justify-center overflow-hidden rounded-[10px] border border-white/[0.10] bg-[#111214]/80 p-3"
+          className="relative flex h-full min-h-[420px] items-center justify-center overflow-hidden rounded-[12px] border border-white/[0.10] bg-[#151518] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.025)]"
         >
           <div ref={previewAreaRef} className="relative flex h-full w-full items-center justify-center">
             <div
@@ -481,7 +481,7 @@ export function SplitStoryboardToolEditor({ sourceImageUrl, options, onOptionsCh
         </div>
       </div>
 
-      <div className="h-full space-y-4 rounded-[10px] border border-white/[0.10] bg-[#111214]/72 p-3.5">
+      <div className="h-full space-y-4 rounded-[12px] border border-white/[0.10] bg-[#18181b] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.025)]">
         <div className="text-sm font-medium text-text-dark">分格参数</div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
@@ -518,7 +518,7 @@ export function SplitStoryboardToolEditor({ sourceImageUrl, options, onOptionsCh
             onChange={(event) => updateOptions({ lineThicknessPercent: Number(event.target.value) })}
             className={SPLIT_RANGE_CLASS}
             style={{
-              background: `linear-gradient(to right, #5b8cff 0%, #5b8cff ${
+              background: `linear-gradient(to right, #09caf5 0%, #09caf5 ${
                 maxLineThicknessPercent > 0
                   ? (lineThicknessPercent / maxLineThicknessPercent) * 100
                   : 0
@@ -536,11 +536,11 @@ export function SplitStoryboardToolEditor({ sourceImageUrl, options, onOptionsCh
             max={Math.max(0, maxLineThicknessPercent)}
             step={0.1}
             onChange={(event) => updateOptions({ lineThicknessPercent: Number(event.target.value) })}
-            className="h-8 rounded-[8px] border-white/[0.10] bg-bg-dark/42"
+            className="h-8 rounded-[8px] border-white/[0.10] bg-[#151518] focus:border-[#09caf5]/40"
           />
         </div>
 
-        <div className="rounded-[8px] border border-white/[0.10] bg-bg-dark/42 px-3 py-2 text-xs text-text-muted">
+        <div className="rounded-[9px] border border-white/[0.08] bg-black/20 px-3 py-2 text-xs text-text-muted">
           <div className="flex items-center justify-between">
             <span>输出小格数量</span>
             <span className="font-medium text-text-dark">{rows * cols}</span>

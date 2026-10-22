@@ -47,6 +47,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import "@/components/layout/libtv-workbench";
 
 type Resolution = "720x1280" | "1080x1920" | "1280x720" | "1920x1080";
 type ResolutionTier = "720" | "1080";
@@ -298,7 +299,7 @@ function ComposeTabContent() {
   };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
+    <div className="libtv-workbench flex h-full flex-col overflow-hidden" data-workbench="episode">
       {/* Compose confirm dialog */}
       <AlertDialog open={composeConfirm} onOpenChange={setComposeConfirm}>
         <AlertDialogContent className="max-w-[480px] rounded-2xl border-white/8 bg-background/80 p-6 shadow-none backdrop-blur-3xl">
@@ -364,7 +365,7 @@ function ComposeTabContent() {
 
       {/* Main area */}
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto flex h-full w-full max-w-5xl flex-col gap-6 p-6 sm:p-8">
+        <div className="mx-auto flex h-full w-full max-w-5xl flex-col gap-4 p-4 sm:p-6">
           {/* Header: title + meta, actions on the right */}
           {!beatsEmpty && (
             <header className="flex flex-wrap items-center justify-between gap-3">

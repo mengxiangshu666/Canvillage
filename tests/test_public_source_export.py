@@ -2,15 +2,86 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import subprocess
 import sys
 import tomllib
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import pytest
 
 from scripts.prepare_public_source import export_source
+
+
+_FRONTEND_SOURCE_SUFFIXES = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"}
+_RESOLVE_SUFFIXES = (
+    "",
+    ".ts",
+    ".tsx",
+    ".js",
+    ".jsx",
+    ".mjs",
+    ".cjs",
+    ".css",
+    ".json",
+)
+_IMPORT_RE = re.compile(
+    r"""(?:^|[;\n])\s*(?:import|export)\s+(?:type\s+)?[^;\n]*?\bfrom\s*["']([^"']+)["']""",
+    re.MULTILINE,
+)
+_SIDE_EFFECT_IMPORT_RE = re.compile(
+    r"""(?:^|[;\n])\s*import\s*["']([^"']+)["']""", re.MULTILINE
+)
+_DYNAMIC_IMPORT_RE = re.compile(r"\bimport\(\s*[\"']([^\"']+)[\"']\s*\)")
+
+
+def _frontend_import_specifiers(source: str) -> set[str]:
+    return {
+        specifier
+        for pattern in (_IMPORT_RE, _SIDE_EFFECT_IMPORT_RE, _DYNAMIC_IMPORT_RE)
+        for specifier in pattern.findall(source)
+        if specifier.startswith(".") or specifier.startswith("@/")
+    }
+
+
+def _resolve_frontend_import(importer: str, specifier: str) -> str | None:
+    specifier = specifier.split("?", 1)[0].split("#", 1)[0]
+    if specifier.startswith("@/"):
+        base = PurePosixPath("frontend/src") / specifier[2:]
+    else:
+        base = PurePosixPath(importer).parent / specifier
+    parts: list[str] = []
+    for part in base.parts:
+        if part == "..":
+            if parts:
+                parts.pop()
+        elif part not in ("", "."):
+            parts.append(part)
+    target = PurePosixPath(*parts).as_posix()
+    return target
+
+
+def _exported_frontend_dependencies(root: Path, paths: set[str]) -> list[str]:
+    missing: set[tuple[str, str]] = set()
+    for importer in sorted(paths):
+        if (
+            not importer.startswith("frontend/src/")
+            or PurePosixPath(importer).suffix not in _FRONTEND_SOURCE_SUFFIXES
+        ):
+            continue
+        source = (root / importer).read_text(encoding="utf-8")
+        for specifier in _frontend_import_specifiers(source):
+            target = _resolve_frontend_import(importer, specifier)
+            if target is None:
+                continue
+            candidates = {target + suffix for suffix in _RESOLVE_SUFFIXES}
+            candidates.update(
+                f"{target}/index{suffix}" for suffix in _RESOLVE_SUFFIXES[1:]
+            )
+            if not candidates.intersection(paths):
+                missing.add((importer, specifier))
+    return [f"{importer} -> {specifier}" for importer, specifier in sorted(missing)]
 
 
 def test_export_keeps_product_tests_and_not_private_history_or_data(tmp_path: Path) -> None:
@@ -81,6 +152,13 @@ def test_repository_export_attributes_keep_product_and_license_files() -> None:
     } <= paths
     css = (ROOT / "frontend/src/components/login/cinematic/hero-layout.module.css").read_text(encoding="utf-8")
     assert "DingTalk" not in css
+
+
+def test_repository_export_frontend_imports_are_closed() -> None:
+    from scripts.prepare_public_source import ROOT, public_files
+
+    paths = set(public_files(ROOT))
+    assert _exported_frontend_dependencies(ROOT, paths) == []
 
 
 def test_cli_archive_keeps_git_executable_bits(tmp_path: Path, monkeypatch) -> None:

@@ -84,14 +84,14 @@ export function CanvasContextMenu({ position, sections, onClose }: CanvasContext
       onPointerDown={(event) => event.stopPropagation()}
       onMouseDown={(event) => event.stopPropagation()}
       onContextMenu={(event) => event.preventDefault()}
-      className={`absolute z-[10000] min-w-[212px] overflow-hidden rounded-[14px] border border-white/[0.10] bg-[#101217]/80 py-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.45)] backdrop-blur-2xl transition-opacity duration-150 ${
+      className={`absolute z-[10000] min-w-[212px] overflow-hidden rounded-[12px] border border-white/[0.10] bg-[#1d1d20]/97 p-1 shadow-[0_12px_34px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl transition-opacity duration-150 ${
         isVisible && isPositioned ? 'opacity-100' : 'opacity-0'
       }`}
       style={{ left: panelPosition.x, top: panelPosition.y }}
     >
       {sections.map((section, sectionIndex) => (
         <div key={sectionIndex}>
-          {sectionIndex > 0 && <div className="my-1.5 h-px bg-white/[0.08]" />}
+          {sectionIndex > 0 && <div className="my-1 h-px bg-white/[0.08]" />}
           {section.map((item) => (
             <button
               key={item.key}
@@ -104,7 +104,7 @@ export function CanvasContextMenu({ position, sections, onClose }: CanvasContext
                 item.onSelect();
                 onClose();
               }}
-              className={`flex w-full items-center justify-between gap-8 px-4 py-1.5 text-left text-[13px] transition-colors ${
+              className={`flex h-8 w-full items-center justify-between gap-8 rounded-[7px] px-2.5 text-left text-xs transition-colors ${
                 item.disabled
                   ? 'cursor-not-allowed text-white/28'
                   : 'text-white/85 hover:bg-white/[0.07]'

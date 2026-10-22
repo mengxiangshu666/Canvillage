@@ -445,7 +445,13 @@ class InlineTaskBackend:
             beat_num=task_state.beat_num,
             scope=task_state.scope,
         )
-        self._remove_queued_task(task_state.task_id)
+        removed_from_queue = self._remove_queued_task(task_state.task_id)
+        # taskkill/killpg 是阻塞调用(Windows 上可达秒级),不得占事件循环
+        await asyncio.get_running_loop().run_in_executor(
+            None, kill_task_processes, task_state.task_id
+        )
+        self._after_cancel(task_state.task_id)
+        upstream_status = "not_started" if removed_from_queue else "unknown"
         get_task_manager().update_progress_for_project(
             ctx,
             task_state.task_type,
@@ -453,14 +459,18 @@ class InlineTaskBackend:
             beat_num=task_state.beat_num,
             scope=task_state.scope,
             progress=task_state.progress,
-            current_task="任务已取消",
+            current_task=(
+                "任务已取消（未派发）"
+                if removed_from_queue
+                else "任务已取消（上游停止未确认）"
+            ),
+            metadata={
+                **dict(getattr(task_state, "metadata", None) or {}),
+                "cancel_local_cleanup": "completed",
+                "cancel_upstream_status": upstream_status,
+            },
             status="cancelled",
             expected_task_id=task_state.task_id,
-        )
-        self._after_cancel(task_state.task_id)
-        # taskkill/killpg 是阻塞调用(Windows 上可达秒级),不得占事件循环
-        await asyncio.get_running_loop().run_in_executor(
-            None, kill_task_processes, task_state.task_id
         )
         return True
 

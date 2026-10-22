@@ -45,15 +45,15 @@ export function ProjectStoryNavigation({
   return (
     <nav
       aria-label={t("storyWorkspace.navigationLabel")}
-      className="flex min-h-11 items-center gap-1 overflow-x-auto rounded-xl border border-white/[0.08] bg-white/[0.025] p-1.5"
+      className="libtv-segmented"
     >
       {STORY_VIEWS.map((item) => {
         const Icon = item.icon;
         const selected = item.id === active;
         const className = cn(
-          "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-colors duration-150",
+          "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[7px] px-3 text-xs font-medium transition-colors duration-150",
           selected
-            ? "bg-foreground text-background"
+            ? "bg-[#303030] text-foreground"
             : "text-muted-foreground hover:bg-white/[0.05] hover:text-foreground",
         );
         const content = (

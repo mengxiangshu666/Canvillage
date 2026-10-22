@@ -37,12 +37,12 @@ export function HealthBar({ project, episode }: EpisodeNavProps) {
   }));
 
   return (
-    <nav className="border-b border-border/30 bg-background px-9 py-3">
+    <nav className="shrink-0 border-b border-white/[0.07] bg-[#141414] px-3 py-2">
       <SlidingTabs
         items={items}
         value={activeTab.id}
         aria-label={t("nav.episodes")}
-        className="justify-center"
+        className="mx-auto max-w-full justify-center rounded-lg border border-white/[0.07] bg-[#181818] px-2"
         onValueChange={(next) => {
           const tab = TOP_TABS.find((item) => item.id === next);
           if (!tab) return;

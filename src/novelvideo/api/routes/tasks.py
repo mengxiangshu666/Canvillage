@@ -635,23 +635,12 @@ async def cancel_project_task_route(
     ),
     user: dict = Depends(get_api_user),
 ):
-    """终止单个项目内指定任务。项目任务后端通路；Ray 已废弃。
+    """请求取消一个项目任务。
 
-    没有 Ray fallback 判断 — 当前 runner 实现是 Celery，task_states 里有 task
-    就直接走 cancel_project_task(设 Redis 取消 flag + Celery revoke + 标 status)。
-    旧版这里有非 Celery backend fallback,每次 task 找不到都会连接旧任务
-    backend 产生噪音日志,已删。
-
-    **Mid-flight cooperative cancel 的范围限制**:`cancel_project_task` 会:
-      1. 设 Redis cancel flag(等 runner watcher poll)
-      2. Celery revoke(terminate=True)(发 SIGTERM 给 worker)
-      3. 把 task_state 标 cancelled(UI 看到任务消失)
-    其中 (1) 真正中断**已经在 await 外部 API 的 task** 只对**有 watcher 的 runner**
-    生效。当前只有 `runners/freezone.py:_run_freezone_gen/edit_async` 用了
-    `_await_with_cancel_watch` —— 其他 runner(sketch/render/video/audio 等)
-    revoke 后 SIGTERM 不能立即打断 asyncio `await`,会等当前 step 跑完才退出。
-    用户体感是"UI 显示已取消,但后端浪费一段算力"。
-    扩到其他 runner 是后续 cleanup,加 `_await_with_cancel_watch` 包裹即可。
+    先写取消标志；排队任务移出队列，运行中任务清理本地子进程和持久队列，
+    最后才把任务标为 cancelled。无法撤销远端供应商时，metadata 记录
+    ``cancel_upstream_status=unknown``，表示本地已停止发布结果，但不保证上游
+    已经停止或不再计费。旧 cancelled 任务继续按原终态读取。
     """
     ctx = await resolve_project_context(user=user, project_id=project, required_role="editor")
     logger.info(
@@ -689,4 +678,4 @@ async def cancel_project_task_route(
             return {"ok": True, "message": "Task deleted"}
         return {"ok": True, "message": f"Task already {task.status}"}
     await get_task_backend().cancel_project_task(ctx, task)
-    return {"ok": True, "message": "Task cancelled"}
+    return {"ok": True, "message": "Task cancelled; local cleanup completed"}

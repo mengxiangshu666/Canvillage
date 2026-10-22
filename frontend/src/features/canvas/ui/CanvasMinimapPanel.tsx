@@ -72,7 +72,7 @@ export function CanvasMinimapPanel({
         <span className="canvas-minimap-caption__hint text-[10px] text-white/38">拖动 · 滚轮缩放</span>
       </div>
       <div
-        className="canvas-minimap-actions nopan nowheel pointer-events-auto absolute z-[10002] flex items-center gap-0.5 rounded-[10px] border border-white/[0.08] bg-black/48 p-0.5 shadow-[0_8px_24px_rgba(0,0,0,0.3)] backdrop-blur-xl"
+        className="canvas-minimap-actions nopan nowheel pointer-events-auto absolute z-[10002] flex items-center gap-0.5 rounded-[9px] border border-white/[0.10] bg-[#1d1d20]/94 p-0.5 shadow-[0_8px_24px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.035)] backdrop-blur-xl"
         role="toolbar"
         aria-label="任务视图控制"
         onPointerDown={(event) => event.stopPropagation()}
@@ -81,8 +81,8 @@ export function CanvasMinimapPanel({
           <button
             type="button"
             onClick={() => setBookmarksVisible((visible) => !visible)}
-            className={`flex h-7 w-7 items-center justify-center rounded-lg transition hover:bg-white/[0.09] hover:text-white active:scale-95 ${
-              bookmarksVisible ? 'bg-white/[0.1] text-white' : 'text-white/66'
+            className={`flex h-7 w-7 items-center justify-center rounded-[6px] transition-colors hover:bg-white/[0.09] hover:text-white active:scale-95 ${
+              bookmarksVisible ? 'bg-[#09caf5]/12 text-[#7de6ff]' : 'text-white/66'
             }`}
             aria-label={bookmarksVisible ? '收起视口书签' : '展开视口书签'}
             aria-pressed={bookmarksVisible}
@@ -94,7 +94,7 @@ export function CanvasMinimapPanel({
         <button
           type="button"
           onClick={() => onExpandedChange(!expanded)}
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-white/66 transition hover:bg-white/[0.09] hover:text-white active:scale-95"
+          className="flex h-7 w-7 items-center justify-center rounded-[6px] text-white/66 transition-colors hover:bg-white/[0.09] hover:text-white active:scale-95"
           aria-label={expanded ? '收起任务视图' : '放大任务视图'}
           title={expanded ? '收起任务视图' : '放大任务视图'}
         >
@@ -103,7 +103,7 @@ export function CanvasMinimapPanel({
         <button
           type="button"
           onClick={onClose}
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-white/66 transition hover:bg-white/[0.09] hover:text-white active:scale-95"
+          className="flex h-7 w-7 items-center justify-center rounded-[6px] text-white/66 transition-colors hover:bg-white/[0.09] hover:text-white active:scale-95"
           aria-label="关闭任务视图"
           title="关闭任务视图"
         >

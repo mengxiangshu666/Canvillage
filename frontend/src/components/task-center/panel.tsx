@@ -81,7 +81,7 @@ export function TaskPanel({ overlay = false }: { overlay?: boolean }) {
         className={cn(
           "absolute z-40 flex flex-col overflow-hidden outline-none transition-all duration-500 ease-[var(--ease-out-quint)]",
           overlay
-            ? "village-task-center-panel bottom-3 left-3 rounded-[16px] border shadow-[0_26px_80px_rgba(0,0,0,0.38)]"
+            ? "village-task-center-panel bottom-3 left-3 rounded-[12px] border border-white/[0.09] bg-[#18181b] shadow-[0_18px_48px_rgba(0,0,0,0.32)]"
             : "inset-x-0 bottom-9 bg-background",
           open
             ? cn("opacity-100", !overlay && "border-t border-border/70")
@@ -101,9 +101,9 @@ export function TaskPanel({ overlay = false }: { overlay?: boolean }) {
               aria-label="Resize task panel"
               data-testid="task-panel-resize-handle"
             />
-            <div className="flex h-12 shrink-0 items-center justify-between border-b border-border/70 px-4">
+            <div className="flex h-11 shrink-0 items-center justify-between border-b border-white/[0.07] px-3.5">
               <div className="min-w-0">
-                <h2 className="text-[13px] font-semibold text-foreground">{t("taskCenter.title")}</h2>
+                <h2 className="text-[12px] font-semibold text-foreground">{t("taskCenter.title")}</h2>
                 <p className="mt-0.5 text-[10px] text-muted-foreground">{t("taskCenter.panel.subtitle")}</p>
               </div>
               <Button

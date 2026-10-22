@@ -427,8 +427,8 @@ function SliderRow({ label, trailing, value, min, max, step = 1, onChange }: Sli
       <Slider
         className="flex-1"
         trackClassName="h-1 bg-white/24"
-        rangeClassName="bg-[#5b8df6]"
-        thumbClassName="h-3 w-3 border-0 bg-[#5b8df6] shadow-none focus-visible:ring-[#5b8df6]/45"
+        rangeClassName="bg-[#09caf5]"
+        thumbClassName="h-3 w-3 border-0 bg-[#09caf5] shadow-none focus-visible:ring-[#09caf5]/45"
         min={min}
         max={max}
         step={step}
@@ -627,7 +627,7 @@ export function MultiAngleEditorPanel({
   return (
     <div
       ref={panelRef}
-      className={`w-[600px] ${CANVAS_NODE_TOOLBAR_CARD_CLASS}`}
+      className={`max-h-[calc(100dvh-24px)] w-[min(600px,calc(100dvw-24px))] overflow-y-auto ${CANVAS_NODE_TOOLBAR_CARD_CLASS}`}
       onPointerDown={(event) => event.stopPropagation()}
     >
       <div className="flex items-center justify-between pl-6 pr-4 pt-5">
@@ -652,8 +652,8 @@ export function MultiAngleEditorPanel({
         </div>
       </div>
 
-      <div className="flex gap-6 px-6 pb-6 pt-4">
-        <div className="flex h-[254px] w-[254px] shrink-0 flex-col items-center justify-center rounded-xl border border-white/10 bg-bg-dark/40 p-3">
+      <div className="flex gap-6 px-6 pb-6 pt-4 max-[560px]:flex-col max-[560px]:gap-4 max-[560px]:px-4 max-[560px]:pb-4">
+        <div className="flex h-[254px] w-[254px] shrink-0 flex-col items-center justify-center rounded-xl border border-white/10 bg-bg-dark/40 p-3 max-[560px]:mx-auto max-[560px]:h-[220px] max-[560px]:w-full max-[560px]:max-w-[254px]">
           <MultiAngleSphere
             horizontalDeg={horizontalDeg}
             verticalDeg={verticalDeg}

@@ -150,7 +150,7 @@ export function CanvasAddNodePanel({
       onPointerLeave={scheduleSkillPanelClose}
     >
       <div
-        className={`${CANVAS_TOOL_SURFACE_CLASS} w-[240px] max-w-[calc(100vw-24px)] overflow-hidden`}
+        className={`${CANVAS_TOOL_SURFACE_CLASS} w-[232px] max-w-[calc(100vw-24px)] overflow-hidden`}
       >
         <div className="ui-scrollbar max-h-[min(510px,70vh)] overflow-y-auto p-2.5 [scrollbar-gutter:stable]">
           <CanvasAddNodeSearch value={nodeQuery} onChange={setNodeQuery} />
@@ -199,7 +199,7 @@ export function CanvasAddNodePanel({
       {activeSkillGroup && (
         <div
           ref={skillPanelRef}
-          className={`${CANVAS_TOOL_SURFACE_CLASS} absolute left-[calc(100%+8px)] top-0 w-[336px] max-w-[calc(100vw-24px)] overflow-hidden`}
+          className={`${CANVAS_TOOL_SURFACE_CLASS} absolute left-[calc(100%+8px)] top-0 w-[304px] max-w-[calc(100vw-24px)] overflow-hidden`}
           onPointerEnter={cancelSkillPanelClose}
           onPointerLeave={scheduleSkillPanelClose}
         >
@@ -211,7 +211,7 @@ export function CanvasAddNodePanel({
               <button
                 key={skill.id}
                 type="button"
-                className={`${CANVAS_MENU_ROW_CLASS} min-h-[52px] items-start py-2`}
+                className={`${CANVAS_MENU_ROW_CLASS} min-h-[48px] items-start py-1.5`}
                 onClick={() => handlePickSkill(skill)}
               >
                 <Sparkles className={`${CANVAS_MENU_ICON_CLASS} mt-0.5`} aria-hidden="true" />

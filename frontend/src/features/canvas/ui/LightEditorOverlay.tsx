@@ -29,6 +29,7 @@ import { inheritMainlineFields } from '@/features/canvas/domain/inheritMainlineF
 import { persistedCanvasModelId } from '@/features/canvas/domain/videoModelSelection';
 import { NODE_TOOLBAR_CLASS } from './nodeToolbarConfig';
 import { ZoomScaledToolbar } from './ZoomScaledToolbar';
+import { NodeToolbarViewportBoundary } from './NodeToolbarViewportBoundary';
 
 export interface LightEditorRequestPayload {
   sourceNodeId: string;
@@ -210,8 +211,9 @@ export const LightEditorOverlay = memo(
         offset={16}
         className={NODE_TOOLBAR_CLASS}
       >
-        {/* 操作区跟随画布缩放（align=start → 锚点左上角，贴节点底边）。 */}
-        <ZoomScaledToolbar origin="top left">
+        {/* 编辑面板保持可读尺寸；画布缩小时只跟随节点位置，不把控件缩到看不清。 */}
+        <NodeToolbarViewportBoundary>
+        <ZoomScaledToolbar origin="top left" mode="counter" counterMax={1}>
           <LightEditorPanel
             imageSource={imageSource}
             sourceModelId={persistedCanvasModelId(node.data as Record<string, unknown>)}
@@ -219,6 +221,7 @@ export const LightEditorOverlay = memo(
             onSubmit={handleSubmit}
           />
         </ZoomScaledToolbar>
+        </NodeToolbarViewportBoundary>
       </ReactFlowNodeToolbar>
     );
   }

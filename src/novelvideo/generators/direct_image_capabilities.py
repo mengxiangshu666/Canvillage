@@ -232,6 +232,22 @@ class DirectImageCapabilityProfile:
     default_aspect_ratio: str | None = None
     default_resolution: str | None = None
     advanced_params: tuple[DirectImageAdvancedParam, ...] = ()
+    #: Ask this family's upstream to inline the finished image instead of
+    #: handing back a CDN URL.  ``agnes-image-2.5-flash`` serves its result
+    #: from ``platform-outputs.agnes-ai.space``, which answers a freshly
+    #: created object with ``401 AuthenticationRequired`` for minutes, while
+    #: the identical request with ``response_format=b64_json`` returns the
+    #: bytes inline (2026-10-15 probe: same URL 401 at 0.8s, 200 three
+    #: minutes later; ``b64_json`` answered 200 with 1.1 MB of base64).
+    response_format: str | None = None
+    #: When set, image-to-image references travel to the *invoke* endpoint as
+    #: this JSON field holding a ``data:`` URI, instead of a multipart upload
+    #: to the edit endpoint.  ``agnes-image-2.5-flash`` is the case that needs
+    #: it: its ``/images/edits`` route answers every multipart submit with
+    #: ``503 no available server`` and rejects non-JSON bodies outright, while
+    #: ``/images/generations`` accepts ``{"image": <data URI>}`` and routes the
+    #: call to its image queue (2026-10-15 probe).
+    json_reference_field: str | None = None
 
     def matches(self, upstream_model: str) -> bool:
         return bool(self.pattern.search(upstream_model))
@@ -353,6 +369,25 @@ _DIRECT_IMAGE_PROFILES: tuple[DirectImageCapabilityProfile, ...] = (
         resolution_options=("1K",),
         quality_options=DIRECT_IMAGE_QUALITY_OPTIONS,
         default_resolution="1K",
+    ),
+    DirectImageCapabilityProfile(
+        # Agnes's image family carries ``image-2`` in its model id, so without
+        # this entry it inherits the gpt-image contract below and is sent a
+        # ``quality`` field the upstream rejects outright.  2026-10-15 probe on
+        # ``agnes-image-2.5-flash``: the identical request with ``quality``
+        # returns HTTP 400 "quality is not supported by text image queue",
+        # without it HTTP 200 plus an image, with ``size`` HTTP 200.  Ratio and
+        # size stay declared because the upstream accepts them verbatim.
+        name="agnes-image",
+        pattern=re.compile(r"^agnes[-_ ]?image", re.IGNORECASE),
+        modes=(IMAGE_MODE_TEXT_TO_IMAGE, IMAGE_MODE_IMAGE_TO_IMAGE),
+        aspect_ratio_options=DIRECT_IMAGE_ASPECT_RATIOS,
+        resolution_options=DIRECT_IMAGE_RESOLUTIONS,
+        supports_custom_aspect_ratio=True,
+        supports_custom_resolution=True,
+        default_resolution="2K",
+        response_format="b64_json",
+        json_reference_field="image",
     ),
     DirectImageCapabilityProfile(
         name="gpt-image",

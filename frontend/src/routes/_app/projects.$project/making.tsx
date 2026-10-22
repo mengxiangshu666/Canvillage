@@ -6,6 +6,7 @@ import { Clapperboard, Film, Mic2, Pencil, Video } from "lucide-react";
 import { useEpisodes, usePipelineStatus } from "@/lib/queries/episodes";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import "@/components/layout/libtv-workbench";
 
 export const Route = createFileRoute("/_app/projects/$project/making")({
   component: MakingPage,
@@ -19,14 +20,15 @@ function MakingPage() {
   const current = pipeline.data?.data;
 
   return (
-    <main className="village-workflow-page -m-6 min-h-[calc(100%+3rem)] bg-[#0b0b0c] px-6 py-7 text-white sm:px-8">
-      <div className="mx-auto w-full max-w-6xl space-y-6">
-        <header>
-          <p className="text-xs font-medium text-primary">村长工作流 · 制作</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight">声音、视频与成片</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            选择一集进入真实制作页面。这里只负责导航和进度，不复制生成工具。
-          </p>
+    <main className="libtv-workbench village-workflow-page -m-6 min-h-[calc(100%+3rem)] bg-[#141414] px-4 py-4 text-white sm:px-6">
+      <div className="mx-auto w-full max-w-6xl space-y-3">
+        <header className="libtv-page-head flex items-start gap-3 rounded-xl border">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-[9px] border border-white/10 bg-white/[0.04] text-primary"><Clapperboard className="size-4" /></span>
+          <div>
+            <p className="text-[11px] font-medium text-primary">村长工作流 · 制作</p>
+            <h1 className="mt-1 text-xl font-semibold tracking-tight">声音、视频与成片</h1>
+            <p className="mt-1 text-xs text-muted-foreground">选择一集进入真实制作页面，查看每一步的完成情况。</p>
+          </div>
         </header>
 
         {episodes.isLoading ? (
@@ -45,12 +47,12 @@ function MakingPage() {
             </Link>
           </section>
         ) : (
-          <section className="grid gap-3 sm:grid-cols-2">
+          <section className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
             {items.map((episode) => {
               const isCurrent = current?.current_episode === episode.number;
               const status = isCurrent ? current?.episode_status : null;
               return (
-                <article key={episode.number} className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4">
+                <article key={episode.number} className="group rounded-xl border border-white/[0.075] bg-[#1d1d1d] p-3.5 transition-colors hover:border-white/[0.13]">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-xs text-muted-foreground">第 {episode.number} 集</p>
@@ -58,7 +60,7 @@ function MakingPage() {
                     </div>
                     {isCurrent ? <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] text-primary">当前</span> : null}
                   </div>
-                  <div className="mt-4 grid grid-cols-4 gap-1.5 text-center text-[10px] text-muted-foreground">
+                  <div className="mt-3 grid grid-cols-4 gap-1 text-center text-[10px] text-muted-foreground">
                     <span className="rounded-lg bg-white/[0.035] px-1 py-2">画面 {status?.sketches ? "已就绪" : "待制作"}</span>
                     <span className="rounded-lg bg-white/[0.035] px-1 py-2">声音 {status?.tts ? "已就绪" : "待制作"}</span>
                     <span className="rounded-lg bg-white/[0.035] px-1 py-2">视频 {status?.video ? "已就绪" : "待制作"}</span>

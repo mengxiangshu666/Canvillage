@@ -41,9 +41,16 @@ vi.mock("@/stores/auth-store", () => ({
 vi.mock("@/components/layout/header", () => ({ Header: () => null }));
 vi.mock("@/hooks/use-reduced-motion", () => ({ useReducedMotion: () => true }));
 vi.mock("@/stores/app-store", () => ({
-  useAppStore: {
-    getState: () => ({ clampDimensionsToViewport: vi.fn() }),
-  },
+  useAppStore: Object.assign(
+    (selector: (state: Record<string, unknown>) => unknown) =>
+      selector({
+        projectLibraryOpen: false,
+        setProjectLibraryOpen: vi.fn(),
+        setTaskPanelOpen: vi.fn(),
+        clampDimensionsToViewport: vi.fn(),
+      }),
+    { getState: () => ({ clampDimensionsToViewport: vi.fn() }) },
+  ),
 }));
 vi.mock("@/lib/queries/projects", () => ({
   useAllProjectSummaries: () => ({ data: [], isLoading: false }),

@@ -737,14 +737,14 @@ export function AssetLibraryPanel({
             }}
             aria-label={collapsed ? "展开素材抽屉" : "收起素材抽屉"}
             aria-expanded={!collapsed}
-            className={`group/btn relative flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 ${
+            className={`group/btn relative flex h-9 w-9 items-center justify-center rounded-[8px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45 ${
               collapsed
                 ? "text-white/82 hover:text-white"
                 : "text-white/68 hover:text-white/92"
             }`}
           >
             <span
-              className={`flex h-9 w-9 items-center justify-center rounded-[10px] border shadow-[0_10px_28px_rgba(0,0,0,0.30)] backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-200 ${
+              className={`flex h-9 w-9 items-center justify-center rounded-[8px] border shadow-[0_8px_20px_rgba(0,0,0,0.24)] backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-200 ${
                 collapsed
                   ? "border-white/18 bg-white/[0.09] group-hover/btn:border-white/26 group-hover/btn:bg-white/[0.13]"
                   : "border-white/10 bg-white/[0.05] group-hover/btn:border-white/15 group-hover/btn:bg-white/[0.08]"

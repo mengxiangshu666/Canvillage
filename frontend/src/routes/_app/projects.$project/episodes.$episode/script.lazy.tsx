@@ -51,6 +51,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { saveScopes, trackSave } from "@/stores/save-status-store";
 import type { Character } from "@/types/character";
+import "@/components/layout/libtv-workbench";
 
 const REWRITE_TARGET_BEATS_MIN = 5;
 const REWRITE_TARGET_BEATS_MAX = 80;
@@ -462,8 +463,8 @@ function ScriptTabContent() {
   };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-background">
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-border/30 px-5 py-3 text-xs">
+    <div className="libtv-workbench flex h-full flex-col overflow-hidden bg-[#141414]" data-workbench="episode">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/[0.075] px-4 py-2.5 text-xs">
         <EpisodeHealthSummary
           project={project}
           episode={epNum}
@@ -645,8 +646,8 @@ function ScriptTabContent() {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="grid min-h-0 gap-5 px-5 pb-5 pt-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <div className="min-w-0 space-y-5">
+        <div className="grid min-h-0 gap-3 px-4 pb-4 pt-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <div className="min-w-0 space-y-3">
             <section>
               <div className="mb-2 flex h-7 items-center justify-between gap-3">
                 <h2 className="text-sm font-semibold tracking-tight text-foreground">

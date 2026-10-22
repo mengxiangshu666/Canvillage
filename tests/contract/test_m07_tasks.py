@@ -548,10 +548,14 @@ def test_m07_http_coverage_exercises_task_center_routes(monkeypatch, tmp_path):
     ) as response:
         assert response.status_code == 200
         assert next(response.iter_lines()).startswith("event: running")
-    assert (
-        client.delete(f"/api/v1/projects/{ctx.project_id}/tasks/m07_http/1").status_code
-        == 200
+    cancel_response = client.delete(
+        f"/api/v1/projects/{ctx.project_id}/tasks/m07_http/1"
     )
+    assert cancel_response.status_code == 200
+    assert cancel_response.json() == {
+        "ok": True,
+        "message": "Task cancelled; local cleanup completed",
+    }
     assert client.delete(f"/api/v1/projects/{ctx.project_id}/tasks/completed").status_code == 200
     assert client.get(f"/api/v1/projects/{ctx.project_id}/pipeline/status").status_code == 200
 
@@ -615,6 +619,29 @@ async def test_cancel_project_task_is_idempotent_for_missing_and_terminal(
         user={"username": "bob"},
     )
     assert completed == {"ok": True, "message": "Task already completed"}
+    assert fake_backend.calls == []
+
+    get_task_manager().create_task_for_project(
+        ctx,
+        "m07_legacy_cancelled",
+        0,
+        scope="job-legacy-cancelled",
+        status="cancelled",
+    )
+    legacy_cancelled = await tasks.cancel_project_task_route(
+        ctx.project_id,
+        "m07_legacy_cancelled",
+        0,
+        beat_num=None,
+        scope="job-legacy-cancelled",
+        user={"username": "bob"},
+    )
+    assert legacy_cancelled == {"ok": True, "message": "Task already cancelled"}
+    stored = get_task_manager().get_task_for_project(
+        ctx, "m07_legacy_cancelled", 0, scope="job-legacy-cancelled"
+    )
+    assert stored is not None and stored.status == "cancelled"
+    assert "cancel_upstream_status" not in (stored.metadata or {})
     assert fake_backend.calls == []
 
 
@@ -789,6 +816,9 @@ async def test_inline_cancel_is_cooperative_runner_stop(tmp_path):
     assert observed_cancel is True
     assert task is not None
     assert task.status == "cancelled"
+    assert task.current_task == "任务已取消（上游停止未确认）"
+    assert task.metadata["cancel_local_cleanup"] == "completed"
+    assert task.metadata["cancel_upstream_status"] == "unknown"
 
 
 @pytest.mark.asyncio

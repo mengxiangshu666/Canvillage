@@ -22,6 +22,7 @@ import { loadImageElement } from '@/features/canvas/application/imageData';
 import { readUrl } from '@/lib/url-params';
 import { NODE_TOOLBAR_CLASS } from './nodeToolbarConfig';
 import { CANVAS_NODE_TOOLBAR_PILL_CLASS } from './nodeFrameStyles';
+import { NodeToolbarViewportBoundary } from './NodeToolbarViewportBoundary';
 
 interface RotateEditorOverlayProps {
   node: CanvasNode;
@@ -228,8 +229,9 @@ export const RotateEditorOverlay = memo(
           offset={25}
           className={NODE_TOOLBAR_CLASS}
         >
+          <NodeToolbarViewportBoundary>
           <div
-            className={`flex items-center gap-1 ${CANVAS_NODE_TOOLBAR_PILL_CLASS}`}
+            className={`flex max-w-[calc(100dvw-16px)] flex-wrap items-center gap-1 ${CANVAS_NODE_TOOLBAR_PILL_CLASS}`}
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -313,6 +315,7 @@ export const RotateEditorOverlay = memo(
               {isSaving ? t('rotateEditor.saving') : t('rotateEditor.save')}
             </button>
           </div>
+          </NodeToolbarViewportBoundary>
         </ReactFlowNodeToolbar>
       </>
     );

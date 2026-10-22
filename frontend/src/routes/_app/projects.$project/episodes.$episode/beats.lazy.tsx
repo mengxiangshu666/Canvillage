@@ -43,6 +43,7 @@ import { TASK_TYPES } from "@/lib/task-types";
 import { useTasks } from "@/lib/queries/tasks";
 import { GLASS_ALERT_DIALOG_CONTENT_CLASS } from "@/lib/dialog-styles";
 import { cn } from "@/lib/utils";
+import "@/components/layout/libtv-workbench";
 
 import { BatchBar } from "@/components/episode/beat-workbench/batch-bar";
 import {
@@ -616,7 +617,7 @@ function BeatsTabContent() {
 
   // Main layout
   return (
-    <div ref={scrollHideRef} className="flex h-full flex-col overflow-hidden">
+    <div ref={scrollHideRef} className="libtv-workbench flex h-full flex-col overflow-hidden" data-workbench="episode">
       {actionsSlot &&
         createPortal(
           <BatchBar

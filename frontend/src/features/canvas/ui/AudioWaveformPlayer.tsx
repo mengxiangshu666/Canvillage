@@ -31,7 +31,7 @@ function cachePeaks(src: string, peaks: Float32Array): void {
   }
 }
 
-const ACCENT = 'rgb(56, 189, 248)';
+const ACCENT = 'rgb(9, 202, 245)';
 const TRACK = 'rgba(255, 255, 255, 0.22)';
 const PX_PER_SEC = 72; // 波形滚动缩放:每秒占用的像素宽度
 const BUCKETS_PER_SEC = 140; // 峰值采样密度
@@ -302,7 +302,7 @@ export function AudioWaveformPlayer({
             className="pointer-events-none absolute inset-0 z-20"
             style={{
               background:
-                'linear-gradient(to right, #1f1f1f 0%, transparent 15%, transparent 85%, #1f1f1f 100%)',
+                'linear-gradient(to right, #1a1a1d 0%, transparent 15%, transparent 85%, #1a1a1d 100%)',
             }}
           />
           <div
@@ -356,7 +356,7 @@ export function AudioWaveformPlayer({
             <button
               type="button"
               aria-label="rewind 10s"
-              className="nodrag flex size-[24px] cursor-pointer items-center justify-center text-[#808080] transition-colors hover:text-white/90"
+              className="nodrag flex h-7 w-7 cursor-pointer items-center justify-center rounded-[7px] text-[#808080] transition-colors hover:bg-white/[0.06] hover:text-white/90"
               onClick={(event) => {
                 event.stopPropagation();
                 seekBy(-10);
@@ -378,7 +378,7 @@ export function AudioWaveformPlayer({
             <button
               type="button"
               aria-label={isPlaying ? 'pause' : 'play'}
-              className="nodrag relative flex size-[36px] cursor-pointer items-center justify-center rounded-full bg-[#E5E5E5] transition-colors hover:bg-white"
+              className="nodrag relative flex size-[34px] cursor-pointer items-center justify-center rounded-[9px] bg-white text-[#1A1A1A] transition-colors hover:bg-white/90"
               onClick={(event) => {
                 event.stopPropagation();
                 togglePlay();
@@ -409,7 +409,7 @@ export function AudioWaveformPlayer({
             <button
               type="button"
               aria-label="fast forward 10s"
-              className="nodrag flex size-[24px] cursor-pointer items-center justify-center text-[#808080] transition-colors hover:text-white/90"
+              className="nodrag flex h-7 w-7 cursor-pointer items-center justify-center rounded-[7px] text-[#808080] transition-colors hover:bg-white/[0.06] hover:text-white/90"
               onClick={(event) => {
                 event.stopPropagation();
                 seekBy(10);
@@ -434,7 +434,7 @@ export function AudioWaveformPlayer({
               type="button"
               aria-label={t('node.audio.trim.title')}
               title={t('node.audio.trim.title')}
-              className="nodrag absolute right-1 top-1/2 flex size-[24px] -translate-y-1/2 cursor-pointer items-center justify-center text-[#808080] transition-colors hover:text-white/90"
+              className="nodrag absolute right-1 top-1/2 flex h-7 w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-[7px] text-[#808080] transition-colors hover:bg-white/[0.06] hover:text-white/90"
               onClick={(event) => {
                 event.stopPropagation();
                 onRequestTrim();

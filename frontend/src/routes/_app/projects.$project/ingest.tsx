@@ -75,6 +75,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import "@/components/layout/libtv-workbench";
 import type { ProjectConfig, SpineTemplate } from "@/types/project";
 
 // ─── form schema ─────────────────────────────────────────────────────────────
@@ -722,7 +723,7 @@ function InputModeToggle({
             className={cn(
               "h-6 flex-1 rounded-[6px] px-2.5 text-xs font-normal leading-none transition-colors md:flex-none",
               active
-                ? "bg-foreground text-background"
+                ? "bg-[#303030] text-foreground shadow-[inset_0_0_0_1px_rgba(255,255,255,0.045)]"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -1433,9 +1434,9 @@ export function IngestPageContent({
       : t("ingest.subtitle");
 
   return (
-    <div className="-m-6 flex h-[calc(100%+3rem)] flex-col overflow-hidden">
+    <div className="libtv-workbench -m-6 flex h-[calc(100%+3rem)] flex-col overflow-hidden">
       {uploadMutation.isPending && <UploadingOverlay />}
-      <div className="flex shrink-0 flex-col gap-3 border-b border-border/30 bg-background px-9 py-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="libtv-page-head flex shrink-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <FishSymbol className="size-[18px]" />
@@ -1451,7 +1452,7 @@ export function IngestPageContent({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-10">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-5 pt-4 lg:px-6">
         <div className="mx-auto w-full max-w-[1080px]">
           <div className="mb-5">
             <ProjectStoryNavigation

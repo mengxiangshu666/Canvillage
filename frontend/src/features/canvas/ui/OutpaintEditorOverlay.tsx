@@ -50,6 +50,7 @@ import { CreditCostPill } from '@/components/credits/credit-visual';
 import { useGenerationCreditCost } from '@/lib/queries/generation-credit-cost';
 import { NODE_TOOLBAR_CLASS } from './nodeToolbarConfig';
 import { CANVAS_NODE_TOOLBAR_PILL_CLASS } from './nodeFrameStyles';
+import { NodeToolbarViewportBoundary } from './NodeToolbarViewportBoundary';
 import {
   NODE_CREDIT_PILL_FLAT_CLASS,
   NODE_GENERATE_BUTTON_BASE_CLASS,
@@ -401,8 +402,9 @@ export const OutpaintEditorOverlay = memo(
           offset={bottomToolbarOffset}
           className={NODE_TOOLBAR_CLASS}
         >
+          <NodeToolbarViewportBoundary>
           <div
-            className={`flex items-center gap-1 ${CANVAS_NODE_TOOLBAR_PILL_CLASS}`}
+            className={`flex max-w-[calc(100dvw-16px)] flex-wrap items-center gap-1 ${CANVAS_NODE_TOOLBAR_PILL_CLASS}`}
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -459,6 +461,7 @@ export const OutpaintEditorOverlay = memo(
               <ArrowUp className="h-4 w-4" />
             </button>
           </div>
+          </NodeToolbarViewportBoundary>
         </ReactFlowNodeToolbar>
       </>
     );

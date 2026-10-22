@@ -39,6 +39,7 @@ import { useStyleDetail, useStyles } from "@/lib/queries/styles";
 import { queryKeys } from "@/lib/query-keys";
 import { downloadUrlAsFile } from "@/lib/browserDownload";
 import { cn } from "@/lib/utils";
+import "@/components/layout/libtv-workbench";
 import {
   EMPTY_STORY_LAB_CONFIG,
   STORY_LAB_WORK_TYPES,
@@ -369,16 +370,16 @@ function StoryLabPage() {
   }
 
   return (
-    <main className="h-full min-h-0 overflow-y-auto bg-background px-5 py-5 lg:px-8">
-      <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4">
+    <main className="libtv-workbench -m-6 h-[calc(100%+3rem)] min-h-0 overflow-y-auto bg-[#141414] px-4 py-4 lg:px-6">
+      <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-3">
         <ProjectStoryNavigation project={project} active="create" clientNavigation />
-        <header className="flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] p-5 md:flex-row md:items-center md:justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <BookOpenText className="size-5 text-primary" />
+        <header className="libtv-page-head flex flex-col gap-3 rounded-xl border md:flex-row md:items-center md:justify-between">
+          <div className="flex items-start gap-3">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-[9px] border border-white/10 bg-white/[0.04] text-primary"><BookOpenText className="size-4" /></span>
+            <div>
               <h1 className="text-xl font-semibold tracking-tight">{t("storyLab.title")}</h1>
+              <p className="mt-1.5 text-xs text-muted-foreground">{t("storyLab.subtitle")}</p>
             </div>
-            <p className="mt-1.5 text-sm text-muted-foreground">{t("storyLab.subtitle")}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
@@ -401,7 +402,7 @@ function StoryLabPage() {
 
         <nav
           aria-label={t("storyLab.stageNavigation")}
-          className="flex min-h-11 items-center gap-1 overflow-x-auto rounded-xl border border-white/[0.08] bg-white/[0.025] p-1.5"
+          className="libtv-segmented"
         >
           {TABS.map((tab) => {
             const stage = generationStageForTab(tab);
@@ -412,11 +413,12 @@ function StoryLabPage() {
                 type="button"
                 onClick={() => setActiveTab(tab)}
                 className={cn(
-                  "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-colors",
+                  "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[7px] px-3 text-xs font-medium transition-colors",
                   activeTab === tab
-                    ? "bg-foreground text-background"
+                    ? "bg-[#303030] text-foreground"
                     : "text-muted-foreground hover:bg-white/[0.05] hover:text-foreground",
                 )}
+                aria-current={activeTab === tab ? "page" : undefined}
               >
                 {complete ? <CheckCircle2 className="size-3.5" /> : null}
                 {t(`storyLab.tabs.${tab}`)}
@@ -431,9 +433,9 @@ function StoryLabPage() {
         </nav>
 
         {activeTab === "creative" ? (
-          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-            <div className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-5">
-              <div className="grid gap-4 md:grid-cols-2">
+          <section className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="rounded-xl border border-white/[0.075] bg-[#1d1d1d] p-4">
+              <div className="grid gap-3 md:grid-cols-2">
                 <label className="space-y-1.5 text-xs text-muted-foreground">
                   {t("storyLab.fields.title")}
                   <Input value={config.title} onChange={(event) => updateConfig("title", event.target.value)} />
@@ -504,7 +506,7 @@ function StoryLabPage() {
               </div>
             </div>
 
-            <aside className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-5">
+            <aside className="rounded-xl border border-white/[0.075] bg-[#1d1d1d] p-4">
               <h2 className="text-sm font-semibold">{t("storyLab.style.title")}</h2>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">{t("storyLab.style.description")}</p>
               <div className="mt-4 grid gap-2">
@@ -579,8 +581,8 @@ function StoryLabPage() {
             </aside>
           </section>
         ) : (
-          <section className="grid min-h-[560px] gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-            <div className="flex min-h-0 flex-col rounded-xl border border-white/[0.08] bg-white/[0.025] p-5">
+          <section className="grid min-h-[560px] gap-3 xl:grid-cols-[minmax(0,1fr)_340px]">
+            <div className="flex min-h-0 flex-col rounded-xl border border-white/[0.075] bg-[#1d1d1d] p-4">
               <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-base font-semibold">{t(`storyLab.stageTitles.${activeTab}`)}</h2>
@@ -619,7 +621,7 @@ function StoryLabPage() {
             </div>
 
             <aside className="space-y-4">
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-5">
+              <div className="rounded-xl border border-white/[0.075] bg-[#1d1d1d] p-4">
                 <div className="flex items-center gap-2">
                   <Sparkles className="size-4 text-primary" />
                   <h2 className="text-sm font-semibold">{t("storyLab.generation.title")}</h2>
@@ -651,7 +653,7 @@ function StoryLabPage() {
               </div>
 
               {currentTask ? (
-                <div className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-5" aria-live="polite">
+                <div className="rounded-xl border border-white/[0.075] bg-[#1d1d1d] p-4" aria-live="polite">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-sm font-medium">{t("storyLab.task.title")}</span>
                     <Badge variant={currentTask.status === "failed" ? "destructive" : "outline"}>

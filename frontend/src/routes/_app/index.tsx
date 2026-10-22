@@ -11,22 +11,30 @@ import {
   ArrowUp,
   BookOpen,
   Brush,
+  Clapperboard,
+  Film,
   FolderOpen,
   LayoutGrid,
+  LayoutTemplate,
   List as ListIcon,
   Loader2,
   Mic,
   MoreHorizontal,
   Paperclip,
   Plus,
+  ScanLine,
   Search,
   Share2,
   Sparkles,
   Trash2,
   Undo2,
+  Users,
+  WandSparkles,
   XIcon,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { fileToImageAttachment } from "@/features/superchat/canvas-agent-references";
 import type { ChatAttachment } from "@/features/superchat/types";
 import { SkillStoreDialog } from "@/features/superchat/SkillStoreDialog";
@@ -79,9 +87,8 @@ import {
   useSoftDeleteProject,
   useUnarchiveProject,
 } from "@/lib/queries/projects";
-import { ProjectFolder } from "@/components/projects/project-folder";
 import { ShareProjectDialog } from "@/components/projects/share-project-dialog";
-import { getProjectCover, NOISE_DATA_URI } from "@/lib/project-cover";
+import { getProjectCover } from "@/lib/project-cover";
 import { openFreezoneProject } from "@/lib/freezone-url";
 import { formatRelativeTime } from "@/lib/relative-time";
 import {
@@ -123,6 +130,19 @@ const PROJECT_NAME_PATTERN = /^[a-zA-Z0-9_]+$/;
 
 const PROJECT_CARD_MIN_HEIGHT_CLASS = "min-h-[12.75rem]";
 const RECENTLY_CREATED_PROJECT_KEY = "village-dashboard-recent-created-project";
+const HOME_CAPABILITY_CARDS: readonly {
+  icon: LucideIcon;
+  title: string;
+  detail: string;
+  prompt: string;
+}[] = [
+  { icon: Clapperboard, title: "原创短片", detail: "一句话到竖屏成片", prompt: "做一个原创竖屏短片：主人公在城市停电的夜里，发现了一段被所有人遗忘的记忆。" },
+  { icon: ScanLine, title: "分镜规划", detail: "先定镜头，再生成", prompt: "请先把这个故事拆成电影分镜，再根据镜头表安排关键帧和视频生成。" },
+  { icon: Users, title: "角色设定", detail: "锁定人物一致性", prompt: "创建一个可以跨镜头复用的主角设定，包括正面全身、面部特写和三视图。" },
+  { icon: Film, title: "产品广告", detail: "15 秒商业展示", prompt: "为一件科技产品做 15 秒商业广告：先出广告创意和分镜，再生成关键画面。" },
+  { icon: WandSparkles, title: "解析再创作", detail: "参考视频拆解重做", prompt: "我要上传一段参考视频，请先拆解镜头节奏、运镜和画面语言，再帮我新做一版。" },
+  { icon: LayoutTemplate, title: "工作流起步", detail: "按制作路线搭画布", prompt: "先根据我的目标推荐一条最适合的画布工作流，并把节点关系搭好等我确认。" },
+] as const;
 
 function readRecentlyCreatedProject(): string | null {
   if (typeof window === "undefined") return null;
@@ -174,6 +194,27 @@ function sortSummaries(list: ProjectSummary[], key: SortKey): ProjectSummary[] {
   }
 }
 
+function ProjectSelectionCheckbox({
+  name,
+  checked,
+  onChange,
+}: {
+  name: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <Checkbox
+      aria-label={t("project.bulk.selectProject", { name })}
+      checked={checked}
+      onCheckedChange={(value) => onChange(value === true)}
+      onClick={(event) => event.stopPropagation()}
+      onKeyDown={(event) => event.stopPropagation()}
+    />
+  );
+}
+
 function ProjectCard({
   summary,
   size = "md",
@@ -181,6 +222,9 @@ function ProjectCard({
   onPreload,
   onShare,
   onAction,
+  selectable = false,
+  selected = false,
+  onSelectedChange,
 }: {
   summary: ProjectSummary;
   size?: "md" | "sm";
@@ -190,9 +234,12 @@ function ProjectCard({
   onAction: (
     action: "archive" | "unarchive" | "delete" | "restore" | "purge",
   ) => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelectedChange?: (checked: boolean) => void;
 }) {
   const { t } = useTranslation();
-  const { initial, primary } = useMemo(
+  const { initial } = useMemo(
     () => getProjectCover(summary.name),
     [summary.name],
   );
@@ -221,7 +268,7 @@ function ProjectCard({
   const clickable = !isDeleted;
   const containerClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (target.closest("[data-project-menu]")) return;
+    if (target.closest("[data-project-menu], [data-project-select]")) return;
     if (clickable) onOpen();
   };
 
@@ -246,7 +293,7 @@ function ProjectCard({
       role={clickable ? "button" : undefined}
       tabIndex={clickable ? 0 : undefined}
       className={cn(
-        "group relative flex h-full flex-col rounded-lg border border-border/65 bg-card/50 transition-all duration-300 ease-out",
+        "village-project-card group relative flex h-full flex-col rounded-[14px] border border-border/80 bg-card transition-[border-color,background-color,transform] duration-200 ease-out",
         PROJECT_CARD_MIN_HEIGHT_CLASS,
         sm ? "p-2 pt-4" : "p-3 pt-5",
         clickable &&
@@ -256,22 +303,35 @@ function ProjectCard({
         isDeleted && "opacity-50",
       )}
     >
+      {selectable && canLifecycle && onSelectedChange && (
+        <div
+          data-project-select
+          className="absolute left-2 top-2 z-10"
+          onClick={(event) => event.stopPropagation()}
+          onKeyDown={(event) => event.stopPropagation()}
+        >
+          <ProjectSelectionCheckbox
+            name={summary.name}
+            checked={selected}
+            onChange={onSelectedChange}
+          />
+        </div>
+      )}
       <div className="mx-auto flex w-full flex-col">
         <div
           className={cn(
-            "project-cover relative mx-auto mb-3 flex aspect-[16/10] w-[90%] items-end justify-center overflow-visible rounded-lg pb-1",
+            "project-cover relative mx-auto mb-3 aspect-[16/10] w-full overflow-hidden rounded-[11px] bg-muted",
             isDeleted && "grayscale",
           )}
         >
-          <ProjectFolder
-            color={primary}
-            initial={initial}
-            width="100%"
-            size={sm ? 0.92 : 1}
-            className="translate-y-1"
-          />
+          <span className="village-project-cover__mark" aria-hidden="true">
+            <FolderOpen className="size-7" strokeWidth={1.5} />
+          </span>
+          <span className="village-project-cover__initial" aria-hidden="true">
+            {initial}
+          </span>
           {isArchived && (
-            <div className="absolute bottom-2 right-2 rounded-full bg-background/60 px-2 py-0.5 text-[10px] font-medium text-foreground backdrop-blur-sm">
+            <div className="absolute bottom-2 right-2 rounded-[6px] bg-[#292929] px-2 py-0.5 text-[10px] font-medium text-foreground">
               {t("project.archivedBadge")}
             </div>
           )}
@@ -460,7 +520,7 @@ function CreateProjectCard({ onCreate }: { onCreate: () => void }) {
       type="button"
       onClick={onCreate}
       className={cn(
-        "group flex h-full w-full flex-col items-center justify-center rounded-lg border border-white/10 bg-transparent p-3 text-center text-muted-foreground transition-all duration-300 ease-out",
+        "group flex h-full w-full flex-col items-center justify-center rounded-[14px] border border-dashed border-border/80 bg-card/35 p-3 text-center text-muted-foreground transition-[border-color,background-color,transform] duration-200 ease-out",
         PROJECT_CARD_MIN_HEIGHT_CLASS,
         "hover:border-white/15 hover:bg-white/[0.03] hover:shadow-lg hover:shadow-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
       )}
@@ -492,28 +552,29 @@ function DashboardTabStrip({
     { value: "deleted", label: t("project.statusDeleted") },
   ];
   return (
-    <div className="inline-flex h-8 items-center rounded-full border border-border bg-background/40 p-1 text-xs">
+    <div className="village-library-status-tabs flex h-10 items-center gap-5 text-xs">
       {tabs.map((tab) => {
         const active = current === tab.value;
         return (
           <button
             key={tab.value}
             type="button"
+            aria-pressed={active}
             onClick={() => onChange(tab.value)}
             className={cn(
-              "inline-flex h-6 items-center gap-1.5 rounded-full px-3 font-normal transition-colors",
+              "relative inline-flex h-10 items-center gap-1.5 border-b-2 px-0.5 font-normal transition-colors duration-160",
               active
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground",
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             <span>{tab.label}</span>
             <span
               className={cn(
-                "rounded-full px-1.5 text-xs tabular-nums",
+                "px-0.5 text-[11px] tabular-nums",
                 active
-                  ? "bg-primary-foreground/15 text-primary-foreground"
-                  : "bg-accent text-muted-foreground",
+                  ? "text-primary"
+                  : "text-muted-foreground/70",
               )}
             >
               {counts[tab.value]}
@@ -531,6 +592,9 @@ function ProjectRow({
   onPreload,
   onShare,
   onAction,
+  selectable = false,
+  selected = false,
+  onSelectedChange,
 }: {
   summary: ProjectSummary;
   onOpen: () => void;
@@ -539,9 +603,12 @@ function ProjectRow({
   onAction: (
     action: "archive" | "unarchive" | "delete" | "restore" | "purge",
   ) => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelectedChange?: (checked: boolean) => void;
 }) {
   const { t } = useTranslation();
-  const { gradient, initial } = useMemo(
+  const { initial, gradient } = useMemo(
     () => getProjectCover(summary.name),
     [summary.name],
   );
@@ -567,7 +634,7 @@ function ProjectRow({
   const clickable = !isDeleted;
   const rowClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (target.closest("[data-project-menu]")) return;
+    if (target.closest("[data-project-menu], [data-project-select]")) return;
     if (clickable) onOpen();
   };
 
@@ -590,7 +657,7 @@ function ProjectRow({
       role={clickable ? "button" : undefined}
       tabIndex={clickable ? 0 : undefined}
       className={cn(
-        "group flex items-center gap-3 rounded-lg border border-border/65 bg-card/50 px-3.5 py-3 transition-colors",
+        "village-project-row group flex min-h-[60px] items-center gap-3 rounded-[11px] border border-border/80 bg-card px-4 py-3 transition-[border-color,background-color,transform] duration-160 ease-out",
         clickable &&
           "cursor-pointer hover:border-foreground/15 hover:bg-card/65",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
@@ -598,29 +665,26 @@ function ProjectRow({
         isDeleted && "opacity-50",
       )}
     >
-      <div
-        className={cn(
-          "relative size-10 shrink-0 overflow-hidden rounded-[9px]",
-          isDeleted && "grayscale",
-        )}
-        style={{ background: gradient }}
-      >
+      {selectable && canLifecycle && onSelectedChange && (
         <div
-          aria-hidden
-          className="absolute inset-0 mix-blend-overlay opacity-[0.08]"
-          style={{
-            backgroundImage: `url("${NOISE_DATA_URI}")`,
-            backgroundSize: "200px 200px",
-          }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span
-            className="text-lg font-bold leading-none text-white/68 drop-shadow-[0_1px_6px_rgba(0,0,0,0.32)]"
-            style={{ fontFeatureSettings: '"cv01", "ss03"' }}
-          >
-            {initial}
-          </span>
+          data-project-select
+          className="flex shrink-0 items-center"
+          onClick={(event) => event.stopPropagation()}
+          onKeyDown={(event) => event.stopPropagation()}
+        >
+          <ProjectSelectionCheckbox
+            name={summary.name}
+            checked={selected}
+            onChange={onSelectedChange}
+          />
         </div>
+      )}
+      <div className={cn("relative size-11 shrink-0 overflow-hidden rounded-[9px]", isDeleted && "grayscale")}>
+        <span aria-hidden="true" className="absolute inset-0" style={{ background: gradient }} />
+        <div className="absolute inset-0 bg-black/28" />
+        <span className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.4)]">
+          {initial}
+        </span>
       </div>
 
       <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -630,14 +694,14 @@ function ProjectRow({
         >
           {summary.name}
         </h3>
-        <span className="hidden shrink-0 rounded-full bg-background/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">
+        <span className="hidden shrink-0 text-[11px] font-medium text-muted-foreground sm:inline">
           {sourceLabel}
         </span>
-        <span className="hidden shrink-0 rounded-full bg-primary/12 px-2 py-0.5 text-[10px] font-medium text-primary sm:inline">
+        <span className="hidden shrink-0 text-[11px] font-medium text-primary sm:inline">
           {roleLabel}
         </span>
         {isArchived && (
-          <span className="hidden shrink-0 rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">
+          <span className="hidden shrink-0 text-[11px] font-medium text-muted-foreground sm:inline">
             {t("project.archivedBadge")}
           </span>
         )}
@@ -669,7 +733,7 @@ function ProjectRow({
             e.stopPropagation();
             onShare();
           }}
-          className="flex shrink-0 items-center gap-1 rounded-full bg-background/55 px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+          className="flex h-8 shrink-0 items-center gap-1 rounded-[7px] px-2 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
           aria-label={t("project.actions.share")}
         >
           <Share2 className="size-3.5" />
@@ -810,7 +874,7 @@ function ViewToggle({
     <div
       role="tablist"
       aria-label={t("project.view.toggle")}
-      className="inline-flex h-8 items-center rounded-full border border-border bg-background/40 p-1 text-xs"
+      className="inline-flex h-9 items-center rounded-[8px] border border-border bg-card p-0.5 text-xs"
     >
       {options.map(({ value: v, labelKey, Icon }) => {
         const active = value === v;
@@ -824,10 +888,10 @@ function ViewToggle({
             title={t(labelKey)}
             onClick={() => onChange(v)}
             className={cn(
-              "inline-flex h-6 items-center justify-center rounded-full px-2 font-normal transition-colors",
+              "inline-flex h-8 items-center justify-center rounded-[6px] px-2.5 font-normal transition-[background-color,color] duration-160",
               active
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground",
+                ? "bg-primary/12 text-primary"
+                : "text-muted-foreground hover:bg-accent hover:text-foreground",
             )}
           >
             <Icon className="size-4" />
@@ -885,17 +949,12 @@ function LoadingGrid({ size = "md" }: { size?: "md" | "sm" }) {
 
 function FirstTimeEmpty({ onCreate }: { onCreate: () => void }) {
   const { t } = useTranslation();
-  const { gradient } = useMemo(() => getProjectCover("empty-dashboard"), []);
   return (
     <div className="flex flex-col items-center justify-center pt-12 text-center">
-      <div className="relative mb-6">
-        <div
-          className="size-32 rounded-full blur-3xl opacity-50"
-          style={{ background: gradient }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <BookOpen className="size-8 text-white/80 drop-shadow-[0_0_20px_rgba(255,255,255,0.15)]" />
-        </div>
+      <div className="village-empty-stack mb-7" aria-hidden="true">
+        <span />
+        <span />
+        <span><BookOpen className="size-6" /></span>
       </div>
       <h3 className="mb-5 text-xl font-bold tracking-tight text-foreground">
         {t("project.heroTitle")}
@@ -923,7 +982,7 @@ function TabEmpty({
   description?: string;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border/60 bg-card/30 px-6 py-12 text-center">
+    <div className="village-library-empty flex flex-col items-center justify-center rounded-[12px] border border-dashed border-border/80 bg-card/55 px-6 py-14 text-center">
       <h3 className="mb-1 text-base font-semibold text-foreground">{title}</h3>
       {description && (
         <p className="max-w-md text-sm text-muted-foreground">{description}</p>
@@ -938,7 +997,7 @@ function ActiveEmptyWithCreate({
   onCreate: () => void;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       <div>
         <CreateProjectCard onCreate={onCreate} />
       </div>
@@ -948,14 +1007,18 @@ function ActiveEmptyWithCreate({
 
 function PurgeDialog({
   name,
+  count,
+  busy = false,
   open,
   onOpenChange,
   onConfirm,
 }: {
-  name: string;
+  name?: string;
+  count?: number;
+  busy?: boolean;
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
 }) {
   const { t } = useTranslation();
   return (
@@ -963,10 +1026,14 @@ function PurgeDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {t("project.purgeDialog.title", { name })}
+            {count == null
+              ? t("project.purgeDialog.title", { name })
+              : t("project.bulk.purgeDialog.title", { count })}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            {t("project.purgeDialog.description")}
+            {count == null
+              ? t("project.purgeDialog.description")
+              : t("project.bulk.purgeDialog.description", { count })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -974,9 +1041,11 @@ function PurgeDialog({
           <AlertDialogAction
             variant="destructive"
             className="min-w-24"
+            disabled={busy}
             onClick={() => {
-              onConfirm();
-              onOpenChange(false);
+              void Promise.resolve(onConfirm()).finally(() =>
+                onOpenChange(false),
+              );
             }}
           >
             {t("project.purgeDialog.confirm")}
@@ -1172,25 +1241,27 @@ function HomeHero({
   };
 
   return (
-    <section className="village-home-hero">
+    <section className="village-home-hero village-home-composer-wrap">
       <form className="village-home-single-input" onSubmit={(event) => {
         event.preventDefault();
         submit();
       }}>
-        <h1 className="village-home-title">
-          <span className="village-home-title-mark" aria-hidden="true">
-            <img className="village-home-title-mark__dark" src="/brand/village-canvas-mark-light.png" alt="" />
-            <img className="village-home-title-mark__light" src="/brand/village-canvas-mark-dark.png" alt="" />
-            <span className="village-home-title-mark__glow" />
-          </span>
-          <span>今天想创作什么？</span>
-        </h1>
         <div className="village-composer p-4" onDragOver={(event) => { if (event.dataTransfer.types.includes("Files")) event.preventDefault(); }} onDrop={(event) => {
           if (!event.dataTransfer.files.length) return;
           event.preventDefault();
           void addFiles(Array.from(event.dataTransfer.files));
         }}>
           <input ref={fileRef} type="file" accept="image/*,.txt,.md" multiple className="hidden" aria-label="选择参考素材" onChange={(event) => { void addFiles(Array.from(event.target.files ?? [])); event.target.value = ""; }} />
+          <div className="village-composer__head">
+            <span className="village-composer__mark" aria-hidden="true">
+              <img className="village-home-title-mark__dark" src="/brand/village-canvas-mark-light.png" alt="" />
+              <img className="village-home-title-mark__light" src="/brand/village-canvas-mark-dark.png" alt="" />
+            </span>
+            <div className="min-w-0">
+              <h2>说出你的创意</h2>
+              <p>导演搭子会把它拆成脚本、分镜、资产与可执行的画布节点。</p>
+            </div>
+          </div>
           <textarea
             aria-label={t("home.placeholder")}
             value={prompt}
@@ -1201,13 +1272,13 @@ function HomeHero({
                 submit();
               }
             }}
-            rows={3}
+            rows={2}
             onPaste={(event) => {
               const files = Array.from(event.clipboardData.files);
               if (files.length) { event.preventDefault(); void addFiles(files); }
             }}
             placeholder={t("home.placeholder")}
-            className="min-h-[88px] w-full resize-none bg-transparent px-1 py-1 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground/70"
+            className="min-h-[68px] w-full resize-none bg-transparent px-1 py-1 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground/70"
           />
           {attachments.map((attachment) => <div key={attachment.id} className="village-composer__attachment">
             {attachment.mimeType?.startsWith("image/") && attachment.content ? <button type="button" onClick={() => setPreviewImage(attachment)} aria-label={`预览 ${attachment.fileName}`}><img src={attachment.content} alt={attachment.fileName ?? "参考素材"} /></button> : <Paperclip className="size-3" />}
@@ -1258,11 +1329,15 @@ function ProjectDashboard() {
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [homePrompt, setHomePrompt] = useState("");
-  const [showAllProjects, setShowAllProjects] = useState(false);
   const [recentlyCreatedProject, setRecentlyCreatedProject] = useState<
     string | null
   >(() => readRecentlyCreatedProject());
   const [pending, setPending] = useState<PendingAction | null>(null);
+  const [selectedProjectIds, setSelectedProjectIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [bulkPurgeOpen, setBulkPurgeOpen] = useState(false);
+  const [bulkPurging, setBulkPurging] = useState(false);
   // Project pending the "open in Freezone?" prompt after creation.
   const [shareProject, setShareProject] = useState<ProjectSummary | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -1277,6 +1352,13 @@ function ProjectDashboard() {
   const setCurrentTab = useAppStore((s) => s.setDashboardTab);
   const view = useAppStore((s) => s.dashboardView);
   const setView = useAppStore((s) => s.setDashboardView);
+  const projectLibraryOpen = useAppStore((s) => s.projectLibraryOpen) ?? false;
+  const setProjectLibraryOpen = useAppStore((s) => s.setProjectLibraryOpen);
+  const [showAllProjects, setShowAllProjectsState] = useState(projectLibraryOpen);
+  const openLibrary = (open: boolean) => {
+    setShowAllProjectsState(open);
+    if (typeof setProjectLibraryOpen === "function") setProjectLibraryOpen(open);
+  };
   const createProject = useCreateProject();
   const archive = useArchiveProject();
   const unarchive = useUnarchiveProject();
@@ -1321,6 +1403,10 @@ function ProjectDashboard() {
     },
     [all, matchesSearch, recentlyCreatedProject, sort],
   );
+  const recentProjects = useMemo(
+    () => sortSummaries(all.filter((project) => project.status === "active"), "updated-desc").slice(0, 4),
+    [all],
+  );
   const archivedList = useMemo(
     () =>
       sortSummaries(
@@ -1337,6 +1423,36 @@ function ProjectDashboard() {
       ),
     [all, matchesSearch, sort],
   );
+  const deletableDeletedProjects = useMemo(
+    () => deletedList.filter(canDeleteProject),
+    [deletedList],
+  );
+  const selectedDeletedProjects = useMemo(
+    () =>
+      deletableDeletedProjects.filter((project) =>
+        selectedProjectIds.has(project.id),
+      ),
+    [deletableDeletedProjects, selectedProjectIds],
+  );
+  const allDeletedSelected =
+    deletableDeletedProjects.length > 0 &&
+    selectedDeletedProjects.length === deletableDeletedProjects.length;
+
+  useEffect(() => {
+    setSelectedProjectIds(new Set());
+  }, [currentTab, search, sort]);
+
+  useEffect(() => {
+    const visibleIds = new Set(
+      deletableDeletedProjects.map((project) => project.id),
+    );
+    setSelectedProjectIds((current) => {
+      const next = new Set(
+        [...current].filter((projectId) => visibleIds.has(projectId)),
+      );
+      return next.size === current.size ? current : next;
+    });
+  }, [deletableDeletedProjects]);
   const trimmedNewName = newName.trim();
   const existingProject = useMemo(
     () => (trimmedNewName ? all.find((p) => p.name === trimmedNewName) : null),
@@ -1358,10 +1474,27 @@ function ProjectDashboard() {
     try {
       const res = await createProject.mutateAsync(name);
       const createdName = res.data.name || name;
+      let projectId = res.data.id ?? res.data.project_id ?? null;
+      if (!projectId) {
+        try {
+          const summaries = await fetchProjectSummaries();
+          projectId =
+            summaries.find((project) => project.name === createdName)?.id ??
+            null;
+        } catch {
+          projectId = null;
+        }
+      }
       setRecentlyCreatedProject(createdName);
       window.localStorage.setItem(RECENTLY_CREATED_PROJECT_KEY, createdName);
       setNewName("");
       setCreateOpen(false);
+      if (projectId) {
+        navigate({
+          to: PROJECT_SECTION_ROUTES.freezone,
+          params: { project: projectId },
+        });
+      }
     } catch {
       toast.error(t("project.toasts.createFailed"));
     }
@@ -1435,7 +1568,7 @@ function ProjectDashboard() {
   };
 
   const returnToHome = () => {
-    setShowAllProjects(false);
+    openLibrary(false);
     scrollMainToTop();
   };
 
@@ -1445,12 +1578,12 @@ function ProjectDashboard() {
   useEffect(() => {
     homeViewHandlerRef.current = (intent) => {
       if (intent === "all") {
-        setShowAllProjects(true);
+        openLibrary(true);
       } else if (intent === "new") {
-        setShowAllProjects(true);
+        openLibrary(true);
         setCreateOpen(true);
       } else {
-        setShowAllProjects(false);
+        openLibrary(false);
       }
       scrollMainToTop();
     };
@@ -1487,6 +1620,8 @@ function ProjectDashboard() {
 
   const openProject = (project: string) =>
     navigate({ to: resolveProjectEntry(project), params: { project } });
+  const openProduction = (project: string) =>
+    navigate({ to: PROJECT_SECTION_ROUTES.production, params: { project } });
   const preloadProject = useCallback(
     (project: string) => {
       void router
@@ -1495,6 +1630,15 @@ function ProjectDashboard() {
     },
     [resolveProjectEntry, router],
   );
+  const useHomePrompt = (prompt: string) => {
+    openLibrary(false);
+    setHomePrompt(prompt);
+    requestAnimationFrame(() => {
+      const composer = document.querySelector<HTMLTextAreaElement>(".village-home-composer-wrap textarea");
+      composer?.scrollIntoView({ behavior: "smooth", block: "center" });
+      composer?.focus();
+    });
+  };
 
   const runWithUndo = (
     name: string,
@@ -1508,6 +1652,15 @@ function ProjectDashboard() {
         label: t("project.toasts.undo"),
         onClick: undo,
       },
+    });
+  };
+
+  const setProjectSelected = (projectId: string, checked: boolean) => {
+    setSelectedProjectIds((current) => {
+      const next = new Set(current);
+      if (checked) next.add(projectId);
+      else next.delete(projectId);
+      return next;
     });
   };
 
@@ -1562,26 +1715,108 @@ function ProjectDashboard() {
     setPending(null);
   };
 
+  const confirmBulkPurge = async () => {
+    const targets = [...selectedDeletedProjects];
+    if (targets.length === 0 || bulkPurging) return;
+
+    setBulkPurging(true);
+    const failed: ProjectSummary[] = [];
+    for (const project of targets) {
+      try {
+        await purge.mutateAsync(projectRouteParam(project));
+      } catch {
+        failed.push(project);
+      }
+    }
+    setSelectedProjectIds(new Set(failed.map((project) => project.id)));
+    setBulkPurging(false);
+
+    if (failed.length > 0) {
+      toast.error(
+        t("project.toasts.bulkPurgePartial", {
+          purged: targets.length - failed.length,
+          failed: failed.length,
+        }),
+      );
+    } else {
+      toast.success(
+        t("project.toasts.bulkPurged", { count: targets.length }),
+      );
+    }
+  };
+
   return (
     <div className="village-home w-full">
-      <nav aria-label="项目导航" className="flex justify-end gap-2 px-6 pt-3 lg:hidden">
-        <Button variant="ghost" onClick={() => setShowAllProjects(true)}><FolderOpen className="size-4" />所有项目</Button>
-        <Button variant="ghost" onClick={() => { setShowAllProjects(true); setCreateOpen(true); }}><Plus className="size-4" />创建项目</Button>
+      <nav aria-label="项目导航" className="village-mobile-nav flex justify-end gap-1 px-4 py-1.5 lg:hidden">
+        <Button variant="ghost" aria-label={t("nav.allProjects", "所有项目")} onClick={() => openLibrary(true)}><FolderOpen className="size-4" />项目库</Button>
+        <Button variant="ghost" onClick={() => { openLibrary(true); setCreateOpen(true); }}><Plus className="size-4" />创建项目</Button>
       </nav>
-      <div className={cn(showAllProjects && "hidden")}>
-        <HomeHero
-          prompt={homePrompt}
-          onPromptChange={setHomePrompt}
-          onSubmit={handleHomeSubmit}
-          busy={createProject.isPending}
-        />
+      <div className={cn("village-home-workbench village-studio-home", showAllProjects && "!hidden")}>
+        <div className="village-studio-content">
+          <header className="village-home-heading">
+            <div className="village-home-heading__copy">
+              <span className="village-home-heading__context">工作台 / 创作室</span>
+              <h1 id="studio-heading">把想法推进到成片</h1>
+              <p>从故事、资产和分镜开始，所有制作环节留在同一个项目里。</p>
+            </div>
+            <div className="village-home-heading__actions">
+              {recentProjects[0] ? (
+                <Button type="button" variant="outline" className="village-banner-secondary" onClick={() => openProduction(projectRouteParam(recentProjects[0]))}>
+                  <Film className="size-4" aria-hidden="true" />继续制作
+                </Button>
+              ) : null}
+              <Button type="button" className="village-banner-primary" onClick={() => setCreateOpen(true)}>
+                <Plus className="size-4" aria-hidden="true" />新建作品
+              </Button>
+            </div>
+          </header>
+
+          <section className="village-home-command-grid" aria-label="开始或继续创作">
+            <div className="village-home-continue">
+              <div className="village-home-panel-head">
+                <div><span>继续最近项目</span><h2>{recentProjects[0]?.name ?? "你的第一个作品"}</h2></div>
+                {recentProjects[0] ? <Button type="button" variant="ghost" onClick={() => openProduction(projectRouteParam(recentProjects[0]))}>打开项目</Button> : null}
+              </div>
+              {recentProjects[0] ? (
+                <button type="button" className="village-home-project-stage" onClick={() => openProduction(projectRouteParam(recentProjects[0]))} onMouseEnter={() => preloadProject(projectRouteParam(recentProjects[0]))}>
+                  <span className="village-home-project-stage__index" aria-hidden="true">{recentProjects[0].name.slice(0, 1)}</span>
+                  <span className="village-home-project-stage__meta"><small>制作进度</small><strong>{recentProjects[0].episodeCount != null ? `${recentProjects[0].episodeCount} 集已建立` : "等待导入故事"}</strong><span>{recentProjects[0].beatCount != null ? `${recentProjects[0].beatCount} 个镜头片段` : "从故事开始，建立第一条制作记录"}</span></span>
+                  <span className="village-home-project-stage__next"><small>下一步</small><strong>进入制作总控</strong><span>查看当前阶段与待处理任务</span></span>
+                </button>
+              ) : (
+                <button type="button" className="village-home-project-stage village-home-project-stage--empty" onClick={() => setCreateOpen(true)}>
+                  <span className="village-home-project-stage__index"><Plus className="size-5" /></span><span className="village-home-project-stage__meta"><strong>从一句想法开始</strong><span>空白画布、故事导入或现成模板都可以。</span></span>
+                </button>
+              )}
+            </div>
+            <HomeHero prompt={homePrompt} onPromptChange={setHomePrompt} onSubmit={handleHomeSubmit} busy={createProject.isPending} />
+          </section>
+
+          <section className="village-home-starters" aria-label="创作起手式">
+            <div className="village-studio-section-head"><div><h2>常用起手式</h2><span>把一句话带进一条成熟制作路线</span></div><button type="button" onClick={() => openLibrary(true)}>浏览全部模板 <span aria-hidden="true">↗</span></button></div>
+            <div className="village-capability-grid">
+              <button type="button" className="village-capability-card village-capability-card--create" onClick={() => setCreateOpen(true)}><span className="village-capability-card__icon"><LayoutGrid className="size-[18px]" aria-hidden="true" /></span><span className="village-capability-card__copy"><strong>空白画布</strong><span>自己搭制作流程</span></span><span className="village-capability-card__arrow" aria-hidden="true">↗</span></button>
+              {HOME_CAPABILITY_CARDS.slice(0, 5).map(({ icon: Icon, title, detail, prompt }) => <button key={title} type="button" className="village-capability-card" onClick={() => useHomePrompt(prompt)}><span className="village-capability-card__icon"><Icon className="size-[18px]" aria-hidden="true" /></span><span className="village-capability-card__copy"><strong>{title}</strong><span>{detail}</span></span><span className="village-capability-card__arrow" aria-hidden="true">↗</span></button>)}
+            </div>
+          </section>
+
+          <section className="village-recent-projects" aria-labelledby="recent-projects-heading">
+            <div className="village-studio-section-head"><div><h2 id="recent-projects-heading">{t("home.recentProjects", "最近项目")}</h2><span>{t("home.activeCount", "{{count}} 个进行中", { count: statusCounts.active })}</span></div><button type="button" onClick={() => openLibrary(true)}>查看全部 <span aria-hidden="true">↗</span></button></div>
+            {allSummaries.isLoading ? <div className="village-recent-project-skeleton" aria-label={t("home.loadingProjects", "正在整理项目…")} /> : recentProjects.length === 0 ? (
+              <button type="button" className="village-recent-project-empty" onClick={() => setCreateOpen(true)}><span className="village-recent-project-empty__plus"><Plus className="size-5" /></span><span><strong>{t("home.noRecentProjects", "还没有正在进行的项目")}</strong><small>{t("home.noRecentProjectsHint", "写下第一句，工作会从这里开始。")}</small></span></button>
+            ) : (
+              <div className="village-recent-project-track village-recent-project-track--wide">{recentProjects.map((project) => <button key={project.id} type="button" className="village-recent-project-card" onClick={() => openProject(projectRouteParam(project))} onMouseEnter={() => preloadProject(projectRouteParam(project))}><span className="village-recent-project-card__cover" aria-hidden="true"><FolderOpen className="size-[18px]" /></span><span className="village-recent-project-card__copy"><strong>{project.name}</strong><small>{project.episodeCount != null ? t("project.card.episodes", { count: project.episodeCount }) : "等待故事"}{project.updatedAt ? ` · ${formatRelativeTime(project.updatedAt, t)}` : ""}</small></span><span className="village-recent-project-card__open" aria-hidden="true">→</span></button>)}</div>
+            )}
+          </section>
+        </div>
       </div>
 
       <div
         className={cn(
-          "mx-auto w-full max-w-7xl px-6 pb-16 pt-4",
-          !showAllProjects && "hidden",
+          "village-project-library mx-auto w-full max-w-[1360px] px-5 pb-16 pt-5 md:px-8",
+          !showAllProjects && "!hidden",
         )}
+        data-project-library
       >
         <section className="scroll-mt-6">
           <button
@@ -1593,16 +1828,16 @@ function ProjectDashboard() {
             {t("home.back", "返回首页")}
           </button>
           {/* Header strip */}
-          <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          <div className="village-library-head mb-5 flex flex-col gap-5 md:mb-7 md:flex-row md:items-start md:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.025em] text-foreground">
             {t("project.dashboardTitle")}
           </h1>
           <p className="mt-[12px] text-[13px] font-medium text-muted-foreground">
             {t("project.dashboardSubtitle")}
           </p>
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+        <div className="village-library-search-row flex flex-wrap items-center justify-end gap-2">
           {totalProjects > 0 && (
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -1612,15 +1847,23 @@ function ProjectDashboard() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t("project.searchPlaceholder")}
                 aria-label={t("project.searchPlaceholder")}
-                className="h-9 w-[min(15rem,calc(100vw-3rem))] rounded-full border-border bg-transparent pl-8 focus-visible:border-foreground/20 focus-visible:ring-2 focus-visible:ring-white/8 md:text-xs dark:bg-transparent"
+                className="h-10 w-[min(17rem,calc(100vw-3rem))] rounded-[9px] border-border bg-card pl-8 focus-visible:border-primary/45 focus-visible:ring-2 focus-visible:ring-primary/15 md:text-xs"
               />
             </div>
           )}
+          <Button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            className="h-10 rounded-[9px] bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-none hover:bg-primary/90"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            {t("project.create")}
+          </Button>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-            <DialogContent className="gap-4 overflow-hidden rounded-2xl border border-white/8 bg-background/68 p-7 shadow-none backdrop-blur-3xl sm:max-w-md">
+            <DialogContent className="village-glass-popover gap-4 overflow-hidden rounded-[16px] p-7 shadow-none sm:max-w-md">
               <DialogHeader className="gap-2">
-                <DialogTitle className="flex items-center gap-2 text-lg font-medium tracking-tight">
-                  <span aria-hidden="true">✨</span>
+                <DialogTitle className="text-lg font-medium tracking-tight">
+
                   <span>{t("project.create")}</span>
                 </DialogTitle>
                 <p className="text-xs leading-5 text-muted-foreground">
@@ -1643,7 +1886,7 @@ function ProjectDashboard() {
                     aria-invalid={!!createNameError || undefined}
                     aria-describedby={createNameError ? "project-name-error" : undefined}
                     autoFocus
-                    className="h-11 rounded-[8px] border-white/12 bg-white/[0.04] px-3 pr-10 text-sm placeholder:text-muted-foreground/70 focus-visible:border-white/25 focus-visible:ring-2 focus-visible:ring-white/8 dark:bg-white/[0.04]"
+                    className="h-11 rounded-[8px] border-border bg-card px-3 pr-10 text-sm placeholder:text-muted-foreground/70 focus-visible:border-primary/45 focus-visible:ring-2 focus-visible:ring-primary/15"
                   />
                   {newName && (
                     <button
@@ -1669,7 +1912,7 @@ function ProjectDashboard() {
                 <Button
                   variant="outline"
                   onClick={() => setCreateOpen(false)}
-                  className="h-10 w-18 rounded-md border-white/18 bg-white/[0.06] px-0 text-sm font-normal text-foreground/80 hover:border-white/28 hover:bg-white/[0.1] hover:text-foreground"
+                  className="h-10 w-18 rounded-[8px] border-border bg-card px-0 text-sm font-normal text-foreground/80 hover:border-foreground/20 hover:bg-accent hover:text-foreground"
                 >
                   {t("common.cancel")}
                 </Button>
@@ -1678,7 +1921,7 @@ function ProjectDashboard() {
                   disabled={
                     createProject.isPending || !trimmedNewName || !!createNameError
                   }
-                  className="h-10 w-18 rounded-md bg-primary px-0 text-sm font-normal text-primary-foreground shadow-lg shadow-primary/15 hover:bg-primary/90"
+                  className="h-10 w-18 rounded-[8px] bg-primary px-0 text-sm font-normal text-primary-foreground shadow-none hover:bg-primary/90"
                 >
                   {createProject.isPending && (
                     <Loader2
@@ -1695,7 +1938,7 @@ function ProjectDashboard() {
       </div>
 
       {/* Tab strip + sort */}
-      <div className="mb-10 flex flex-wrap items-center gap-x-3 gap-y-2">
+      <div className="village-library-toolbar mb-7 flex flex-wrap items-center gap-x-3 gap-y-2">
         <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-2">
           <DashboardTabStrip
             current={currentTab}
@@ -1705,7 +1948,7 @@ function ProjectDashboard() {
           <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
             <SelectTrigger
               size="sm"
-              className="h-8 gap-1 rounded-full border-border bg-transparent px-3 text-xs text-muted-foreground hover:bg-foreground/[0.04] data-[size=sm]:h-8 data-[size=sm]:rounded-full dark:bg-transparent dark:hover:bg-foreground/[0.04]"
+              className="h-9 gap-1 rounded-[8px] border-border bg-card px-3 text-xs text-muted-foreground hover:bg-accent data-[size=sm]:h-9 data-[size=sm]:rounded-[8px]"
             >
               <SelectValue>
                 {(value: string) => {
@@ -1733,7 +1976,48 @@ function ProjectDashboard() {
             {t("project.trashRetentionHint")}
           </p>
         )}
-        <div className="ml-auto flex items-center">
+        {currentTab === "deleted" && deletableDeletedProjects.length > 0 && (
+          <div className="village-glass-batchbar flex min-w-0 basis-full flex-wrap items-center gap-2 rounded-[10px] px-2.5 py-1.5 sm:basis-auto">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Checkbox
+                aria-label={t("project.bulk.selectAllLabel")}
+                checked={allDeletedSelected}
+                indeterminate={
+                  !allDeletedSelected && selectedDeletedProjects.length > 0
+                }
+                disabled={bulkPurging}
+                onCheckedChange={(checked) =>
+                  setSelectedProjectIds(
+                    checked
+                      ? new Set(
+                          deletableDeletedProjects.map((project) => project.id),
+                        )
+                      : new Set(),
+                  )
+                }
+              />
+              {t("project.bulk.selectAll")}
+            </div>
+            <span className="text-xs tabular-nums text-muted-foreground">
+              {t("project.bulk.selectedCount", {
+                count: selectedDeletedProjects.length,
+              })}
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="destructive"
+              className="h-8 rounded-[7px] px-3 text-xs"
+              disabled={selectedDeletedProjects.length === 0 || bulkPurging}
+              onClick={() => setBulkPurgeOpen(true)}
+            >
+              {bulkPurging && <Loader2 className="size-3.5 animate-spin" />}
+              <Trash2 className="size-3.5" />
+              {t("project.bulk.deleteSelected")}
+            </Button>
+          </div>
+        )}
+        <div className="ml-auto flex items-center gap-2">
           <ViewToggle value={view} onChange={setView} />
         </div>
       </div>
@@ -1761,8 +2045,9 @@ function ProjectDashboard() {
 
           if (list.length === 0) {
             if (search.trim()) return (
-              <div className="py-12 text-center" role="status">
-                <p>没有找到匹配的项目</p>
+              <div className="village-library-empty py-14 text-center" role="status">
+                <p className="font-medium text-foreground">没有找到「{search.trim()}」</p>
+                <p className="mt-1.5 text-xs text-muted-foreground">换个关键词，或清除当前搜索。</p>
                 <Button variant="ghost" onClick={() => setSearch("")}>清除搜索</Button>
               </div>
             );
@@ -1802,8 +2087,8 @@ function ProjectDashboard() {
               }}
               className={cn(
                 view === "list"
-                  ? "flex flex-col gap-3"
-                  : "grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7",
+                  ? "village-project-rows flex flex-col gap-2"
+                  : "village-project-cards grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
               )}
             >
               {currentTab === "active" && view === "card" && (
@@ -1834,6 +2119,11 @@ function ProjectDashboard() {
                   {view === "list" ? (
                     <ProjectRow
                       summary={summary}
+                      selectable={currentTab === "deleted"}
+                      selected={selectedProjectIds.has(summary.id)}
+                      onSelectedChange={(checked) =>
+                        setProjectSelected(summary.id, checked)
+                      }
                       onOpen={() => openProject(projectRouteParam(summary))}
                       onPreload={() => preloadProject(projectRouteParam(summary))}
                       onShare={() => setShareProject(summary)}
@@ -1842,6 +2132,11 @@ function ProjectDashboard() {
                   ) : (
                     <ProjectCard
                       summary={summary}
+                      selectable={currentTab === "deleted"}
+                      selected={selectedProjectIds.has(summary.id)}
+                      onSelectedChange={(checked) =>
+                        setProjectSelected(summary.id, checked)
+                      }
                       size="md"
                       onOpen={() => openProject(projectRouteParam(summary))}
                       onPreload={() => preloadProject(projectRouteParam(summary))}
@@ -1858,6 +2153,11 @@ function ProjectDashboard() {
                     <ProjectRow
                       key={projectRouteParam(summary)}
                       summary={summary}
+                      selectable={currentTab === "deleted"}
+                      selected={selectedProjectIds.has(summary.id)}
+                      onSelectedChange={(checked) =>
+                        setProjectSelected(summary.id, checked)
+                      }
                       onOpen={() => openProject(projectRouteParam(summary))}
                       onPreload={() => preloadProject(projectRouteParam(summary))}
                       onShare={() => setShareProject(summary)}
@@ -1867,6 +2167,11 @@ function ProjectDashboard() {
                     <ProjectCard
                       key={projectRouteParam(summary)}
                       summary={summary}
+                      selectable={currentTab === "deleted"}
+                      selected={selectedProjectIds.has(summary.id)}
+                      onSelectedChange={(checked) =>
+                        setProjectSelected(summary.id, checked)
+                      }
                       size="md"
                       onOpen={() => openProject(projectRouteParam(summary))}
                       onPreload={() => preloadProject(projectRouteParam(summary))}
@@ -1901,6 +2206,15 @@ function ProjectDashboard() {
         onOpenChange={(v) => !v && setPending(null)}
         onConfirm={confirmPending}
       />
+      <PurgeDialog
+        count={selectedDeletedProjects.length}
+        busy={bulkPurging}
+        open={bulkPurgeOpen}
+        onOpenChange={(open) => {
+          if (!open && !bulkPurging) setBulkPurgeOpen(false);
+        }}
+        onConfirm={confirmBulkPurge}
+      />
       <ShareProjectDialog
         project={shareProject}
         open={!!shareProject}
@@ -1911,6 +2225,8 @@ function ProjectDashboard() {
     </div>
   );
 }
+
+export { ProjectDashboard };
 
 export const Route = createFileRoute("/_app/")({
   component: ProjectDashboard,

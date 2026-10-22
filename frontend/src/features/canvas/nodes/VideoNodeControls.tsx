@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, ChevronUp, Film, Library, Music, Pause, Plus, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, Film, Library, Music, Pause, Plus, SlidersHorizontal, Volume2, VolumeX } from "lucide-react";
 import type { Seedance2SceneOptimize, VideoGenCount, VideoGenMode, VideoGenQuality, VideoNodeData } from "@/features/canvas/domain/canvasNodes";
 import type { FreezoneVideoCapabilityParameter, FreezoneVideoAspectRatio } from "@/api/ops";
 import { visibleVideoAdvancedParameters } from "@/features/canvas/domain/videoAdvancedParameters";
@@ -14,7 +14,6 @@ import { findCameraMovementPreset, type CameraMovementPreset } from "@/features/
 import { CameraMovementPickerPopover } from "@/features/canvas/nodes/CameraMovementPickerPopover";
 import { compileVideoModelFamily, type VideoModelFamily } from "@/features/canvas/domain/videoCapabilityCompiler";
 import { listVisibleVideoModeTabs, resolveActiveVideoModeTab } from "@/features/canvas/domain/videoModeTabs";
-import { GENERATION_CONCURRENCY_DEFAULT, generationQueueUnitHint } from "@/features/canvas/application/generationConcurrency";
 import { ReferenceDetachButton } from "@/features/canvas/nodes/shared/ReferenceDetachButton";
 import { ReferenceChipDurationBadge, ReferenceChipNumberBadge } from "@/features/canvas/nodes/shared/ReferenceStripBadge";
 import { referenceMentionName } from "@/features/canvas/nodes/shared/referenceStripBadges";
@@ -22,14 +21,23 @@ import type { ReferenceMediaCapEntry, ReferenceMediaItem } from "@/features/canv
 import { clampVideoDuration } from "./videoNodeModelRules";
 
 const COUNT_OPTIONS: ReadonlyArray<VideoGenCount> = [1, 2, 4, 6, 8, 12];
-const VIDEO_PARAM_POPOVER_CLASS = `nodrag nowheel fixed z-[10000] w-[320px] p-4 ${NODE_FLOATING_PANEL_SURFACE_CLASS}`;
-const VIDEO_COUNT_POPOVER_CLASS = `nodrag nowheel fixed z-[10000] w-[132px] overflow-hidden p-1 ${NODE_FLOATING_PANEL_SURFACE_CLASS}`;
-const VIDEO_PARAM_LABEL_CLASS = "mb-2 text-[11px] font-semibold uppercase tracking-wide text-text-dark/72";
-const VIDEO_PARAM_BUTTON_BASE_CLASS = "inline-flex items-center justify-center rounded px-2 py-2 text-xs transition-colors";
-const VIDEO_PARAM_ACTIVE_BUTTON_CLASS = "bg-white/[0.13] text-text-dark ring-1 ring-white/24";
-const VIDEO_PARAM_IDLE_BUTTON_CLASS = "bg-white/[0.07] text-text-muted/95 hover:bg-white/[0.11] hover:text-text-dark";
-const VIDEO_PARAM_ROW_CLASS = "mb-4 gap-2";
-const VIDEO_COUNT_OPTION_BASE_CLASS = "block w-full rounded-[6px] px-3 py-1.5 text-left text-xs transition-colors";
+const VIDEO_PARAM_POPOVER_CLASS = `nodrag nowheel fixed z-[10000] max-h-[min(440px,calc(100vh-24px))] w-[352px] max-w-[calc(100vw-24px)] overflow-y-auto overscroll-contain rounded-2xl border border-white/[0.1] bg-[#252527]/96 p-3 shadow-[0_18px_46px_rgba(0,0,0,0.44)] backdrop-blur-2xl`;
+const VIDEO_PARAM_LABEL_CLASS = "text-[12px] font-medium leading-4 text-text-muted/90";
+const VIDEO_PARAM_BUTTON_BASE_CLASS = "inline-flex min-h-8 min-w-0 items-center justify-center rounded-lg border px-2 text-[12px] leading-none transition-colors disabled:cursor-not-allowed disabled:opacity-35";
+const VIDEO_PARAM_ACTIVE_BUTTON_CLASS = "border-white/75 bg-white/[0.09] text-text-dark shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]";
+const VIDEO_PARAM_IDLE_BUTTON_CLASS = "border-white/[0.12] bg-transparent text-text-muted/90 hover:border-white/25 hover:bg-white/[0.055] hover:text-text-dark";
+const VIDEO_PARAM_ROW_CLASS = "grid gap-1.5";
+const ASPECT_GLYPH_SIZES: Record<string, { width: number; height: number }> = {
+  "1:1": { width: 11, height: 11 },
+  "9:16": { width: 8, height: 15 },
+  "16:9": { width: 16, height: 9 },
+  "3:4": { width: 10, height: 13 },
+  "4:3": { width: 14, height: 10 },
+  "21:9": { width: 17, height: 7 },
+  "2:3": { width: 9, height: 14 },
+  "3:2": { width: 15, height: 10 },
+  auto: { width: 15, height: 8 },
+};
 const VIDEO_MODE_POPOVER_CLASS = `nodrag nowheel fixed z-[10000] w-[132px] overflow-visible p-1 ${NODE_FLOATING_PANEL_SURFACE_CLASS}`;
 const VIDEO_MODE_TOOLTIP_CLASS = "pointer-events-none absolute left-full top-1/2 z-[10001] ml-2 -translate-y-1/2 whitespace-nowrap rounded-md bg-[#1f1f22] px-2.5 py-1.5 text-[11px] font-medium text-white/90 shadow-lg ring-1 ring-white/10";
 
@@ -265,6 +273,7 @@ export function GenModeSelect({ value, modelId, modelFamily, supportedModes, ups
 interface VideoConfigChipProps {
   aspectRatio: FreezoneVideoAspectRatio;
   aspectRatioOptions: readonly FreezoneVideoAspectRatio[];
+  count: VideoGenCount;
   quality: VideoGenQuality;
   advertisedQualityOptions: readonly VideoGenQuality[];
   rejectedQualityOptions: ReadonlySet<VideoGenQuality>;
@@ -286,6 +295,25 @@ interface VideoConfigChipProps {
   nativeAudio: "unsupported" | "optional" | "required";
   onGenerateAudioChange: (next: boolean) => void;
   onChange: (patch: Partial<VideoNodeData>) => void;
+}
+
+function VideoAspectGlyph({ value }: { value: string }) {
+  const glyph = ASPECT_GLYPH_SIZES[value] ?? ASPECT_GLYPH_SIZES.auto;
+  if (value === "auto") {
+    return (
+      <span className="flex h-5 w-5 items-center justify-center text-current/75">
+        <span className="h-px w-4 rounded-full bg-current" />
+      </span>
+    );
+  }
+  return (
+    <span className="flex h-5 w-5 items-center justify-center text-current/75">
+      <span
+        className="flex-none rounded-[2px] border-[1.5px] border-current"
+        style={{ width: glyph.width, height: glyph.height }}
+      />
+    </span>
+  );
 }
 
 function capabilityParameterValue(
@@ -470,7 +498,7 @@ export function VideoAdvancedParametersChip({
       {isOpen && popoverPosition && typeof document !== "undefined" && createPortal(
         <div
           ref={popoverRef}
-          className={`${VIDEO_PARAM_POPOVER_CLASS} max-h-[min(620px,80vh)] overflow-y-auto`}
+          className={VIDEO_PARAM_POPOVER_CLASS}
           style={{ left: popoverPosition.left, top: popoverPosition.top }}
           onPointerDown={(event) => event.stopPropagation()}
           onClick={(event) => event.stopPropagation()}
@@ -503,6 +531,7 @@ export function VideoAdvancedParametersChip({
 export function VideoConfigChip({
   aspectRatio,
   aspectRatioOptions,
+  count,
   quality,
   advertisedQualityOptions,
   rejectedQualityOptions,
@@ -534,11 +563,10 @@ export function VideoConfigChip({
   const popoverRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const popoverPosition = useAnchoredNodePopoverPosition(isOpen, triggerRef, {
-    width: 320,
-    // 新增「生成音频」一行（标签 + 两个按钮 + 可能的提示），面板估高相应上调，
-    // 免得贴到画布上下边缘时被裁掉。
-    height: sceneOptimizeOptions.length > 0 ? 560 : 470,
+    width: 352,
+    height: sceneOptimizeOptions.length > 0 ? 440 : 384,
     align: "start",
+    popoverRef,
   });
   // Local draft for the direct-entry duration box. The field stays free text
   // while editing so a half-typed value isn't fought by clamping, but we still
@@ -606,11 +634,8 @@ export function VideoConfigChip({
         }}
         className={NODE_TEXT_CONTROL_TRIGGER_CLASS}
       >
-        <span>
-          {aspectRatio === "auto"
-            ? t("node.videoNode.aspect.auto")
-            : aspectRatio || "由模型决定"}
-        </span>
+        <VideoAspectGlyph value={aspectRatio || "auto"} />
+        <span>{aspectRatio === "auto" ? t("node.videoNode.aspect.auto") : aspectRatio || "Auto"}</span>
         {aspectRatio ? (
           <span className="text-text-muted/80">·</span>
         ) : null}
@@ -623,6 +648,14 @@ export function VideoConfigChip({
             <span>{durationSec}s</span>
           </>
         ) : null}
+        <span className="text-text-muted/80">·</span>
+        <span>{t("node.videoNode.count.format", { count })}</span>
+        <span className="text-text-muted/80">·</span>
+        {generateAudio ? (
+          <Volume2 className="h-3.5 w-3.5" aria-label={t("node.videoNode.audio.on")} />
+        ) : (
+          <VolumeX className="h-3.5 w-3.5 text-text-muted/70" aria-label={t("node.videoNode.audio.off")} />
+        )}
         <ChevronDown className="h-3 w-3 text-text-muted/90" />
       </button>
       {isOpen && popoverPosition && typeof document !== "undefined" && createPortal(
@@ -636,197 +669,243 @@ export function VideoConfigChip({
           onPointerDown={(event) => event.stopPropagation()}
           onClick={(event) => event.stopPropagation()}
         >
-          {hasAspectOptions ? (
-            <>
-              {aspectRatioOptions.length > 0 ? (
-                <>
-                  <div className={VIDEO_PARAM_LABEL_CLASS}>
-                    {t("node.videoNode.aspect.title")}
-                  </div>
-                  <div className={`grid grid-cols-5 ${VIDEO_PARAM_ROW_CLASS}`}>
-                    {aspectRatioOptions.map((ratio) => {
-                      const isActive = aspectRatio === ratio;
-                      return (
-                        <button
-                          key={ratio}
-                          type="button"
-                          onClick={() => onChange({ aspectRatio: ratio })}
-                          className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} ${
-                            isActive
-                              ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
-                              : VIDEO_PARAM_IDLE_BUTTON_CLASS
-                          }`}
-                        >
-                          {ratio === "auto" ? t("node.videoNode.aspect.auto") : ratio}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              ) : null}
-            </>
-          ) : null}
-
-          {advertisedQualityOptions.length > 0 ? (
-            <>
-              <div className={VIDEO_PARAM_LABEL_CLASS}>{t("node.videoNode.quality.title")}</div>
-              <div className={`grid grid-cols-3 ${VIDEO_PARAM_ROW_CLASS}`}>
-                {advertisedQualityOptions.map((value) => {
-                  const q = value;
-                  const isActive = quality === q;
-                  const isRejected = rejectedQualityOptions.has(q);
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      disabled={isRejected}
-                      title={isRejected ? runtimeCapabilityNote || "当前渠道暂不接受该清晰度" : undefined}
-                      onClick={() => onChange({ quality: q })}
-                      className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} ${
-                        isActive
-                          ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
-                          : isRejected
-                            ? "cursor-not-allowed border-amber-300/15 bg-amber-300/[0.04] text-amber-100/35 line-through"
-                            : VIDEO_PARAM_IDLE_BUTTON_CLASS
-                      }`}
-                    >
-                      {q}
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          ) : null}
-
-          {durationParameterEnabled ? (
-            <>
-              <div className={VIDEO_PARAM_LABEL_CLASS}>
-                {t("node.videoNode.duration.title")}
-              </div>
-              {durationOptions && durationOptions.length > 0 ? (
-                <div className={`grid grid-cols-4 ${VIDEO_PARAM_ROW_CLASS}`}>
-                  {durationOptions.map((option) => {
-                    const isActive = durationSec === option;
+          <div className="flex flex-col gap-3">
+            {hasAspectOptions ? (
+              <section className="flex flex-col gap-2">
+                <div className={VIDEO_PARAM_LABEL_CLASS}>
+                  {t("node.videoNode.aspect.title")}
+                </div>
+                <div
+                  className={VIDEO_PARAM_ROW_CLASS}
+                  style={{
+                    gridTemplateColumns: `repeat(${Math.min(4, Math.max(1, aspectRatioOptions.length))}, minmax(0, 1fr))`,
+                  }}
+                >
+                  {aspectRatioOptions.map((ratio) => {
+                    const isActive = aspectRatio === ratio;
                     return (
                       <button
-                        key={option}
+                        key={ratio}
                         type="button"
-                        onClick={() => onChange({ durationSec: option })}
-                        className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} ${
+                        aria-pressed={isActive}
+                        onClick={() => onChange({ aspectRatio: ratio })}
+                        className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} min-h-[48px] flex-col gap-1 py-1.5 ${
                           isActive
                             ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
                             : VIDEO_PARAM_IDLE_BUTTON_CLASS
                         }`}
                       >
-                        {option}s
+                        <VideoAspectGlyph value={ratio} />
+                        <span>{ratio === "auto" ? t("node.videoNode.aspect.auto") : ratio}</span>
                       </button>
                     );
                   })}
                 </div>
-              ) : (
-                <div className="mb-4 flex items-center gap-3">
-                  <input
-                    type="range"
-                    min={durationBounds.min}
-                    max={durationBounds.max}
-                    step={1}
-                    value={durationSec}
-                    onChange={(event) =>
-                      onChange({
-                        durationSec: clampVideoDuration(Number(event.target.value), durationBounds),
-                      })
-                    }
-                    className="video-duration-slider min-w-0 flex-1"
-                  />
-                  <div className="flex shrink-0 items-center gap-1">
+              </section>
+            ) : null}
+
+            {advertisedQualityOptions.length > 0 ? (
+              <section className="flex flex-col gap-2">
+                <div className={VIDEO_PARAM_LABEL_CLASS}>{t("node.videoNode.quality.title")}</div>
+                <div
+                  className={VIDEO_PARAM_ROW_CLASS}
+                  style={{
+                    gridTemplateColumns: `repeat(${Math.min(3, Math.max(1, advertisedQualityOptions.length))}, minmax(0, 1fr))`,
+                  }}
+                >
+                  {advertisedQualityOptions.map((value) => {
+                    const q = value;
+                    const isActive = quality === q;
+                    const isRejected = rejectedQualityOptions.has(q);
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        disabled={isRejected}
+                        aria-pressed={isActive}
+                        title={isRejected ? runtimeCapabilityNote || "当前渠道暂不接受该清晰度" : undefined}
+                        onClick={() => onChange({ quality: q })}
+                        className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} min-h-8 ${
+                          isActive
+                            ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
+                            : isRejected
+                              ? "cursor-not-allowed border-amber-300/15 bg-amber-300/[0.04] text-amber-100/35 line-through"
+                              : VIDEO_PARAM_IDLE_BUTTON_CLASS
+                        }`}
+                      >
+                        {q}
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
+
+            {durationParameterEnabled ? (
+              <section className="flex flex-col gap-2">
+                <div className={VIDEO_PARAM_LABEL_CLASS}>
+                  {t("node.videoNode.duration.title")}
+                </div>
+                {durationOptions && durationOptions.length > 0 ? (
+                  <div
+                    className={VIDEO_PARAM_ROW_CLASS}
+                    style={{
+                      gridTemplateColumns: `repeat(${Math.min(5, Math.max(1, durationOptions.length))}, minmax(0, 1fr))`,
+                    }}
+                  >
+                    {durationOptions.map((option) => {
+                      const isActive = durationSec === option;
+                      return (
+                        <button
+                          key={option}
+                          type="button"
+                          aria-pressed={isActive}
+                          onClick={() => onChange({ durationSec: option })}
+                          className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} min-h-8 ${
+                            isActive
+                              ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
+                              : VIDEO_PARAM_IDLE_BUTTON_CLASS
+                          }`}
+                        >
+                          {option}s
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
                     <input
-                      type="number"
-                      inputMode="numeric"
+                      type="range"
                       min={durationBounds.min}
                       max={durationBounds.max}
                       step={1}
-                      value={durationDraft}
-                      onChange={(event) => handleDurationInput(event.target.value)}
-                      onBlur={commitDuration}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          event.preventDefault();
-                          commitDuration();
-                          event.currentTarget.blur();
-                        }
-                      }}
+                      value={durationSec}
                       aria-label={t("node.videoNode.duration.title")}
-                      className="h-7 w-12 rounded border border-white/12 bg-white/[0.07] px-1.5 text-center text-xs tabular-nums text-text-dark outline-none transition-colors focus:border-white/28 focus:bg-white/[0.11] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      onChange={(event) =>
+                        onChange({
+                          durationSec: clampVideoDuration(Number(event.target.value), durationBounds),
+                        })
+                      }
+                      className="video-duration-slider min-w-0 flex-1"
                     />
-                    <span className="text-[11px] text-text-muted/80">s</span>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        min={durationBounds.min}
+                        max={durationBounds.max}
+                        step={1}
+                        value={durationDraft}
+                        onChange={(event) => handleDurationInput(event.target.value)}
+                        onBlur={commitDuration}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            commitDuration();
+                            event.currentTarget.blur();
+                          }
+                        }}
+                        aria-label={t("node.videoNode.duration.title")}
+                        className="h-9 w-14 rounded-[9px] border border-white/[0.12] bg-white/[0.055] px-1.5 text-center text-[13px] tabular-nums text-text-dark outline-none transition-colors focus:border-white/35 focus:bg-white/[0.09] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      />
+                      <span className="text-xs text-text-muted/80">s</span>
+                    </div>
                   </div>
-                </div>
-              )}
-            </>
-          ) : null}
+                )}
+              </section>
+            ) : null}
 
-          {/* 「生成音频」：对齐 libtv 的面板排布，二选一而不是拨杆。 */}
-          <div className={VIDEO_PARAM_LABEL_CLASS}>
-            {t("node.videoNode.audio.title")}
-          </div>
-          <div className={`grid grid-cols-2 ${VIDEO_PARAM_ROW_CLASS}`}>
-            <button
-              type="button"
-              aria-pressed={generateAudio}
-              onClick={() => onGenerateAudioChange(true)}
-              className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} ${
-                generateAudio
-                  ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
-                  : VIDEO_PARAM_IDLE_BUTTON_CLASS
-              }`}
-            >
-              {t("node.videoNode.audio.on")}
-            </button>
-            <button
-              type="button"
-              aria-pressed={!generateAudio}
-              onClick={() => onGenerateAudioChange(false)}
-              className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} ${
-                !generateAudio
-                  ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
-                  : VIDEO_PARAM_IDLE_BUTTON_CLASS
-              }`}
-            >
-              {t("node.videoNode.audio.off")}
-            </button>
-          </div>
-          {audioCapabilityHint ? (
-            <p className="-mt-2 mb-4 text-[11px] leading-4 text-text-muted/80">
-              {audioCapabilityHint}
-            </p>
-          ) : null}
-
-          {sceneOptimizeOptions.length > 0 && (
-            <>
+            <section className="flex flex-col gap-2">
               <div className={VIDEO_PARAM_LABEL_CLASS}>
-                {t("node.videoNode.sceneOptimize.title")}
+                {t("node.videoNode.audio.title")}
               </div>
-              <div className={`grid grid-cols-2 ${VIDEO_PARAM_ROW_CLASS}`}>
-                {sceneOptimizeOptions.map((option) => {
-                  const isActive = sceneOptimize === option;
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  aria-pressed={generateAudio}
+                  onClick={() => onGenerateAudioChange(true)}
+                  className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} min-h-8 ${
+                    generateAudio
+                      ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
+                      : VIDEO_PARAM_IDLE_BUTTON_CLASS
+                  }`}
+                >
+                  {t("node.videoNode.audio.on")}
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={!generateAudio}
+                  onClick={() => onGenerateAudioChange(false)}
+                  className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} min-h-8 ${
+                    !generateAudio
+                      ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
+                      : VIDEO_PARAM_IDLE_BUTTON_CLASS
+                  }`}
+                >
+                  {t("node.videoNode.audio.off")}
+                </button>
+              </div>
+              {audioCapabilityHint ? (
+                <p className="text-[11px] leading-4 text-text-muted/75">
+                  {audioCapabilityHint}
+                </p>
+              ) : null}
+            </section>
+
+            <section className="flex flex-col gap-2">
+              <div className={VIDEO_PARAM_LABEL_CLASS}>
+                {t("node.videoNode.count.title", { defaultValue: "生成数量" })}
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {COUNT_OPTIONS.map((option) => {
+                  const isActive = count === option;
                   return (
                     <button
                       key={option}
                       type="button"
-                      onClick={() => onChange({ sceneOptimize: option })}
-                      className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} ${
+                      aria-pressed={isActive}
+                      onClick={() => onChange({ count: option })}
+                      className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} min-h-8 ${
                         isActive
                           ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
                           : VIDEO_PARAM_IDLE_BUTTON_CLASS
                       }`}
                     >
-                      {t(`node.videoNode.sceneOptimize.options.${option}`)}
+                      {t("node.videoNode.count.format", { count: option })}
                     </button>
                   );
                 })}
               </div>
-            </>
-          )}
+            </section>
+
+            {sceneOptimizeOptions.length > 0 ? (
+              <section className="flex flex-col gap-2">
+                <div className={VIDEO_PARAM_LABEL_CLASS}>
+                  {t("node.videoNode.sceneOptimize.title")}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {sceneOptimizeOptions.map((option) => {
+                    const isActive = sceneOptimize === option;
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        aria-pressed={isActive}
+                        onClick={() => onChange({ sceneOptimize: option })}
+                        className={`${VIDEO_PARAM_BUTTON_BASE_CLASS} min-h-8 ${
+                          isActive
+                            ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
+                            : VIDEO_PARAM_IDLE_BUTTON_CLASS
+                        }`}
+                      >
+                        {t(`node.videoNode.sceneOptimize.options.${option}`)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
+          </div>
 
         </div>,
         document.body,
@@ -993,89 +1072,6 @@ export function ExternalAssetChip({ onOpen }: ExternalAssetChipProps) {
       <Plus className={`${NODE_TEXT_CONTROL_ICON_CLASS} group-hover/external:text-text-dark`} />
       <span>外部素材</span>
     </button>
-  );
-}
-
-interface CountPickerProps {
-  value: VideoGenCount;
-  onChange: (next: VideoGenCount) => void;
-}
-
-export function CountPicker({ value, onChange }: CountPickerProps) {
-  const { t } = useTranslation();
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const popoverPosition = useAnchoredNodePopoverPosition(isOpen, triggerRef, {
-    width: 132,
-    height: 210,
-    align: "end",
-  });
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const onPointerDown = (event: MouseEvent) => {
-      if (
-        triggerRef.current?.contains(event.target as Node) ||
-        popoverRef.current?.contains(event.target as Node)
-      ) {
-        return;
-      }
-      setIsOpen(false);
-    };
-    document.addEventListener("mousedown", onPointerDown, true);
-    return () => document.removeEventListener("mousedown", onPointerDown, true);
-  }, [isOpen]);
-
-  return (
-    <div className="relative">
-      <button
-        ref={triggerRef}
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          setIsOpen((prev) => !prev);
-        }}
-        className={NODE_TEXT_CONTROL_TRIGGER_CLASS}
-      >
-        <span>{t("node.videoNode.count.format", { count: value })}{value > GENERATION_CONCURRENCY_DEFAULT ? '·排队' : ''}</span>
-        <ChevronUp className="h-3 w-3 text-text-muted/90" />
-      </button>
-      {isOpen && popoverPosition && typeof document !== "undefined" && createPortal(
-        <div
-          ref={popoverRef}
-          className={VIDEO_COUNT_POPOVER_CLASS}
-          style={{
-            left: popoverPosition.left,
-            top: popoverPosition.top,
-          }}
-          onPointerDown={(event) => event.stopPropagation()}
-          onClick={(event) => event.stopPropagation()}
-        >
-          {COUNT_OPTIONS.map((option) => {
-            const isActive = option === value;
-            return (
-              <button
-                key={option}
-                type="button"
-                onClick={() => {
-                  onChange(option);
-                  setIsOpen(false);
-                }}
-                className={`${VIDEO_COUNT_OPTION_BASE_CLASS} ${
-                  isActive
-                    ? VIDEO_PARAM_ACTIVE_BUTTON_CLASS
-                    : "text-text-muted/95 hover:bg-white/[0.11] hover:text-text-dark"
-                }`}
-              >
-                {t("node.videoNode.count.format", { count: option })}{generationQueueUnitHint(option, '条')}
-              </button>
-            );
-          })}
-        </div>,
-        document.body,
-      )}
-    </div>
   );
 }
 

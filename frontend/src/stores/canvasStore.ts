@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Elastic-2.0
 // Copyright (c) 2026 ClaymoreLab
 import { create } from 'zustand';
+import { dedupePlainConnectionEdges, hasConnectionBetween } from '@/features/canvas/edges/canvasConnectionDedupe';
 import {
   type Viewport,
   addEdge,
@@ -686,9 +687,10 @@ function normalizeEdgesWithNodes(rawEdges: CanvasEdge[], nodes: CanvasNode[]): C
     }));
 
   const referenceDedupedEdges = dedupeReferenceInputEdges(normalizedEdges, nodeMap);
+  const connectionDedupedEdges = dedupePlainConnectionEdges(referenceDedupedEdges);
   const edgeIndexById = new Map<string, number>();
   const dedupedEdges: CanvasEdge[] = [];
-  for (const edge of referenceDedupedEdges) {
+  for (const edge of connectionDedupedEdges) {
     const existingIndex = edgeIndexById.get(edge.id);
     if (existingIndex === undefined) {
       edgeIndexById.set(edge.id, dedupedEdges.length);
@@ -1753,15 +1755,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       // 3D 世界节点只用一张上游图生成，因此入边唯一：已有其它上游时拒绝新连接。
       // 这是所有连线路径(手动拖线 / 拖到空白生成节点)的共同收口处。
       const targetNode = state.nodes.find((node) => node.id === connection.target);
-      if (
-        targetNode?.type === CANVAS_NODE_TYPES.threeDWorld &&
-        state.edges.some(
-          (edge) =>
-            edge.target === connection.target && edge.source !== connection.source,
-        )
-      ) {
-        return {};
-      }
+      if (targetNode?.type === CANVAS_NODE_TYPES.threeDWorld && state.edges.some((edge) => edge.target === connection.target && edge.source !== connection.source)) return {};
+      if (hasConnectionBetween(state.edges, connection)) return {};
       // 上游类型规则收口：挡掉任何绕过 UI 校验的连接（如音频←非文本）。
       const sourceNode = state.nodes.find((node) => node.id === connection.source);
       if (

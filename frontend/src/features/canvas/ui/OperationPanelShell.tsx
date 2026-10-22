@@ -87,6 +87,10 @@ export function NodePanelZoomAnchor({ children }: { children: ReactNode }) {
  * 面板若用 `position: fixed` 会相对「被 transform 的祖先」定位而不是视口，无法
  * 真正居中；createPortal 到 body 才能脱离这个 transform 上下文。
  */
+/**
+ * 收起态只用视口外的安全留白约束面板，避免画布缩小时成排按钮被裁掉；
+ * 面板本身仍贴着节点，保持 LibTV 的「参数属于节点」阅读关系。
+ */
 export function OperationPanelShell({
   expanded,
   onCollapse,
@@ -112,7 +116,11 @@ export function OperationPanelShell({
       <NodePanelZoomAnchor>
         <div
           className={`${inlineClassName} ${INLINE_ENTER_CLASS} pointer-events-auto`}
-          style={inlineStyle}
+          style={{
+            ...inlineStyle,
+            maxHeight: 'min(520px, calc(100dvh - 32px))',
+            maxWidth: 'calc(100vw - 24px)',
+          }}
           onClick={stopPropagation}
         >
           {children}
@@ -123,7 +131,7 @@ export function OperationPanelShell({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-6 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/58 p-6 backdrop-blur-[3px]"
       onClick={onCollapse}
       onPointerDown={stopPropagation}
     >

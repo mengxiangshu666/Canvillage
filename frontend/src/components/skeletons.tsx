@@ -29,21 +29,27 @@ function BusyList({ label, className, children }: BusyListProps) {
   );
 }
 
-// ─── Episodes grid (4-col card grid mimicking the real list) ────────────────
+// ─── Episodes grid (same compact card rhythm as the real list) ─────────────
 export function EpisodeListSkeleton({ label }: { label: string }) {
   return (
     <BusyList
       label={label}
-      className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+      className="mx-auto grid max-w-[1200px] grid-cols-1 gap-2.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
     >
       {Array.from({ length: 8 }).map((_, i) => (
         <div
           key={i}
-          className="flex flex-col gap-2 rounded-lg border border-border bg-card p-3"
+          className="flex min-h-[13rem] flex-col gap-3 rounded-xl border border-white/[0.075] bg-[#1d1d1d] p-3"
         >
-          <Skeleton className="aspect-[16/10] w-full" />
-          <Skeleton className="h-4 w-2/3" />
-          <Skeleton className="h-3 w-1/3" />
+          <Skeleton className="h-4 w-2/3 rounded-md" />
+          <Skeleton className="h-3 w-full rounded-md" />
+          <Skeleton className="h-3 w-4/5 rounded-md" />
+          <div className="mt-1 space-y-1.5">
+            <Skeleton className="h-7 w-full rounded-lg" />
+            <Skeleton className="h-7 w-full rounded-lg" />
+            <Skeleton className="h-7 w-full rounded-lg" />
+          </div>
+          <Skeleton className="mt-auto h-8 w-full rounded-lg" />
         </div>
       ))}
     </BusyList>
@@ -57,7 +63,7 @@ export function TaskListSkeleton({ label }: { label: string }) {
       {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}
-          className="flex items-center gap-3 rounded-md border border-border bg-card p-3"
+          className="flex items-center gap-3 rounded-[10px] border border-white/[0.075] bg-[#1d1d1d] p-3"
         >
           <Skeleton className="size-2 rounded-full" />
           <div className="flex-1 space-y-1.5">
@@ -84,7 +90,7 @@ export function SidebarListSkeleton({
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}
-          className="flex items-center gap-2 rounded-md border border-border bg-card p-2"
+          className="flex items-center gap-2 rounded-lg border border-white/[0.075] bg-[#1d1d1d] p-2"
         >
           <Skeleton className="size-8 shrink-0 rounded" />
           <div className="min-w-0 flex-1 space-y-1.5">

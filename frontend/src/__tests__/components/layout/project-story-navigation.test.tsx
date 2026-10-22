@@ -15,7 +15,7 @@ describe("ProjectStoryNavigation", () => {
 
     expect(
       screen.getByRole("navigation", { name: "storyWorkspace.navigationLabel" }),
-    ).toBeInTheDocument();
+    ).toHaveClass("libtv-segmented");
     expect(screen.getByText("storyWorkspace.create").closest("a")).toHaveAttribute(
       "href",
       "/projects/demo/story-lab",

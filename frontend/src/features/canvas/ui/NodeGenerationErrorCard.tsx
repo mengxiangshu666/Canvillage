@@ -135,7 +135,7 @@ export function NodeGenerationErrorCard({
       className="flex h-full w-full items-center justify-center p-3"
       data-testid="node-generation-error-card"
     >
-      <section className="relative flex max-h-full w-full max-w-[340px] flex-col overflow-hidden rounded-2xl border border-red-300/14 bg-[#1d1d1f]/96 shadow-[0_14px_40px_rgba(0,0,0,0.34)] backdrop-blur-xl">
+      <section className="relative flex max-h-full w-full max-w-[336px] flex-col overflow-hidden rounded-[12px] border border-red-300/14 bg-[#1a1a1d] shadow-[0_14px_40px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.035)]">
         {onDismiss && (
           <button
             type="button"
@@ -174,7 +174,7 @@ export function NodeGenerationErrorCard({
                   event.stopPropagation();
                   onRecover();
                 }}
-                className="nodrag nopan inline-flex h-7 items-center gap-1.5 rounded-full border border-emerald-200/20 bg-emerald-200/12 px-3 text-[11px] font-medium text-emerald-50 transition-[transform,background-color,opacity] hover:bg-emerald-200/20 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45"
+                className="nodrag nopan inline-flex h-7 items-center gap-1.5 rounded-[8px] border border-emerald-200/20 bg-emerald-200/12 px-2.5 text-[11px] font-medium text-emerald-50 transition-[transform,background-color,opacity] hover:bg-emerald-200/20 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45"
               >
                 <RefreshCcw className={`h-3 w-3 ${recoverBusy ? 'animate-spin' : ''}`} />
                 {recoverBusy ? '获取中' : '重新获取'}
@@ -191,7 +191,7 @@ export function NodeGenerationErrorCard({
                   event.stopPropagation();
                   onRetry();
                 }}
-                className="nodrag nopan inline-flex h-7 items-center gap-1.5 rounded-full bg-white px-3 text-[11px] font-medium text-black transition-[transform,background-color,opacity] hover:bg-white/88 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45"
+                className="nodrag nopan inline-flex h-7 items-center gap-1.5 rounded-[8px] bg-white px-2.5 text-[11px] font-medium text-black transition-[transform,background-color,opacity] hover:bg-white/88 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45"
               >
                 <RefreshCcw className={`h-3 w-3 ${retryBusy ? 'animate-spin' : ''}`} />
                 {retryBusy ? '生成中' : '重新生成'}
@@ -205,7 +205,7 @@ export function NodeGenerationErrorCard({
                   event.stopPropagation();
                   onChangeModel();
                 }}
-                className="nodrag nopan inline-flex h-7 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.055] px-3 text-[11px] font-medium text-white/74 transition-[transform,background-color,color] hover:bg-white/[0.1] hover:text-white active:scale-[0.97]"
+                className="nodrag nopan inline-flex h-7 items-center gap-1.5 rounded-[8px] border border-white/10 bg-white/[0.055] px-2.5 text-[11px] font-medium text-white/74 transition-[transform,background-color,color] hover:bg-white/[0.1] hover:text-white active:scale-[0.97]"
               >
                 <SlidersHorizontal className="h-3 w-3" />
                 更换模型

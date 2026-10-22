@@ -20,6 +20,7 @@ import { readUrl } from '@/lib/url-params';
 import { NODE_TOOLBAR_CLASS } from './nodeToolbarConfig';
 import { CANVAS_NODE_OPS_PANEL_CLASS } from './nodeFrameStyles';
 import { ZoomScaledToolbar } from './ZoomScaledToolbar';
+import { NodeToolbarViewportBoundary } from './NodeToolbarViewportBoundary';
 import {
   NODE_GENERATE_BUTTON_BASE_CLASS,
   NODE_GENERATE_BUTTON_DISABLED_CLASS,
@@ -163,8 +164,9 @@ export const VideoUpscaleEditorOverlay = memo(
         offset={12}
         className={NODE_TOOLBAR_CLASS}
       >
-        {/* 操作区按画布缩放同步缩放，锚点取顶边（贴节点底边）——与 UpscaleEditorOverlay 一致。 */}
-        <ZoomScaledToolbar origin="top center">
+        {/* 面板保持在可读尺寸，锚点取顶边贴住节点底边。 */}
+        <NodeToolbarViewportBoundary>
+        <ZoomScaledToolbar origin="top center" mode="counter" counterMax={1}>
           <div
             className={`flex w-[520px] max-w-[calc(100vw-32px)] flex-col rounded-[var(--node-radius)] ${CANVAS_NODE_OPS_PANEL_CLASS}`}
             onClick={(event) => event.stopPropagation()}
@@ -183,9 +185,9 @@ export const VideoUpscaleEditorOverlay = memo(
                         key={value}
                         type="button"
                         onClick={() => handleResolutionChange(value)}
-                        className={`flex h-6 min-w-12 items-center justify-center rounded text-xs font-medium transition-colors ${
+                        className={`flex h-7 min-w-12 items-center justify-center rounded-[6px] text-xs font-medium transition-colors ${
                           isActive
-                            ? 'bg-white/[0.16] text-text-dark'
+                            ? 'bg-[#09caf5]/14 text-[#8cecff]'
                             : 'text-text-muted/82 hover:bg-white/[0.06] hover:text-text-dark'
                         }`}
                       >
@@ -209,7 +211,7 @@ export const VideoUpscaleEditorOverlay = memo(
             <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
-                className="h-7 rounded px-1.5 text-xs font-medium text-text-dark/72 transition-colors hover:text-text-dark"
+                className="h-7 rounded-[6px] px-2 text-xs font-medium text-text-dark/72 transition-colors hover:bg-white/[0.06] hover:text-text-dark"
                 onClick={handleCancel}
                 title={t('common.cancel')}
               >
@@ -232,6 +234,7 @@ export const VideoUpscaleEditorOverlay = memo(
           </div>
           </div>
         </ZoomScaledToolbar>
+        </NodeToolbarViewportBoundary>
       </ReactFlowNodeToolbar>
     );
   },
@@ -288,7 +291,7 @@ function DenoisePicker({ value, onChange }: DenoisePickerProps) {
         <div
           ref={popoverRef}
           data-canvas-floating-popover="true"
-          className="fixed z-[10000] w-[160px] rounded-[10px] border border-white/[0.12] bg-[#282828]/96 p-1 shadow-[0_14px_34px_rgba(0,0,0,0.42)] backdrop-blur-md"
+          className="fixed z-[10000] w-[160px] rounded-[12px] border border-white/[0.10] bg-[#202023] p-1 shadow-[0_12px_30px_rgba(0,0,0,0.36)]"
           style={{
             left: popoverPosition.left,
             top: popoverPosition.top,
@@ -306,9 +309,9 @@ function DenoisePicker({ value, onChange }: DenoisePickerProps) {
                   onChange(option);
                   setIsOpen(false);
                 }}
-                className={`flex h-8 w-full items-center justify-between rounded-md px-2.5 text-xs font-medium transition-colors ${
+                className={`flex h-8 w-full items-center justify-between rounded-[7px] px-2.5 text-xs font-medium transition-colors ${
                   isActive
-                    ? 'bg-white/[0.10] text-text-dark'
+                    ? 'bg-[#09caf5]/12 text-[#7de6ff]'
                     : 'text-text-muted hover:bg-white/[0.06] hover:text-text-dark'
                 }`}
               >

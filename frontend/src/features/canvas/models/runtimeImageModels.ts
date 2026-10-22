@@ -49,6 +49,13 @@ export const UNCONFIGURED_IMAGE_MODEL: ImageModelDefinition = {
   resolveRequest: () => ({ requestModel: '', modeLabel: '未配置' }),
 };
 
+export function requestableImageSize(
+  value: string,
+  supportedValues: ReadonlyArray<string>,
+): string | undefined {
+  return supportedValues.includes(value) ? value : undefined;
+}
+
 function normalizeImageModes(model: ModelOption): ImageGenerationMode[] {
   // A missing field is an old catalog entry, so retain the legacy two-mode
   // behavior. Once the backend publishes an explicit list, preserve it

@@ -18,10 +18,12 @@ vi.mock("react-i18next", () => ({
 import { AppSidebar } from "@/components/layout/app-sidebar";
 
 describe("AppSidebar project navigation", () => {
-  it("keeps project actions distinct from top-level workflow and settings controls", () => {
+  it("shows the complete project production path in the sidebar", () => {
     render(<AppSidebar />);
 
-    expect(screen.getByRole("link", { name: "任务管理" })).toBeInTheDocument();
+    for (const name of ["画布", "总控", "故事", "资产", "分镜", "制作", "任务记录"]) {
+      expect(screen.getByRole("link", { name })).toBeInTheDocument();
+    }
     expect(screen.queryByRole("link", { name: "工作流" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "设置" })).not.toBeInTheDocument();
   });

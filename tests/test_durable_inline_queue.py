@@ -8,6 +8,8 @@ from pathlib import Path
 import threading
 from types import SimpleNamespace
 
+import pytest
+
 from novelvideo.ports.local.durable_queue import DurableQueueStore
 from novelvideo.ports.local.lifecycle import LocalLifecycle
 from novelvideo.ports.local.tasks import DurableInlineTaskBackend, _InlineLaneJob
@@ -451,6 +453,31 @@ def test_recovery_preserves_existing_terminal_task_state(monkeypatch, tmp_path):
     assert store.count_pending() == 0
 
 
+def test_recovery_does_not_redispatch_explicitly_cancelled_task(monkeypatch, tmp_path):
+    store = DurableQueueStore(tmp_path / "queue.sqlite3")
+    stored_job = _job(tmp_path, run_task_id="run-cancelled")
+    store.put(run_task_id=stored_job.run_task_id, job=stored_job)
+    store.mark_running(stored_job.run_task_id)
+    state = _State("run-cancelled", scope="node-1", status="cancelled")
+
+    class Manager:
+        def get_task_for_project(self, *_args, **_kwargs):
+            return state
+
+        def requeue_interrupted_task_for_project(self, *_args, **_kwargs):
+            raise AssertionError("cancelled task must not be re-queued after restart")
+
+        def fail_task_for_project(self, *_args, **_kwargs):
+            raise AssertionError("cancelled task state must remain authoritative")
+
+    backend = DurableInlineTaskBackend(durable_store=store)
+    monkeypatch.setattr("novelvideo.ports.local.tasks.get_task_manager", lambda: Manager())
+
+    assert asyncio.run(backend.recover_pending_tasks()) == 0
+    assert state.status == "cancelled"
+    assert store.count_pending() == 0
+
+
 def test_terminal_and_cancel_paths_remove_durable_row(monkeypatch, tmp_path):
     store = DurableQueueStore(tmp_path / "queue.sqlite3")
     backend = DurableInlineTaskBackend(durable_store=store)
@@ -480,6 +507,91 @@ def test_terminal_and_cancel_paths_remove_durable_row(monkeypatch, tmp_path):
     assert asyncio.run(backend.cancel_project_task(_ctx(tmp_path), state)) is True
     assert state.status == "cancelled"
     assert store.count_pending() == 0
+
+
+def test_cancel_marks_terminal_only_after_local_cleanup(monkeypatch, tmp_path):
+    store = DurableQueueStore(tmp_path / "queue.sqlite3")
+    backend = DurableInlineTaskBackend(durable_store=store)
+    job = _job(tmp_path, run_task_id="run-cleanup-order")
+    store.put(run_task_id=job.run_task_id, job=job)
+    state = _State(
+        "run-cleanup-order",
+        scope="node-1",
+        status="running",
+        progress=0.4,
+        metadata={"provider": "newapi"},
+    )
+    events: list[str] = []
+
+    class Manager:
+        def update_progress_for_project(self, *_args, **kwargs):
+            assert events == ["request", "cleanup", "journal"]
+            assert kwargs["status"] == "cancelled"
+            assert kwargs["current_task"] == "任务已取消（上游停止未确认）"
+            assert kwargs["metadata"]["provider"] == "newapi"
+            assert kwargs["metadata"]["cancel_local_cleanup"] == "completed"
+            assert kwargs["metadata"]["cancel_upstream_status"] == "unknown"
+            events.append("terminal")
+            state.status = "cancelled"
+            state.metadata = kwargs["metadata"]
+
+    async def request_cancel(**_kwargs):
+        events.append("request")
+
+    original_after_cancel = backend._after_cancel
+
+    def after_cancel(run_task_id: str) -> None:
+        events.append("journal")
+        original_after_cancel(run_task_id)
+
+    monkeypatch.setattr(
+        "novelvideo.ports.local.tasks.get_cancellation_store",
+        lambda: SimpleNamespace(request_cancel=request_cancel),
+    )
+    monkeypatch.setattr("novelvideo.ports.local.tasks.get_task_manager", lambda: Manager())
+    monkeypatch.setattr(
+        "novelvideo.ports.local.tasks.kill_task_processes",
+        lambda _task_id: events.append("cleanup"),
+    )
+    monkeypatch.setattr(backend, "_after_cancel", after_cancel)
+
+    assert asyncio.run(backend.cancel_project_task(_ctx(tmp_path), state)) is True
+    assert events == ["request", "cleanup", "journal", "terminal"]
+    assert state.status == "cancelled"
+    assert store.count_pending() == 0
+
+
+def test_cancel_cleanup_failure_keeps_task_active(monkeypatch, tmp_path):
+    store = DurableQueueStore(tmp_path / "queue.sqlite3")
+    backend = DurableInlineTaskBackend(durable_store=store)
+    job = _job(tmp_path, run_task_id="run-cleanup-failed")
+    store.put(run_task_id=job.run_task_id, job=job)
+    state = _State("run-cleanup-failed", scope="node-1", status="running")
+
+    class Manager:
+        def update_progress_for_project(self, *_args, **_kwargs):
+            raise AssertionError("cleanup failure must not write a terminal state")
+
+    async def request_cancel(**_kwargs):
+        return None
+
+    def fail_cleanup(_task_id: str) -> None:
+        raise RuntimeError("process cleanup unavailable")
+
+    monkeypatch.setattr(
+        "novelvideo.ports.local.tasks.get_cancellation_store",
+        lambda: SimpleNamespace(request_cancel=request_cancel),
+    )
+    monkeypatch.setattr("novelvideo.ports.local.tasks.get_task_manager", lambda: Manager())
+    monkeypatch.setattr(
+        "novelvideo.ports.local.tasks.kill_task_processes", fail_cleanup
+    )
+
+    with pytest.raises(RuntimeError, match="process cleanup unavailable"):
+        asyncio.run(backend.cancel_project_task(_ctx(tmp_path), state))
+
+    assert state.status == "running"
+    assert store.count_pending() == 1
 
 
 def test_task_state_requeues_only_the_restart_sweep_failure(tmp_path):

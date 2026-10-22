@@ -30,6 +30,8 @@ interface AppState {
   theme: Theme;
   dashboardTab: ProjectStatus;
   dashboardView: DashboardView;
+  /** The project library is the library work surface on the home route. */
+  projectLibraryOpen: boolean;
   taskPanelOpen: boolean;
   taskPanelHeight: number;
   aiAssistantOpen: boolean;
@@ -66,6 +68,7 @@ interface AppState {
   setTheme: (theme: Theme) => void;
   setDashboardTab: (tab: ProjectStatus) => void;
   setDashboardView: (view: DashboardView) => void;
+  setProjectLibraryOpen: (open: boolean) => void;
   setTaskPanelOpen: (open: boolean) => void;
   setTaskPanelHeight: (h: number) => void;
   setAiAssistantOpen: (open: boolean) => void;
@@ -122,7 +125,8 @@ export const useAppStore = create<AppState>()(
       language: "zh",
       theme: "dark",
       dashboardTab: "active",
-      dashboardView: "card",
+      dashboardView: "list",
+      projectLibraryOpen: false,
       aiAssistantOpen: false,
       aiAssistantWidth: AI_ASSISTANT_WIDTH_DEFAULT,
       companionKind: DEFAULT_BUILTIN_PET_SLUG,
@@ -136,6 +140,7 @@ export const useAppStore = create<AppState>()(
       setTheme: (theme) => set({ theme }),
       setDashboardTab: (tab) => set({ dashboardTab: tab }),
       setDashboardView: (view) => set({ dashboardView: view }),
+      setProjectLibraryOpen: (open) => set({ projectLibraryOpen: open }),
       taskPanelOpen: false,
       taskPanelHeight: TASK_PANEL_HEIGHT_DEFAULT,
       setTaskPanelOpen: (open) => set({ taskPanelOpen: open }),
@@ -212,7 +217,7 @@ export const useAppStore = create<AppState>()(
         return base;
       },
       partialize: (state) => {
-        const { companionXPercent: _x, companionYPercent: _y, ...persisted } = state;
+        const { companionXPercent: _x, companionYPercent: _y, projectLibraryOpen: _library, ...persisted } = state;
         return {
           ...persisted,
           companionPet: persistedCompanionPet(state.companionPet),

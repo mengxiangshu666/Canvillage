@@ -5,6 +5,7 @@ import { useState, type ReactNode } from 'react';
 
 import { useCanvasStore } from '@/stores/canvasStore';
 import { ZoomScaledToolbar } from '@/features/canvas/ui/ZoomScaledToolbar';
+import { NodeToolbarViewportBoundary } from '@/features/canvas/ui/NodeToolbarViewportBoundary';
 
 interface NodeSideActionRailProps {
   nodeId: string;
@@ -26,7 +27,7 @@ interface NodeSideActionRailProps {
 // 操作工具条一致地一起变大；仅保留 min=0.6 下限，避免缩到 minZoom(0.1) 时点不准。
 
 export const NODE_SIDE_ACTION_BUTTON_CLASS =
-  'nodrag inline-flex h-8 items-center gap-1.5 rounded-[12px] border border-white/10 bg-[#242426]/95 px-3 text-xs font-medium text-text-dark backdrop-blur-xl transition-colors hover:border-white/18 hover:bg-[#29292b]/95 hover:text-white disabled:cursor-not-allowed disabled:opacity-50';
+  'nodrag inline-flex h-8 items-center gap-1.5 rounded-[8px] border border-white/10 bg-[#1f1f22]/97 px-2.5 text-xs font-medium text-text-dark shadow-[0_8px_20px_rgba(0,0,0,0.24)] backdrop-blur-xl transition-colors hover:border-white/18 hover:bg-[#2b2b2e] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09caf5]/45';
 
 export const NODE_SIDE_ACTION_ICON_CLASS = 'h-3.5 w-3.5 text-text-muted/90';
 
@@ -73,6 +74,7 @@ export function NodeSideActionRail({
         top-left corner and growing downward keeps the rail below the toolbar —
         which sits entirely above the node's top edge — at any zoom.
       */}
+      <NodeToolbarViewportBoundary>
       <div
         style={isLeft ? undefined : { transform: "translateY(calc(-100% - 2px))" }}
         onMouseEnter={() => setRailHovered(true)}
@@ -87,6 +89,7 @@ export function NodeSideActionRail({
           </div>
         </ZoomScaledToolbar>
       </div>
+      </NodeToolbarViewportBoundary>
     </ReactFlowNodeToolbar>
   );
 }
