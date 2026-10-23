@@ -264,6 +264,56 @@ def test_started_media_task_is_async_not_terminal() -> None:
     assert receipt["executionId"] == "task:task-1"
 
 
+def test_workflow_tools_are_hidden_without_intent() -> None:
+    names = {
+        item["name"]
+        for item in tapcanvas_sidecar.remote_tool_definitions(include_workflow=False)
+    }
+    assert "village_canvas_start_workflow_run" not in names
+    assert "village_canvas_command_workflow_run" not in names
+    assert "village_canvas_read_compact" in names
+    assert "village_canvas_start_workflow_run" in {
+        item["name"] for item in tapcanvas_sidecar.remote_tool_definitions()
+    }
+
+
+def test_workflow_scaffolding_is_blocked_for_plain_asset_requests() -> None:
+    context = {"workflow_authorized": False}
+    with pytest.raises(ValueError, match="没有要求工作流"):
+        tapcanvas_sidecar.authorized_tool_arguments(
+            "village_canvas_start_workflow_run",
+            {"workflow_id": "custom-canvas-workflow"},
+            context,
+        )
+    with pytest.raises(ValueError, match="没有要求工作流"):
+        tapcanvas_sidecar.authorized_tool_arguments(
+            "village_canvas_dispatch_action",
+            {"commands": [{"type": "create_shot_sequence"}]},
+            context,
+        )
+    with pytest.raises(ValueError, match="没有要求工作流"):
+        tapcanvas_sidecar.authorized_tool_arguments(
+            "village_canvas_command_workflow_run",
+            {"run_id": "run-1", "command": "cancel"},
+            context,
+        )
+    allowed = tapcanvas_sidecar.authorized_tool_arguments(
+        "village_canvas_dispatch_action",
+        {"commands": [{"type": "create_canvas_node"}]},
+        context,
+    )
+    assert allowed["commands"][0]["type"] == "create_canvas_node"
+    assert tapcanvas_sidecar.workflow_requested("帮我做两张角色卡") is False
+    assert tapcanvas_sidecar.workflow_requested("不要启动工作流或分镜") is False
+    assert tapcanvas_sidecar.workflow_requested("做一个三镜分镜工作流") is True
+    authorized = tapcanvas_sidecar.authorized_tool_arguments(
+        "village_canvas_start_workflow_run",
+        {"workflow_id": "custom-canvas-workflow"},
+        {"workflow_authorized": True},
+    )
+    assert authorized["workflow_id"] == "custom-canvas-workflow"
+
+
 @pytest.mark.asyncio
 async def test_sse_stream_projects_progress_and_result() -> None:
     class FakeStream:

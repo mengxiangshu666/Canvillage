@@ -69,6 +69,59 @@ _CANVAS_REQUEST_RE = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 
+_WORKFLOW_INTENT_RE = re.compile(
+    r"(?i)(工作流|workflow|分镜|镜头|整片|成片|连续|多镜|storyboard|shot|sequence|分集|生产流水线)"
+)
+_WORKFLOW_NEGATIVE_RE = re.compile(
+    r"(?i)(?:不要|别|不用|不需要|无需|禁止|不要启动|不要用)[^。；;\n]{0,16}"
+    r"(?:工作流|workflow|分镜|镜头|整片|成片|多镜|storyboard|shot|sequence)"
+)
+_STRUCTURE_COMMAND_TYPES = frozenset(
+    {"insert_starter_workflow", "create_shot_sequence"}
+)
+_WORKFLOW_TOOL_NAMES = frozenset(
+    {
+        "village_canvas_start_workflow_run",
+        "village_canvas_command_workflow_run",
+    }
+)
+
+
+def workflow_requested(prompt: str) -> bool:
+    text = prompt or ""
+    if _WORKFLOW_NEGATIVE_RE.search(text):
+        return False
+    return bool(_WORKFLOW_INTENT_RE.search(text))
+
+
+def _requests_canvas_structure(name: str, arguments: Mapping[str, Any]) -> bool:
+    """True when a tool call would scaffold shots/starter nodes.
+
+    A simple asset request ("two character cards") must not silently turn into
+    a storyboard workflow that inserts empty shot nodes the user never asked
+    for.  Workflow scaffolding is allowed only when the turn itself mentions a
+    workflow, storyboard, shots, sequence or full production.
+    """
+
+    if name == "village_canvas_start_workflow_run":
+        workflow_id = str(
+            arguments.get("workflow_id") or arguments.get("starter_workflow_id") or ""
+        ).strip()
+        if workflow_id == "custom-canvas-workflow" or arguments.get(
+            "starter_workflow_id"
+        ):
+            return True
+    if name == "village_canvas_command_workflow_run":
+        return True
+    commands = arguments.get("commands")
+    if isinstance(commands, list):
+        return any(
+            isinstance(command, Mapping)
+            and str(command.get("type") or "") in _STRUCTURE_COMMAND_TYPES
+            for command in commands
+        )
+    return False
+
 
 def task_authorization_from_prompt(prompt: str) -> dict[str, Any] | None:
     """Read the server-bound task authorization from a structured chat turn."""
@@ -94,6 +147,13 @@ def authorized_tool_arguments(
     """Overlay the turn's server-owned paid-media authorization on tool args."""
 
     payload = dict(arguments)
+    if _requests_canvas_structure(name, payload) and not bool(
+        context.get("workflow_authorized")
+    ):
+        raise ValueError(
+            "本轮用户没有要求工作流、分镜或整片；不要启动工作流或插入分镜结构。"
+            "角色卡、单图或资产请求请直接创建节点并生成。"
+        )
     authorization = context.get("task_authorization")
     if name in _PAID_MEDIA_TOOL_NAMES and isinstance(authorization, Mapping):
         payload["task_authorization"] = dict(authorization)
@@ -288,6 +348,9 @@ SYSTEM_PROMPT = """你是村长无限画布的创作 Agent「小树」。
   只在缺少新事实时再读一次。
 - 用户说“随意发挥/看着办”时，先做最小可交付的一步，不要自动启动整片制作、
   批量工作流或批量付费媒体；需要扩大范围时先说明下一步。
+- 角色卡、单图、资产补齐这类请求直接创建节点并生成，不要启动
+  custom-canvas-workflow，也不要用 insert_starter_workflow 或 create_shot_sequence
+  铺设用户没有要求的分镜节点。
 - 复用已有节点/运行时先读当前状态；只有用户明确重做才创建新对象。
 - 对外身份只叫「小树」/「村长无限画布」。不要提 TapCanvas、DeepSeek Harness、
   模型厂商、开源项目名或工具前缀；用户问实现细节时只说明这是村长无限画布的 Agent。
@@ -339,6 +402,7 @@ def register_context(
     canvas_id: str,
     turn_id: str = "",
     task_authorization: Mapping[str, Any] | None = None,
+    workflow_authorized: bool = False,
 ) -> dict[str, Any]:
     context = {
         "api_url": api_url,
@@ -347,6 +411,7 @@ def register_context(
         "canvas_id": canvas_id,
         "turn_id": turn_id,
         "task_authorization": dict(task_authorization or {}),
+        "workflow_authorized": bool(workflow_authorized),
         "expires_at": time.monotonic() + SIDECAR_TTL_SECONDS,
     }
     CONTEXTS[token] = context
@@ -362,10 +427,15 @@ def tool_schema_by_name() -> dict[str, dict[str, Any]]:
     return {str(name): dict(schema) for name, schema, _handler in CANVAS_TOOLS}
 
 
-def remote_tool_definitions() -> list[dict[str, Any]]:
+def remote_tool_definitions(*, include_workflow: bool = True) -> list[dict[str, Any]]:
     schemas = tool_schema_by_name()
+    names = (
+        SIDECAR_TOOL_NAMES
+        if include_workflow
+        else SIDECAR_TOOL_NAMES - _WORKFLOW_TOOL_NAMES
+    )
     definitions: list[dict[str, Any]] = []
-    for name in sorted(SIDECAR_TOOL_NAMES):
+    for name in sorted(names):
         schema = schemas.get(name)
         if schema is None:
             continue
@@ -545,6 +615,7 @@ async def run_turn(
     model: str | None = None,
     turn_id: str | None = None,
     task_authorization: Mapping[str, Any] | None = None,
+    user_request: str | None = None,
     event_sink: Callable[[str, Mapping[str, Any]], Awaitable[None]] | None = None,
 ) -> dict[str, Any]:
     """Run one real sidecar turn and return its text plus tool trace.
@@ -563,6 +634,7 @@ async def run_turn(
     agent_token = await _create_agent_token(username, project_id)
     turn_token = secrets.token_urlsafe(32)
     turn_key = str(turn_id or "").strip()
+    workflow_authorized = workflow_requested(user_request or prompt)
     register_context(
         turn_token,
         api_url=api_base_url(),
@@ -571,6 +643,7 @@ async def run_turn(
         canvas_id=canvas_id,
         turn_id=turn_key,
         task_authorization=task_authorization,
+        workflow_authorized=workflow_authorized,
     )
     logical_task_id = (
         f"village-sidecar-{turn_key}"
@@ -598,7 +671,7 @@ async def run_turn(
         "externalSkillResolverConfig": None,
         "referenceImages": [],
         "assetInputs": [],
-        "remoteTools": remote_tool_definitions(),
+        "remoteTools": remote_tool_definitions(include_workflow=workflow_authorized),
         "remoteToolCatalog": [],
         "remoteToolConfig": {
             "endpoint": f"{api_base_url()}/api/v1/agent-sidecar/mcp/{turn_token}",
@@ -756,6 +829,7 @@ async def stream_chat_turn(
         model=model,
         turn_id=turn_key,
         task_authorization=task_authorization,
+        user_request=human_prompt,
         event_sink=project_sidecar_event,
     )
     for call in result.get("tool_calls") or []:

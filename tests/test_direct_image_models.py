@@ -6,6 +6,7 @@ from novelvideo.generators.direct_image_models import (
     _DIRECT_IMAGE_SAFE_SUBMIT_RETRY_EXCEPTIONS,
     DirectImageModel,
     DirectImageUpstreamError,
+    _brand_new_image_prompt,
     _gemini_image_request_fields,
     _direct_image_request_fields,
     _validate_direct_image_parameters,
@@ -43,6 +44,14 @@ def test_read_budget_can_be_restored_by_operator(monkeypatch):
     monkeypatch.setenv("VILLAGE_CANVAS_IMAGE_READ_TIMEOUT_SECONDS", "300")
 
     assert image_submit_timeout().read == 300.0
+
+
+def test_text_to_image_prompt_is_explicitly_brand_new() -> None:
+    prompt = "四宫格角色身份板，沈青禾，正面全身"
+    normalized = _brand_new_image_prompt(prompt)
+    assert normalized.startswith("Generate a brand-new image from scratch.")
+    assert normalized.endswith(prompt)
+    assert _brand_new_image_prompt(normalized) == normalized
 
 
 def test_relay_side_400_counts_as_transient_for_the_shared_retry_policy():
@@ -1388,6 +1397,7 @@ def test_split_provider_and_model_binds_explicit_model_to_direct(monkeypatch):
 
     monkeypatch.setattr(module, "get_direct_models", lambda _kind: _direct_image_rows())
 
-    assert route_helpers.split_provider_and_model(
-        None, "gpt-image-2.5-sunburst"
-    ) == ("direct", "image-default")
+    assert route_helpers.split_provider_and_model(None, "gpt-image-2.5-sunburst") == (
+        "direct",
+        "image-default",
+    )

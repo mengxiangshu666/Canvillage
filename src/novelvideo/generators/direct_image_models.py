@@ -47,6 +47,23 @@ from novelvideo.shared.provider_cost import extract_provider_cost_evidence
 
 DIRECT_IMAGE_MODEL_PREFIX = "direct/"
 
+# Some image-editing models read a character-sheet/identity-board prompt as
+# "edit the uploaded reference" even when no reference was sent, then reject it
+# with ``input_image_required``.  Prefixing a pure text-to-image instruction
+# removes that ambiguity without changing the user's content.
+_BRAND_NEW_IMAGE_PREFIX = (
+    "Generate a brand-new image from scratch. Do not edit, extend, or reuse "
+    "any existing image. "
+)
+
+
+def _brand_new_image_prompt(prompt: str) -> str:
+    text = str(prompt or "").strip()
+    if "brand-new image" in text[:240].lower():
+        return text
+    return _BRAND_NEW_IMAGE_PREFIX + text
+
+
 logger = logging.getLogger(__name__)
 
 # A generic Chinese "安全政策" 400 from an HK relay is usually length/format/
@@ -346,9 +363,9 @@ def resolve_direct_image_model(model: str | None) -> DirectImageModel | None:
         value = value[len(DIRECT_IMAGE_MODEL_PREFIX) :]
     models = list_direct_image_models()
     if value in {"", "default"}:
-        return next((item for item in models if item.enabled and item.is_default), None) or next(
-            (item for item in models if item.enabled), None
-        )
+        return next(
+            (item for item in models if item.enabled and item.is_default), None
+        ) or next((item for item in models if item.enabled), None)
     by_registry_id = next(
         (item for item in models if item.registry_id == value and item.enabled),
         None,
@@ -363,7 +380,10 @@ def resolve_direct_image_model(model: str | None) -> DirectImageModel | None:
         for item in models
         if item.enabled and item.upstream_model.strip().lower() == value
     ]
-    return next((item for item in by_upstream if item.is_default), by_upstream[0] if by_upstream else None)
+    return next(
+        (item for item in by_upstream if item.is_default),
+        by_upstream[0] if by_upstream else None,
+    )
 
 
 def direct_image_model_option(model: DirectImageModel) -> dict[str, Any]:
@@ -578,10 +598,7 @@ def _gemini_image_base_url(base_url: str) -> str:
 def _gemini_image_endpoint(base_url: str, upstream_model: str) -> str:
     model = str(upstream_model or "").strip().removeprefix("models/")
     encoded_model = quote(model, safe="")
-    return (
-        f"{_gemini_image_base_url(base_url)}"
-        f"/models/{encoded_model}:generateContent"
-    )
+    return f"{_gemini_image_base_url(base_url)}/models/{encoded_model}:generateContent"
 
 
 def _gemini_image_request_fields(
@@ -619,9 +636,7 @@ def _gemini_image_request_fields(
         normalized_aspect = str(aspect_ratio or "").strip().replace("：", ":")
         if normalized_aspect.casefold() in {"", "auto", "original", "adaptive"}:
             normalized_aspect = profile.default_aspect_ratio or (
-                profile.aspect_ratio_options[0]
-                if profile.aspect_ratio_options
-                else ""
+                profile.aspect_ratio_options[0] if profile.aspect_ratio_options else ""
             )
         if normalized_aspect:
             image_config["aspectRatio"] = normalized_aspect
@@ -656,9 +671,7 @@ def _validate_direct_image_parameters(
         normalized_aspect = str(aspect_ratio or "").strip().replace("：", ":")
         if normalized_aspect.casefold() in {"", "auto", "original", "adaptive"}:
             normalized_aspect = profile.default_aspect_ratio or (
-                profile.aspect_ratio_options[0]
-                if profile.aspect_ratio_options
-                else ""
+                profile.aspect_ratio_options[0] if profile.aspect_ratio_options else ""
             )
         if profile.supports_custom_aspect_ratio:
             if not is_valid_image_aspect_ratio(normalized_aspect):
@@ -752,7 +765,9 @@ def _direct_image_uploaded_failure(
         return DirectImageUpstreamError(
             message,
             error_code=(
-                "DIRECT_IMAGE_SAFETY_BLOCK" if exhausted else "DIRECT_IMAGE_SAFETY_BLOCK_RETRY"
+                "DIRECT_IMAGE_SAFETY_BLOCK"
+                if exhausted
+                else "DIRECT_IMAGE_SAFETY_BLOCK_RETRY"
             ),
             stage="submit",
             retryable=True,
@@ -800,7 +815,9 @@ def _direct_image_uploaded_failure(
     return None
 
 
-def _image_files(paths: Iterable[str], *, field_name: str) -> list[tuple[str, tuple[str, bytes, str]]]:
+def _image_files(
+    paths: Iterable[str], *, field_name: str
+) -> list[tuple[str, tuple[str, bytes, str]]]:
     files: list[tuple[str, tuple[str, bytes, str]]] = []
     for raw_path in paths:
         path = Path(raw_path)
@@ -841,7 +858,9 @@ async def _write_image_response(
         try:
             output_path.write_bytes(base64.b64decode(raw))
         except ValueError as exc:
-            raise RuntimeError("direct image API returned invalid base64 image data") from exc
+            raise RuntimeError(
+                "direct image API returned invalid base64 image data"
+            ) from exc
     else:
         image_url = item.get("url") or item.get("image_url") or item.get("download_url")
         if not isinstance(image_url, str) or not image_url.strip():
@@ -989,7 +1008,9 @@ async def generate_direct_image(
                 suggested_action=str(metadata["suggested_action"]),
                 http_status=fallback_exc.provider_error_metadata.get("http_status"),
                 protocol=fallback.protocol,
-                request_contract=fallback_exc.provider_error_metadata.get("request_contract"),
+                request_contract=fallback_exc.provider_error_metadata.get(
+                    "request_contract"
+                ),
             ) from fallback_exc
 
 
@@ -1024,6 +1045,14 @@ async def _generate_direct_image_once(
     )
     ensure_direct_model_runtime_ready(runtime_model)
     references = [str(path) for path in reference_paths if str(path).strip()]
+    effective_prompt = prompt if references else _brand_new_image_prompt(prompt)
+    if effective_prompt != prompt:
+        logger.info(
+            "direct image text-to-image prompt normalized (model=%s chars=%s->%s)",
+            model.upstream_model,
+            len(str(prompt or "")),
+            len(effective_prompt),
+        )
     profile = model.profile
     if references and IMAGE_MODE_IMAGE_TO_IMAGE not in profile.modes:
         raise RuntimeError(f"{model.label} 已识别为仅支持文生图，不能用于图生图")
@@ -1045,7 +1074,7 @@ async def _generate_direct_image_once(
     fields = (
         _gemini_image_request_fields(
             model=model,
-            prompt=prompt,
+            prompt=effective_prompt,
             aspect_ratio=aspect_ratio,
             image_size=image_size,
             reference_paths=references,
@@ -1053,7 +1082,7 @@ async def _generate_direct_image_once(
         if is_gemini_image
         else _direct_image_request_fields(
             model=model,
-            prompt=prompt,
+            prompt=effective_prompt,
             aspect_ratio=aspect_ratio,
             image_size=image_size,
             quality=quality,
@@ -1134,12 +1163,11 @@ async def _generate_direct_image_once(
                 permanent_request_failure = (
                     type(exc).__name__ in _DIRECT_IMAGE_PERMANENT_TRANSPORT_EXCEPTIONS
                 )
-                if (
-                    attempt < DIRECT_IMAGE_TRANSIENT_MAX_ATTEMPTS
-                    and safe_to_retry
-                ):
+                if attempt < DIRECT_IMAGE_TRANSIENT_MAX_ATTEMPTS and safe_to_retry:
                     delay = DIRECT_IMAGE_TRANSIENT_BACKOFF_SECONDS[
-                        min(attempt - 1, len(DIRECT_IMAGE_TRANSIENT_BACKOFF_SECONDS) - 1)
+                        min(
+                            attempt - 1, len(DIRECT_IMAGE_TRANSIENT_BACKOFF_SECONDS) - 1
+                        )
                     ]
                     logger.warning(
                         "direct image upstream transport failure (%s: %s); "
