@@ -7,7 +7,10 @@ import {
   fieldsTotalWidth,
   resolveVisibleScriptColumns,
 } from '@/features/canvas/nodes/script/scriptColumns';
-import { SCRIPT_ROW_ACTIONS_WIDTH_PX } from '@/features/canvas/nodes/script/ScriptResultTable';
+import {
+  SCRIPT_ROW_ACTIONS_WIDTH_PX,
+  fitColumnWidths,
+} from '@/features/canvas/nodes/script/ScriptResultTable';
 import { resolveScriptTableAvailableWidth } from '@/features/canvas/nodes/script/useScriptTableWidth';
 
 describe('分镜表可用宽度', () => {
@@ -36,5 +39,29 @@ describe('分镜表可用宽度', () => {
     });
     expect(fieldsTotalWidth(visible) + SCRIPT_ROW_ACTIONS_WIDTH_PX).toBeLessThanOrEqual(width);
     expect(visible.length).toBeLessThan(scriptFieldSequence().length);
+  });
+});
+
+describe('列宽压缩', () => {
+  it('800 宽节点的 5 个必留列会被压到容器内', () => {
+    // 800 节点内容区 771px，扣掉 132px 行操作列后只剩 639px。
+    const widths = [56, 68, 200, 200, 200];
+    const fitted = fitColumnWidths(widths, 771 - SCRIPT_ROW_ACTIONS_WIDTH_PX);
+    expect(fitted.reduce((sum, width) => sum + width, 0))
+      .toBeLessThanOrEqual(771 - SCRIPT_ROW_ACTIONS_WIDTH_PX);
+    expect(fitted.every((width) => width >= 36)).toBe(true);
+    expect(fitted[0]).toBeLessThan(widths[0]);
+  });
+
+  it('空间够时不改动原宽', () => {
+    const widths = [56, 68, 200, 200, 200];
+    expect(fitColumnWidths(widths, 1000)).toEqual(widths);
+  });
+
+  it('压到 74% 仍放不下就保留原比例，交给横向滚动', () => {
+    const widths = [56, 68, 200, 200, 200];
+    const fitted = fitColumnWidths(widths, 300);
+    expect(fitted.reduce((sum, width) => sum + width, 0)).toBeGreaterThan(300);
+    expect(fitted[2]).toBe(148);
   });
 });

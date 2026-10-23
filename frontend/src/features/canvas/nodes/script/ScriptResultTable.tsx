@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Elastic-2.0
 // Copyright (c) 2026 ClaymoreLab
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, Copy, Image as ImageIcon, Plus, Trash2, Wand2 } from 'lucide-react';
 
 import type { FreezoneStoryScriptRow } from '@/api/ops';
@@ -56,6 +56,30 @@ const CELL_MAX_HEIGHT_PX = 180;
 // 行操作列：复制 / 插行 / 上移 / 下移 / 删除 / 只改这一镜六个动作排成一行，固定列宽。
 // 列宽自适应要把这 132px 算进总宽，否则选出来的列一定比容器宽、必然出现横向滚动。
 export const SCRIPT_ROW_ACTIONS_WIDTH_PX = 132;
+
+// 列被压到原宽的 74% 就不再压：再窄中文已经读不成行，宁可横向滚动。
+const MIN_COLUMN_SCALE = 0.74;
+const MIN_COLUMN_WIDTH_PX = 36;
+
+/**
+ * 把当前可见列按容器宽度等比压窄。
+ *
+ * 800px 的默认节点里，5 个必留列（镜号 / 时长 / 画面描述 / 两条提示词）合计
+ * 724px，加上 132px 行操作列就比内容区宽 —— 选列逻辑已经保不住它们，最后一列
+ * 会被裁掉。这里按比例压到刚好放下；压到 74% 仍放不下才允许横向滚动。
+ */
+export function fitColumnWidths(
+  widths: readonly number[],
+  availableWidthPx: number,
+): number[] {
+  const total = widths.reduce((sum, width) => sum + width, 0);
+  if (availableWidthPx <= 0 || total <= availableWidthPx) return [...widths];
+  // 留 2px 给边框/取整误差，避免压完还差一两像素再冒一条滚动条。
+  const scale = Math.max(MIN_COLUMN_SCALE, (availableWidthPx - 2) / total);
+  return widths.map((width) =>
+    Math.max(MIN_COLUMN_WIDTH_PX, Math.floor(width * scale)),
+  );
+}
 const ROW_ACTION_BUTTON_CLASS =
   'nodrag inline-flex h-5 w-5 items-center justify-center rounded-[5px] text-text-muted/80 transition-colors hover:bg-white/[0.1] hover:text-text-dark disabled:pointer-events-none disabled:opacity-30';
 
@@ -73,9 +97,30 @@ export function ScriptResultTable({
     columns.filter((col) => col.numeric).map((col) => col.key),
   );
   const showRowActions = Boolean(rowOperations);
+  const actionsWidth = showRowActions ? SCRIPT_ROW_ACTIONS_WIDTH_PX : 0;
+  // 表格容器实测宽度：列数没变但节点被拉窄时也要重新压列，不能只信选列时的估算。
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  useEffect(() => {
+    const element = scrollerRef.current;
+    if (!element) return;
+    const measure = () => setContainerWidth(element.clientWidth);
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  const fittedWidths = useMemo(
+    () =>
+      fitColumnWidths(
+        columns.map((col) => col.widthPx),
+        Math.max(0, containerWidth - actionsWidth),
+      ),
+    [actionsWidth, columns, containerWidth],
+  );
   const tableMinWidth =
-    columns.reduce((sum, col) => sum + col.widthPx, 0) +
-    (showRowActions ? SCRIPT_ROW_ACTIONS_WIDTH_PX : 0);
+    fittedWidths.reduce((sum, width) => sum + width, 0) + actionsWidth;
   // 行键用稳定行键（镜号 / 关键帧序号 / 回落下标），与「生成分镜」写节点时同一套。
   // 用下标当 key 时，删行 / 重排会让 React 复用错位的 DOM，正在编辑的格子里会
   // 留下上一行的文本。
@@ -84,7 +129,7 @@ export function ScriptResultTable({
   // 而不必去读横幅的措辞。标本身挂在第一个可见单元格的左侧色条上（见下）。
   const flaggedCount = rowFlags ? rowKeys.filter((key) => rowFlags.has(key)).length : 0;
   return (
-    <div className="ui-scrollbar h-full w-full overflow-auto rounded-xl border border-white/[0.09] bg-[#101012]/80 [scrollbar-gutter:stable]">
+    <div ref={scrollerRef} className="ui-scrollbar h-full w-full overflow-auto rounded-xl border border-white/[0.09] bg-[#101012]/80 [scrollbar-gutter:stable]">
       <table
         className="border-collapse text-left text-[11.5px] leading-[1.5] text-text-dark" aria-label="脚本分镜表"
         style={{ minWidth: tableMinWidth, tableLayout: 'fixed' }}
@@ -102,7 +147,7 @@ export function ScriptResultTable({
             {columns.map((col, columnIndex) => (
               <th
                 key={col.key}
-                style={{ width: col.widthPx, minWidth: col.widthPx }}
+                style={{ width: fittedWidths[columnIndex] ?? col.widthPx, minWidth: fittedWidths[columnIndex] ?? col.widthPx }}
                 className={`border-b border-r border-b-white/[0.1] border-r-white/[0.05] bg-[#18181A]/98 px-2.5 py-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-text-muted/90 backdrop-blur last:border-r-0 ${
                   numericColumnKeys.has(col.key) ? 'text-center' : ''
                 }`}
@@ -209,7 +254,7 @@ export function ScriptResultTable({
                   return (
                     <td
                       key={col.key}
-                      style={{ width: col.widthPx, minWidth: col.widthPx }}
+                      style={{ width: fittedWidths[columnIndex] ?? col.widthPx, minWidth: fittedWidths[columnIndex] ?? col.widthPx }}
                       title={flagOnFirstCell ? flag?.title : undefined}
                       className={`border-b border-r border-white/[0.05] px-2.5 py-2 align-top last:border-r-0 ${
                         numeric ? 'text-center tabular-nums text-text-dark/90' : ''
