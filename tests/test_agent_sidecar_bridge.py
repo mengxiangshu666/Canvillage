@@ -191,6 +191,79 @@ def test_sidecar_read_timeout_is_disabled() -> None:
     assert tapcanvas_sidecar._SIDECAR_HTTP_TIMEOUT.connect == 10.0
 
 
+def test_server_task_authorization_is_parsed_and_injected() -> None:
+    prompt = (
+        "[CANVAS_AGENT_REQUEST_V2]"
+        '{"request":"画一张","task_authorization":{"scope":"current_turn",'
+        '"run_mode":"auto","allow_structure":true,"allow_paid_media":true,'
+        '"max_paid_starts":1,"grant_id":"grant-1"}}'
+        "[/CANVAS_AGENT_REQUEST_V2]"
+    )
+    authorization = tapcanvas_sidecar.task_authorization_from_prompt(prompt)
+    assert authorization == {
+        "scope": "current_turn",
+        "run_mode": "auto",
+        "allow_structure": True,
+        "allow_paid_media": True,
+        "max_paid_starts": 1,
+        "grant_id": "grant-1",
+    }
+    context = {"task_authorization": authorization}
+    arguments = tapcanvas_sidecar.authorized_tool_arguments(
+        "freezone_run_node",
+        {"task_authorization": {"allow_paid_media": False, "grant_id": "model-made"}},
+        context,
+    )
+    assert arguments["task_authorization"] == authorization
+    read_arguments = tapcanvas_sidecar.authorized_tool_arguments(
+        "village_canvas_read_compact", {"canvas_id": "default"}, context
+    )
+    assert "task_authorization" not in read_arguments
+
+
+def test_media_results_become_terminal_delivery_receipts() -> None:
+    receipt = tapcanvas_sidecar.delivery_receipt_for_tool(
+        "village_canvas_read_compact",
+        {
+            "schema": "village_canvas_compact.v1",
+            "project_id": "p",
+            "canvas_id": "default",
+            "revision": 7,
+            "nodes": [
+                {
+                    "id": "node-1",
+                    "type": "imageGenNode",
+                    "has_image": True,
+                    "image_url": "/static/projects/p/freezone/_outputs/x.png",
+                }
+            ],
+        },
+        api_url="http://127.0.0.1:8784",
+    )
+    assert receipt is not None
+    assert receipt["protocolVersion"] == "tapcanvas.workflow-execution-receipt/v1"
+    assert receipt["terminal"] is True
+    assert receipt["acceptedAsync"] is False
+    assert receipt["workflowOutputs"][0]["ports"]["output"]["image"] == [
+        "http://127.0.0.1:8784/static/projects/p/freezone/_outputs/x.png"
+    ]
+
+
+def test_started_media_task_is_async_not_terminal() -> None:
+    receipt = tapcanvas_sidecar.delivery_receipt_for_tool(
+        "freezone_run_node",
+        {
+            "generation_started": True,
+            "job": {"task_id": "task-1", "task_type": "freezone_gen"},
+        },
+        api_url="http://127.0.0.1:8784",
+    )
+    assert receipt is not None
+    assert receipt["terminal"] is False
+    assert receipt["acceptedAsync"] is True
+    assert receipt["executionId"] == "task:task-1"
+
+
 @pytest.mark.asyncio
 async def test_sse_stream_projects_progress_and_result() -> None:
     class FakeStream:

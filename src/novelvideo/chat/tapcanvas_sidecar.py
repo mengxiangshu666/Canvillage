@@ -52,6 +52,183 @@ SIDECAR_READ_ONLY_TOOL_NAMES = frozenset(
     }
 )
 
+# These tools may start paid media.  The browser binds a server-owned
+# task_authorization/grant to the turn; the model must never invent or replace
+# it, so the gateway injects the turn's authoritative value.
+_PAID_MEDIA_TOOL_NAMES = frozenset(
+    {
+        "freezone_run_node",
+        "village_canvas_dispatch_action",
+        "village_canvas_start_workflow_run",
+        "village_canvas_command_workflow_run",
+    }
+)
+
+_CANVAS_REQUEST_RE = re.compile(
+    r"\[CANVAS_AGENT_REQUEST_V2\]\s*(.*?)\s*\[/CANVAS_AGENT_REQUEST_V2\]",
+    re.IGNORECASE | re.DOTALL,
+)
+
+
+def task_authorization_from_prompt(prompt: str) -> dict[str, Any] | None:
+    """Read the server-bound task authorization from a structured chat turn."""
+
+    match = _CANVAS_REQUEST_RE.search(prompt or "")
+    if match is None:
+        return None
+    try:
+        payload = json.loads(match.group(1))
+    except (TypeError, ValueError):
+        return None
+    if not isinstance(payload, Mapping):
+        return None
+    authorization = payload.get("task_authorization")
+    return dict(authorization) if isinstance(authorization, Mapping) else None
+
+
+def authorized_tool_arguments(
+    name: str,
+    arguments: Mapping[str, Any],
+    context: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Overlay the turn's server-owned paid-media authorization on tool args."""
+
+    payload = dict(arguments)
+    authorization = context.get("task_authorization")
+    if name in _PAID_MEDIA_TOOL_NAMES and isinstance(authorization, Mapping):
+        payload["task_authorization"] = dict(authorization)
+    return payload
+
+
+_MEDIA_URL_KEYS = frozenset(
+    {"image_url", "preview_url", "output_url", "video_url", "audio_url"}
+)
+
+
+def _absolute_media_url(value: str, api_url: str) -> str:
+    url = value.strip()
+    if url.startswith("/"):
+        return api_url.rstrip("/") + url
+    return url
+
+
+def _collect_media_urls(value: Any, api_url: str) -> list[str]:
+    urls: list[str] = []
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            if key in _MEDIA_URL_KEYS and isinstance(item, str) and item.strip():
+                url = _absolute_media_url(item, api_url)
+                if url.startswith(("http://", "https://")) and url not in urls:
+                    urls.append(url)
+            else:
+                for nested in _collect_media_urls(item, api_url):
+                    if nested not in urls:
+                        urls.append(nested)
+    elif isinstance(value, list):
+        for item in value:
+            for nested in _collect_media_urls(item, api_url):
+                if nested not in urls:
+                    urls.append(nested)
+    return urls
+
+
+def _result_payload(result: Any) -> dict[str, Any]:
+    if isinstance(result, Mapping):
+        return dict(result)
+    if isinstance(result, str):
+        try:
+            parsed = json.loads(result)
+        except (TypeError, ValueError):
+            return {}
+        return dict(parsed) if isinstance(parsed, Mapping) else {}
+    return {}
+
+
+def delivery_receipt_for_tool(
+    name: str,
+    result: Any,
+    *,
+    api_url: str,
+) -> dict[str, Any] | None:
+    """Expose real media output in the receipt shape the sidecar can verify.
+
+    TapCanvas artifact delivery only accepts a terminal
+    ``tapcanvas.workflow-execution-receipt/v1`` with ``workflowOutputs``.  The
+    Village tools return task/canvas receipts instead, so an adapter-level
+    translation is required; otherwise the agent can finish the image and still
+    fail its final self-check.
+    """
+
+    data = _result_payload(result)
+    if not data:
+        return None
+    urls = _collect_media_urls(data, api_url)
+    job = data.get("job") if isinstance(data.get("job"), Mapping) else {}
+    raw_data = data.get("data")
+    task: Mapping[str, Any] = {}
+    if isinstance(raw_data, Mapping):
+        task = raw_data
+    elif isinstance(raw_data, list):
+        task = next(
+            (
+                item
+                for item in raw_data
+                if isinstance(item, Mapping)
+                and str(item.get("status") or "").lower() in {"completed", "succeeded"}
+            ),
+            {},
+        )
+    task_id = str(
+        job.get("task_id") or task.get("task_id") or data.get("task_id") or ""
+    ).strip()
+    status = str(
+        task.get("status")
+        or data.get("status")
+        or ("success" if data.get("generation_started") else "")
+    ).lower()
+    if urls:
+        task_type = str(
+            job.get("task_type")
+            or task.get("task_type")
+            or data.get("generationMediaType")
+            or ""
+        ).lower()
+        media_kind = "image"
+        if "video" in task_type:
+            media_kind = "video"
+        elif "audio" in task_type:
+            media_kind = "audio"
+        execution_id = (
+            f"task:{task_id}"
+            if task_id
+            else f"canvas:{data.get('project_id')}:{data.get('canvas_id')}:"
+            f"revision:{data.get('revision')}:node:"
+            f"{','.join(str(item) for item in (data.get('created_node_ids') or [node.get('id') for node in (data.get('nodes') or []) if isinstance(node, Mapping)]))}"
+        )
+        return {
+            "protocolVersion": "tapcanvas.workflow-execution-receipt/v1",
+            "terminal": True,
+            "status": "success",
+            "acceptedAsync": False,
+            "executionId": execution_id,
+            "workflowOutputs": [{"ports": {"output": {media_kind: urls}}}],
+        }
+    if name in _PAID_MEDIA_TOOL_NAMES and (
+        data.get("generation_started") is True
+        or status in {"running", "pending", "accepted"}
+    ):
+        execution_id = f"task:{task_id}" if task_id else f"async:{name}"
+        return {
+            "protocolVersion": "tapcanvas.workflow-execution-receipt/v1",
+            "terminal": False,
+            "status": "running",
+            "acceptedAsync": True,
+            "executionId": execution_id,
+            "workflowOutputs": [],
+        }
+    return None
+
+
 # Internal contract tools are exposed to the model by the sidecar.  The chat UI
 # and the assistant's own wording use Village names, never vendor names.
 _DISPLAY_TOOL_NAMES = {
@@ -91,6 +268,20 @@ SYSTEM_PROMPT = """你是村长无限画布的创作 Agent「小树」。
   任务启动只能说明“已受理”，不能说明“已生成完成”。
 - 交付前必须用 report_delivery 逐项引用真实回执；没有回执就明确失败或等待，
   不得用“已保存”“已恢复”“下次继续”掩盖未执行。
+- 纯文本才用 response 交付；涉及图片、视频或音频产物时，record_user_intent 的
+  delivery.mode 必须是 async_artifact，report_delivery 用 artifact 合同和
+  tool-output 证据，不要用 response 模式硬交媒体。
+- 付费媒体的 task_authorization 由服务端按本轮绑定并自动注入；不要自己编
+  grant_id，也不要因为没看到授权就改走 response 交付。
+- get_delivery_evidence 的证据 ID 是按当前工具调用位置编号的：拿到后立刻
+  report_delivery，中间不要再调用任何工具；要补证据就先补完、重新取一次，
+  然后马上交付。
+- report_delivery 的 requirements 必须逐字复用冻结合同的 id 和 statement，
+  不得改写；连续失败两次就停止重试，向用户说明已完成什么、卡在哪里，不要留空。
+- 启动图片/视频/音频任务前先查该节点是否已有 active task；已有就等待或复用，
+  不要重复启动。修改既有节点用 dispatch_action；apply_commands 只在新建或
+  已有 ready_write checkpoint 时使用。
+- 任务等待时不要密集轮询；状态没变就说明还在跑，隔几秒再查。
 - 能在一个批次完成的画布改动，必须一次用 dispatch_action 或 apply_commands
   提交；不要一个节点一次调用，也不要把同一批改动拆成很多轮。
 - 读写要节制：刚读过的 revision 和已有回执足够时不要重复读、不要重复验证；
@@ -147,6 +338,7 @@ def register_context(
     project_id: str,
     canvas_id: str,
     turn_id: str = "",
+    task_authorization: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     context = {
         "api_url": api_url,
@@ -154,6 +346,7 @@ def register_context(
         "project_id": project_id,
         "canvas_id": canvas_id,
         "turn_id": turn_id,
+        "task_authorization": dict(task_authorization or {}),
         "expires_at": time.monotonic() + SIDECAR_TTL_SECONDS,
     }
     CONTEXTS[token] = context
@@ -240,7 +433,9 @@ async def invoke_native_tool(
         VILLAGE_CANVAS_TURN_ID=str(context.get("turn_id") or ""),
     ):
         registry = build_native_registry(full=True)
-        return await registry.invoke(name, dict(arguments))
+        return await registry.invoke(
+            name, authorized_tool_arguments(name, arguments, context)
+        )
 
 
 async def _create_agent_token(username: str, project_id: str) -> str:
@@ -349,6 +544,7 @@ async def run_turn(
     conversation_id: str = "default",
     model: str | None = None,
     turn_id: str | None = None,
+    task_authorization: Mapping[str, Any] | None = None,
     event_sink: Callable[[str, Mapping[str, Any]], Awaitable[None]] | None = None,
 ) -> dict[str, Any]:
     """Run one real sidecar turn and return its text plus tool trace.
@@ -374,6 +570,7 @@ async def run_turn(
         project_id=project_id,
         canvas_id=canvas_id,
         turn_id=turn_key,
+        task_authorization=task_authorization,
     )
     logical_task_id = (
         f"village-sidecar-{turn_key}"
@@ -480,6 +677,7 @@ async def stream_chat_turn(
     from novelvideo.chat._service_parts._service_state import _human_user_text
 
     turn_key = str(turn_id or uuid.uuid4().hex)
+    task_authorization = task_authorization_from_prompt(prompt)
     human_prompt = _human_user_text(prompt)
     thread_id = f"xiaoshu:{project}:{conversation_id or 'default'}"
     await on_event(
@@ -557,6 +755,7 @@ async def stream_chat_turn(
         conversation_id=conversation_id,
         model=model,
         turn_id=turn_key,
+        task_authorization=task_authorization,
         event_sink=project_sidecar_event,
     )
     for call in result.get("tool_calls") or []:

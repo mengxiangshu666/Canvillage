@@ -76,6 +76,13 @@ async def _execute_tapcanvas_remote_tool(
     payload: dict[str, Any] = {"ok": True, "content": text}
     if not isinstance(result, str):
         payload["result"] = result
+    receipt = tapcanvas_sidecar.delivery_receipt_for_tool(
+        name,
+        result,
+        api_url=str(context["api_url"]),
+    )
+    if receipt is not None:
+        payload.update(receipt)
     return JSONResponse(status_code=200, content=payload)
 
 
