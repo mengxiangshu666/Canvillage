@@ -17,7 +17,7 @@ import re
 import secrets
 import time
 import uuid
-from typing import Any, Mapping
+from typing import Any, Awaitable, Callable, Mapping
 
 import httpx
 
@@ -91,6 +91,12 @@ SYSTEM_PROMPT = """你是村长无限画布的创作 Agent「小树」。
   任务启动只能说明“已受理”，不能说明“已生成完成”。
 - 交付前必须用 report_delivery 逐项引用真实回执；没有回执就明确失败或等待，
   不得用“已保存”“已恢复”“下次继续”掩盖未执行。
+- 能在一个批次完成的画布改动，必须一次用 dispatch_action 或 apply_commands
+  提交；不要一个节点一次调用，也不要把同一批改动拆成很多轮。
+- 读写要节制：刚读过的 revision 和已有回执足够时不要重复读、不要重复验证；
+  只在缺少新事实时再读一次。
+- 用户说“随意发挥/看着办”时，先做最小可交付的一步，不要自动启动整片制作、
+  批量工作流或批量付费媒体；需要扩大范围时先说明下一步。
 - 复用已有节点/运行时先读当前状态；只有用户明确重做才创建新对象。
 - 对外身份只叫「小树」/「村长无限画布」。不要提 TapCanvas、DeepSeek Harness、
   模型厂商、开源项目名或工具前缀；用户问实现细节时只说明这是村长无限画布的 Agent。
@@ -273,6 +279,67 @@ def _system_prompt(*, project_id: str, canvas_id: str, turn_id: str) -> str:
     return SYSTEM_PROMPT + facts
 
 
+# A real production turn can legitimately run for many minutes.  Fail fast only
+# on connect/pool problems; never cut an in-flight turn off at an arbitrary
+# wall-clock boundary.  Progress is streamed to the chat instead of held back
+# until the final response.
+_SIDECAR_HTTP_TIMEOUT = httpx.Timeout(
+    connect=10.0,
+    read=None,
+    write=30.0,
+    pool=10.0,
+)
+
+
+async def _consume_sidecar_stream(
+    response: httpx.Response,
+    event_sink: Callable[[str, Mapping[str, Any]], Awaitable[None]] | None,
+) -> dict[str, Any]:
+    """Consume the sidecar SSE stream and return its final ``result.response``."""
+
+    event_name = "message"
+    data_lines: list[str] = []
+    final: dict[str, Any] | None = None
+
+    async def dispatch(name: str, raw: str) -> None:
+        nonlocal final
+        if not raw.strip():
+            return
+        try:
+            data = json.loads(raw)
+        except (TypeError, ValueError):
+            data = {"raw": raw}
+        if not isinstance(data, Mapping):
+            data = {"value": data}
+        if event_sink is not None:
+            await event_sink(name, data)
+        if name == "result":
+            response_payload = data.get("response")
+            if isinstance(response_payload, Mapping):
+                final = dict(response_payload)
+            elif "text" in data or "trace" in data:
+                final = dict(data)
+        elif name == "error":
+            message = str(data.get("message") or data.get("code") or "Agent 回合失败")
+            raise SidecarError(f"小树 Agent 回合失败：{product_text(message)}")
+
+    async for line in response.aiter_lines():
+        if line == "":
+            await dispatch(event_name, "\n".join(data_lines))
+            event_name = "message"
+            data_lines = []
+            continue
+        if line.startswith("event:"):
+            event_name = line[len("event:") :].strip()
+        elif line.startswith("data:"):
+            data_lines.append(line[len("data:") :].lstrip())
+    if data_lines:
+        await dispatch(event_name, "\n".join(data_lines))
+    if final is None:
+        raise SidecarError("小树 Agent 流结束了，但没有返回最终结果")
+    return final
+
+
 async def run_turn(
     *,
     username: str,
@@ -282,6 +349,7 @@ async def run_turn(
     conversation_id: str = "default",
     model: str | None = None,
     turn_id: str | None = None,
+    event_sink: Callable[[str, Mapping[str, Any]], Awaitable[None]] | None = None,
 ) -> dict[str, Any]:
     """Run one real sidecar turn and return its text plus tool trace.
 
@@ -321,7 +389,7 @@ async def run_turn(
         "overrideApiBaseUrl": direct_model.base_url,
         "overrideApiKey": direct_model.api_key,
         "apiStyle": "openai-completions",
-        "stream": False,
+        "stream": True,
         "sessionId": f"village-sidecar-{project_id}-{conversation_id or 'default'}-{username}",
         "userId": username,
         "logicalTaskId": logical_task_id,
@@ -342,13 +410,16 @@ async def run_turn(
         },
     }
     try:
-        async with httpx.AsyncClient(timeout=300) as client:
-            response = await client.post(f"{sidecar_url()}/chat", json=payload)
-        if response.status_code >= 400:
-            raise SidecarError(
-                f"小树 Agent 服务拒绝了本轮请求：HTTP {response.status_code}：{response.text[:2000]}"
-            )
-        result = response.json()
+        async with httpx.AsyncClient(timeout=_SIDECAR_HTTP_TIMEOUT) as client:
+            async with client.stream(
+                "POST", f"{sidecar_url()}/chat", json=payload
+            ) as response:
+                if response.status_code >= 400:
+                    body = (await response.aread()).decode("utf-8", "replace")
+                    raise SidecarError(
+                        f"小树 Agent 服务拒绝了本轮请求：HTTP {response.status_code}：{body[:2000]}"
+                    )
+                result = await _consume_sidecar_stream(response, event_sink)
     except httpx.HTTPError as exc:
         raise SidecarError(
             f"小树 Agent 服务不可用：{type(exc).__name__}: {exc}"
@@ -363,11 +434,10 @@ async def run_turn(
     }
 
 
-def _canvas_patch_event(call: Mapping[str, Any]) -> dict[str, Any] | None:
+def _canvas_patch_from_text(raw: str) -> dict[str, Any] | None:
     """Extract a canonical canvas patch from a dispatch tool result."""
 
-    raw = call.get("outputPreview")
-    if not isinstance(raw, str) or not raw.strip():
+    if not raw.strip():
         return None
     try:
         payload = json.loads(raw)
@@ -382,6 +452,13 @@ def _canvas_patch_event(call: Mapping[str, Any]) -> dict[str, Any] | None:
     if not str(payload.get("command_id") or "").strip():
         return None
     return dict(payload)
+
+
+def _canvas_patch_event(call: Mapping[str, Any]) -> dict[str, Any] | None:
+    raw = call.get("outputPreview")
+    if not isinstance(raw, str):
+        return None
+    return _canvas_patch_from_text(raw)
 
 
 async def stream_chat_turn(
@@ -404,15 +481,6 @@ async def stream_chat_turn(
 
     turn_key = str(turn_id or uuid.uuid4().hex)
     human_prompt = _human_user_text(prompt)
-    result = await run_turn(
-        username=username,
-        project_id=project,
-        canvas_id=str(canvas_id or "default"),
-        prompt=human_prompt,
-        conversation_id=conversation_id,
-        model=model,
-        turn_id=turn_key,
-    )
     thread_id = f"xiaoshu:{project}:{conversation_id or 'default'}"
     await on_event(
         {
@@ -421,10 +489,87 @@ async def stream_chat_turn(
             "turn_id": turn_key,
         }
     )
+    assistant_buffer = ""
+    seen_tool_calls: set[str] = set()
+    patched_calls: set[str] = set()
+
+    async def project_sidecar_event(name: str, data: Mapping[str, Any]) -> None:
+        nonlocal assistant_buffer
+        if name == "content":
+            delta = str(data.get("delta") or "")
+            if delta:
+                assistant_buffer = product_text(assistant_buffer + delta)
+                await on_event(
+                    {
+                        "type": "assistant_delta",
+                        "text": assistant_buffer,
+                        "turn_id": turn_key,
+                    }
+                )
+            return
+        if name != "tool":
+            return
+        call_id = str(data.get("toolCallId") or "")
+        raw_name = str(data.get("toolName") or "agent.tool")
+        display = display_tool_name(raw_name)
+        phase = str(data.get("phase") or "")
+        if phase == "started":
+            await on_event(
+                {
+                    "type": "tool_update",
+                    "tool_event_kind": "tool_call",
+                    "tool_call_id": call_id,
+                    "name": display,
+                    "input": data.get("input")
+                    if isinstance(data.get("input"), dict)
+                    else {},
+                    "text": display,
+                }
+            )
+            return
+        if phase != "completed":
+            return
+        success = data.get("status") == "succeeded"
+        output = str(data.get("outputPreview") or data.get("errorMessage") or "")
+        patch = _canvas_patch_from_text(output)
+        if patch is not None:
+            await on_event({"type": "canvas_patch", **patch})
+            patched_calls.add(call_id)
+        await on_event(
+            {
+                "type": "tool_update",
+                "tool_event_kind": "tool_call_update",
+                "tool_terminal": True,
+                "tool_success": success,
+                "tool_failed": not success,
+                "tool_call_id": call_id,
+                "name": display,
+                "text": output,
+            }
+        )
+        seen_tool_calls.add(call_id)
+
+    result = await run_turn(
+        username=username,
+        project_id=project,
+        canvas_id=str(canvas_id or "default"),
+        prompt=human_prompt,
+        conversation_id=conversation_id,
+        model=model,
+        turn_id=turn_key,
+        event_sink=project_sidecar_event,
+    )
     for call in result.get("tool_calls") or []:
         if not isinstance(call, Mapping):
             continue
         call_id = str(call.get("toolCallId") or "")
+        if call_id and call_id in seen_tool_calls:
+            if call_id not in patched_calls:
+                patch = _canvas_patch_event(call)
+                if patch is not None:
+                    await on_event({"type": "canvas_patch", **patch})
+                    patched_calls.add(call_id)
+            continue
         raw_name = str(call.get("name") or "agent.tool")
         name = display_tool_name(raw_name)
         status = str(call.get("status") or "")

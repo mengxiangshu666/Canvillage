@@ -186,6 +186,52 @@ def test_vendor_names_are_replaced_in_user_visible_text() -> None:
     )
 
 
+def test_sidecar_read_timeout_is_disabled() -> None:
+    assert tapcanvas_sidecar._SIDECAR_HTTP_TIMEOUT.read is None
+    assert tapcanvas_sidecar._SIDECAR_HTTP_TIMEOUT.connect == 10.0
+
+
+@pytest.mark.asyncio
+async def test_sse_stream_projects_progress_and_result() -> None:
+    class FakeStream:
+        async def aiter_lines(self):
+            for line in (
+                "event: thread.started",
+                'data: {"threadId":"t"}',
+                "",
+                "event: content",
+                'data: {"delta":"你"}',
+                "",
+                "event: content",
+                'data: {"delta":"好"}',
+                "",
+                "event: result",
+                'data: {"response":{"text":"你好","trace":{"runOutcome":{"status":"succeeded"}}}}',
+                "",
+                "event: done",
+                'data: {"reason":"logical_succeeded"}',
+                "",
+            ):
+                yield line
+
+    seen: list[tuple[str, dict]] = []
+
+    async def sink(name, data):
+        seen.append((name, dict(data)))
+
+    result = await tapcanvas_sidecar._consume_sidecar_stream(FakeStream(), sink)
+
+    assert result["text"] == "你好"
+    assert [name for name, _ in seen] == [
+        "thread.started",
+        "content",
+        "content",
+        "result",
+        "done",
+    ]
+    assert seen[1][1]["delta"] == "你"
+
+
 @pytest.mark.asyncio
 async def test_stream_chat_turn_projects_trace_and_canvas_patch(monkeypatch) -> None:
     from novelvideo.chat._service_parts import _service_context
