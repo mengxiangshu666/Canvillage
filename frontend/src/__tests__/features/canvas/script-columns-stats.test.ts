@@ -67,10 +67,10 @@ describe('分镜表列显隐', () => {
     for (const key of detailKeys) expect(all).toContain(key);
   });
 
-  it('33 列合计 4850px，默认列在 800px 节点里放得下', () => {
+  it('33 列合计 4758px，默认列在 800px 节点里放得下', () => {
     const all = scriptFieldSequence();
     expect(all).toHaveLength(33);
-    expect(fieldsTotalWidth(all)).toBe(4850);
+    expect(fieldsTotalWidth(all)).toBe(4758);
     const visible = resolveVisibleScriptColumns({
       mode: 'default',
       availableWidthPx: NODE_CONTENT_WIDTH,

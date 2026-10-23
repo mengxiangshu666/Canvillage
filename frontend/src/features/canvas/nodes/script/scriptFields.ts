@@ -34,8 +34,8 @@ export const SCRIPT_CHARACTER_SLOT_COUNT = 2;
 
 /** 表格前段：镜号 / 时长 / 画面描述（对应 LibTV 的 shotNumber / durationSeconds / plotDescription）。 */
 const SCRIPT_LEAD_FIELDS: ScriptFieldDef[] = [
-  { key: 'shot_no', label: '镜号', widthPx: 60, numeric: true, tier: 'core' },
-  { key: 'duration', label: '时长', widthPx: 80, numeric: true, tier: 'core' },
+  { key: 'shot_no', label: '镜号', widthPx: 56, numeric: true, tier: 'core' },
+  { key: 'duration', label: '时长', widthPx: 68, numeric: true, tier: 'core' },
   { key: 'visual_description', label: '画面描述', widthPx: 200, tier: 'core' },
 ];
 
@@ -44,7 +44,7 @@ const SCRIPT_LEAD_FIELDS: ScriptFieldDef[] = [
  * LibTV 是「角色 / 角色描述 / 角色图」三连列，顺序一致。
  */
 const SCRIPT_CHARACTER_SLOT_FIELDS: ScriptFieldDef[] = [
-  { key: 'character_{slot}', label: '角色{slot}', widthPx: 120, tier: 'core' },
+  { key: 'character_{slot}', label: '角色{slot}', widthPx: 108, tier: 'core' },
   // 角色描述与角色图都是**后端回填**的资产明细（见 ports/story_script.py 的字段说明），
   // 开拍前核对交给资产视图，表格里默认收起来。
   { key: 'character_description_{slot}', label: '角色描述{slot}', widthPx: 180, tier: 'detail' },
@@ -60,9 +60,9 @@ const SCRIPT_CHARACTER_SLOT_FIELDS: ScriptFieldDef[] = [
  */
 const SCRIPT_TRAIL_FIELDS: ScriptFieldDef[] = [
   { key: 'reference', label: '参考', widthPx: 80, render: 'image', tier: 'detail' },
-  { key: 'shot', label: '景别', widthPx: 120, tier: 'core' },
-  { key: 'character_action', label: '角色动作', widthPx: 120, tier: 'core' },
-  { key: 'emotion', label: '情绪', widthPx: 120, tier: 'core' },
+  { key: 'shot', label: '景别', widthPx: 100, tier: 'core' },
+  { key: 'character_action', label: '角色动作', widthPx: 108, tier: 'core' },
+  { key: 'emotion', label: '情绪', widthPx: 100, tier: 'core' },
   { key: 'scene_tags', label: '场景标签', widthPx: 120, tier: 'core' },
   // 道具与场景同族（LibTV 资产台账的三族就是 characters / scenes / props），但默认
   // 收起来：它不是每一镜都有，一屏里为它让出 120px 会挤掉一列核心列。

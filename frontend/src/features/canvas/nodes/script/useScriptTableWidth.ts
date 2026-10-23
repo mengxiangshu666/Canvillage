@@ -2,6 +2,8 @@
 // Copyright (c) 2026 ClaymoreLab
 import { useEffect, useState } from 'react';
 
+import { SCRIPT_ROW_ACTIONS_WIDTH_PX } from './ScriptResultTable';
+
 /**
  * 分镜表当前能用的宽度（像素）。
  *
@@ -19,6 +21,19 @@ export const SCRIPT_TABLE_NODE_CHROME_PX = 18;
 
 /** 全屏弹层的扣减量：弹层 `p-6`（48）+ 内层 `p-2`（16）+ 表格自身边框（2）。 */
 export const SCRIPT_TABLE_FULLSCREEN_CHROME_PX = 66;
+
+/** 节点内 / 全屏的表格可用宽度；行操作列固定占宽，必须一起扣掉。 */
+export function resolveScriptTableAvailableWidth(params: {
+  width: number;
+  isFullscreen: boolean;
+  viewportWidth: number;
+}): number {
+  const chrome = params.isFullscreen
+    ? SCRIPT_TABLE_FULLSCREEN_CHROME_PX
+    : SCRIPT_TABLE_NODE_CHROME_PX;
+  const container = params.isFullscreen ? params.viewportWidth : params.width;
+  return Math.max(0, container - chrome - SCRIPT_ROW_ACTIONS_WIDTH_PX);
+}
 
 export function useViewportWidth(): number {
   const [width, setWidth] = useState(() =>
