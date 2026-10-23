@@ -73,13 +73,13 @@ def test_four_view_template_describes_the_sheet_without_banning_panels(tmp_path)
         prompt_template="four_view",
     )
 
-    assert "四视图设定表" in prompt
-    assert "左侧 1/3" in prompt
-    assert "右侧 2/3" in prompt
-    assert "严格无头" in prompt
-    assert "颈部残端" in prompt
-    assert "同一张图" in prompt
-    assert "浅灰 #E8E8E8" in prompt
+    assert "character identity board" in prompt
+    assert "FACE FRONT" in prompt
+    assert "FACE SIDE" in prompt
+    assert "BODY FRONT" in prompt
+    assert "BACK" in prompt
+    assert "brand-new image from scratch" in prompt
+    assert "never show more than one readable face" in prompt
     assert "拼贴、分屏" not in prompt
 
 
@@ -94,4 +94,4 @@ def test_unknown_template_falls_back_to_the_single_portrait_prompt(tmp_path):
     )
 
     assert "正面全身角色基准图" in prompt
-    assert "四视图设定表" not in prompt
+    assert "character identity board" not in prompt

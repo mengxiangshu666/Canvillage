@@ -355,10 +355,12 @@ describe('资产图出图（第三刀）', () => {
   it('三族默认多视图设定图，保留设计与干净成像', () => {
     const ledger = collectScriptAssetLedger(rows(), new Map());
     const character = scriptAssetImagePrompt(ledger.characters[0]);
-    expect(character).toContain('生成角色四视图设定表');
-    expect(character).toContain('左侧 1/3');
-    expect(character).toContain('正面、侧面、背面三个无头全身视图');
+    expect(character).toContain('character identity board');
+    expect(character).toContain('FACE FRONT');
+    expect(character).toContain('BODY FRONT');
+    expect(character).toContain('brand-new image from scratch');
     expect(character).not.toContain('右侧 1/4');
+    expect(character).toContain('never show more than one readable face');
     expect(character).toContain('必须避免：五官变形');
     expect(character).toContain('十七岁少女');
     expect(character).toContain('锁定人物身份、五官、体型和设计');
@@ -400,7 +402,7 @@ describe('资产图出图（第三刀）', () => {
     expect(resolveScriptAssetViewMode({ characterPromptTemplate: 'four_view' })).toBe('multi_view');
     expect(resolveScriptAssetViewMode({ viewMode: 'multi_view', characterPromptTemplate: 'front_full_body' })).toBe('multi_view');
     expect(resolveScriptAssetViewMode({ viewMode: 'single_view', characterPromptTemplate: 'four_view' })).toBe('single_view');
-    expect(scriptAssetImagePrompt(ledger.characters[0], { characterPromptTemplate: 'four_view' })).toContain('左侧 1/3');
+    expect(scriptAssetImagePrompt(ledger.characters[0], { characterPromptTemplate: 'four_view' })).toContain('FACE FRONT');
     expect(scriptAssetImagePrompt(ledger.scenes[0], { viewMode: 'single_view' })).toContain('生成单幅场景空景参考图');
     expect(scriptAssetImagePrompt(ledger.props[0], { viewMode: 'single_view' })).toContain('生成单幅道具主视图参考');
   });
@@ -467,8 +469,8 @@ describe('资产图出图（第三刀）', () => {
     expect(scriptAssetImagePrompt(ledger.scenes[0])).not.toContain('图片风格为');
   });
 
-  it('资产图比例默认自动：角色 4:3、场景 16:9、道具 1:1（oiioii 落盘参数）', () => {
-    expect(resolveScriptAssetAspect('character', 'auto')).toBe('4:3');
+  it('资产图比例默认自动：角色 2:3、场景 16:9、道具 1:1', () => {
+    expect(resolveScriptAssetAspect('character', 'auto')).toBe('2:3');
     expect(resolveScriptAssetAspect('scene', undefined)).toBe('16:9');
     expect(resolveScriptAssetAspect('prop', '')).toBe('1:1');
     // 用户锁定了比例就一律听用户的。
@@ -510,7 +512,7 @@ describe('资产图出图（第三刀）', () => {
       expect(node.data.count).toBe(1);
     });
     const characterNode = created.find((node) => node.data.scriptAssetId === 'character:阿雀');
-    expect(characterNode?.data.prompt).toContain('生成角色四视图设定表');
+    expect(characterNode?.data.prompt).toContain('character identity board');
     expect(characterNode?.data.scriptAssetPlannedViews).toEqual(['front', 'side', 'back', 'full_body']);
     expect(created.find(node => node.data.scriptAssetId === 'scene:祠堂')?.data.scriptAssetPlannedViews).toEqual(['wide', 'geometry']);
     expect(created.find(node => node.data.scriptAssetId === 'prop:玉佩')?.data.scriptAssetPlannedViews).toEqual(['hero', 'multi_view']);

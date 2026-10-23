@@ -588,7 +588,8 @@ def test_four_view_generation_sends_front_photo_to_provider(monkeypatch, tmp_pat
         )
     )
     assert calls[0]["reference_paths"] == (str(reference),)
-    assert calls[0]["aspect_ratio"] == "4:3"
+    assert calls[0]["aspect_ratio"] == "2:3"
+    assert calls[0]["image_size"] == "2K"
     assert "Preserve the face" in calls[0]["prompt"]
 
 

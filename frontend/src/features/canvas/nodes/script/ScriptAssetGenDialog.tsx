@@ -137,9 +137,9 @@ export function ScriptAssetGenDialog({
 
         <p className="text-[12px] leading-relaxed text-text-muted/80">
           {viewMode === 'multi_view'
-            ? '角色四视图设定表；场景空镜全景与俯视拓扑；道具正面、侧面、背面与细节四格。'
+            ? '角色身份板（四格：正面脸 / 侧面 / 正面全身 / 背面）；场景空镜全景与俯视拓扑；道具正面、侧面、背面与细节四格。'
             : '角色正面全身照；场景单幅空景；道具单幅主视图。'}
-          比例默认自动：角色 4:3、场景 16:9、道具 1:1。
+          比例默认自动：角色 2:3、场景 16:9、道具 1:1。
         </p>
 
         {ledger.missing.length > 0 && (
@@ -251,7 +251,7 @@ export function ScriptAssetGenDialog({
           <div className="flex items-center justify-between gap-3">
             <span className="shrink-0 text-[12px] text-text-muted">比例</span>
             <div className="flex flex-wrap justify-end gap-1">
-              {/* 「自动」在最前：三族各取所需（角色 4:3 / 场景 16:9 / 道具 1:1）。这是默认，
+              {/* 「自动」在最前：三族各取所需（角色 2:3 / 场景 16:9 / 道具 1:1）。这是默认，
                   也是唯一能同时喂对下游两组参考图的那个（角色要脸、场景要空间）。 */}
               {[{ key: SCRIPT_ASSET_ASPECT_AUTO, label: '自动' }, ...STORYBOARD_ASPECTS].map(
                 (option) => (

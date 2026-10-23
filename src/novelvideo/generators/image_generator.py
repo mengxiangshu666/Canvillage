@@ -1207,14 +1207,11 @@ def _direct_character_style_prompt(
     if prompt_template == CHARACTER_PROMPT_TEMPLATE_FOUR_VIEW:
         lines.extend(
             [
-                "输出一张角色四视图设定表：四组视图画在同一张图内，不是四张独立图片。",
-                "布局：左侧 1/3 为角色正面大头照（头顶到胸口），居中，头部端正、双眼水平、眼线不倾斜，"
-                "整个画面里只有这一处出现头脸；右侧 2/3 为严格无头、仅颈部以下的全身三视图，"
-                "正面、侧面、背面并排站立，在衣领上缘平齐截断，不出现头部、面部、颈部皮肤和颈部残端。",
-                "三个全身角度的比例、服装、配色和配饰完全一致，像同一角色原地转身；"
-                "三视图之间保留约 5% 间隔，不要挤在一起。",
-                "背景为纯色浅灰 #E8E8E8，无杂物杂色、无道具、无多余人物，干净抠图质感；"
-                "画面干净通透、无噪点、无脏污纹理、无摩尔纹。",
+                "Create a brand-new image from scratch: a pure text-to-image character identity board, not an edit of any existing image.",
+                "PURPOSE: canonical identity reference board for this one character. Single-page four-view sheet, vertical 2:3 board, two equal-width columns, thin light divider lines, one small caption label at the top-left corner of each cell reading exactly: FACE FRONT / FACE SIDE / BODY FRONT / BACK. Top row occupies about 41% of the board height (head-and-shoulders framing); bottom row about 59% (full standing figure).",
+                "VIEW DISCIPLINE: Only the top-left FACE FRONT cell carries a crisp, fully readable face; it is the single facial identity anchor. FACE SIDE is a pure profile turning toward the left edge at matched head-and-shoulders scale; head outline, ear and hair silhouette stay fully preserved while the face area is deliberately softened and blurred so no readable eyes, nose or lips remain. BODY FRONT shows the complete standing figure with the face area likewise softened and blurred, while hair, head silhouette, clothing and body stay sharp. BACK is a strict back view: no looking over the shoulder, no visible face. Both full-body cells use the identical natural standing stance, identical body scale, identical foot baseline and the same outfit; only viewing direction changes. Head top, soles and long hem stay fully inside the frame.",
+                "BG: seamless light warm-gray studio sweep, one continuous surface behind and under the subject. LIGHT: one soft neutral key from the upper front-left with gentle fill from the right, consistent exposure and colour temperature across all four cells, natural contact shadow under the feet. Neutral base state only: no scene, no action, no emotion, no blood, dirt or wetness.",
+                "AVOID: any text other than the four cell labels; no name, age, attribute or brand tags; no UI, logo or watermark; no extra people or background objects; no dramatic scene lighting; no fashion editorial series; no anime, painterly or 3D-render style; do not blur hair, clothing or body; never show more than one readable face.",
             ]
         )
     elif identity:
@@ -1323,9 +1320,12 @@ async def _generate_direct_character_reference(
     if prompt_only:
         return []
 
-    # 四视图设定表是横构图（左 1/3 大头照 + 右 2/3 三视图并排），竖构图会挤掉服装细节。
+    # 四宫格身份板是竖构图（2:3，上排头肩、下排全身），2K 才够四格面部与服装细节。
     aspect_ratio = (
-        "4:3" if prompt_template == CHARACTER_PROMPT_TEMPLATE_FOUR_VIEW else "3:4"
+        "2:3" if prompt_template == CHARACTER_PROMPT_TEMPLATE_FOUR_VIEW else "3:4"
+    )
+    image_size = (
+        "2K" if prompt_template == CHARACTER_PROMPT_TEMPLATE_FOUR_VIEW else "1K"
     )
     paths: list[str] = []
     generation_count = max(1, int(count or 1))
@@ -1342,7 +1342,7 @@ async def _generate_direct_character_reference(
                 prompt=prompt,
                 output_path=path,
                 aspect_ratio=aspect_ratio,
-                image_size="1K",
+                image_size=image_size,
                 quality="medium",
                 reference_paths=(reference_image_path,) if reference_image_path else (),
             )

@@ -3346,6 +3346,7 @@ tests/test_script_asset_review_persistence.py,Elastic-2.0,2026 SuperTale contrib
 tests/test_script_camera_cut_handoff.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_script_camera_style_execution.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_script_camera_style_guidance.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
+tests/test_script_character_card_contract.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_script_continuous_camera_workflow.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_script_directing_intent.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 tests/test_script_director_validation.py,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation

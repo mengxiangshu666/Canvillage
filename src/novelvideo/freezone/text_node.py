@@ -123,10 +123,32 @@ You develop a user's idea, creative brief or script excerpt into a structured st
   viewing direction separately. Do not invent an unlabeled directional arrow.
   Keep transient damage, opening, holding and action in the state fields. Respect supplied
   designs; for idea-only input record important invented design choices in assumptions.
-  No tagged assets means an empty map; never invent assets merely to populate the fields.
+  Scene baselines must also name the physical light sources, their direction and colour
+  temperature, the stable topology of entrances/routes/fixed landmarks, and the dominant
+  materials; two different scenes must not read as the same room with a new label.
+  Prop baselines must state the identity/function contract: what the object is for, its
+  operation or contact parts, its weight/scale, wear pattern and which visible state
+  variants are permanent design versus per-shot state. No tagged assets means an empty
+  map; never invent assets merely to populate the fields.
 - 对 `prop_tags` 中会跨镜出现的道具，填写 `prop_state_start`、`prop_state_end`、`prop_state_change`：分别说明本镜起始状态、结束状态和可见变化；静态道具写「保持基准状态」。不得让道具无原因地出现、消失、复原或改变朝向。
 - `character_1` should prefer a stable role identifier if inferable, such as `沈昭昭_现代` or `沈昭昭_古装`.
 - `character_description_1` should prefer bracketed character-card format, e.g. `[沈昭昭_现代: 28岁女性，面色苍白，神情疲惫，身穿现代简约职业装……]`.
+- Character cards are also the source for one-click identity-board assets. Keep this fixed
+  order for every named character so the image prompt can fill its slots:
+  `[ID: gender, age, height, 9-head/head-to-body ratio, build and stance; face shape,
+  cheekbones, jaw, chin, eyes (shape / intercanthal distance / iris), nose bridge and tip,
+  lips and cupid's bow, ears; skin tone and finish; hair color, texture, part, length;
+  outer garment (fabric / collar / closure / buttons / hem), inner layer, trousers or skirt,
+  shoes (toe / heel / material); one or two permanent traces; prohibitions]`.
+  Compress into one bracketed line, not a paragraph. Example compression:
+  `[沈青禾: 女性，22岁，178cm，九头身，小头长肢，肩宽平、颈长、高腰、直脊柱；长鹅蛋脸，颧骨横展、窄下颌、小方下巴，杏眼平角、瞳距略宽、深栗虹膜，鼻梁窄直、鼻背一处小断、鼻头小圆，薄上唇厚下唇、唇峰清晰，耳中等贴头；冷白皮、颧骨淡红、哑光；纯黑直发中分、锁骨下、耳后；深灰蓝羊毛立领长大衣、单排四角扣、H型过膝，象牙高领羊绒衫，黑直筒西裤，黑方头低跟皮鞋；右手食指中指淡石墨，唯一手部痕迹，无首饰]`.
+  This card freezes identity, body proportions, face DNA, hair, baseline wardrobe and one
+  or two permanent traces. Do not put scene, action, emotion, temporary clothing, injuries,
+  props or camera facts in the card; those belong in character_state_start/end,
+  start_state/end_state and the shot prompt segments.
+  If the source lacks a field, infer a concrete design that fits the character and record
+  the inference in assumptions; never replace a field with an empty adjective. The same
+  role's card must be byte-identical across every row.
 - Character cards freeze identity and baseline design. Put each present character's actual
   costume, goggles, safety equipment and persistent appearance in character_state_start
   and character_state_end, keyed by that character's exact name. Unchanged states must
@@ -350,6 +372,25 @@ the user explicitly asks for that presentation as the actual image content.
   Do not copy a studio name or fashionable effect as a recipe, impose contrast on work
   that needs consistency, or promise stepped frame rates without model capability.
   Describe observable pose, timing and emphasis instead of unsupported output parameters.
+
+## Pre-output self-check (hard)
+Before returning the JSON, run this private checklist and fix the draft in the same response:
+- Source coverage: every source event, decisive line and promised reveal that must survive is
+  assigned to at least one row; do not invent unrequested plot, characters or spectacle.
+- Asset completeness: every named character has the fixed-order character card; every tagged
+  scene/prop has a reusable baseline description; no `无`/placeholder for a tagged asset.
+- Card identity: the same character's card is byte-identical in every row; no per-shot emotion,
+  pose, temporary clothing, injury, prop or camera fact inside the card.
+- State chain: every row's start_state matches the previous row's end_state unless an actual
+  cut, time ellipse, location change or visible change is written; props do not reset at cuts.
+- Continuity: screen direction, eyeline, 180-degree axis, wardrobe/equipment state and light
+  direction stay coherent across adjacent rows; a deliberate break states its reason.
+- Prompt integrity: every `shot_prompt` has exactly 8 bracketed segments and every
+  `video_motion_prompt` keeps its 5-part order; no unsupported provider capability is promised.
+- Coverage over quota: do not pad rows to hit a shot count or compress away story beats to hit
+  a duration target; duration follows the actual action, dialogue and observation time.
+If a check fails, repair the JSON before output. Do not return a note describing the failure
+instead of fixing it.
 
 Example style for `shot_prompt`:
 下面是同一选择时刻的两种可选拍法，不是要求先后生成两镜；角色卡与共同材质保持一致。

@@ -48,11 +48,10 @@ export const ASSET_IMAGE_CELL_HEIGHT = 360;
  * 资产图比例：**自动**（按族各取所需），用户也可以一键锁定成某一个。
  *
  * 之前三族一律给 1:1，理由是「方图给主体的像素最多」。这个理由对单主体成立，对**角色
- * 设定图**不成立：角色的那张要的是「四视图设定表」——左侧大头照、右侧无头全身三视图。
- * 方图里塞三列全身视图会挤掉脸和服饰细节，而这张图的意义恰恰是「让模型看清角色」。
+ * 身份板**不成立：角色的那张要的是四格竖版——上排正面脸/侧面，下排正面全身/背面。
+ * 方图或横图会把四格和脸、服饰细节挤掉，而这张图的意义恰恰是「让模型看清角色」。
  *
- * 所以三族各按 oiioii 的实测值来（`oiioii爬取/live_canvas/role_batch.json` 的 4:3、
- * `scene_batch.json` 的 16:9、`item_batch.json` 的 1:1），默认走自动。
+ * 所以三族各取所需：角色 2:3、场景 16:9、道具 1:1，默认走自动。
  */
 export const SCRIPT_ASSET_ASPECT_AUTO = 'auto';
 
@@ -95,13 +94,13 @@ export function resolveScriptAssetViewMode(config: {
 /**
  * 某一族的资产图比例。
  *
- * 这三个值不是拍的，是对着 oiioii 的落盘参数抄的：角色 4:3（四视图要横构图）、
- * 场景 16:9（空间关系要宽）、道具 1:1（单主体，方图给材质细节的像素最多）。
+ * 角色用 2:3 竖版身份板（四格、上 41% / 下 59%）；场景 16:9（空间关系要宽）；
+ * 道具 1:1（单主体，方图给材质细节的像素最多）。
  */
 export function scriptAssetAspectFor(role: ScriptAssetRole): string {
   switch (role) {
     case 'character':
-      return '4:3';
+      return '2:3';
     case 'scene':
       return '16:9';
     case 'prop':
@@ -130,7 +129,7 @@ const ASSET_BLOCK_MAX_ATTEMPTS = 60;
  * 落盘提示词抄**（`oiioii爬取/live_canvas/role_batch.json` / `scene_batch.json` /
  * `item_batch.json` 里 `*GeneratePreview.prompt`，那是它真正发给模型的原文）：
  *
- * - 角色 —— 默认四视图设定表（正面脸部 + 无头正 / 侧 / 背三视图），或单张正面全身立绘。
+ * - 角色 —— 默认四格身份板（FACE FRONT / FACE SIDE / BODY FRONT / BACK），或单张正面全身立绘。
  *   两者都锁定角色外观、比例、颜色和细节，避免下游
  *   `图片N` 参考时发生身份漂移。
  * - 场景 —— 多视图给空镜全景和俯视空间关系图，单视图给空景；均不出现角色。
@@ -182,16 +181,16 @@ export function scriptAssetImagePrompt(
         ].join('');
       }
       return [
-        '生成角色四视图设定表，同一张图片中必须同时包含四个视图，不是单张正面全身照。',
-        '布局：左侧 1/3 为正面平视脸部大头照，双眼水平、头部端正；右侧 2/3 为正面、侧面、背面三个无头全身视图并排，在衣领上缘平齐截断，不出现颈部皮肤或颈桩，脚部完整。',
-        '保持同一角色身份、体型、服装、配色和配饰一致；参考图只提供身份与设计，不能照搬参考图的单人构图。角色设定：',
-        `${looks}。`,
+        'Create a brand-new image from scratch: a pure text-to-image character identity board, not an edit of any existing image.',
+        'PURPOSE: canonical identity reference board for this one character, built to lock a reusable identity anchor for later storyboard and video work. Single-page four-view sheet, vertical 2:3 board, two equal-width columns, thin light divider lines, one small caption label at the top-left corner of each cell reading exactly: FACE FRONT / FACE SIDE / BODY FRONT / BACK. Top row occupies about 41% of the board height (head-and-shoulders framing); bottom row about 59% (full standing figure).',
+        'VIEW DISCIPLINE: Only the top-left FACE FRONT cell carries a crisp, fully readable face; it is the single facial identity anchor. FACE SIDE is a pure profile turning toward the left edge at matched head-and-shoulders scale; head outline, ear and hair silhouette stay fully preserved while the face area is deliberately softened and blurred so no readable eyes, nose or lips remain. BODY FRONT shows the complete standing figure with the face area likewise softened and blurred, while hair, head silhouette, clothing and body stay sharp. BACK is a strict back view: no looking over the shoulder, no visible face. Both full-body cells use the identical natural standing stance, identical body scale, identical foot baseline and the same outfit; only viewing direction changes. Head top, soles and long hem stay fully inside the frame.',
+        `CHARACTER FACTS: ${looks}.`,
         styleClause,
-        '三个身体视图比例完全一致，之间保留 5% 间隔，不重叠、不遗漏视图，不增加第五个视图或另一个完整有头全身人物。',
-        '各视图采用一致的柔和照明，清楚呈现轮廓、服装裁片、接缝与配饰连接，材质反光符合其物理性质，不用强烈景深遮挡设定细节。',
-        '背景为纯色浅灰 #E8E8E8，无任何杂色块、道具或多余人物，干净抠图质感。',
+        ...(asset.imageUrl ? ['Use the supplied image only as the identity/design source for face, body proportions, hair and baseline clothing; do not copy its composition or background into this four-view board.'] : []),
+        'BG: seamless light warm-gray studio sweep, one continuous surface behind and under the subject. LIGHT: one soft neutral key from the upper front-left with gentle fill from the right, consistent exposure and colour temperature across all four cells, natural contact shadow under the feet. Neutral base state only: no scene, no action, no emotion, no blood, dirt or wetness.',
+        'AVOID: any text other than the four cell labels; no name, age, attribute or brand tags; no UI, logo or watermark; no extra people or background objects; no dramatic scene lighting; no fashion editorial series; no anime, painterly or 3D-render style; do not blur hair, clothing or body; never show more than one readable face.',
         SCRIPT_CHARACTER_ASSET_NEGATIVE_GUARD,
-      ].join('');
+      ].join('\n\n');
     }
     case 'scene': {
       const scene = description.length > 0 ? `${name}。${description}` : name;
@@ -428,7 +427,7 @@ export function generateScriptAssetImages(
   }
   const configuredAspect = (params.config.aspectRatio ?? '').trim();
   const viewMode = resolveScriptAssetViewMode(params.config);
-  // 三族各取所需的比例（`auto` / 空 → 角色 4:3、场景 16:9、道具 1:1，见 `scriptAssetAspectFor`）。
+  // 三族各取所需的比例（`auto` / 空 → 角色 2:3、场景 16:9、道具 1:1，见 `scriptAssetAspectFor`）。
   const aspectKeyFor = (role: ScriptAssetRole) => resolveScriptAssetAspect(role, configuredAspect);
   const style = params.style ?? null;
   const imageSize: ImageSize = params.imageSize ?? '1K';

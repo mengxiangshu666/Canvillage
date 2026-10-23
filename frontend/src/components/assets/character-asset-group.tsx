@@ -11,7 +11,7 @@ export function CharacterAssetGroup({ character }: { character: Character }) {
       <p className="text-xs font-medium">{t("characters.assetGroup.title")}</p>
       {[
         { url: character.portrait_url, label: t("characters.assetGroup.front"), ratio: "aspect-[3/4]" },
-        { url: character.four_view_url, label: t("characters.assetGroup.fourView"), ratio: "aspect-[4/3]" },
+        { url: character.four_view_url, label: t("characters.assetGroup.fourView"), ratio: "aspect-[2/3]" },
       ].map(({ url, label, ratio }) => (
         <div key={label} className="flex w-full flex-col gap-1">
           <p className="text-xs text-muted-foreground">{label}</p>

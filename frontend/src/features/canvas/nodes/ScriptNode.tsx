@@ -553,7 +553,7 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
   );
 
   // 资产图的模型 / 比例 / 视图规格：与分镜图分开存 —— 比例默认「自动」，
-  // 三族各取所需（角色 4:3 四视图、场景 16:9、道具 1:1），用户也可以一键锁成同一个。
+  // 三族各取所需（角色 2:3 身份板、场景 16:9、道具 1:1），用户也可以一键锁成同一个。
   const assetGenConfig: ScriptAssetGenConfig =
     data.assetGenConfig ?? {
       aspectRatio: DEFAULT_SCRIPT_ASSET_GEN_ASPECT,
