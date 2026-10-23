@@ -55,7 +55,7 @@ const CELL_MAX_HEIGHT_PX = 180;
 
 // 行操作列：复制 / 插行 / 上移 / 下移 / 删除 / 只改这一镜六个动作排成一行，固定列宽。
 // 列宽自适应要把这 132px 算进总宽，否则选出来的列一定比容器宽、必然出现横向滚动。
-export const SCRIPT_ROW_ACTIONS_WIDTH_PX = 132;
+export const SCRIPT_ROW_ACTIONS_WIDTH_PX = 140;
 
 // 列被压到原宽的 74% 就不再压：再窄中文已经读不成行，宁可横向滚动。
 const MIN_COLUMN_SCALE = 0.74;
@@ -74,8 +74,8 @@ export function fitColumnWidths(
 ): number[] {
   const total = widths.reduce((sum, width) => sum + width, 0);
   if (availableWidthPx <= 0 || total <= availableWidthPx) return [...widths];
-  // 留 2px 给边框/取整误差，避免压完还差一两像素再冒一条滚动条。
-  const scale = Math.max(MIN_COLUMN_SCALE, (availableWidthPx - 2) / total);
+  // 留 4px 给边框/取整误差，避免压完还差一两像素再冒一条滚动条。
+  const scale = Math.max(MIN_COLUMN_SCALE, (availableWidthPx - 4) / total);
   return widths.map((width) =>
     Math.max(MIN_COLUMN_WIDTH_PX, Math.floor(width * scale)),
   );

@@ -1834,6 +1834,7 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
         {hasResult ? (
           <>
             <ScriptResultHeader
+              compact={resolvedWidth < 1100}
               title={scriptTitleText}
               view={activeView}
               onViewChange={handleViewChange}
@@ -2327,6 +2328,8 @@ interface ScriptResultHeaderProps {
   isGenerating: boolean;
   /** 列显隐菜单（只对表格视图有意义，但一直挂着 —— 切视图回来时状态还在）。 */
   columnMenu?: React.ReactNode;
+  /** 节点较窄时只留图标与主按钮文案，避免最右侧按钮被裁掉。 */
+  compact?: boolean;
 }
 
 // 与画布其它节点控件同一套语言（见 nodeControlStyles）：28px 高、无描边、
@@ -2355,15 +2358,16 @@ function ScriptResultHeader({
   onDownload,
   isGenerating,
   columnMenu,
+  compact = false,
 }: ScriptResultHeaderProps) {
   return (
-    <div className="flex items-center justify-between gap-2 border-b border-[rgba(255,255,255,0.06)] px-2.5 py-1.5">
+    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[rgba(255,255,255,0.06)] px-2.5 py-1.5">
       <div className="flex min-w-0 items-center gap-2">
         <span className="truncate text-[12px] font-medium text-text-dark">
           {title || '分镜脚本'}
         </span>
       </div>
-      <div className="flex shrink-0 items-center gap-0.5">
+      <div className="flex min-w-0 flex-wrap items-center justify-end gap-0.5">
         {/* 视图切换（脚本视图 / 创意视图 / 资产视图）；选择写回节点数据。 */}
         <ScriptViewSwitcher value={view} onChange={onViewChange} />
         {/* 列显隐：只在表格视图下有意义（创意 / 资产视图按字段各自聚合），
@@ -2380,9 +2384,10 @@ function ScriptResultHeader({
           }}
           disabled={isGenerating}
           title="按当前提示词重新生成脚本"
+          aria-label="重新生成"
         >
           <RefreshCw className="h-3.5 w-3.5" />
-          重新生成
+          {!compact && '重新生成'}
         </button>
         <button
           type="button"
@@ -2393,9 +2398,10 @@ function ScriptResultHeader({
           }}
           disabled={isGenerating}
           title="为脚本里的角色 / 场景 / 道具生成概念图（资产图），分镜图会把它们当参考图"
+          aria-label="生成资产图"
         >
           <ImagePlus className="h-3.5 w-3.5" />
-          生成资产图
+          {!compact && '生成资产图'}
           {pendingAssetCount > 0 && (
             <span className="rounded-full bg-white/[0.16] px-1.5 text-[10px] leading-4 text-text-dark">
               {pendingAssetCount}
@@ -2426,13 +2432,21 @@ function ScriptResultHeader({
           }}
           disabled={isGenerating || filmClipCount + shotVideoPending === 0}
           title="按分镜行逐镜散出视频节点：首帧取该镜分镜图，提示词取该行的视频运动提示词"
+          aria-label={
+            !shotVideoDerived
+              ? '逐镜出视频'
+              : shotVideoPending > 0
+                ? `重新生成视频 ${shotVideoPending}`
+                : '视频已出齐'
+          }
         >
           <Video className="h-3.5 w-3.5" />
-          {!shotVideoDerived
-            ? '逐镜出视频'
-            : shotVideoPending > 0
-              ? `重新生成视频 ${shotVideoPending}`
-              : '视频已出齐'}
+          {!compact &&
+            (!shotVideoDerived
+              ? '逐镜出视频'
+              : shotVideoPending > 0
+                ? `重新生成视频 ${shotVideoPending}`
+                : '视频已出齐')}
         </button>
         {/* 「成片」：把已出片的镜头按行序接进视频合成节点（不花钱，产物是可继续编辑的时间线）。
             一镜都没出片时禁用 —— 那时候建出合成节点只会开出一个空时间线。 */}
@@ -2445,9 +2459,10 @@ function ScriptResultHeader({
           }}
           disabled={isGenerating || filmClipCount === 0}
           title="按剧本顺序合看已有视频，未完成镜头跳过；规格差异不妨碍预览"
+          aria-label={filmHasCompose ? `更新预览 ${filmClipCount}` : `合看镜头 ${filmClipCount}`}
         >
           <Film className="h-3.5 w-3.5" />
-          {filmHasCompose ? `更新预览 ${filmClipCount}` : `合看镜头 ${filmClipCount}`}
+          {!compact && (filmHasCompose ? `更新预览 ${filmClipCount}` : `合看镜头 ${filmClipCount}`)}
         </button>
         <button
           type="button"
@@ -2458,9 +2473,10 @@ function ScriptResultHeader({
           }}
           disabled={isGenerating || filmClipCount === 0}
           title="严格成片：每一镜都必须已出当前版本视频；建好时间线后还要逐接点正常速度看听，才可标记正式认可"
+          aria-label="正式成片"
         >
           <Film className="h-3.5 w-3.5" />
-          正式成片
+          {!compact && '正式成片'}
         </button>
         <button
           type="button"
@@ -2470,9 +2486,10 @@ function ScriptResultHeader({
             onDownload();
           }}
           title="导出分镜表 CSV"
+          aria-label="下载"
         >
           <Download className="h-3.5 w-3.5" />
-          下载
+          {!compact && '下载'}
         </button>
         <button
           type="button"
@@ -2482,6 +2499,7 @@ function ScriptResultHeader({
             onFullscreen();
           }}
           title="全屏查看"
+          aria-label="全屏查看"
         >
           <Expand className="h-3.5 w-3.5" />
         </button>
