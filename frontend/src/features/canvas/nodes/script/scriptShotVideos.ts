@@ -2028,6 +2028,7 @@ export function scatterScriptShotVideos(
       model: model || undefined,
       aspectRatio: deliverySpec.aspectRatio,
       deliverySpec,
+      ...(quality ? { quality } : {}),
     },
   });
 

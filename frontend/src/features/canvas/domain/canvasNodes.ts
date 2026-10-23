@@ -980,6 +980,8 @@ export interface StoryVideoGenConfig {
   aspectRatio?: string;
   /** 全片交付规格；无值时由 aspectRatio 通过稳定画框表解析。 */
   deliverySpec?: VideoDeliverySpec;
+  /** 出片清晰度；只在该模型声明了可用档位时下发。 */
+  quality?: VideoGenQuality;
   settings?: Record<string, unknown>;
 }
 

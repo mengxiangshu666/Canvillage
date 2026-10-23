@@ -47,6 +47,7 @@ import {
   type ScriptImageGenConfig,
   type ScriptNodeData,
   type StoryVideoGenConfig,
+  type VideoGenQuality,
 } from '@/features/canvas/domain/canvasNodes';
 import { resolveImageDisplayUrl } from '@/features/canvas/application/imageData';
 import { runtimeImageModelFromOption } from '@/features/canvas/models/runtimeImageModels';
@@ -194,7 +195,11 @@ import {
 } from './script/scriptShotCompose';
 import { useFreezoneVideoModels } from '@/features/canvas/hooks/useFreezoneVideoModels';
 import { selectVideoModel } from '@/features/canvas/domain/videoModelSelection';
-import { normalizeVideoQualityValue } from '@/features/canvas/models/imageCapabilityValues';
+import {
+  normalizeVideoQuality,
+  resolutionToQuality,
+  videoQualityOptionsForModel,
+} from '@/features/canvas/nodes/videoNodeModelRules';
 import {
   describeStaleReasons,
   storyboardStalenessForScript,
@@ -1303,6 +1308,16 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
   );
   const shotVideoModelId = selectedVideoModel?.id ?? persistedVideoModelId ?? '';
   const shotVideoAspect = videoGenConfig.aspectRatio ?? '16:9';
+  // 清晰度档位与视频节点同源：只认模型运行时合同，空合同不臆造档位。
+  const shotVideoQualityOptions = useMemo(
+    () => videoQualityOptionsForModel(selectedVideoModel),
+    [selectedVideoModel],
+  );
+  const shotVideoQuality = normalizeVideoQuality(
+    videoGenConfig.quality,
+    shotVideoQualityOptions,
+    resolutionToQuality(String(selectedVideoModel?.parameterDefaults?.resolution ?? '')),
+  );
   // 承接边（T-153）的准入：模型合同必须声明能吃下第二张图。判据用同一份实时目录，
   // 与视频节点 `useVideoModeReconciliation` 升级 `allReference` 的前提一致。
   const shotVideoContinuityReference = shotVideoAcceptsChainReference(selectedVideoModel);
@@ -1315,20 +1330,18 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
         modelCapabilities: selectedVideoModel,
         model: shotVideoModelId,
         aspectRatio: shotVideoAspect,
+        quality: shotVideoQuality,
         continuityReference: shotVideoContinuityReference,
       }),
     // 图快照变了（这条链上任何节点 / 边变化）就要重算。
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [id, data, canvasGraph, shotVideoContinuityReference, selectedVideoModel, shotVideoModelId, shotVideoAspect],
+    [id, data, canvasGraph, shotVideoContinuityReference, selectedVideoModel, shotVideoModelId, shotVideoAspect, shotVideoQuality],
   );
   const shotVideoPendingCount = shotVideoPlan.ok ? shotVideoPlan.pendingCount : 0;
   const shotVideoHasDerived = shotVideoPlan.ok && shotVideoPlan.mode === 'regenerate';
   // 计价：与视频节点同口径（`video_backend` × 分辨率 × 秒数）。时长用的是计划账里
   // 那批待提交镜头的秒数合计（与落盘时写进节点的同源），不在 UI 侧另算一遍。
-  const shotVideoEstimateResolution = (
-    normalizeVideoQualityValue(String(selectedVideoModel?.parameterDefaults?.resolution ?? '')) ??
-    '720P'
-  ).toLowerCase();
+  const shotVideoEstimateResolution = shotVideoQuality.toLowerCase();
   const shotVideoCreditCost = useGenerationCreditCost(
     'video_backend',
     selectedVideoModel?.apiModel ?? null,
@@ -1349,18 +1362,27 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
     },
     [id, videoGenConfig, updateNodeData],
   );
+  const patchScriptVideoConfig = useCallback(
+    (patch: Partial<StoryVideoGenConfig>) => {
+      const latest = (useCanvasStore.getState().nodes.find((node) => node.id === id)?.data
+        ?.videoGenConfig ?? {}) as StoryVideoGenConfig;
+      updateNodeData(id, { videoGenConfig: { ...latest, ...patch } });
+    },
+    [id, updateNodeData],
+  );
   const handleShotVideoAspectChange = useCallback(
     (next: string) => {
       const deliverySpec = resolveScriptDeliverySpec(next);
-      updateNodeData(id, {
-        videoGenConfig: {
-          ...videoGenConfig,
-          aspectRatio: deliverySpec.aspectRatio,
-          deliverySpec,
-        },
+      patchScriptVideoConfig({
+        aspectRatio: deliverySpec.aspectRatio,
+        deliverySpec,
       });
     },
-    [id, videoGenConfig, updateNodeData],
+    [patchScriptVideoConfig],
+  );
+  const handleShotVideoQualityChange = useCallback(
+    (next: VideoGenQuality) => patchScriptVideoConfig({ quality: next }),
+    [patchScriptVideoConfig],
   );
 
   const runShotVideoScatter = useCallback(
@@ -1401,6 +1423,7 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
     [
       id,
       shotVideoAspect,
+      shotVideoQuality,
       shotVideoModelId,
       selectedVideoModel,
       shotVideoPaidGate,
@@ -2213,12 +2236,15 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
             rows={shotVideoPlan.ok ? shotVideoPlan.rows : []}
             model={shotVideoModelId}
             aspectKey={shotVideoAspect}
+            quality={shotVideoQuality}
+            qualityOptions={shotVideoQualityOptions}
             priceDisplay={shotVideoPriceDisplay}
             paidActionGate={shotVideoPaidGate}
             // 出片是异步的：建完节点就返回，弹层在这期间保持「进行中」态（与分镜图那条路同款）。
             busy={isGenerating}
             onModelChange={handleShotVideoModelChange}
             onAspectChange={handleShotVideoAspectChange}
+            onQualityChange={handleShotVideoQualityChange}
             onCancel={() => setIsShotVideoDialogOpen(false)}
             onConfirm={handleShotVideoConfirm}
             onCreateOnly={handleShotVideoCreateOnly}

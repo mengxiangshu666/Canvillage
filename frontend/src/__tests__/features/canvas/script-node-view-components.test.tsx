@@ -353,6 +353,20 @@ describe('逐镜出视频确认弹层', () => {
     expect(onConfirm).not.toHaveBeenCalled();
   });
 
+  it('清晰度按模型档位渲染并回调', () => {
+    const onQualityChange = vi.fn();
+    renderDialog(
+      <ScriptShotVideoDialog
+        {...baseProps}
+        quality="720P"
+        qualityOptions={['480P', '720P', '1080P']}
+        onQualityChange={onQualityChange}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: '1080P' }));
+    expect(onQualityChange).toHaveBeenCalledWith('1080P');
+  });
+
   it('逐镜体检表把每一镜会被自动填进去的事实摊开，缺项如实计数', () => {
     renderDialog(
       <ScriptShotVideoDialog

@@ -5,6 +5,7 @@ import { Loader2, TriangleAlert, Video } from 'lucide-react';
 
 import { ProviderModelPicker } from '@/features/canvas/ui/ProviderModelPicker';
 import { STORYBOARD_ASPECTS } from '@/features/canvas/domain/storyboardGroup';
+import type { VideoGenQuality } from '@/features/canvas/domain/canvasNodes';
 import type { ScriptPaidActionGate } from './scriptPaidActionGate';
 import {
   type ScriptShotAuditIssue,
@@ -16,7 +17,7 @@ import {
  *
  * 与「视频故事 → 逐镜出视频」的 {@link VideoStoryVideoDialog} 是同一件事的两个入口：
  * 那边的事实来源是**拉片解析**出来的镜头表，这边是**脚本节点自己**的分镜行。所以两个
- * 弹层的可调项一致（视频模型 + 画幅），时长口径也一致（由表决定，不另给滑块）。
+ * 弹层的可调项一致（视频模型 + 画幅 + 清晰度），时长口径也一致（由表决定，不另给滑块）。
  *
  * 比那边多一句话：**提示词兜底计数**。脚本的后端提示词一直在产
  * `video_motion_prompt`，但老脚本 / 手改过的表可能没有 —— 那些行会退回画面提示词出片，
@@ -56,6 +57,9 @@ export interface ScriptShotVideoDialogProps {
   rows?: readonly ScriptShotAuditRow[];
   model: string;
   aspectKey: string;
+  /** 出片清晰度与模型可用档位；空档位时不显示可点选项。 */
+  quality?: VideoGenQuality;
+  qualityOptions?: readonly VideoGenQuality[];
   busy?: boolean;
   /** 已格式化的预估点数（拿不到账单规则时为 null）。 */
   priceDisplay?: string | null;
@@ -63,6 +67,7 @@ export interface ScriptShotVideoDialogProps {
   paidActionGate?: ScriptPaidActionGate | null;
   onModelChange: (next: string) => void;
   onAspectChange: (next: string) => void;
+  onQualityChange?: (next: VideoGenQuality) => void;
   onCancel: () => void;
   onConfirm: () => void;
   /** 仅建节点（不出视频）。 */
@@ -193,11 +198,14 @@ export function ScriptShotVideoDialog({
   rows = [],
   model,
   aspectKey,
+  quality,
+  qualityOptions = [],
   busy = false,
   priceDisplay = null,
   paidActionGate = null,
   onModelChange,
   onAspectChange,
+  onQualityChange,
   onCancel,
   onConfirm,
   onCreateOnly,
@@ -346,6 +354,32 @@ export function ScriptShotVideoDialog({
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            <span className="shrink-0 text-[12px] text-text-muted">清晰度</span>
+            {qualityOptions.length > 0 ? (
+              <div className="flex flex-wrap justify-end gap-1" role="group" aria-label="出片清晰度">
+                {qualityOptions.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    aria-pressed={option === quality}
+                    disabled={busy || !onQualityChange}
+                    onClick={() => onQualityChange?.(option)}
+                    className={`h-7 rounded-[8px] px-2 text-[12px] transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                      option === quality
+                        ? 'bg-white/[0.14] text-text-dark'
+                        : 'text-text-muted hover:bg-white/[0.06] hover:text-text-dark'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <span className="text-[11px] text-text-muted/60">该模型未提供清晰度档位</span>
+            )}
           </div>
         </div>
 
