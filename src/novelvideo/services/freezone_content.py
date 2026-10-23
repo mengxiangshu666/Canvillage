@@ -46,6 +46,24 @@ async def generate_freezone_story_script_with_vision(**kwargs: Any) -> dict[str,
     return await generate(**kwargs)
 
 
+async def complete_freezone_asset_content(**kwargs: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+    from novelvideo.freezone.text_node import (
+        complete_freezone_asset_content as complete,
+    )
+
+    return await complete(**kwargs)
+
+
+async def complete_missing_freezone_asset_contents(
+    **kwargs: Any,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    from novelvideo.freezone.text_node import (
+        complete_missing_freezone_asset_contents as complete,
+    )
+
+    return await complete(**kwargs)
+
+
 def bind_story_script_assets(
     data: dict[str, Any], *, frame_urls: list[str], character_refs: list[Any], preserve_existing: bool = False, target_indices: list[int] | None = None
 ) -> None:
@@ -77,6 +95,83 @@ def script_rows_fingerprint(rows: list[dict[str, Any]]) -> str:
     from novelvideo.freezone.script_contract import script_rows_fingerprint as fingerprint
 
     return fingerprint(rows)
+
+
+def build_source_coverage(
+    source_text: str,
+    rows: list[dict[str, Any]],
+    *,
+    input_kind: str = "text",
+    transcript_available: bool = False,
+) -> dict[str, Any]:
+    from novelvideo.freezone.source_coverage import build_source_coverage as build
+
+    return build(
+        source_text,
+        rows,
+        input_kind=input_kind,
+        transcript_available=transcript_available,
+    )
+
+
+def attach_video_frame_units(
+    coverage: dict[str, Any],
+    manifest: dict[str, Any] | None,
+) -> dict[str, Any]:
+    from novelvideo.freezone.source_coverage import attach_video_frame_units as attach
+
+    return attach(coverage, manifest)
+
+
+def explicit_script_shot_numbers(source_text: str) -> list[int]:
+    from novelvideo.freezone.script_batching import explicit_shot_numbers
+
+    return explicit_shot_numbers(source_text)
+
+
+def plan_script_source_batches(
+    source_text: str,
+    expected_shot_numbers: list[int],
+    **kwargs: Any,
+) -> list[dict[str, Any]]:
+    from novelvideo.freezone.script_batching import plan_source_batches
+
+    return plan_source_batches(source_text, expected_shot_numbers, **kwargs)
+
+
+def script_checkpoint_fingerprint(**kwargs: Any) -> str:
+    from novelvideo.freezone.script_checkpoint import checkpoint_fingerprint
+
+    return checkpoint_fingerprint(**kwargs)
+
+
+def load_script_checkpoint(project_dir: Path, fingerprint: str) -> dict[str, Any] | None:
+    from novelvideo.freezone.script_checkpoint import load_story_script_checkpoint
+
+    return load_story_script_checkpoint(project_dir, fingerprint)
+
+
+def save_script_checkpoint(
+    project_dir: Path,
+    fingerprint: str,
+    *,
+    stage: str,
+    data: dict[str, Any],
+    frame_urls: list[str] | None = None,
+    frame_anchors: dict[str, Any] | None = None,
+    contract_report: dict[str, Any] | None = None,
+) -> Path | None:
+    from novelvideo.freezone.script_checkpoint import save_story_script_checkpoint
+
+    return save_story_script_checkpoint(
+        project_dir,
+        fingerprint,
+        stage=stage,
+        data=data,
+        frame_urls=frame_urls,
+        frame_anchors=frame_anchors,
+        contract_report=contract_report,
+    )
 
 
 def append_script_shot_visual_context(prompt: str, row: dict[str, Any]) -> str:

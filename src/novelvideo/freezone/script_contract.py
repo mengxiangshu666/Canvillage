@@ -249,6 +249,18 @@ RULE_CATALOG: dict[str, dict[str, str]] = {
         "severity": SEVERITY_ADVISORY,
         "summary": "同名场景与道具的基准设计说明需要核对",
     },
+    "script.asset.content.complete.v1": {
+        "severity": SEVERITY_BLOCKING,
+        "summary": "结构化资产基准必须覆盖被引用资产，字段完整或明确不适用，假设须说明来源",
+    },
+    "script.assets.identity_conflict.v1": {
+        "severity": SEVERITY_BLOCKING,
+        "summary": "同一显式资产身份不能在同一脚本里指向不同名称，也不能重复占用",
+    },
+    "script.override.user_edited.v1": {
+        "severity": SEVERITY_ADVISORY,
+        "summary": "这些字段是用户手改稿；自动修复、升级和重新编译不得静默覆盖",
+    },
     "script.motion.segments.v1": {
         "severity": SEVERITY_BLOCKING,
         "summary": "视频运动提示词必须是 6 段式",
@@ -661,6 +673,9 @@ def validate_script_rows(
     _check_shot_prompt_shape(table, parsed, report)
     _check_character_cards(table, parsed, report)
     _check_asset_definitions(table, report)
+    _check_asset_contents(table, director_plan or {}, report)
+    _check_asset_identity_conflicts(table, report)
+    _check_user_edited_fields(table, report)
     _check_singleton(table, parsed, report, role="style", field="shot_prompt",
                      rule_id="script.style.singleton.v1", label=SHOT_SEGMENT_LABELS_ZH["style"])
     _check_motion_shape(table, parsed, report)
@@ -756,12 +771,35 @@ def _check_film_plan(table: list[dict[str, Any]], plan: Mapping[str, Any], targe
     target = target if target is not None else plan.get("target_duration_seconds")
     if isinstance(target, (int, float)) and not isinstance(target, bool) and math.isfinite(target) and target > 0:
         total = sum(_coerce_seconds(row.get("duration")) or 0 for row in table)
-        report.metrics.update(target_duration_seconds=target, total_seconds=total)
+        policy = plan.get("target_duration_policy")
+        policy = policy if policy in {"soft", "hard"} else "soft"
+        report.metrics.update(
+            target_duration_seconds=target,
+            total_seconds=total,
+            target_duration_policy=policy,
+        )
         if abs(total - target) > 1.0 + 1e-9:
+            if policy == "hard":
+                message = (
+                    f"整片硬目标{target:g}秒，当前脚本合计{total:g}秒；"
+                    "请具体说明与原台词、必要因果或连续动作的冲突并保留待决定，"
+                    "不自动删剧情、平均压时或把差额塞给末镜，也不宣称已达标"
+                )
+            else:
+                message = (
+                    f"整片目标{target:g}秒，当前脚本合计{total:g}秒；"
+                    "允许为连续表演合理超时，此项仅提醒，不拦截生成、不自动裁剪"
+                )
             report.issues.append(ScriptIssue(
                 rule_id="script.duration.total_budget.v1", severity=SEVERITY_ADVISORY,
-                message=f"整片目标{target:g}秒，当前脚本合计{total:g}秒；允许为连续表演合理超时，此项仅提醒，不拦截生成、不自动裁剪",
-                row_index=-1, shot_no="", field="duration", detail={"target_seconds": target, "actual_seconds": total, "tolerance_seconds": 1},
+                message=message,
+                row_index=-1, shot_no="", field="duration",
+                detail={
+                    "target_seconds": target,
+                    "actual_seconds": total,
+                    "tolerance_seconds": 1,
+                    "target_duration_policy": policy,
+                },
             ))
     sequences = plan.get("sequences")
     if not isinstance(sequences, list):
@@ -829,6 +867,109 @@ def _inject_character_states(row: dict[str, Any]) -> None:
             body += f"\n<character_state>{state_text}本镜状态优先于角色卡和参考图中的基准服装；身份特征保持一致。</character_state>"
         segments[position] = body
         row[field_name] = " + ".join(f"[{segment}]" for segment in segments)
+
+
+def _check_asset_identity_conflicts(
+    table: list[dict[str, Any]],
+    report: ScriptContractReport,
+) -> None:
+    owners: dict[tuple[str, str], dict[str, Any]] = {}
+    for index, row in enumerate(table):
+        pairs: list[tuple[str, str, str]] = []
+        for slot in (1, 2):
+            name = _row_text(row, f"character_{slot}")
+            asset_id = _row_text(row, f"character_asset_id_{slot}") or _row_text(row, f"character_id_{slot}")
+            if name and asset_id:
+                pairs.append(("character", asset_id, name))
+        for role, tags_field, ids_field in (
+            ("scene", "scene_tags", "scene_asset_ids"),
+            ("prop", "prop_tags", "prop_asset_ids"),
+        ):
+            tags = [
+                tag.strip()
+                for tag in re.split(r"[、，,；;\n]+", _row_text(row, tags_field))
+                if tag.strip() and tag.strip().casefold() not in {"无", "没有", "none", "n/a", "-", "—"}
+            ]
+            raw_ids = row.get(ids_field)
+            ids = [str(item).strip() for item in raw_ids] if isinstance(raw_ids, list) else []
+            for tag_index, asset_id in enumerate(ids):
+                if not asset_id:
+                    continue
+                if tag_index >= len(tags):
+                    report.issues.append(ScriptIssue(
+                        rule_id="script.assets.identity_conflict.v1", severity=SEVERITY_BLOCKING,
+                        message=f"{role} 身份 {asset_id} 没有对应的名称，无法确认身份归属",
+                        row_index=index, shot_no=_shot_no_of(row, index), field=ids_field,
+                        detail={"role": role, "asset_id": asset_id},
+                    ))
+                    continue
+                pairs.append((role, asset_id, tags[tag_index]))
+            if len(set(ids)) != len(ids):
+                report.issues.append(ScriptIssue(
+                    rule_id="script.assets.identity_conflict.v1", severity=SEVERITY_BLOCKING,
+                    message=f"本镜的 {role} 身份列表有重复编号，不能把两个名称压成同一个身份",
+                    row_index=index, shot_no=_shot_no_of(row, index), field=ids_field,
+                    detail={"role": role, "asset_ids": ids},
+                ))
+        row_seen: set[str] = set()
+        for role, asset_id, name in pairs:
+            if asset_id in row_seen:
+                report.issues.append(ScriptIssue(
+                    rule_id="script.assets.identity_conflict.v1", severity=SEVERITY_BLOCKING,
+                    message=f"本镜把资产 {asset_id} 同时指向多个名称；同一身份不能一人分饰两角",
+                    row_index=index, shot_no=_shot_no_of(row, index), field="asset_ids",
+                    detail={"role": role, "asset_id": asset_id},
+                ))
+                continue
+            row_seen.add(asset_id)
+            key = (role, asset_id)
+            owner = owners.setdefault(key, {"name": name, "row_index": index})
+            if owner["name"] != name:
+                report.issues.append(ScriptIssue(
+                    rule_id="script.assets.identity_conflict.v1", severity=SEVERITY_BLOCKING,
+                    message=f"资产身份 {asset_id} 在第 {owner['row_index'] + 1} 行是「{owner['name']}」，本行却指向「{name}」；请修正编号或拆分资产",
+                    row_index=index, shot_no=_shot_no_of(row, index), field="asset_ids",
+                    detail={
+                        "role": role,
+                        "asset_id": asset_id,
+                        "first_name": owner["name"],
+                        "first_row_index": owner["row_index"],
+                        "conflicting_name": name,
+                    },
+                ))
+
+
+def _check_user_edited_fields(
+    table: list[dict[str, Any]],
+    report: ScriptContractReport,
+) -> None:
+    for index, row in enumerate(table):
+        raw = row.get("user_edited_fields")
+        if not isinstance(raw, list):
+            continue
+        fields = [str(field).strip() for field in raw if str(field).strip()]
+        if not fields:
+            continue
+        report.issues.append(ScriptIssue(
+            rule_id="script.override.user_edited.v1",
+            severity=SEVERITY_ADVISORY,
+            message=f"本镜有手改字段：{'、'.join(fields)}；自动修复/升级只能提示差异，不能静默覆盖",
+            row_index=index,
+            shot_no=_shot_no_of(row, index),
+            field="user_edited_fields",
+            detail={"fields": fields},
+        ))
+
+
+def _check_asset_contents(
+    table: list[dict[str, Any]],
+    director_plan: Mapping[str, Any],
+    report: ScriptContractReport,
+) -> None:
+    from novelvideo.freezone.script_asset_content import asset_content_issues
+
+    for raw in asset_content_issues(table, director_plan):
+        report.issues.append(ScriptIssue(**raw))
 
 
 def _check_asset_definitions(table: list[dict[str, Any]], report: ScriptContractReport) -> None:

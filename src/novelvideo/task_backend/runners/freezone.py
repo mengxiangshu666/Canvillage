@@ -918,6 +918,7 @@ async def _run_freezone_video_compose_async(
     from novelvideo.services.project_resources import make_static_url_for_context
     from novelvideo.services.canvas_assets import ensure_freezone_dirs
     from novelvideo.services.freezone_jobs import (
+        probe_freezone_video_duration,
         run_freezone_video_compose as run_freezone_video_compose_job,
     )
 
@@ -939,11 +940,30 @@ async def _run_freezone_video_compose_async(
         tracks=list(payload.get("tracks") or []),
     )
     rel = output_path.relative_to(project_dir).as_posix()
+    import asyncio
+    import hashlib
+
+    def _file_sha256(path: Path) -> str:
+        digest = hashlib.sha256()
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+        return digest.hexdigest()
+
+    try:
+        duration_seconds = await probe_freezone_video_duration(str(output_path))
+    except Exception:
+        # Unknown duration must stay unknown; never substitute the requested timeline length.
+        duration_seconds = None
+    output_sha256 = await asyncio.to_thread(_file_sha256, output_path)
     return {
         "job_id": job_id,
         "output_format": "mp4",
         "output_path": str(output_path),
         "output_url": make_static_url_for_context(ctx, rel),
+        "output_duration_seconds": duration_seconds,
+        "output_sha256": output_sha256,
+        "output_size_bytes": output_path.stat().st_size,
     }
 
 
@@ -1216,14 +1236,17 @@ async def _run_freezone_story_script_async(
     from novelvideo.services.freezone_content import (
         bind_story_script_assets,
         enforce_story_script_contract,
+        explicit_script_shot_numbers,
         generate_freezone_story_script,
         generate_freezone_story_script_with_vision,
+        plan_script_source_batches,
         repair_freezone_story_script_issues,
         rewrite_freezone_story_script_shot,
         rewrite_freezone_story_script_sequence,
         validate_sequence_rewrite_request,
     )
     from novelvideo.services.freezone_jobs import (
+        read_freezone_frame_anchors,
         run_freezone_extract_frames as run_freezone_extract_frames_job,
     )
 
@@ -1388,6 +1411,70 @@ async def _run_freezone_story_script_async(
 
     frame_paths: list[Path] = []
     frame_urls: list[str] = []
+    from novelvideo.services.freezone_content import (
+        load_script_checkpoint,
+        save_script_checkpoint,
+        script_checkpoint_fingerprint,
+    )
+
+    checkpoint_key = script_checkpoint_fingerprint(
+        job_id=job_id,
+        source_text=source_text,
+        prompt=prompt,
+        model=str(payload.get("model") or ""),
+        video_model=str(payload.get("video_model") or "") or None,
+        video_path=video_path,
+        character_refs=character_refs,
+    )
+    cached = load_script_checkpoint(project_dir, checkpoint_key)
+    if cached:
+        _update(
+            ctx,
+            "freezone_story_script",
+            job_id,
+            0.7,
+            "复用同一来源与模型下已完成的生成结果，跳过重复付费调用...",
+        )
+        data = FreezoneStoryScriptGenerateData.model_validate(cached["data"])
+        frame_urls = [str(url) for url in cached.get("frame_urls") or []]
+        cached_anchors = cached.get("frame_anchors")
+        frame_anchors = cached_anchors if isinstance(cached_anchors, dict) else None
+        cached_report = cached.get("contract_report")
+        contract_report = cached_report if isinstance(cached_report, dict) else {}
+        if not contract_report:
+            contract_dict = data.model_dump()
+            contract_report = enforce_story_script_contract(contract_dict)
+            data = FreezoneStoryScriptGenerateData(
+                title=data.title,
+                director_plan=data.director_plan,
+                rows=[FreezoneStoryScriptRow(**row) for row in contract_dict["rows"]],
+            )
+            save_script_checkpoint(
+                project_dir,
+                checkpoint_key,
+                stage="contract",
+                data=data.model_dump(),
+                frame_urls=frame_urls,
+                frame_anchors=frame_anchors,
+                contract_report=contract_report,
+            )
+        data, film_production = _compile_film_preproduction(
+            ctx=ctx,
+            payload=payload,
+            data=data,
+        )
+        return _finish_freezone_story_script_job(
+            ctx=ctx,
+            project_dir=project_dir,
+            payload=payload,
+            job_id=job_id,
+            data=data,
+            frame_urls=frame_urls,
+            frame_anchors=frame_anchors,
+            contract_report=contract_report,
+            film_production=film_production,
+        )
+    frame_anchors: dict[str, Any] | None = None
     if video_path:
         _update(ctx, "freezone_story_script", job_id, 0.1, "正在从视频抽取关键帧...")
         frame_paths = await run_freezone_extract_frames_job(
@@ -1397,6 +1484,7 @@ async def _run_freezone_story_script_async(
             max_frames=int(payload.get("max_frames") or 20),
             scene_threshold=float(payload.get("scene_threshold") or 0.3),
         )
+        frame_anchors = read_freezone_frame_anchors(project_dir, job_id)
         frame_urls = [
             make_static_url_for_context(ctx, path.relative_to(project_dir).as_posix())
             for path in frame_paths
@@ -1420,15 +1508,51 @@ async def _run_freezone_story_script_async(
             model=str(payload.get("model") or "") or None,
         )
     else:
-        _update(ctx, "freezone_story_script", job_id, 0.1, "开始生成故事脚本...")
-        data = await generate_freezone_story_script(
-            source_text=source_text,
-            prompt=prompt,
-            model=str(payload.get("model") or ""),
-            character_refs=character_refs,
-            **duration_kwargs,
-        )
+        shot_numbers = explicit_script_shot_numbers(source_text)
+        try:
+            batches = (
+                plan_script_source_batches(source_text, shot_numbers)
+                if shot_numbers else []
+            )
+        except ValueError:
+            # 来源镜号与正文不完全对齐时，保留原来的单次生成路径，由合同检查报缺口。
+            batches = []
+        if len(batches) > 1 and not frame_paths and not character_image_paths:
+            _update(
+                ctx,
+                "freezone_story_script",
+                job_id,
+                0.1,
+                f"长脚本分 {len(batches)} 批生成，已完成批次会保存断点...",
+            )
+            data = await _generate_batched_story_script(
+                source_text=source_text,
+                prompt=prompt,
+                model=str(payload.get("model") or ""),
+                video_model=payload.get("video_model"),
+                character_refs=character_refs,
+                project_dir=project_dir,
+                job_id=job_id,
+                batches=batches,
+            )
+        else:
+            _update(ctx, "freezone_story_script", job_id, 0.1, "开始生成故事脚本...")
+            data = await generate_freezone_story_script(
+                source_text=source_text,
+                prompt=prompt,
+                model=str(payload.get("model") or ""),
+                character_refs=character_refs,
+                **duration_kwargs,
+            )
     bind_story_script_assets(data, frame_urls=frame_urls, character_refs=character_refs)
+    save_script_checkpoint(
+        project_dir,
+        checkpoint_key,
+        stage="bound",
+        data=data.model_dump(),
+        frame_urls=frame_urls,
+        frame_anchors=frame_anchors,
+    )
     contract_dict = data.model_dump()
     contract_report = enforce_story_script_contract(contract_dict)
     if contract_report:
@@ -1439,6 +1563,15 @@ async def _run_freezone_story_script_async(
             director_plan=data.director_plan,
             rows=[FreezoneStoryScriptRow(**row) for row in contract_dict["rows"]],
         )
+    save_script_checkpoint(
+        project_dir,
+        checkpoint_key,
+        stage="contract",
+        data=data.model_dump(),
+        frame_urls=frame_urls,
+        frame_anchors=frame_anchors,
+        contract_report=contract_report,
+    )
     data, film_production = _compile_film_preproduction(
         ctx=ctx,
         payload=payload,
@@ -1452,6 +1585,7 @@ async def _run_freezone_story_script_async(
         data=data,
         frame_urls=frame_urls,
         contract_report=contract_report,
+        frame_anchors=frame_anchors,
         film_production=film_production,
     )
 
@@ -1530,9 +1664,27 @@ def _compile_film_preproduction(
     project_dna = payload.get("project_dna")
     output_spec = payload.get("output_spec")
     estimate_inputs = payload.get("estimate_inputs")
+    import hashlib
+    import json as _json
+
+    source_for_hash = str(payload.get("source_text") or payload.get("prompt") or "")
     compiled = compile_film_preproduction_contract(
         production_id=payload.get("production_id") or ctx.project_id,
         rows=data.model_dump().get("rows") or [],
+        input_context={
+            "production_id": payload.get("production_id") or ctx.project_id,
+            "source_hash": hashlib.sha256(source_for_hash.encode("utf-8")).hexdigest(),
+            "director_plan": data.director_plan.model_dump(),
+            "output_spec": output_spec if isinstance(output_spec, dict) else None,
+            "assets_digest": hashlib.sha256(
+                _json.dumps(
+                    payload.get("assets") or payload.get("asset_passports") or [],
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    default=str,
+                ).encode("utf-8")
+            ).hexdigest()[:24],
+        },
         story_contract=story_contract if isinstance(story_contract, dict) else None,
         series_data=series_data if isinstance(series_data, dict) else None,
         director_vision=director_vision if isinstance(director_vision, dict) else None,
@@ -1574,6 +1726,109 @@ def _resolve_story_script_rewrite_index(
     return None
 
 
+async def _generate_batched_story_script(
+    *,
+    source_text: str,
+    prompt: str,
+    model: str,
+    video_model: str | None,
+    character_refs: list[dict[str, Any]],
+    project_dir: Path,
+    job_id: str,
+    batches: list[dict[str, Any]],
+) -> Any:
+    """Generate long explicit-shot scripts in bounded batches.
+
+    Each completed batch is checkpointed under the same job id, so a retry only
+    runs the batches that are still missing. The first batch owns the shared
+    director plan; later plans contribute only unseen sequences.
+    """
+    from novelvideo.ports.story_script import (
+        FreezoneStoryScriptGenerateData,
+        FreezoneStoryScriptRow,
+    )
+    from novelvideo.services.freezone_content import (
+        generate_freezone_story_script,
+        load_script_checkpoint,
+        save_script_checkpoint,
+        script_checkpoint_fingerprint,
+    )
+
+    results: list[Any] = []
+    global_excerpt = source_text[:6000]
+    for batch_index, batch in enumerate(batches):
+        batch_source = str(batch["source_text"] or "")
+        batch_numbers = [int(number) for number in batch.get("shot_numbers") or []]
+        plan_rule = (
+            "director_plan 必须描述整部片子的共同意图与全局段落，但 sequences.shot_nos 仍只能写本批镜号；"
+            if batch_index == 0
+            else "director_plan 只描述本批，sequences.shot_nos 只能包含本批镜号；"
+        )
+        batch_prompt = (
+            f"{prompt}\n\n这是整部脚本的第 {batch_numbers[0]}-{batch_numbers[-1]} 镜批次。"
+            f"全片背景节选（只用于理解上下文，不要为节选里的其他镜生成 rows）：{global_excerpt}\n"
+            f"只输出这些镜：{batch_numbers}；不要输出批次之外的镜头。"
+            + plan_rule
+        )
+        # Batch checkpoints are intentionally source-scoped: a failed task is
+        # retried as a new job id, and completed batches must still be reusable.
+        # They are only consulted in batched mode; short scripts never see them.
+        batch_key = script_checkpoint_fingerprint(
+            source_text=batch_source,
+            prompt=batch_prompt,
+            model=model,
+            video_model=video_model,
+            character_refs=character_refs,
+        )
+        cached = load_script_checkpoint(project_dir, batch_key)
+        if cached:
+            data = FreezoneStoryScriptGenerateData.model_validate(cached["data"])
+        else:
+            data = await generate_freezone_story_script(
+                source_text=batch_source,
+                prompt=batch_prompt,
+                model=model,
+                character_refs=character_refs,
+                **({"video_model": video_model} if video_model is not None else {}),
+            )
+            save_script_checkpoint(
+                project_dir,
+                batch_key,
+                stage=f"batch:{batch['batch_id']}",
+                data=data.model_dump(),
+            )
+        results.append(data)
+
+    first = results[0]
+    merged: dict[int, FreezoneStoryScriptRow] = {}
+    for data in results:
+        for row in data.rows:
+            number = int(row.shot_no)
+            if number in merged:
+                raise ValueError(f"分批生成出现重复镜头：镜{number}")
+            merged[number] = row
+    expected = [int(number) for batch in batches for number in batch["shot_numbers"]]
+    missing = [number for number in expected if number not in merged]
+    if missing:
+        raise ValueError(f"分批生成缺少镜头：{missing[:12]}")
+    plan = first.director_plan.model_copy(deep=True)
+    sequence_index = {sequence.sequence_id: sequence for sequence in plan.sequences}
+    for data in results[1:]:
+        for sequence in data.director_plan.sequences:
+            existing = sequence_index.get(sequence.sequence_id)
+            if existing is None:
+                sequence_index[sequence.sequence_id] = sequence.model_copy(deep=True)
+                plan.sequences.append(sequence_index[sequence.sequence_id])
+                continue
+            existing.shot_nos = sorted(set([*existing.shot_nos, *sequence.shot_nos]))
+    title = first.title or "脚本"
+    return FreezoneStoryScriptGenerateData(
+        title=title,
+        director_plan=plan,
+        rows=[merged[number] for number in sorted(merged)],
+    )
+
+
 def _finish_freezone_story_script_job(
     *,
     ctx: ProjectContext,
@@ -1583,6 +1838,7 @@ def _finish_freezone_story_script_job(
     data: Any,
     frame_urls: list[str],
     contract_report: dict[str, Any],
+    frame_anchors: dict[str, Any] | None = None,
     film_production: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """落盘 + 返回：把修复后的表与合同报告一起交给前端。
@@ -1600,6 +1856,21 @@ def _finish_freezone_story_script_job(
     payload_data = data.model_dump()
     if isinstance(payload.get("canvas_source"), dict):
         payload_data["canvas_source"] = dict(payload["canvas_source"])
+    from novelvideo.services.freezone_content import (
+        attach_video_frame_units,
+        build_source_coverage,
+    )
+
+    source_coverage = build_source_coverage(
+        str(payload.get("source_text") or payload.get("prompt") or ""),
+        payload_data.get("rows") or [],
+        input_kind="video" if frame_urls else "text",
+        transcript_available=False,
+    )
+    if frame_anchors:
+        source_coverage = attach_video_frame_units(source_coverage, frame_anchors)
+        source_coverage["video_anchors"] = frame_anchors
+    payload_data["source_coverage"] = source_coverage
     sequence_receipt = contract_report.get("sequence_rewrite")
     if isinstance(sequence_receipt, dict):
         from novelvideo.services.freezone_content import script_rows_fingerprint

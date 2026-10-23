@@ -32,6 +32,7 @@ import { readUrl } from "@/lib/url-params";
 import { VideoComposeModal } from "@/features/canvas/compose/VideoComposeModal";
 import type { ComposeTimelineState } from "@/features/canvas/compose/timelineModel";
 import { SCRIPT_EDIT_DURATION_FIELD } from "./script/scriptShotCompose";
+import type { ScriptFilmReview } from "./script/scriptFilmReview";
 
 type VideoComposeNodeProps = NodeProps & {
   id: string;
@@ -173,6 +174,10 @@ export const VideoComposeNode = memo(
               (data.draftTimeline as ComposeTimelineState | undefined) ?? null
             }
             scriptEditDurationMsByShotId={data[SCRIPT_EDIT_DURATION_FIELD] as Record<string, number> | undefined}
+            filmReview={(data.scriptFilmReview as ScriptFilmReview | undefined) ?? null}
+            onPersistFilmReview={(review) =>
+              updateNodeData(id, { scriptFilmReview: review })
+            }
             onPersistDraft={(timeline) =>
               updateNodeData(id, { draftTimeline: timeline })
             }

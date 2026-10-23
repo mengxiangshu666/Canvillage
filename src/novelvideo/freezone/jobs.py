@@ -28,6 +28,10 @@ from typing import Any, Callable, Optional
 import numpy as np
 from PIL import Image
 from pydantic import BaseModel, Field, model_validator
+from novelvideo.freezone.frame_anchors import (
+    _write_frame_anchor_manifest,
+    read_freezone_frame_anchors as read_freezone_frame_anchors,
+)
 
 from novelvideo.freezone.paths import (
     ensure_video_source_path,
@@ -2296,14 +2300,22 @@ async def run_freezone_extract_frames(
 
     # Fallback: if too few scene cuts (e.g. talking head static video),
     # sample evenly-spaced frames so the user always gets *something*.
+    sampling_mode = "scene_detect"
     if len(scene_files) < 3:
         for f in scene_files:
             f.unlink(missing_ok=True)
         scene_files = await _sample_evenly(video_path, out_dir, max_frames)
+        sampling_mode = "even_sample"
     if not scene_files:
         raise RuntimeError(
             f"视频中没有可用的画面帧：{video_path.name}（可能是纯音频或损坏的文件）"
         )
+    await _write_frame_anchor_manifest(
+        video_path=video_path,
+        out_dir=out_dir,
+        frames=scene_files,
+        sampling_mode=sampling_mode,
+    )
 
     return scene_files
 

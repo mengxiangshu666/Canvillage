@@ -82,6 +82,7 @@ import { backendErrorToastMessage } from "@/lib/api-errors";
 import { resolveErrorContent, showErrorDialog } from "@/features/canvas/application/errorDialog";
 import { resolveGenerationErrorDiagnostics } from "@/features/canvas/application/generationErrorReport";
 import { scriptShotKeyframes, scriptShotKeyframeReadiness } from './script/scriptShotKeyframes';
+import { scriptTailReferenceStaleReason } from './script/scriptShotVideos';
 import { compileScriptVideoReferences, scriptVideoReferenceFacts } from './script/scriptShotVideoReferences';
 
 type UpdateNodeData = (nodeId: string, data: Partial<CanvasNodeData>) => void;
@@ -215,9 +216,21 @@ export function useVideoGenerationSubmission(
         return;
       }
       if (typeof data.scriptShotSourceNodeId === 'string') {
+        const liveNode = useCanvasStore.getState().nodes.find(node => node.id === id);
+        const graphNow = useCanvasStore.getState();
+        const tailReason = liveNode ? scriptTailReferenceStaleReason(liveNode, graphNow) : null;
+        if (tailReason) {
+          updateNodeData(id, {
+            generationError: tailReason,
+            generationErrorCode: 'SCRIPT_SHOT_TAIL_STALE',
+            generationErrorStage: 'preflight',
+            generationErrorRetryable: false,
+          });
+          return;
+        }
         const keyframeReadiness = scriptShotKeyframeReadiness(
-          useCanvasStore.getState().nodes.find(node => node.id === id),
-          useCanvasStore.getState(),
+          liveNode,
+          graphNow,
         );
         if (!keyframeReadiness.ok) {
           if (keyframeReadiness.pending && data.canvas_auto_generate_once === true) {

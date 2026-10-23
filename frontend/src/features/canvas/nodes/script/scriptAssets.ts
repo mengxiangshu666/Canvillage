@@ -5,6 +5,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { currentAssetReview, type ScriptAssetReviewReceipt } from './scriptAssetReviewReceipt';
 
 import type { FreezoneStoryScriptRow } from '@/api/ops';
+import type { FreezoneStoryDirectorPlan } from '@/api/scriptContract';
 import { useCanvasStore } from '@/stores/canvasStore';
 import {
   collectScriptCharacters,
@@ -461,9 +462,63 @@ export function useScriptAssetImageClaims(
 export function useScriptAssetLedger(
   scriptNodeId: string | null,
   rows: readonly FreezoneStoryScriptRow[],
+  directorPlan?: FreezoneStoryDirectorPlan | null,
 ): ScriptAssetLedger {
   const claims = useScriptAssetImageClaims(scriptNodeId);
-  return useMemo(() => collectScriptAssetLedger(rows, claims), [rows, claims]);
+  return useMemo(
+    () => collectScriptAssetLedger(rows, claims, directorPlan),
+    [rows, claims, directorPlan],
+  );
+}
+
+/** 结构化字段的中文名；未列出的字段直接用原键，避免悄悄丢掉新字段。 */
+const ASSET_CONTENT_FIELD_LABELS: Record<string, string> = {
+  age_stage: '年龄/生命阶段',
+  body_proportion: '体型比例',
+  face_features: '面部特征',
+  skin_hair: '皮肤与毛发',
+  base_wardrobe: '基准服装',
+  stable_marks: '稳定识别特征',
+  surface_materials: '表面材质',
+  spatial_boundary: '空间边界',
+  landmarks: '地标与出入口',
+  relative_layout: '相对位置与尺度',
+  materials: '空间材质',
+  light_sources: '物理光源与方向',
+  appearance_scale: '外形与比例',
+  material_structure: '材质与结构',
+  narrative_function: '叙事功能',
+  operable_parts: '可操作/接触部位',
+  base_state: '基准状态',
+};
+
+function isAssetContentValue(value: unknown): value is string {
+  if (typeof value !== 'string') return false;
+  const text = value.trim();
+  return Boolean(text) && !['无', '没有', '未知', '不详', '未定', 'none', 'n/a', 'na', 'unknown', '-', '—'].includes(text.toLowerCase());
+}
+
+/**
+ * 把导演规划里的结构化资产事实压成一句描述，接进现有资产提示词。
+ *
+ * 旧脚本没有 `asset_contents` 时返回空串，描述和内容哈希逐字不变；
+ * 只有显式提供结构化基准的新脚本才会改变资产版本。
+ */
+export function scriptAssetStructuredFacts(
+  directorPlan: FreezoneStoryDirectorPlan | null | undefined,
+  role: ScriptAssetRole,
+  name: string,
+): string {
+  const normalized = name.trim().toLowerCase();
+  const contract = (directorPlan?.asset_contents ?? []).find((item) =>
+    String(item.role ?? '').trim().toLowerCase() === role
+    && String(item.name ?? '').trim().toLowerCase() === normalized,
+  );
+  if (!contract || !contract.fields) return '';
+  return Object.entries(contract.fields)
+    .filter(([, value]) => isAssetContentValue(value))
+    .map(([key, value]) => `${ASSET_CONTENT_FIELD_LABELS[key] ?? key}：${value.trim()}`)
+    .join('；');
 }
 
 /** 从聚合结果造一个台账条目（补 id / role / 图来路）。 */
@@ -474,8 +529,12 @@ function toAsset(
   /** 行里那张图算不算「这个资产真有图」—— 道具恒假（行里没有道具图字段）。 */
   rowImageCounts: boolean,
   requiredViews: readonly string[] = [],
+  structuredFacts = '',
 ): ScriptAsset {
   const id = collection.assetId.trim() || scriptAssetId(role, collection.name);
+  const description = structuredFacts
+    ? `${collection.description}${collection.description ? '\n' : ''}结构化基准：${structuredFacts}`
+    : collection.description;
   const claim = generated.get(id) ?? null;
   const generatedUrl = claim?.imageUrl ?? null;
   const rowUrl = rowImageCounts ? collection.imageUrl : null;
@@ -491,7 +550,7 @@ function toAsset(
     id,
     role,
     name: collection.name,
-    description: collection.description,
+    description,
     sourceImageUrl: role === 'character' ? collection.sourceImageUrl : null,
     identityLocks,
     dependencies,
@@ -527,7 +586,7 @@ function toAsset(
     role,
     roleLabel: SCRIPT_ASSET_ROLE_LABEL[role],
     name: collection.name,
-    description: collection.description,
+    description,
     revision,
     contentHash,
     identityLocks,
@@ -613,19 +672,22 @@ function requiredViewsFor(
 export function collectScriptAssetLedger(
   rows: readonly FreezoneStoryScriptRow[],
   generated: ScriptAssetClaimSource = scriptAssetImageNodes(),
+  directorPlan?: FreezoneStoryDirectorPlan | null,
 ): ScriptAssetLedger {
   const claims = claimMapOf(generated);
   const rowList = [...rows];
+  const factsFor = (role: ScriptAssetRole, name: string) =>
+    scriptAssetStructuredFacts(directorPlan, role, name);
   const characters = collectScriptCharacters(rowList).map((entry) =>
-    toAsset('character', entry, claims, true, requiredViewsFor('character', entry, rowList)),
+    toAsset('character', entry, claims, true, requiredViewsFor('character', entry, rowList), factsFor('character', entry.name)),
   );
   const scenes = collectScriptScenes(rowList).map((entry) =>
-    toAsset('scene', entry, claims, true, requiredViewsFor('scene', entry, rowList)),
+    toAsset('scene', entry, claims, true, requiredViewsFor('scene', entry, rowList), factsFor('scene', entry.name)),
   );
   // 道具：行里的 imageUrl 恒为 null（见 scriptViews.collectScriptProps），
   // 传 false 只是把这个既定事实写成显式参数，不靠上游巧合。
   const props = collectScriptProps(rowList).map((entry) =>
-    toAsset('prop', entry, claims, false, requiredViewsFor('prop', entry, rowList)),
+    toAsset('prop', entry, claims, false, requiredViewsFor('prop', entry, rowList), factsFor('prop', entry.name)),
   );
 
   const byRole: Record<ScriptAssetRole, ScriptAsset[]> = { character: characters, scene: scenes, prop: props };

@@ -316,6 +316,14 @@ async def freezone_job_result(
             push_metadata["pushable"] = True
         if isinstance(task_result.get("slot_target"), dict):
             push_metadata["slot_target"] = task_result["slot_target"]
+        if task_type == "freezone_video_compose":
+            for key in (
+                "output_duration_seconds",
+                "output_sha256",
+                "output_size_bytes",
+            ):
+                if key in task_result:
+                    push_metadata[key] = task_result[key]
     if task_type == "freezone_video_gen":
         from novelvideo.services.video_generation_source import read_video_generation_source
 

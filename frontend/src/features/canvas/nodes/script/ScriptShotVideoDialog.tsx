@@ -41,6 +41,15 @@ export interface ScriptShotVideoDialogProps {
   fallbackPromptCount?: number;
   /** 会接上「上一镜承接」参考的镜数（同场景相邻镜）。 */
   continuityCount?: number;
+  /** 同场明确连续、但前段真实边界未就绪，本轮不会提交的镜数。 */
+  waitingCount?: number;
+  waitingShotNumbers?: readonly string[];
+  /** 用户明确整片目标；没有时不猜。 */
+  targetDurationSeconds?: number | null;
+  targetDurationPolicy?: 'soft' | 'hard' | null;
+  /** 生成档位高于剧本时长的镜数与镜号。 */
+  durationRoundedCount?: number;
+  durationRoundedShotNumbers?: readonly string[];
   /** 所选模型能不能吃下第二张图；false 时弹层如实说明这批是各拍各的单图首帧。 */
   continuitySupported?: boolean;
   /** 逐镜体检表：每一镜会被自动填进去的出片事实（首帧、运镜、提示词来源、音轨）。 */
@@ -69,6 +78,8 @@ const AUDIT_ISSUE_LABELS: Record<ScriptShotAuditIssue, string> = {
   durationMismatch: '时长不一致',
   invalidDuration: '缺少明确时长',
   modelUnsupported: '所选模型不支持本镜生成方式、时长或声音方案',
+  continuityWaiting: '等待前段真实边界',
+  durationRounded: '档位高于剧本时长',
 };
 
 const AUDIT_AUDIO_LABELS: Record<ScriptShotAuditRow['audioRoute'], string> = {
@@ -101,7 +112,7 @@ function ShotAuditTable({ rows }: { rows: readonly ScriptShotAuditRow[] }) {
           <thead className="sticky top-0 z-10 bg-[#232326] text-text-muted">
             <tr>
               <th className="w-10 px-2 py-1.5 font-normal">镜号</th>
-              <th className="w-24 px-2 py-1.5 font-normal">取用 / 生成</th>
+              <th className="w-28 px-2 py-1.5 font-normal">取用 / 生成 / 实片</th>
               <th className="w-20 px-2 py-1.5 font-normal">首帧</th>
               <th className="px-2 py-1.5 font-normal">摄影安排</th>
               <th className="w-16 px-2 py-1.5 font-normal">提示词</th>
@@ -113,7 +124,7 @@ function ShotAuditTable({ rows }: { rows: readonly ScriptShotAuditRow[] }) {
               <tr key={row.rowKey} className="border-t border-white/[0.06] align-middle">
                 <td className="px-2 py-1 text-text-dark/90">{row.shotNumber}</td>
                 <td className="px-2 py-1 text-text-muted">
-                  {row.durationSec === null ? '—' : `${row.durationSec}s / ${row.generationDurationSec == null ? '不可用' : `${row.generationDurationSec}s`}`}
+                  {row.durationSec === null ? '—' : `${row.durationSec}s / ${row.generationDurationSec == null ? '不可用' : `${row.generationDurationSec}s`} / ${row.actualDurationSec == null ? '—' : `${row.actualDurationSec.toFixed(1)}s`}`}
                 </td>
                 <td className="px-2 py-1">
                   {row.firstFrameUrl ? (
@@ -172,6 +183,12 @@ export function ScriptShotVideoDialog({
   skippedNoPrompt = 0,
   fallbackPromptCount = 0,
   continuityCount = 0,
+  waitingCount = 0,
+  waitingShotNumbers = [],
+  targetDurationSeconds = null,
+  targetDurationPolicy = null,
+  durationRoundedCount = 0,
+  durationRoundedShotNumbers = [],
   continuitySupported = false,
   rows = [],
   model,
@@ -199,6 +216,34 @@ export function ScriptShotVideoDialog({
 
   const paidAllowed = paidActionGate?.allowed ?? true;
   const paidBlockedReason = paidActionGate?.reason ?? null;
+  const measuredDurations = rows
+    .map((row) => row.actualDurationSec)
+    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value) && value > 0);
+  const editorialSeconds = rows.reduce((sum, row) => sum + (row.durationSec ?? 0), 0);
+  const requestedSeconds = rows.reduce((sum, row) => sum + (row.generationDurationSec ?? row.durationSec ?? 0), 0);
+  const actualSeconds = measuredDurations.reduce((sum, value) => sum + value, 0);
+  const secondsLabel = (value: number) => `${Number.isInteger(value) ? value : value.toFixed(1)}s`;
+  const durationSummary = rows.length > 0
+    ? `全片取用 ${secondsLabel(editorialSeconds)} · 按当前档位请求 ${secondsLabel(requestedSeconds)} · 实片 ${
+      measuredDurations.length > 0 ? secondsLabel(actualSeconds) : '未知'
+    }（${measuredDurations.length}/${rows.length} 已测）${
+      measuredDurations.length > 0
+        ? ` · 实片对取用 ${actualSeconds - editorialSeconds >= 0 ? '+' : ''}${secondsLabel(actualSeconds - editorialSeconds)}`
+        : ''
+    }`
+    : '';
+  const targetNote = targetDurationSeconds !== null
+    ? `${targetDurationPolicy === 'hard' ? '用户整片硬目标' : '用户整片软目标'} ${secondsLabel(targetDurationSeconds)}；按当前档位请求合计 ${secondsLabel(requestedSeconds)}，差额 ${
+      requestedSeconds - targetDurationSeconds >= 0 ? '+' : ''
+    }${secondsLabel(requestedSeconds - targetDurationSeconds)}。${
+      targetDurationPolicy === 'hard'
+        ? '若无法兼顾必要表演或台词，会明确列出冲突并保留待决定，不自动删剧情或压缩所有镜头。'
+        : '允许为完整表演有理由地偏离；不会为凑目标自动裁剪、变速或补空动作。'
+    }`
+    : '';
+  const roundedNote = durationRoundedCount > 0
+    ? `${durationRoundedCount} 镜（第 ${durationRoundedShotNumbers.join('、')} 镜）的剧本时长不在所选模型档位上，已按不低于所需的档位上取整；整段会完整保留，不自动裁回剧本秒数。`
+    : '';
   const skippedNotes = [
     skippedNoImage > 0 ? `${skippedNoImage} 行还没有分镜图（出图后才能出视频）` : '',
     skippedNoPrompt > 0 ? `${skippedNoPrompt} 行没有提示词` : '',
@@ -214,8 +259,11 @@ export function ScriptShotVideoDialog({
   const continuityNote = !continuitySupported
     ? '当前模型不支持多图参考，这批镜头会各自用一张分镜图出片（镜头之间不会互相参考画面）。'
     : continuityCount > 0
-      ? `${continuityCount} 个镜头会参考上一镜画面；已有当前视频的唯一截尾帧时优先使用，否则用分镜首帧。动作接点仍需核对。`
-      : '这批没有可用的上一镜分镜参考，按各镜自己的首帧生成。';
+      ? `${continuityCount} 个镜头已等到上一镜当前版本的真实截尾帧，会作为承接参考；等待中的连续镜本轮不会提交。单帧只能接住位置和姿态，动作、速度与声音仍需联看。`
+      : '这批还没有已就绪的上一镜真实尾帧；独立镜和换场照常生成，连续镜会在体检表里标为等待。';
+  const waitingNote = waitingCount > 0
+    ? `${waitingCount} 镜（第 ${waitingShotNumbers.join('、')} 镜）是同场明确连续动作，但前段当前视频/真实边界还没就绪；本轮不会提交这些镜，先完成前段并截到真实尾帧再生成。`
+    : '';
   const description =
     mode === 'regenerate'
       ? willRebuild
@@ -240,6 +288,15 @@ export function ScriptShotVideoDialog({
         </header>
 
         <p className="text-[12px] leading-relaxed text-text-muted">{description}</p>
+        {durationSummary && (
+          <p className="text-[11px] leading-relaxed text-text-muted/80">{durationSummary}</p>
+        )}
+        {targetNote && (
+          <p className="text-[11px] leading-relaxed text-text-muted/80">{targetNote}</p>
+        )}
+        {roundedNote && (
+          <p className="text-[11px] leading-relaxed text-amber-200/85">{roundedNote}</p>
+        )}
         {paidBlockedReason && (
           <div
             role="alert"
@@ -253,6 +310,9 @@ export function ScriptShotVideoDialog({
           <p className="text-[12px] leading-relaxed text-amber-200/85">{fallbackNote}</p>
         )}
         <p className="text-[12px] leading-relaxed text-text-muted">{continuityNote}</p>
+        {waitingNote && (
+          <p className="text-[12px] leading-relaxed text-amber-200/85">{waitingNote}</p>
+        )}
 
         {rows.length > 0 && <ShotAuditTable rows={rows} />}
 

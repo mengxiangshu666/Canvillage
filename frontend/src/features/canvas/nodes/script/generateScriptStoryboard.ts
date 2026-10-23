@@ -401,7 +401,7 @@ export function generateScriptStoryboard(
   // 否则生成的资产版本快照与后续 staleness 重算会差一版，刚生成就自判过期。
   const ledger =
     params.ledger
-    ?? collectScriptAssetLedger(params.rows, scriptAssetImageNodes(params.scriptNodeId));
+    ?? collectScriptAssetLedger(params.rows, scriptAssetImageNodes(params.scriptNodeId), directorPlan);
 
   const nodeMap = new Map(store.nodes.map((node) => [node.id, node] as const));
   const scriptAbsolute = resolveAbsolutePosition(scriptNode, nodeMap);
@@ -736,7 +736,7 @@ export function regenerateStoryboardGroupImages(groupNodeId: string): {
   // 资产图必须按脚本归属认领。省略 owner 会把其它脚本的同名角色图也算进来，
   // 组级重跑随后会误判参考图已变，并把别的脚本的图写进这一镜。
   const ledger = scriptNodeId
-    ? collectScriptAssetLedger(rows, scriptAssetImageNodes(scriptNodeId))
+    ? collectScriptAssetLedger(rows, scriptAssetImageNodes(scriptNodeId), directorPlan)
     : undefined;
   const pending = scriptNodeId
     ? storyboardMemberIdsToRearm(memberIds, rows, ledger, deliverySpec, directorPlan)

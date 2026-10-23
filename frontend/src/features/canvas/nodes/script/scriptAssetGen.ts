@@ -155,6 +155,7 @@ export function scriptAssetImagePrompt(
   const name = asset.name.trim();
   const description = asset.description.trim();
   const style = (options.style ?? '').trim();
+  const styleIsIllustrative = /(anime|动漫|二次元|painterly|水彩|手绘|3d|三维|卡通|插画)/i.test(style);
   const viewMode = resolveScriptAssetViewMode(options);
   const directorVisual = options.directorContext
     ? scriptDirectorVisualContext({ directorContext: options.directorContext })
@@ -188,7 +189,7 @@ export function scriptAssetImagePrompt(
         styleClause,
         ...(asset.imageUrl ? ['Use the supplied image only as the identity/design source for face, body proportions, hair and baseline clothing; do not copy its composition or background into this four-view board.'] : []),
         'BG: seamless light warm-gray studio sweep, one continuous surface behind and under the subject. LIGHT: one soft neutral key from the upper front-left with gentle fill from the right, consistent exposure and colour temperature across all four cells, natural contact shadow under the feet. Neutral base state only: no scene, no action, no emotion, no blood, dirt or wetness.',
-        'AVOID: any text other than the four cell labels; no name, age, attribute or brand tags; no UI, logo or watermark; no extra people or background objects; no dramatic scene lighting; no fashion editorial series; no anime, painterly or 3D-render style; do not blur hair, clothing or body; never show more than one readable face.',
+        `AVOID: any text other than the four cell labels; no name, age, attribute or brand tags; no UI, logo or watermark; no extra people or background objects; no dramatic scene lighting; no fashion editorial series; ${styleIsIllustrative ? 'follow the selected illustration style and do not switch to photorealism or live-action fashion editorial' : 'no anime, painterly or 3D-render style'}; do not blur hair, clothing or body, only the two specified face areas may be blurred; never show more than one readable face.`,
         SCRIPT_CHARACTER_ASSET_NEGATIVE_GUARD,
       ].join('\n\n');
     }

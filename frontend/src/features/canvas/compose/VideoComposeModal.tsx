@@ -18,6 +18,7 @@ import {
   ChevronUp,
   Copy,
   Download,
+  Eye,
   Film,
   Gauge,
   Image as ImageIcon,
@@ -91,6 +92,13 @@ import {
 import { CoverEditor } from "./CoverEditor";
 import { useComposePlayback } from "./useComposePlayback";
 import { getFilmstrip, pickFrame, type FilmstripFrame } from "./filmstrip";
+import { ScriptFilmReviewPanel } from "@/features/canvas/nodes/script/ScriptFilmReviewPanel";
+import {
+  bindScriptFilmTechnicalOutput,
+  emptyScriptFilmReview,
+  scriptFilmReviewStatus,
+  type ScriptFilmReview,
+} from "@/features/canvas/nodes/script/scriptFilmReview";
 
 export interface VideoComposeModalProps {
   project: string;
@@ -106,6 +114,9 @@ export interface VideoComposeModalProps {
   onPersistDraft?: (timeline: ComposeTimelineState) => void;
   /** 脚本中的剪辑时长；与视频素材生成时长分开，首次打开时只取这一段。 */
   scriptEditDurationMsByShotId?: Record<string, number>;
+  /** 已保存的接点/整片审片记录；没有时从空记录开始，不代表已审。 */
+  filmReview?: ScriptFilmReview | null;
+  onPersistFilmReview?: (review: ScriptFilmReview) => void;
 }
 
 interface SelectedClipRef {
@@ -455,6 +466,8 @@ export function VideoComposeModal({
   onComposed,
   initialTimeline,
   onPersistDraft,
+  filmReview: initialFilmReview = null,
+  onPersistFilmReview,
 }: VideoComposeModalProps) {
   const { t } = useTranslation();
   // 合成弹窗打开期间标记为「沉浸式」：画布的全局快捷键（Delete 删节点、⌘C/⌘V、⌘Z…）
@@ -469,6 +482,17 @@ export function VideoComposeModal({
   );
   const [past, setPast] = useState<ComposeTimelineState[]>([]);
   const [future, setFuture] = useState<ComposeTimelineState[]>([]);
+  const [filmReview, setFilmReview] = useState<ScriptFilmReview>(
+    () => initialFilmReview ?? emptyScriptFilmReview(),
+  );
+  const [filmReviewOpen, setFilmReviewOpen] = useState(false);
+  useEffect(() => {
+    if (initialFilmReview) setFilmReview(initialFilmReview);
+  }, [initialFilmReview]);
+  const persistFilmReview = useCallback((next: ScriptFilmReview) => {
+    setFilmReview(next);
+    onPersistFilmReview?.(next);
+  }, [onPersistFilmReview]);
   const [pxPerSec, setPxPerSec] = useState(DEFAULT_PX_PER_SEC);
   const [snapEnabled, setSnapEnabled] = useState(true);
   // selected = 主选中（驱动变速/音量/分割等编辑面板）；selectedIds = 全部选中片段 id
@@ -1514,16 +1538,16 @@ export function VideoComposeModal({
 
   // 导出到画布：先把合成视频经 upload 接口落成稳定素材，再回显到本节点的合成结果上。
   const exportToCanvas = useCallback(
-    async (url: string) => {
+    async (url: string): Promise<{ url: string; cover: string | null }> => {
       const blob = await fetchComposedBlob(url);
       const uploaded = await uploadFreezoneVideo(
         project,
         blob,
         composedFileName(url),
       );
-      onComposed(uploaded.url, timelineRef.current.cover?.url ?? null);
+      return { url: uploaded.url, cover: timelineRef.current.cover?.url ?? null };
     },
-    [composedFileName, fetchComposedBlob, onComposed, project],
+    [composedFileName, fetchComposedBlob, project],
   );
 
   const runExport = useCallback(
@@ -1546,8 +1570,9 @@ export function VideoComposeModal({
       setIsExporting(true);
       setExportError(null);
       try {
+        const exportTimeline = { ...timeline, resolution };
         const payload = buildComposePayload(
-          { ...timeline, resolution },
+          exportTimeline,
           { canvasId, fps, backgroundColor },
         );
         const ref = await submitFreezoneVideoCompose(project, payload);
@@ -1561,15 +1586,41 @@ export function VideoComposeModal({
           setExportError(t("videoCompose.error.noUrl"));
           return;
         }
-        if (target === "local") await exportToLocal(result.url);
-        else await exportToCanvas(result.url);
+        if (target === "local") {
+          await exportToLocal(result.url);
+          persistFilmReview(bindScriptFilmTechnicalOutput(
+            filmReview,
+            exportTimeline,
+            result.url,
+            new Date().toISOString(),
+            {
+              duration_seconds: result.output_duration_seconds,
+              sha256: result.output_sha256,
+              size_bytes: result.output_size_bytes,
+            },
+          ));
+        } else {
+          const uploaded = await exportToCanvas(result.url);
+          persistFilmReview(bindScriptFilmTechnicalOutput(
+            filmReview,
+            exportTimeline,
+            uploaded.url,
+            new Date().toISOString(),
+            {
+              duration_seconds: result.output_duration_seconds,
+              sha256: result.output_sha256,
+              size_bytes: result.output_size_bytes,
+            },
+          ));
+          onComposed(uploaded.url, uploaded.cover);
+        }
       } catch (error) {
         setExportError(error instanceof Error ? error.message : String(error));
       } finally {
         setIsExporting(false);
       }
     },
-    [canvasId, exportToCanvas, exportToLocal, isExporting, project, t, timeline],
+    [canvasId, exportToCanvas, exportToLocal, filmReview, isExporting, onComposed, persistFilmReview, project, t, timeline],
   );
 
   // Close on Escape (unless a popover/export is busy).
@@ -1672,6 +1723,10 @@ export function VideoComposeModal({
   const rulerSeconds = Math.max(RULER_MIN_SECONDS, Math.ceil(durationMs / 1000));
   const timelineWidthPx = rulerSeconds * pxPerSec;
   const canExport = hasExportableClips(timeline) && !isExporting;
+  const filmReviewStatus = useMemo(
+    () => scriptFilmReviewStatus(timeline, filmReview),
+    [filmReview, timeline],
+  );
   // 时间轴上重叠的视频片段 id —— 用于把冲突片段高亮（红框）提示用户。
   const overlapClipIds = useMemo(() => overlappingVideoClipIds(timeline), [timeline]);
 
@@ -1708,6 +1763,22 @@ export function VideoComposeModal({
           <span className="text-sm font-semibold">{t("videoCompose.title")}</span>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setFilmReviewOpen(true)}
+            className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+              filmReviewStatus.formalReady
+                ? 'border-emerald-300/30 bg-emerald-400/10 text-emerald-200/90'
+                : 'border-border-dark text-text-dark hover:bg-white/[0.06]'
+            }`}
+            title="核对实际接点与整片看听；技术能合成不等于已认可"
+          >
+            <Eye className="h-4 w-4" />
+            审片 {filmReviewStatus.acceptedCount}/{filmReviewStatus.boundaryTotal}
+            {!filmReviewStatus.formalReady && filmReviewStatus.staleCount > 0 && (
+              <span className="text-[10px] text-amber-200/85">有过期</span>
+            )}
+          </button>
           {/* 设置封面：独立入口，点开封面编辑器（选帧 / 上传）。已设封面时左侧带缩略图。 */}
           <button
             type="button"
@@ -2167,6 +2238,15 @@ export function VideoComposeModal({
           cover={timeline.cover ?? null}
           onCancel={() => setCoverEditorOpen(false)}
           onApply={applyCover}
+        />
+      )}
+      {filmReviewOpen && (
+        <ScriptFilmReviewPanel
+          timeline={timeline}
+          review={filmReview}
+          project={project}
+          onChange={persistFilmReview}
+          onClose={() => setFilmReviewOpen(false)}
         />
       )}
     </div>,

@@ -31,6 +31,7 @@ from novelvideo.freezone.script_contract import (
 
 FILM_PROMPT_SCHEMA = "film_prompt_bundle.v1"
 FILM_PROMPT_AUDIT_SCHEMA = "film_prompt_audit.v1"
+FILM_PROMPT_COMPILER_VERSION = "film-prompt-compiler.v1"
 
 
 def append_script_shot_visual_context(prompt: str, row: Mapping[str, Any]) -> str:
@@ -148,6 +149,7 @@ def build_film_prompt_bundle(
     rows: object,
     *,
     rewrite_video_negatives: bool = True,
+    input_context: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Compile prompt rows while preserving the existing 8/6 format."""
 
@@ -211,6 +213,39 @@ def build_film_prompt_bundle(
             ).encode("utf-8")
         ).hexdigest()[:20]
     )
+    compiler_input = {
+        "compiler_version": FILM_PROMPT_COMPILER_VERSION,
+        "rewrite_policy": result["rewrite_policy"],
+        "rows": source_rows,
+        "input_context": dict(input_context or {}),
+    }
+    input_hash = hashlib.sha256(
+        json.dumps(
+            compiler_input,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            default=str,
+        ).encode("utf-8")
+    ).hexdigest()[:24]
+    result["compiler"] = {
+        "version": FILM_PROMPT_COMPILER_VERSION,
+        "input_hash": f"film-input.v1:{input_hash}",
+        "result_hash": "pending",
+    }
+    result_hash = hashlib.sha256(
+        json.dumps(
+            {
+                "compiler_version": FILM_PROMPT_COMPILER_VERSION,
+                "input_hash": result["compiler"]["input_hash"],
+                "contract_revision": result["contract_revision"],
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()[:24]
+    result["compiler"]["result_hash"] = f"film-result.v1:{result_hash}"
     return result
 
 
@@ -241,6 +276,22 @@ def validate_film_prompt_bundle(value: object) -> dict[str, Any]:
     )
     if _text(bundle.get("contract_revision"), limit=100) != expected:
         raise ValueError("film_prompt_bundle contract_revision does not match its contents")
+    compiler = bundle.get("compiler")
+    if isinstance(compiler, Mapping):
+        result_hash = hashlib.sha256(
+            json.dumps(
+                {
+                    "compiler_version": compiler.get("version"),
+                    "input_hash": compiler.get("input_hash"),
+                    "contract_revision": bundle.get("contract_revision"),
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()[:24]
+        if compiler.get("version") != FILM_PROMPT_COMPILER_VERSION or compiler.get("result_hash") != f"film-result.v1:{result_hash}":
+            raise ValueError("film_prompt_bundle compiler receipt does not match its contents")
     return bundle
 
 
@@ -341,12 +392,14 @@ def compile_film_prompt_rows(
     rows: object,
     *,
     rewrite_video_negatives: bool = True,
+    input_context: Mapping[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Return rewritten rows and an inspectable bundle for the task runner."""
 
     bundle = build_film_prompt_bundle(
         rows,
         rewrite_video_negatives=rewrite_video_negatives,
+        input_context=input_context,
     )
     rewritten = []
     source_rows = rows if isinstance(rows, (list, tuple)) else []

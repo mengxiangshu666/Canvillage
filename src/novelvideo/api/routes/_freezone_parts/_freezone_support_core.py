@@ -74,6 +74,7 @@ from novelvideo.api.schemas import (
     FreezoneRelightRequest,
     FreezoneScene360Request,
     FreezoneSketchFromContextRequest,
+    FreezoneScriptAssetCompletionRequest,
     FreezoneStageAssetAcceptedResponse,
     FreezoneStoryScriptCharacterRef,
     FreezoneStoryScriptGenerateRequest,

@@ -17,6 +17,7 @@ import pytest
 
 from novelvideo.freezone.jobs import (
     _ffmpeg_error_tail,
+    read_freezone_frame_anchors,
     run_freezone_extract_frames,
 )
 
@@ -139,3 +140,19 @@ async def test_extract_frames_falls_back_to_even_sampling(tmp_path: Path) -> Non
     assert all(path.exists() and path.stat().st_size > 0 for path in frames)
     out_dir = project_dir / "freezone" / "_outputs" / "freezone_extract" / "01EVEN"
     assert all(path.parent == out_dir for path in frames)
+
+    anchors = read_freezone_frame_anchors(project_dir, "01EVEN")
+    assert anchors is not None
+    assert anchors["schema"] == "freezone_frame_anchors.v1"
+    assert anchors["sampling_mode"] == "even_sample"
+    assert anchors["transcript_available"] is False
+    assert len(anchors["frames"]) == len(frames)
+    assert all(item["estimated"] is True for item in anchors["frames"])
+    times = [item["time_seconds"] for item in anchors["frames"]]
+    assert all(isinstance(value, float) for value in times)
+    assert times == sorted(times)
+    assert anchors["source_sha256"]
+
+
+def test_missing_frame_anchor_manifest_is_none(tmp_path: Path) -> None:
+    assert read_freezone_frame_anchors(tmp_path, "missing") is None

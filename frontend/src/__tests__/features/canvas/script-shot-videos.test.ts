@@ -33,6 +33,7 @@ import {
   type ScatterScriptShotVideosParams,
   scriptShotVideoPrompt,
   planScriptShotVideos,
+  resumeWaitingScriptShotVideos,
   scatterScriptShotVideos,
   scriptShotVideoChain,
   graphSliceOf,
@@ -2441,5 +2442,187 @@ describe('逐镜出视频 · 音频合同与逐镜体检表', () => {
     expect(scriptShotVideoPrompt({ ...rows[0], camera_movement: '镜头先跟随跑者，跑者站定后机位停止' }).prompt)
       .not.toContain('始终跟随');
     expect(scriptShotVideoPrompt(rows[0]).prompt).toContain(camera);
+  });
+});
+
+describe('时长对账：剧本 / 请求 / 实片分开', () => {
+  beforeEach(() => {
+    resetStoryboardSettle();
+    seedScriptNode();
+  });
+
+  it('实际文件时长只来自当前版本视频，未知不冒充请求值', () => {
+    seedStoryboardImages();
+    expect(scatterVideos({ modelCapabilities: { durationOptions: [5] }, generateVideos: false }).ok).toBe(true);
+    const [first] = videoNodes();
+    useCanvasStore.getState().updateNodeData(first.id, { durationMs: 6000 });
+
+    const plan = planScriptShotVideos(SCRIPT_ID, useCanvasStore.getState(), {
+      modelCapabilities: { durationOptions: [5] },
+      model: VIDEO_MODEL,
+    });
+
+    expect(plan.ok).toBe(true);
+    if (!plan.ok) return;
+    expect(plan.editorialSeconds).toBe(9);
+    expect(plan.requestedSeconds).toBe(10);
+    expect(plan.actualSeconds).toBe(6);
+    expect(plan.actualKnownCount).toBe(1);
+    expect(plan.durationGapSeconds).toBe(-3);
+  });
+
+  it('整片口径包含全部镜头，目标差额与档位取整分别显示', () => {
+    const scriptRows = rows();
+    seedScriptNode(scriptRows);
+    useCanvasStore.getState().updateNodeData(SCRIPT_ID, {
+      scriptResult: {
+        title: '天空之跃',
+        rows: scriptRows,
+        director_plan: { target_duration_seconds: 8, target_duration_policy: 'hard', assumptions: [] },
+      },
+    });
+    seedStoryboardImages();
+    const plan = planScriptShotVideos(SCRIPT_ID, undefined, {
+      modelCapabilities: { durationOptions: [5] },
+      model: VIDEO_MODEL,
+    });
+
+    expect(plan.ok).toBe(true);
+    if (!plan.ok) return;
+    expect(plan.editorialSeconds).toBe(9);
+    expect(plan.filmEditorialSeconds).toBe(9);
+    expect(plan.filmRequestedSeconds).toBe(10);
+    expect(plan.filmRequestedUnknownCount).toBe(0);
+    expect(plan.targetDurationSeconds).toBe(8);
+    expect(plan.targetDurationPolicy).toBe('hard');
+    expect(plan.targetGapSeconds).toBe(2);
+    expect(plan.durationRoundedCount).toBe(1);
+    expect(plan.durationRoundedShotNumbers).toEqual(['1']);
+    expect(plan.rows[0].issues).toContain('durationRounded');
+  });
+
+  it('后端探测时长在没有 durationMs 时仍然算实片，不退回请求值', () => {
+    seedStoryboardImages();
+    expect(scatterVideos({ modelCapabilities: { durationOptions: [5] }, generateVideos: false }).ok).toBe(true);
+    const videos = videoNodes();
+    useCanvasStore.getState().updateNodeData(videos[0].id, {
+      durationMs: 6000,
+    });
+    useCanvasStore.getState().updateNodeData(videos[1].id, {
+      resourceMeta: { durationSec: 7.5 },
+    });
+    const plan = planScriptShotVideos(SCRIPT_ID, undefined, {
+      modelCapabilities: { durationOptions: [5] },
+      model: VIDEO_MODEL,
+    });
+    expect(plan.ok).toBe(true);
+    if (!plan.ok) return;
+    expect(plan.actualSeconds).toBe(13.5);
+    expect(plan.actualKnownCount).toBe(2);
+    expect(plan.filmActualSeconds).toBe(13.5);
+    expect(plan.durationGapSeconds).toBe(4.5);
+  });
+});
+
+describe('M10 严格连续：前段真实边界未就绪时等待', () => {
+  beforeEach(() => {
+    resetStoryboardSettle();
+    seedScriptNode([
+      { shot_no: '1', duration: '4', scene_tags: '祠堂', transition_plan: 'continuous_action', visual_description: '阿雀推门', video_motion_prompt: '门被推开' },
+      { shot_no: '2', duration: '4', scene_tags: '祠堂', visual_description: '阿雀抬眼', video_motion_prompt: '镜头推近阿雀' },
+    ]);
+  });
+
+  it('计划显式标出等待，且只提交不依赖前段的镜', () => {
+    seedStoryboardImages();
+    const capabilities = { durationOptions: [4, 5], supportedModes: ['imageToVideo', 'allReference'] };
+    const plan = planScriptShotVideos(SCRIPT_ID, undefined, {
+      model: VIDEO_MODEL,
+      modelCapabilities: capabilities,
+      continuityReference: true,
+    });
+
+    expect(plan.ok).toBe(true);
+    if (!plan.ok) return;
+    expect(plan.waitingCount).toBe(1);
+    expect(plan.waitingShotNumbers).toEqual(['2']);
+    expect(plan.pendingCount).toBe(1);
+    expect(plan.rows[1].issues).toContain('continuityWaiting');
+
+    const result = scatterScriptShotVideos({
+      scriptNodeId: SCRIPT_ID,
+      model: VIDEO_MODEL,
+      modelCapabilities: capabilities,
+      continuityReference: true,
+      generateVideos: true,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.armed).toBe(1);
+    const waiting = videoByRowKey().get('shot:2');
+    expect(waiting?.data.scriptShotWaitingForPrevious).toBe(true);
+    expect(waiting?.data.canvas_auto_generate_once).toBe(false);
+  });
+
+  it('前段真实尾帧就绪后只解锁下一镜，后续镜继续等待；换场镜独立', () => {
+    seedScriptNode([
+      { shot_no: '1', duration: '4', scene_tags: '祠堂', transition_plan: 'continuous_action', visual_description: '推门', video_motion_prompt: '门被推开' },
+      { shot_no: '2', duration: '4', scene_tags: '祠堂', transition_plan: 'continuous_action', visual_description: '抬眼', video_motion_prompt: '推近' },
+      { shot_no: '3', duration: '4', scene_tags: '祠堂', visual_description: '转身', video_motion_prompt: '跟随转身' },
+      { shot_no: '4', duration: '4', scene_tags: '山道', visual_description: '雨落', video_motion_prompt: '拉远' },
+    ]);
+    seedStoryboardImages();
+    const capabilities = { durationOptions: [4, 5], supportedModes: ['imageToVideo', 'allReference'] };
+    const params = {
+      scriptNodeId: SCRIPT_ID,
+      model: VIDEO_MODEL,
+      modelCapabilities: capabilities,
+      continuityReference: true,
+    };
+    const first = scatterScriptShotVideos({ ...params, generateVideos: true });
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    expect(first.armed).toBe(2);
+    const nodes = videoByRowKey();
+    expect(nodes.get('shot:2')?.data.scriptShotWaitingForPrevious).toBe(true);
+    expect(nodes.get('shot:3')?.data.scriptShotWaitingForPrevious).toBe(true);
+    expect(nodes.get('shot:4')?.data.canvas_auto_generate_once).toBe(true);
+
+    const completeRow = (rowKey: string, videoUrl: string, tailUrl: string) => {
+      const video = videoByRowKey().get(rowKey)!;
+      useCanvasStore.getState().updateNodeData(video.id, {
+        videoUrl,
+        isGenerating: false,
+        generationError: null,
+        canvas_auto_generate_once: false,
+      });
+      useCanvasStore.getState().addNode(CANVAS_NODE_TYPES.upload, { x: 0, y: 0 }, {
+        imageUrl: tailUrl,
+        captureMetadata: {
+          source_kind: 'video_frame_capture',
+          source_node_id: video.id,
+          source_video_url: videoUrl,
+          capture_mode: 'last',
+        },
+      });
+    };
+
+    completeRow('shot:1', '/a.mp4', '/a-tail.png');
+    const unlockB = resumeWaitingScriptShotVideos(params);
+    expect(unlockB.ok).toBe(true);
+    if (!unlockB.ok) return;
+    expect(unlockB.unlockedShotNumbers).toEqual(['2']);
+    expect(unlockB.waitingShotNumbers).toEqual(['3']);
+    expect(videoByRowKey().get('shot:2')?.data.canvas_auto_generate_once).toBe(true);
+    expect(videoByRowKey().get('shot:2')?.data.scriptShotWaitingForPrevious).toBe(false);
+    expect(videoByRowKey().get('shot:3')?.data.canvas_auto_generate_once).toBe(false);
+
+    completeRow('shot:2', '/b.mp4', '/b-tail.png');
+    const unlockC = resumeWaitingScriptShotVideos(params);
+    expect(unlockC.ok).toBe(true);
+    if (!unlockC.ok) return;
+    expect(unlockC.unlockedShotNumbers).toEqual(['3']);
+    expect(unlockC.waiting).toBe(0);
+    expect(videoByRowKey().get('shot:3')?.data.canvas_auto_generate_once).toBe(true);
   });
 });

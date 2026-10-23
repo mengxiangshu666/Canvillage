@@ -152,3 +152,19 @@ def test_references_keep_role_order_and_optional_missing_assets_stay_visible():
 
 def test_reference_cap_mirrors_backend_contract():
     assert SCRIPT_REFERENCE_IMAGE_CAP == BACKEND_REFERENCE_CAP == 9
+
+
+def test_explicit_character_ids_keep_same_name_characters_apart():
+    ledger = build_script_asset_ledger(
+        [
+            {"shot_id": "s1", "shot_no": 1, "character_1": "同名",
+             "character_description_1": "甲", "character_asset_id_1": "char-a"},
+            {"shot_id": "s2", "shot_no": 2, "character_1": "同名",
+             "character_description_1": "乙", "character_asset_id_1": "char-b"},
+        ]
+    )
+
+    character_ids = [
+        asset["asset_id"] for asset in ledger["assets"] if asset["role"] == "character"
+    ]
+    assert character_ids == ["char-a", "char-b"]

@@ -28,11 +28,18 @@ const BACKEND_ONLY_FIELDS = new Set([
   "shot_id",
   "shot_order",
   "display_shot_no",
+  // Manual override provenance, not an editable column itself.
+  "user_edited_fields",
   // Model-authored classification drives contract validation, not an editable column.
   "content_intent",
   // Typed planning maps/lists are not scalar table cells.
   "sequence_ids", "character_state_start", "character_state_end",
   "scene_descriptions", "prop_descriptions", "duration_policy",
+  // Explicit asset identities are project data, not editable script table cells.
+  "character_asset_id_1", "character_id_1", "character_asset_id_2", "character_id_2",
+  "scene_asset_ids", "prop_asset_ids",
+  // Source anchors are data provenance, not editable table columns.
+  "source_unit_ids", "source_excerpt",
 ]);
 
 function backendRowFieldNames(): string[] {

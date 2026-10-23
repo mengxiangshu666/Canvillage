@@ -911,10 +911,10 @@ export async function fetchFreezoneVideoCutResult(
   project: string,
   jobId: string,
 ): Promise<FreezoneVideoCutResultData> {
-  const raw = await apiCall<{ ok?: boolean; data?: FreezoneVideoCutResultData }>(
+  // apiCall already unwraps the envelope; reading `.data` again yielded no segments.
+  const data = await apiCall<FreezoneVideoCutResultData>(
     `projects/${encodeURIComponent(project)}/freezone/jobs/freezone_video_cut/${encodeURIComponent(jobId)}/result`,
   );
-  const data = raw?.data;
   return {
     segments: Array.isArray(data?.segments) ? data.segments : [],
     segment_count: typeof data?.segment_count === "number" ? data.segment_count : 0,

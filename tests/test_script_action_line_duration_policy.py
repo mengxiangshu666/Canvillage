@@ -7,6 +7,43 @@ from novelvideo.freezone.script_video_duration import resolve_script_video_durat
 import pytest
 
 
+def test_whole_film_target_distinguishes_soft_and_hard_requirements():
+    from novelvideo.freezone.script_video_duration import (
+        explicit_script_duration_target,
+        explicit_script_duration_target_policy,
+    )
+
+    soft = "做一支约60秒的短片，保留人物停顿"
+    hard = "全片必须控制在90秒，不能超过"
+    assert explicit_script_duration_target(soft) == 60
+    assert explicit_script_duration_target_policy(soft) == "soft"
+    assert explicit_script_duration_target(hard) == 90
+    assert explicit_script_duration_target_policy(hard) == "hard"
+    assert explicit_script_duration_target_policy("没有明确整片时长") is None
+
+
+@pytest.mark.asyncio
+async def test_duration_runner_carries_policy_into_instruction_and_deps():
+    from types import SimpleNamespace
+    from novelvideo.freezone.script_video_duration import run_duration_planned_script
+
+    calls = []
+
+    async def run(task, **kwargs):
+        calls.append((task, kwargs))
+        return SimpleNamespace(output="ok")
+
+    await run_duration_planned_script(
+        SimpleNamespace(run=run),
+        "生成脚本",
+        None,
+        target_duration_seconds=60,
+        target_duration_policy="hard",
+    )
+    assert "硬约束" in calls[0][0]
+    assert calls[0][1]["deps"]["target_duration_policy"] == "hard"
+
+
 def test_generation_and_repair_share_content_led_duration_policy():
     from novelvideo.freezone.script_video_duration import SCRIPT_CONTENT_DURATION_GUIDANCE
 

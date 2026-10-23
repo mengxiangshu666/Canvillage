@@ -120,9 +120,9 @@ export function ensureShotKeyframeNodes(params: {
 
 export function ensureScriptKeyframeImages(scriptNodeId: string, generateImages: boolean): string[] {
   const rows = scriptRowsOf(scriptNodeId);
-  const ledger = collectScriptAssetLedger(rows, scriptAssetImageNodes(scriptNodeId));
-  const images = storyboardImageNodesForScript(scriptNodeId);
   const directorPlan = (useCanvasStore.getState().nodes.find((node) => node.id === scriptNodeId)?.data?.scriptResult as { director_plan?: FreezoneStoryDirectorPlan | null } | undefined)?.director_plan;
+  const ledger = collectScriptAssetLedger(rows, scriptAssetImageNodes(scriptNodeId), directorPlan);
+  const images = storyboardImageNodesForScript(scriptNodeId);
   const shots = buildScriptShotSpecs(rows, ledger, undefined, directorPlan);
   const queued: string[] = [];
   shots.forEach((shot, index) => {

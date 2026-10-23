@@ -176,6 +176,7 @@ import { ScriptContractBanner } from './script/ScriptContractBanner';
 import { ScriptReadinessBanner } from './script/ScriptReadinessBanner';
 import { ScriptShotRewriteDialog } from './script/ScriptShotRewriteDialog';
 import { ScriptShotVideoDialog } from './script/ScriptShotVideoDialog';
+import { useScriptShotVideoAutoResume } from './script/useScriptShotVideoAutoResume';
 import {
   scriptRewriteFrozenFacts,
 } from './script/scriptPromptSegments';
@@ -604,6 +605,14 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
           ? {
               ...row,
               [colKey]: nextValue,
+              user_edited_fields: [
+                ...new Set([
+                  ...(Array.isArray(existing.user_edited_fields)
+                    ? existing.user_edited_fields
+                    : []),
+                  colKey,
+                ]),
+              ],
               ...(colKey === 'shot_no'
                 ? { display_shot_no: nextValue.trim() || String(index + 1) }
                 : {}),
@@ -1009,7 +1018,7 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
   );
   // 资产台账（第一刀）：三族资产的身份 + 各自有没有图。行变了或资产图出图落定就重算。
   // 它同时是「生成分镜」的参考图顺序来源与过期判定的一部分，所以必须与生成时吃同一份。
-  const assetLedger = useScriptAssetLedger(id, rows);
+  const assetLedger = useScriptAssetLedger(id, rows, scriptResult?.director_plan);
   // 脚本行改过之后，这批分镜图里哪些已经对不上了（对齐 LibTV「脚本已变更须重生成
   // storyboard」）。判定读的是节点上的派生快照，见 scriptStaleness。
   const staleness = useMemo(
@@ -1281,6 +1290,16 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
     () => runShotVideoScatter(false),
     [runShotVideoScatter],
   );
+  const clearShotVideoError = useCallback(() => setShotVideoError(null), []);
+  useScriptShotVideoAutoResume({
+    scriptNodeId: id,
+    nodes: canvasGraph.nodes,
+    model: shotVideoModelId,
+    modelCapabilities: selectedVideoModel,
+    aspectRatio: shotVideoAspect,
+    continuityReference: shotVideoContinuityReference,
+    onUnlocked: clearShotVideoError,
+  });
 
   // 「成片」：把已经出片的镜头视频按**行序**接进一个视频合成节点（幂等，重复点只补边）。
   // 不弹确认层：它不打任何模型、不花钱，唯一的产物是一个可继续编辑的时间线草稿。
@@ -1302,6 +1321,22 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
       toast.message(`还有 ${result.skippedNoVideo} 镜没有片子，出片后点「合看镜头」会接上`);
     }
     // 合成节点是下游终点，聚焦它 —— 用户接下来要做的动作（打开时间线）在那里。
+    useCanvasStore.getState().requestFocusNode(result.composeNodeId);
+  }, [id, updateNodeData]);
+
+  const runAssembleFormalFilm = useCallback(() => {
+    const result = assembleScriptFilm({ scriptNodeId: id, preview: false });
+    if (!result.ok) {
+      updateNodeData(id, { generationError: result.reason });
+      toast.error(result.reason);
+      return;
+    }
+    updateNodeData(id, { ...CLEARED_GENERATION_ERROR_PATCH });
+    toast.success(
+      result.mode === 'created'
+        ? `已建正式成片时间线，接入 ${result.clipCount} 条当前版本视频`
+        : `已更新正式成片时间线，接入 ${result.clipCount} 条当前版本视频`,
+    );
     useCanvasStore.getState().requestFocusNode(result.composeNodeId);
   }, [id, updateNodeData]);
 
@@ -1436,6 +1471,7 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
     (assetIds: string[]) => runAssetImages(assetIds, false),
     [runAssetImages],
   );
+
 
   useEffect(() => {
     updateNodeInternals(id);
@@ -1652,6 +1688,7 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
               filmClipCount={shotFilm.clipCount}
               filmHasCompose={shotFilm.hasCompose}
               onAssembleFilm={runAssembleFilm}
+              onAssembleFormalFilm={runAssembleFormalFilm}
               onDownload={handleDownloadCsv}
               isGenerating={isGenerating}
               columnMenu={
@@ -1669,6 +1706,7 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
               rows={rows}
               compact
               blockedShotNumbers={preflight.blockedShotNumbers}
+              sourceCoverage={scriptResult?.source_coverage ?? null}
             />
             <ScriptDirectorPlan plan={scriptResult?.director_plan} rows={rows} pending={Boolean(data.scriptDirectorPlanNeedsSync)} disabled={isGenerating || rewriteBusy} onRewriteSequence={handleRewriteSequence} onCommit={plan => updateNodeData(id, { scriptResult: { ...scriptResult, rows, director_plan: plan }, scriptDirectorPlanNeedsSync: true })} />
             <ScriptReadinessBanner
@@ -1857,7 +1895,12 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
                 </button>
               </div>
             </div>
-            <ScriptStatsBar stats={stats} rows={rows} blockedShotNumbers={preflight.blockedShotNumbers} />
+            <ScriptStatsBar
+              stats={stats}
+              rows={rows}
+              blockedShotNumbers={preflight.blockedShotNumbers}
+              sourceCoverage={scriptResult?.source_coverage ?? null}
+            />
             <ScriptDirectorPlan plan={scriptResult?.director_plan} rows={rows} pending={Boolean(data.scriptDirectorPlanNeedsSync)} disabled={isGenerating || rewriteBusy} onRewriteSequence={handleRewriteSequence} onCommit={plan => updateNodeData(id, { scriptResult: { ...scriptResult, rows, director_plan: plan }, scriptDirectorPlanNeedsSync: true })} />
             <ScriptReadinessBanner
               readiness={readiness}
@@ -1956,6 +1999,12 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
             skippedNoPrompt={shotVideoPlan.ok ? shotVideoPlan.skippedNoPrompt : 0}
             fallbackPromptCount={shotVideoPlan.ok ? shotVideoPlan.fallbackPromptCount : 0}
             continuityCount={shotVideoPlan.ok ? shotVideoPlan.continuityCount : 0}
+            waitingCount={shotVideoPlan.ok ? shotVideoPlan.waitingCount : 0}
+            waitingShotNumbers={shotVideoPlan.ok ? shotVideoPlan.waitingShotNumbers : []}
+            targetDurationSeconds={shotVideoPlan.ok ? shotVideoPlan.targetDurationSeconds : null}
+            targetDurationPolicy={shotVideoPlan.ok ? shotVideoPlan.targetDurationPolicy : null}
+            durationRoundedCount={shotVideoPlan.ok ? shotVideoPlan.durationRoundedCount : 0}
+            durationRoundedShotNumbers={shotVideoPlan.ok ? shotVideoPlan.durationRoundedShotNumbers : []}
             continuitySupported={shotVideoContinuityReference}
             rows={shotVideoPlan.ok ? shotVideoPlan.rows : []}
             model={shotVideoModelId}
@@ -2048,7 +2097,7 @@ function ScriptViewBody({
 }) {
   if (view === 'creative') return <ScriptCreativeView rows={rows} scriptNodeId={scriptNodeId} ledger={ledger} />;
   if (view === 'video') return <ScriptVideoReview rows={rows} scriptNodeId={scriptNodeId} onRewrite={rowOperations?.onRewrite} disabled={rowActionsDisabled} />;
-  if (view === 'asset') return <ScriptAssetView rows={rows} ledger={ledger} />;
+  if (view === 'asset') return <ScriptAssetView rows={rows} ledger={ledger} scriptNodeId={scriptNodeId} />;
   return (
     <ScriptResultTable
       rows={rows}
@@ -2087,6 +2136,8 @@ interface ScriptResultHeaderProps {
   /** 已经建过合成节点（按钮文案切到「更新成片」）。 */
   filmHasCompose: boolean;
   onAssembleFilm: () => void;
+  /** 严格成片：所有镜头必须已出片且当前版本对得上；产物仍需逐接点审片。 */
+  onAssembleFormalFilm: () => void;
   onDownload: () => void;
   isGenerating: boolean;
   /** 列显隐菜单（只对表格视图有意义，但一直挂着 —— 切视图回来时状态还在）。 */
@@ -2115,6 +2166,7 @@ function ScriptResultHeader({
   filmClipCount,
   filmHasCompose,
   onAssembleFilm,
+  onAssembleFormalFilm,
   onDownload,
   isGenerating,
   columnMenu,
@@ -2211,6 +2263,19 @@ function ScriptResultHeader({
         >
           <Film className="h-3.5 w-3.5" />
           {filmHasCompose ? `更新预览 ${filmClipCount}` : `合看镜头 ${filmClipCount}`}
+        </button>
+        <button
+          type="button"
+          className={HEADER_ACTION_CLASS}
+          onClick={(event) => {
+            event.stopPropagation();
+            onAssembleFormalFilm();
+          }}
+          disabled={isGenerating || filmClipCount === 0}
+          title="严格成片：每一镜都必须已出当前版本视频；建好时间线后还要逐接点正常速度看听，才可标记正式认可"
+        >
+          <Film className="h-3.5 w-3.5" />
+          正式成片
         </button>
         <button
           type="button"

@@ -353,6 +353,166 @@ async def test_content_led_mixed_durations_survive_agent_binding_contract_and_st
 
 
 @pytest.mark.asyncio
+async def test_story_script_runner_reuses_completed_checkpoint_without_repaying(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A retry after post-processing failure must not call the text model again."""
+
+    from novelvideo.task_backend.runners import freezone as runner
+
+    calls = 0
+
+    async def fake_generate(**_kwargs: object) -> FreezoneStoryScriptGenerateData:
+        nonlocal calls
+        calls += 1
+        return FreezoneStoryScriptGenerateData(
+            title="复用测试",
+            director_plan={"story_promise": "停顿后作出选择"},
+            rows=[FreezoneStoryScriptRow(**_row(1))],
+        )
+
+    def fake_bind(*_args: object, **_kwargs: object) -> None:
+        return None
+
+    monkeypatch.setattr(
+        "novelvideo.services.freezone_content.generate_freezone_story_script", fake_generate
+    )
+    monkeypatch.setattr(
+        "novelvideo.services.freezone_content.bind_story_script_assets", fake_bind
+    )
+    monkeypatch.setattr(runner, "_update", lambda *args, **kwargs: None)
+    monkeypatch.setattr(runner, "_append_node_history", lambda **kwargs: None, raising=False)
+    payload = {
+        "project_dir": str(tmp_path),
+        "source_text": "镜1：她停下脚步，回头看了一眼。",
+        "video_model": "direct_model",
+    }
+    first = await runner._run_freezone_story_script_async(
+        {"payload": {"job_id": "checkpoint-1", **payload}},
+        _project_context(tmp_path),
+    )
+    second = await runner._run_freezone_story_script_async(
+        {"payload": {"job_id": "checkpoint-1", **payload}},
+        _project_context(tmp_path),
+    )
+    assert calls == 1
+    assert first["title"] == second["title"] == "复用测试"
+    assert second["rows"][0]["duration"] == 4
+    assert second["source_coverage"]["machine_status"] == "complete"
+
+    # A deliberate new generation has a new job id and must call the model again;
+    # checkpoint reuse is for recovery of the same job, not for "regenerate".
+    third = await runner._run_freezone_story_script_async(
+        {"payload": {"job_id": "checkpoint-3", **payload}},
+        _project_context(tmp_path),
+    )
+    assert calls == 2
+    assert third["title"] == "复用测试"
+
+
+@pytest.mark.asyncio
+async def test_long_explicit_script_generates_in_batches_and_merges_once(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """20 个明确镜头走 3 批；每镜只写一次，最终表按镜号合并。"""
+    import re
+
+    from novelvideo.task_backend.runners import freezone as runner
+
+    calls: list[str] = []
+
+    async def fake_generate(**kwargs: object) -> FreezoneStoryScriptGenerateData:
+        batch_source = str(kwargs["source_text"])
+        numbers = [int(value) for value in re.findall(r"镜(\d+)：", batch_source)]
+        calls.append(batch_source)
+        return FreezoneStoryScriptGenerateData(
+            title="分批测试",
+            director_plan={"story_promise": "按批次讲完", "rhythm_curve": "连续"},
+            rows=[FreezoneStoryScriptRow(**_row(number)) for number in numbers],
+        )
+
+    monkeypatch.setattr(
+        "novelvideo.services.freezone_content.generate_freezone_story_script",
+        fake_generate,
+    )
+    monkeypatch.setattr(
+        "novelvideo.services.freezone_content.bind_story_script_assets",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(runner, "_update", lambda *args, **kwargs: None)
+    monkeypatch.setattr(runner, "_append_node_history", lambda **kwargs: None, raising=False)
+    source = (chr(10) * 2).join(f"镜{number}：第{number}镜的事件。" for number in range(1, 21))
+    result = await runner._run_freezone_story_script_async(
+        {"payload": {
+            "job_id": "batched-20",
+            "project_dir": str(tmp_path),
+            "source_text": source,
+            "model": "test",
+        }},
+        _project_context(tmp_path),
+    )
+    assert len(calls) == 3
+    assert [row["shot_no"] for row in result["rows"]] == list(range(1, 21))
+    assert result["title"] == "分批测试"
+
+
+@pytest.mark.asyncio
+async def test_batch_checkpoints_reuse_completed_batches_on_retry(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import re
+
+    from novelvideo.services.freezone_content import plan_script_source_batches
+    from novelvideo.task_backend.runners import freezone as runner
+
+    calls = 0
+
+    async def fake_generate(**kwargs: object) -> FreezoneStoryScriptGenerateData:
+        nonlocal calls
+        calls += 1
+        batch_source = str(kwargs["source_text"])
+        numbers = [int(value) for value in re.findall(r"镜(\d+)：", batch_source)]
+        return FreezoneStoryScriptGenerateData(
+            title="断点批次",
+            director_plan={"story_promise": "完整", "rhythm_curve": "连续"},
+            rows=[FreezoneStoryScriptRow(**_row(number)) for number in numbers],
+        )
+
+    monkeypatch.setattr(
+        "novelvideo.services.freezone_content.generate_freezone_story_script",
+        fake_generate,
+    )
+    source = (chr(10) * 2).join(f"镜{number}：第{number}镜的事件。" for number in range(1, 21))
+    batches = plan_script_source_batches(source, list(range(1, 21)))
+    first = await runner._generate_batched_story_script(
+        source_text=source,
+        prompt="",
+        model="test",
+        video_model=None,
+        character_refs=[],
+        project_dir=tmp_path,
+        job_id="batch-checkpoint",
+        batches=batches,
+    )
+    second = await runner._generate_batched_story_script(
+        source_text=source,
+        prompt="",
+        model="test",
+        video_model=None,
+        character_refs=[],
+        project_dir=tmp_path,
+        job_id="batch-checkpoint-retry",
+        batches=batches,
+    )
+    assert calls == 3
+    assert [row.shot_no for row in first.rows] == list(range(1, 21))
+    assert [row.shot_no for row in second.rows] == list(range(1, 21))
+
+
+@pytest.mark.asyncio
 async def test_story_script_runner_applies_contract_and_exposes_report(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -406,6 +566,7 @@ async def test_story_script_runner_applies_contract_and_exposes_report(
     assert written["film_production"]["schema"] == "film_production_contract.v1"
     assert written["director_plan"]["story_promise"] == "在安静中发现危机"
     assert written["film_production"]["contracts"]["visual_bible"]["look"]["visual_style"] == "都市悬疑写实电影感"
+    assert written["film_production"]["contracts"]["film_prompt"]["compiler"]["version"] == "film-prompt-compiler.v1"
     assert "film_prompt_contract_valid" in written["film_production"]["gate_observations"]
 
 
@@ -522,6 +683,7 @@ async def test_story_script_runner_rewrite_touches_only_the_target_row(
     monkeypatch.setattr(runner, "_append_node_history", lambda **kwargs: None, raising=False)
 
     original = [_row(1, shot_id="SHOT-A"), _row(2, shot_id="SHOT-B"), _row(3, shot_id="SHOT-C", style=OTHER_STYLE)]
+    original[1]["user_edited_fields"] = ["shot_prompt", "video_motion_prompt"]
     envelope = {
         "payload": {
             "job_id": "job-rewrite",
@@ -568,6 +730,8 @@ async def test_story_script_runner_rewrite_touches_only_the_target_row(
     assert rows[1]["visual_description"] == "她停在原地"
     assert rows[1]["film_language"] == "固定观察；声音延续；有意停留"
     assert rows[1]["end_state"] == "双手停在桌边，望向门口"
+    # Explicit rewrite replaces authored text; old manual-override markers are consumed.
+    assert rows[1]["user_edited_fields"] == []
     # 第 0 行逐字未动（连 shot_prompt 都一样）。
     assert rows[0]["shot_prompt"] == original[0]["shot_prompt"]
     # 目标行的角色卡与风格段被改回表里那一份。

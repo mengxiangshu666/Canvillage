@@ -3,6 +3,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { FreezoneStoryScriptRow } from '@/api/ops';
+import type { FreezoneStoryDirectorPlan } from '@/api/scriptContract';
 import { CANVAS_NODE_TYPES, isImageGenNode, type VideoCreativeHandoff } from '@/features/canvas/domain/canvasNodes';
 import {
   assetContributesAsReference,
@@ -98,6 +99,30 @@ describe('脚本资产台账', () => {
     expect(scriptAssetId('character', '  阿雀 ')).toBe('character:阿雀');
     // 「出现镜次」跨镜聚合：阿雀在第 1、2 镜都出场。
     expect(ledger.characters[0].shotNumbers).toEqual(['1', '2']);
+  });
+
+  it('结构化资产事实进入实际提示词描述与新版本，旧稿保持不变', () => {
+    const plan: FreezoneStoryDirectorPlan = {
+      asset_contents: [{
+        role: 'character',
+        name: '阿雀',
+        subject_kind: 'human',
+        fields: {
+          age_stage: '十七岁',
+          face_features: '左眉尾浅疤，单眼皮',
+          base_wardrobe: '短打束发，深青布衣',
+        },
+        not_applicable: {},
+        source: 'source_text',
+      }],
+    };
+    const legacy = collectScriptAssetLedger(rows(), new Map());
+    const structured = collectScriptAssetLedger(rows(), new Map(), plan);
+    expect(legacy.characters[0].description).not.toContain('结构化基准');
+    expect(structured.characters[0].description).toContain('结构化基准：');
+    expect(structured.characters[0].description).toContain('面部特征：左眉尾浅疤，单眼皮');
+    expect(structured.characters[0].contentHash).not.toBe(legacy.characters[0].contentHash);
+    expect(scriptAssetImagePrompt(structured.characters[0])).toContain('面部特征：左眉尾浅疤，单眼皮');
   });
 
   it('按镜头实际暴露出的角度计算资产视图缺口', () => {
@@ -683,5 +708,66 @@ describe('资产缺口与参考图闸门（第四 / 五刀）', () => {
     expect(
       computeScriptPreflight({ members: [], rows: named, ledger }).degradedShotNumbers,
     ).toEqual([]);
+  });
+});
+
+describe('显式资产身份贯穿', () => {
+  it('同名不同显式 ID 保持两张角色卡', () => {
+    const ledger = collectScriptAssetLedger([
+      { shot_no: '1', character_1: '同名', character_description_1: '甲', character_asset_id_1: 'char-a' },
+      { shot_no: '2', character_1: '同名', character_description_1: '乙', character_asset_id_1: 'char-b' },
+    ], new Map());
+    expect(ledger.characters.map((asset) => asset.id)).toEqual(['char-a', 'char-b']);
+    expect(ledger.characters.map((asset) => asset.shotNumbers)).toEqual([['1'], ['2']]);
+  });
+
+  it('同一显式 ID 改名后仍是同一张角色卡', () => {
+    const ledger = collectScriptAssetLedger([
+      { shot_no: '1', character_1: '旧名', character_description_1: '甲', character_asset_id_1: 'char-a' },
+      { shot_no: '2', character_1: '新名', character_description_1: '甲', character_asset_id_1: 'char-a' },
+    ], new Map());
+    expect(ledger.characters).toHaveLength(1);
+    expect(ledger.characters[0].id).toBe('char-a');
+    expect(ledger.characters[0].shotNumbers).toEqual(['1', '2']);
+  });
+
+  it('场景并行 ID 在过滤非资产标签后仍按原下标对齐', () => {
+    const ledger = collectScriptAssetLedger([
+      {
+        shot_no: '1',
+        scene_tags: '柔光、房间、走廊',
+        scene_asset_ids: ['light-a', 'scene-a', 'scene-b'],
+      },
+    ], new Map());
+    expect(ledger.scenes.map((asset) => asset.id)).toEqual(['scene-a', 'scene-b']);
+  });
+
+  it('同名场景不同显式 ID 保持两张场景卡', () => {
+    const ledger = collectScriptAssetLedger([
+      { shot_no: '1', scene_tags: '房间', scene_asset_ids: ['scene-a'] },
+      { shot_no: '2', scene_tags: '房间', scene_asset_ids: ['scene-b'] },
+    ], new Map());
+    expect(ledger.scenes.map((asset) => asset.id)).toEqual(['scene-a', 'scene-b']);
+  });
+});
+
+describe('角色板风格与标签不互相矛盾', () => {
+  it('动漫/水彩风格不再被 no anime 禁令打架', () => {
+    const asset = collectScriptAssetLedger([
+      { shot_no: '1', character_1: '甲', character_description_1: '短发' },
+    ], new Map()).characters[0];
+    const prompt = scriptAssetImagePrompt(asset, { style: '动漫水彩' });
+    expect(prompt).toContain('动漫水彩');
+    expect(prompt).not.toContain('no anime, painterly or 3D-render style');
+    expect(prompt).toContain('follow the selected illustration style');
+    expect(prompt).toContain('only the two specified face areas may be blurred');
+  });
+
+  it('写实风格仍保留不转动漫/绘画/3D 的禁令', () => {
+    const asset = collectScriptAssetLedger([
+      { shot_no: '1', character_1: '甲', character_description_1: '短发' },
+    ], new Map()).characters[0];
+    const prompt = scriptAssetImagePrompt(asset, { style: '写实电影质感' });
+    expect(prompt).toContain('no anime, painterly or 3D-render style');
   });
 });

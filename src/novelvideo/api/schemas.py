@@ -2213,6 +2213,16 @@ class FreezoneStoryScriptGenerateRequest(BaseModel):
     )
 
 
+class FreezoneScriptAssetCompletionRequest(BaseModel):
+    """只补全结构化资产定义；不写画布、不生成媒体。"""
+
+    director_plan: dict = Field(default_factory=dict)
+    rows: list[FreezoneStoryScriptRow] = Field(default_factory=list)
+    source_text: str = Field(default="")
+    model: str = Field(default="", max_length=300)
+    max_assets: int = Field(default=6, ge=1, le=20)
+
+
 class FreezoneJobAcceptedData(BaseModel):
     task_type: str
     job_id: str

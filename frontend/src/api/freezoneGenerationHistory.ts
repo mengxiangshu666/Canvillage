@@ -41,4 +41,8 @@ export interface FreezoneJobResult {
   url: string;
   size: number;
   video_generation_source?: FreezoneVideoGenerationSource | null;
+  /** 合成成片的实际探测值；未知时为 null/缺失。 */
+  output_duration_seconds?: number | null;
+  output_sha256?: string | null;
+  output_size_bytes?: number | null;
 }

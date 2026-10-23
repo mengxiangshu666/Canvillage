@@ -58,6 +58,7 @@ import { videoGenerationSourceMatches } from '@/features/canvas/application/vide
 import { scriptKeyframePlan, scriptKeyframePlanPrompt, scriptKeyframeVisualContext, type ScriptKeyframePlanItem } from './scriptKeyframePlan';
 import { buildScriptCreativeHandoff, scriptDirectorVisualContext, scriptSceneSpatialContext, scriptShotVisualContext } from './scriptCreativeHandoff';
 import { ensureShotKeyframeNodes } from './scriptKeyframeImages';
+import { parseResourceMeta } from '@/features/canvas/domain/canvasResourceMeta';
 
 function scriptVideoModelIssue(spec: ScriptShotVideoSpec, model?: ScriptVideoModelCapabilities | null, existing?: CanvasNode, graph: CanvasGraphSlice = liveGraph(), continuitySourceId?: string): string | null {
   const assetCount = spec.assetReferences.filter(reference => reference.assetId).length;
@@ -350,6 +351,8 @@ export interface ScriptShotVideoSpec {
   startState?: string;
   requiresAssetReference: boolean;
   transition: string;
+  /** 同场且上一镜明确 continuous_action 时，本镜必须等前段真实边界；独立切/换场为空。 */
+  continuityRequirement: { rowKey: string; shotNumber: string } | null;
   /** 后端对本镜生成方式的建议；当前派生链仍以分镜图首帧为实际输入。 */
   generationMode: 'imageToVideo' | 'firstLastFrame' | 'textToVideo';
   /** 音效列（`sound`）：有设计、无台词的镜头由此得到模型原生音频。 */
@@ -564,6 +567,19 @@ export function buildScriptShotVideoSpecs(
       isScriptNoValue(soundCell) || isScriptNoDialogue(soundCell) ? '' : soundCell;
     const dialogueCell = cellText(row, 'dialogue');
     const dialogueLine = isScriptNoDialogue(dialogueCell) ? '' : dialogueCell;
+    const previousRow = index > 0 ? rows[index - 1] : null;
+    // 首尾帧模式自带明确终点，边界由本镜两张图决定，不依赖前段真实尾帧；
+    // 缺尾图由下面的 `needsTail` 直接拦，不允许悄悄独立提交的是纯图生视频的连续镜。
+    const continuityRequirement = previousRow
+      && generationMode !== 'textToVideo'
+      && generationMode !== 'firstLastFrame'
+      && transitionIsContinuous(shotTransition(previousRow))
+      && rowsShareScene(previousRow, row)
+      ? {
+          rowKey: rowKeys[index - 1],
+          shotNumber: scriptRowShotNumber(previousRow, index - 1),
+        }
+      : null;
     return {
       rowKey: rowKeys[index],
       shotNumber,
@@ -580,6 +596,7 @@ export function buildScriptShotVideoSpecs(
       startState: isScriptNoValue(cellText(row, 'start_state')) ? '' : cellText(row, 'start_state'),
       requiresAssetReference: rowCharacters(row).length > 0 || ['scene_tags', 'prop_tags'].some(key => splitScriptTags(cellText(row, key)).some(tag => !isScriptNoValue(tag))),
       transition,
+      continuityRequirement,
       generationMode,
       soundDesign,
       dialogueLine,
@@ -1045,6 +1062,8 @@ function shotVideoNodeData(params: {
   quality: VideoGenQuality | null | undefined;
   defaultDurationSec: number;
   generateVideos: boolean;
+  waitingForPrevious?: boolean;
+  waitingArmedForBatch?: boolean;
   modelCapabilities?: ScriptVideoModelCapabilities | null;
 }): Partial<VideoNodeData> {
   const { spec } = params;
@@ -1097,6 +1116,8 @@ function shotVideoNodeData(params: {
     shot_number: spec.shotNumber,
     shot_size: spec.shotSize,
     shot_motion_prompt: spec.prompt,
+    scriptShotWaitingForPrevious: params.waitingForPrevious === true,
+    scriptShotWaitingArmedForBatch: params.waitingArmedForBatch === true,
     canvas_auto_generate_once: params.generateVideos,
   } as Partial<VideoNodeData>;
 }
@@ -1154,8 +1175,42 @@ export interface ScriptShotVideoPlan {
   derivedCount: number;
   /** 这轮会接上「上一镜承接」边的镜数（0 ＝ 这批全是各拍各的单图首帧）。 */
   continuityCount: number;
+  /** 同场明确连续、但前段真实边界未就绪而等待的镜数；这些不提交付费生成。 */
+  waitingCount: number;
+  waitingShotNumbers: string[];
   /** 本轮会提交的视频秒数合计（＝每条 `count(1) × 该镜时长`），供计价用。 */
   plannedSeconds: number;
+  /** 剧本取用时长合计（行 `duration`，不含生成档位取整）。 */
+  editorialSeconds?: number;
+  /** 本次请求/生成档位合计（`scriptGenerationDuration`，可能大于剧本取用）。 */
+  requestedSeconds?: number;
+  /** 已落地的当前版本视频实际时长合计；未知不猜。 */
+  actualSeconds?: number;
+  /** 有实际时长读数的镜数；小于 pendingCount 时合计只是部分已知。 */
+  actualKnownCount?: number;
+  /** 实际 - 剧本取用的差额；没有实际读数时为 null。 */
+  durationGapSeconds?: number | null;
+  /** 整片口径：全部已出图镜的剧本时长（不只本轮待提交）。 */
+  filmEditorialSeconds: number;
+  /** 整片口径：全部已出图镜按当前模型档位请求的时长；能力未知的镜不计入。 */
+  filmRequestedSeconds: number;
+  /** 整片口径：有多少镜因模型能力未知算不出请求时长。 */
+  filmRequestedUnknownCount: number;
+  /** 整片口径：当前版本实片已测时长合计；未知不猜。 */
+  filmActualSeconds: number;
+  /** 整片口径：有多少镜拿到了当前版本实片时长。 */
+  filmActualKnownCount: number;
+  /** 整片口径：实片 - 剧本取用；一镜都未测时为 null。 */
+  filmDurationGapSeconds: number | null;
+  /** 整片目标（用户明确写在来源里的秒数）；没有时为 null，不拿模型假设冒充。 */
+  targetDurationSeconds: number | null;
+  /** 目标是「约」还是「必须」；没有目标时为 null。 */
+  targetDurationPolicy: 'soft' | 'hard' | null;
+  /** 整片请求时长 - 目标时长；没有目标或档位未知时为 null。 */
+  targetGapSeconds: number | null;
+  /** 生成档位高于剧本时长的镜数（上取整已显示，不静默变成长镜头）。 */
+  durationRoundedCount: number;
+  durationRoundedShotNumbers: string[];
   /** 表里有几行用的是画面提示词兜底（没有 `video_motion_prompt`）。 */
   fallbackPromptCount: number;
   /** 逐镜体检表：每一镜会被自动填进去的出片事实，供开拍前审核。 */
@@ -1171,7 +1226,9 @@ export type ScriptShotAuditIssue =
   | 'missingLastFrame'
   | 'invalidDuration'
   | 'modelUnsupported'
-  | 'durationMismatch';
+  | 'continuityWaiting'
+  | 'durationMismatch'
+  | 'durationRounded';
 
 /** 单镜出片事实（审核面只读，不产生副作用）。 */
 export interface ScriptShotAuditRow {
@@ -1179,6 +1236,8 @@ export interface ScriptShotAuditRow {
   shotNumber: string;
   durationSec: number | null;
   generationDurationSec: number | null;
+  /** 当前版本视频的实际文件时长；没有可信读数时为 null（不拿请求值冒充）。 */
+  actualDurationSec?: number | null;
   /** 首帧（该镜分镜图）的 URL；空串＝还没有图，这一镜进不了这一批。 */
   firstFrameUrl: string;
   /** 提示词里的运镜正文；空串＝这一镜没有运镜，画面会靠主体动作自己动。 */
@@ -1211,6 +1270,8 @@ interface ShotVideoContext {
   continuitySourceByRowKey: Map<string, string>;
   /** 这轮会接上承接边的镜数（= `continuitySourceByRowKey` 里落得到的那些）。 */
   continuityCount: number;
+  /** 同场明确连续、但前段当前版本/真实尾帧还没就绪，本轮不得独立提交的镜。 */
+  waitingForContinuity: Set<string>;
   existingByKey: Map<string, string>;
   existingIds: string[];
   skippedNoPrompt: number;
@@ -1227,6 +1288,7 @@ function readShotVideoContext(
   graph: CanvasGraphSlice = liveGraph(),
   expectations: {
     model?: string | null;
+    modelCapabilities?: ScriptVideoModelCapabilities | null;
     aspectRatio?: string | null;
     quality?: VideoGenQuality | null;
     /** 所选模型能不能吃下第二张图；见 {@link shotVideoAcceptsChainReference}。 */
@@ -1237,8 +1299,8 @@ function readShotVideoContext(
   if (!scriptNode) return { ok: false, reason: '脚本节点已不存在' };
   const rows = scriptRowsOf(scriptNodeId, graph);
   if (rows.length === 0) return { ok: false, reason: '脚本表里还没有分镜行，先生成一次脚本' };
-  const ledger = collectScriptAssetLedger(rows, scriptAssetImageNodes(scriptNodeId, graph.nodes));
   const directorPlan = (scriptNode.data?.scriptResult as { director_plan?: FreezoneStoryDirectorPlan | null } | undefined)?.director_plan;
+  const ledger = collectScriptAssetLedger(rows, scriptAssetImageNodes(scriptNodeId, graph.nodes), directorPlan);
   const specs = buildScriptShotVideoSpecs(rows, expectations.aspectRatio, ledger, directorPlan);
   const deliverySpec = specs[0]?.deliverySpec ?? resolveScriptDeliverySpec(expectations.aspectRatio);
   const withPrompt = specs.filter((spec) => spec.hasPrompt);
@@ -1295,9 +1357,15 @@ function readShotVideoContext(
           return;
         }
       }
-      // 没有当前上一镜尾帧就不建立承接关系。视频仍可按本镜首帧独立生成，
-      // 等上一镜完成并截到真实尾帧后，再次点击时会补上这条边。
+      // 没有当前上一镜尾帧就不建立承接关系；同场明确连续的镜不独立提交，
+      // 由下面的 waitingForContinuity 拦住，等前段真实边界就绪后再解锁。
     });
+  }
+  const waitingForContinuity = new Set<string>();
+  for (const spec of specs) {
+    if (spec.continuityRequirement && !continuitySourceByRowKey.has(spec.rowKey)) {
+      waitingForContinuity.add(spec.rowKey);
+    }
   }
   const shootableRowKeys = new Set(shootable.map(({ spec }) => spec.rowKey));
   const continuityCount = [...continuitySourceByRowKey.keys()].filter((rowKey) =>
@@ -1336,6 +1404,7 @@ function readShotVideoContext(
     imageByRowKey: imageByKey,
     continuitySourceByRowKey,
     continuityCount,
+    waitingForContinuity,
     existingByKey,
     existingIds,
     skippedNoPrompt: specs.length - withPrompt.length,
@@ -1369,12 +1438,33 @@ function buildAuditRows(context: {
   imageByRowKey: Map<string, CanvasNode>;
   existingByKey: Map<string, string>;
   continuitySourceByRowKey: Map<string, string>;
+  waitingForContinuity: Set<string>;
 }, model?: ScriptVideoModelCapabilities | null, graph: CanvasGraphSlice = liveGraph()): ScriptShotAuditRow[] {
   return context.specs.map((spec) => {
     const shotImageNode = context.imageByRowKey.get(spec.rowKey);
     const frameUrl = shotImageNode ? firstFrameUrl(shotImageNode) : null;
     const camera = cameraDirectionText(spec.prompt);
     const promptDuration = motionPromptDurationSeconds(spec.prompt);
+    const currentVideoNode = graph.nodes.find(
+      (node) => node.id === context.existingByKey.get(spec.rowKey),
+    );
+    const rawActualDurationMs = currentVideoNode?.data?.durationMs;
+    const probedDurationSec = parseResourceMeta(currentVideoNode?.data?.resourceMeta)?.durationSec;
+    const actualDurationSec =
+      currentVideoNode?.data?.[SCRIPT_SHOT_VIDEO_ROW_FINGERPRINT_FIELD] === spec.rowFingerprint
+      && (
+        (typeof rawActualDurationMs === 'number'
+          && Number.isFinite(rawActualDurationMs)
+          && rawActualDurationMs > 0)
+        || (typeof probedDurationSec === 'number'
+          && Number.isFinite(probedDurationSec)
+          && probedDurationSec > 0)
+      )
+        ? (typeof rawActualDurationMs === 'number' && rawActualDurationMs > 0
+          ? rawActualDurationMs / 1000
+          : probedDurationSec as number)
+        : null;
+    const generationDurationSec = scriptGenerationDuration(spec.durationSec, model);
     const issues: ScriptShotAuditIssue[] = [];
     if (!spec.hasPrompt) issues.push('noPrompt');
     if (!frameUrl && spec.generationMode !== 'textToVideo') issues.push('noImage');
@@ -1382,6 +1472,7 @@ function buildAuditRows(context: {
     if (cameraDirectionNeedsReview(camera)) issues.push('cameraNeedsReview');
     if (spec.generationMode === 'firstLastFrame' && !scriptShotKeyframes(graph.nodes.find(node => node.id === context.existingByKey.get(spec.rowKey)), graph, spec.rowFingerprint).ok) issues.push('missingLastFrame');
     if (spec.durationSec === null) issues.push('invalidDuration');
+    if (context.waitingForContinuity.has(spec.rowKey)) issues.push('continuityWaiting');
     if (scriptVideoModelIssue(spec, model, graph.nodes.find(node => node.id === context.existingByKey.get(spec.rowKey)), graph, context.continuitySourceByRowKey.get(spec.rowKey))) issues.push('modelUnsupported');
     if (
       promptDuration !== null &&
@@ -1390,11 +1481,19 @@ function buildAuditRows(context: {
     ) {
       issues.push('durationMismatch');
     }
+    if (
+      generationDurationSec !== null &&
+      spec.durationSec !== null &&
+      generationDurationSec > spec.durationSec
+    ) {
+      issues.push('durationRounded');
+    }
     return {
       rowKey: spec.rowKey,
       shotNumber: spec.shotNumber,
       durationSec: spec.durationSec,
-      generationDurationSec: scriptGenerationDuration(spec.durationSec, model),
+      generationDurationSec,
+      actualDurationSec,
       firstFrameUrl: frameUrl ?? '',
       camera,
       promptSource: spec.promptSource,
@@ -1449,22 +1548,103 @@ export function planScriptShotVideos(
         }, graph);
       })
     : context.shootable;
+  const pendingExecutable = pending.filter(
+    ({ spec }) => !context.waitingForContinuity.has(spec.rowKey),
+  );
+  const auditRows = buildAuditRows(context, expectations.modelCapabilities, graph);
+  const editorialSeconds = pendingExecutable.reduce(
+    (total, { spec }) => total + (spec.durationSec ?? 0),
+    0,
+  );
+  const requestedSeconds = pendingExecutable.reduce(
+    (total, { spec }) =>
+      total
+      + (scriptGenerationDuration(spec.durationSec, expectations.modelCapabilities)
+        ?? spec.durationSec
+        ?? DEFAULT_DURATION_SEC),
+    0,
+  );
+  const actualDurations = auditRows
+    .map((row) => row.actualDurationSec)
+    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value) && value > 0);
+  const actualSeconds = actualDurations.reduce((sum, value) => sum + value, 0);
+  // 全片口径和「本轮待提交」分开：弹层上半部分说的是这部片子现在有多长，
+  // 不能把已出片的镜头从账里漏掉，也不能把等待前段的镜算成已提交。
+  const filmEditorialSeconds = context.specs.reduce(
+    (total, spec) => total + (spec.durationSec ?? 0),
+    0,
+  );
+  let filmRequestedSeconds = 0;
+  let filmRequestedUnknownCount = 0;
+  let durationRoundedCount = 0;
+  const durationRoundedShotNumbers: string[] = [];
+  for (const spec of context.specs) {
+    const generationSeconds = scriptGenerationDuration(
+      spec.durationSec,
+      expectations.modelCapabilities,
+    );
+    if (spec.durationSec !== null && generationSeconds === null) filmRequestedUnknownCount += 1;
+    filmRequestedSeconds += generationSeconds ?? 0;
+    if (
+      spec.durationSec !== null &&
+      generationSeconds !== null &&
+      generationSeconds > spec.durationSec
+    ) {
+      durationRoundedCount += 1;
+      durationRoundedShotNumbers.push(spec.shotNumber);
+    }
+  }
+  const scriptNode = graph.nodes.find((node) => node.id === scriptNodeId);
+  const rawTarget = (scriptNode?.data?.scriptResult as
+    | { director_plan?: { target_duration_seconds?: unknown; target_duration_policy?: unknown } }
+    | undefined)?.director_plan?.target_duration_seconds;
+  const rawTargetPolicy = (scriptNode?.data?.scriptResult as
+    | { director_plan?: { target_duration_policy?: unknown } }
+    | undefined)?.director_plan?.target_duration_policy;
+  const targetDurationSeconds =
+    typeof rawTarget === 'number' && Number.isFinite(rawTarget) && rawTarget > 0
+      ? rawTarget
+      : null;
+  const targetDurationPolicy =
+    targetDurationSeconds === null
+      ? null
+      : rawTargetPolicy === 'hard' ? 'hard' : 'soft';
   return {
     ok: true,
     mode: rearm ? 'regenerate' : 'create',
     shotCount: context.shootable.length,
-    pendingCount: pending.length,
+    pendingCount: pendingExecutable.length,
+    waitingCount: context.shootable.filter(({ spec }) => context.waitingForContinuity.has(spec.rowKey)).length,
+    waitingShotNumbers: context.shootable
+      .filter(({ spec }) => context.waitingForContinuity.has(spec.rowKey))
+      .map(({ spec }) => spec.shotNumber),
     willRebuild: context.classification === 'rebuild',
     skippedNoPrompt: context.skippedNoPrompt,
     skippedNoImage: context.skippedNoImage,
     derivedCount: context.existingIds.length,
     continuityCount: context.continuityCount,
-    plannedSeconds: pending.reduce(
-      (total, { spec }) => total + (scriptGenerationDuration(spec.durationSec, expectations.modelCapabilities) ?? spec.durationSec ?? DEFAULT_DURATION_SEC),
-      0,
-    ),
+    plannedSeconds: requestedSeconds,
+    editorialSeconds,
+    requestedSeconds,
+    actualSeconds,
+    actualKnownCount: actualDurations.length,
+    durationGapSeconds: actualDurations.length > 0 ? actualSeconds - editorialSeconds : null,
+    filmEditorialSeconds,
+    filmRequestedSeconds,
+    filmRequestedUnknownCount,
+    filmActualSeconds: actualSeconds,
+    filmActualKnownCount: actualDurations.length,
+    filmDurationGapSeconds: actualDurations.length > 0 ? actualSeconds - filmEditorialSeconds : null,
+    targetDurationSeconds,
+    targetDurationPolicy,
+    targetGapSeconds:
+      targetDurationSeconds !== null && filmRequestedUnknownCount === 0
+        ? filmRequestedSeconds - targetDurationSeconds
+        : null,
+    durationRoundedCount,
+    durationRoundedShotNumbers,
     fallbackPromptCount: context.fallbackPromptCount,
-    rows: buildAuditRows(context, expectations.modelCapabilities, graph),
+    rows: auditRows,
   };
 }
 
@@ -1481,6 +1661,7 @@ function createShotVideoNodes(params: {
   generateVideos: boolean;
   /** 行标识 → 上一镜分镜图节点 id；没有的镜不接承接边。 */
   continuitySourceByRowKey: Map<string, string>;
+  waitingForContinuity: Set<string>;
 }): Array<{ nodeId: string; rowKey: string }> {
   const {
     scriptNodeId,
@@ -1492,6 +1673,7 @@ function createShotVideoNodes(params: {
     defaultDurationSec,
     generateVideos,
     continuitySourceByRowKey,
+    waitingForContinuity,
   } = params;
   if (targets.length === 0) return [];
 
@@ -1552,6 +1734,7 @@ function createShotVideoNodes(params: {
   const created: Array<{ nodeId: string; rowKey: string }> = [];
   targets.forEach(({ spec, shotImageNode }, index) => {
     const position = positions[index] ?? origin;
+    const targetGenerate = generateVideos && !waitingForContinuity.has(spec.rowKey);
     const newNodeId = useCanvasStore.getState().addNode(
       CANVAS_NODE_TYPES.video,
       position,
@@ -1566,7 +1749,10 @@ function createShotVideoNodes(params: {
         deliverySpec,
         quality,
         defaultDurationSec,
-        generateVideos,
+        generateVideos: targetGenerate,
+        waitingForPrevious: waitingForContinuity.has(spec.rowKey),
+        waitingArmedForBatch:
+          generateVideos && waitingForContinuity.has(spec.rowKey),
         modelCapabilities: params.modelCapabilities,
       }),
     );
@@ -1576,12 +1762,12 @@ function createShotVideoNodes(params: {
       useCanvasStore.getState().deleteNodes([newNodeId]);
       return;
     }
-    if (!generateVideos && spec.generationMode === 'firstLastFrame' && shotImageNode) {
+    if (!targetGenerate && spec.generationMode === 'firstLastFrame' && shotImageNode) {
       const video = useCanvasStore.getState().nodes.find(node => node.id === newNodeId);
       const rowIndex = buildScriptRowKeys(scriptRowsOf(scriptNodeId)).indexOf(spec.rowKey);
       if (video && rowIndex >= 0) prepareScriptEndFrameDraft(video, shotImageNode, scriptRowsOf(scriptNodeId)[rowIndex], spec.rowFingerprint);
     }
-    const keyframeNodeIds = ensureShotKeyframeNodes({ scriptNodeId, spec, shotImageNode, generateImages: generateVideos });
+    const keyframeNodeIds = ensureShotKeyframeNodes({ scriptNodeId, spec, shotImageNode, generateImages: targetGenerate });
     ensureShotKeyframeEdges(keyframeNodeIds, newNodeId);
     // 先首帧、再状态画面、后承接：`collectUpstreamImageUrls` 按边序取图，第一张必须是首帧。
     const continuitySourceId = continuitySourceByRowKey.get(spec.rowKey);
@@ -1624,20 +1810,24 @@ export function scatterScriptShotVideos(
     classification,
     deliverySpec,
     continuitySourceByRowKey,
+    waitingForContinuity,
   } = context;
 
   const generateVideos = params.generateVideos === true;
+  const activeShootable = context.shootable.filter(
+    ({ spec }) => !waitingForContinuity.has(spec.rowKey),
+  );
   if (generateVideos) {
-    const modelIssues = context.shootable.flatMap(({ spec }) => {
+    const modelIssues = activeShootable.flatMap(({ spec }) => {
       const reason = scriptVideoModelIssue(spec, params.modelCapabilities, liveGraph().nodes.find(node => node.id === context.existingByKey.get(spec.rowKey)), liveGraph(), context.continuitySourceByRowKey.get(spec.rowKey));
       return reason ? [`第 ${spec.shotNumber} 镜：${reason}`] : [];
     });
     if (modelIssues.length > 0) return { ok: false, reason: modelIssues.join('；') };
-    const missingDuration = context.shootable.filter(({ spec }) => spec.durationSec === null);
+    const missingDuration = activeShootable.filter(({ spec }) => spec.durationSec === null);
     if (missingDuration.length > 0) {
       return { ok: false, reason: `第 ${missingDuration.map(({ spec }) => spec.shotNumber).join('、')} 镜没有明确的正数秒时长，请先填写时长；可以先仅建草稿节点` };
     }
-    const needsTail = context.shootable.filter(({ spec }) => spec.generationMode === 'firstLastFrame'
+    const needsTail = activeShootable.filter(({ spec }) => spec.generationMode === 'firstLastFrame'
       && (classification !== 'rearm' || !scriptShotKeyframes(liveGraph().nodes.find(node => node.id === existingByKey.get(spec.rowKey)), liveGraph(), spec.rowFingerprint).ok));
     if (needsTail.length > 0) {
       return { ok: false, reason: needsTail.map(({ spec }) => {
@@ -1645,7 +1835,7 @@ export function scatterScriptShotVideos(
         return `第 ${spec.shotNumber} 镜：${frames.ok ? '行集合已变化，请先仅建节点，再补齐本镜首尾帧' : frames.reason}`;
       }).join('；') };
     }
-    if (context.shootable.some(({ spec }) => spec.generationMode === 'firstLastFrame') && !params.modelCapabilities?.supportedModes?.includes('firstLastFrame')) {
+    if (activeShootable.some(({ spec }) => spec.generationMode === 'firstLastFrame') && !params.modelCapabilities?.supportedModes?.includes('firstLastFrame')) {
       return { ok: false, reason: '所选模型未声明支持首尾帧，请换模型' };
     }
   }
@@ -1673,6 +1863,11 @@ export function scatterScriptShotVideos(
       }
       // 首帧来源可能换过（分镜图重建过）：身份字段跟着更新，边补到新的那张上。
       const live = useCanvasStore.getState().nodes.find((node) => node.id === nodeId);
+      useCanvasStore.getState().updateNodeData(nodeId, {
+        scriptShotWaitingForPrevious: waitingForContinuity.has(spec.rowKey),
+        scriptShotWaitingArmedForBatch:
+          waitingForContinuity.has(spec.rowKey) && generateVideos,
+      });
       if (shotImageNode && live?.data?.[SCRIPT_SHOT_VIDEO_IMAGE_FIELD] !== shotImageNode.id) {
         useCanvasStore.getState().updateNodeData(nodeId, {
           [SCRIPT_SHOT_VIDEO_IMAGE_FIELD]: shotImageNode.id,
@@ -1694,7 +1889,8 @@ export function scatterScriptShotVideos(
       const frameUrl = firstFrameUrl(shotImageNode) ?? '';
       if (!frameUrl && spec.generationMode !== 'textToVideo') return;
       if (
-        shotVideoNeedsRender({
+        !waitingForContinuity.has(spec.rowKey)
+        && shotVideoNeedsRender({
           nodeId,
           expectedPrompt: spec.prompt,
           expectedDurationSec: spec.durationSec ?? defaultDurationSec,
@@ -1786,6 +1982,7 @@ export function scatterScriptShotVideos(
       defaultDurationSec,
       generateVideos,
       continuitySourceByRowKey,
+      waitingForContinuity,
     });
     addedIds.forEach(({ nodeId, rowKey }) => existingByKey.set(rowKey, nodeId));
     const nodeIds = shootable
@@ -1796,7 +1993,9 @@ export function scatterScriptShotVideos(
       mode: 'rearmed',
       nodeIds,
       addedCount: addedIds.length,
-      armed: generateVideos ? pending.length + addedIds.length : 0,
+      armed: generateVideos
+        ? pending.length + addedIds.filter(({ rowKey }) => !waitingForContinuity.has(rowKey)).length
+        : 0,
       skippedNoImage,
       skippedNoPrompt,
     };
@@ -1818,6 +2017,7 @@ export function scatterScriptShotVideos(
     defaultDurationSec,
     generateVideos,
     continuitySourceByRowKey,
+    waitingForContinuity,
   });
   const nodeIds = created.map(({ nodeId }) => nodeId);
   if (nodeIds.length === 0) {
@@ -1836,9 +2036,109 @@ export function scatterScriptShotVideos(
     mode: classification === 'rebuild' ? 'rebuilt' : 'created',
     nodeIds,
     addedCount: nodeIds.length,
-    armed: generateVideos ? nodeIds.length : 0,
+    armed: generateVideos
+      ? created.filter(({ rowKey }) => !waitingForContinuity.has(rowKey)).length
+      : 0,
     skippedNoImage,
     skippedNoPrompt,
+  };
+}
+
+/**
+ * 严格连续组里，前段真实边界就绪后只解锁「下一镜」。
+ *
+ * 不重新扫全批、不重建节点、不碰已经出片的镜：只把当前 `waitingForPrevious`
+ * 且曾由本轮批次请求过生成的节点，按实时前段结果补上承接边和承接参考，
+ * 再打一次自动提交标记。后续镜仍要等这一镜自己的真实结果，因此链条逐段前进。
+ *
+ * 这不是新的调度器；节点挂载仍走原来的 `canvas_auto_generate_once` 队列。
+ */
+export function resumeWaitingScriptShotVideos(
+  params: ScatterScriptShotVideosParams,
+): {
+  ok: true;
+  unlocked: number;
+  unlockedShotNumbers: string[];
+  waiting: number;
+  waitingShotNumbers: string[];
+} | { ok: false; reason: string } {
+  const graph = liveGraph();
+  const context = readShotVideoContext(params.scriptNodeId, graph, {
+    model: params.model,
+    aspectRatio: params.aspectRatio,
+    quality: params.quality,
+    continuityReference: params.continuityReference === true,
+  });
+  if (!context.ok) return { ok: false, reason: context.reason };
+  const specByRow = new Map(context.specs.map((spec) => [spec.rowKey, spec] as const));
+  const waitingNodes = graph.nodes.filter((node) =>
+    isVideoNode(node)
+    && node.data?.[SCRIPT_SHOT_VIDEO_SOURCE_FIELD] === params.scriptNodeId
+    && node.data?.scriptShotWaitingForPrevious === true
+    && node.data?.scriptShotWaitingArmedForBatch === true,
+  );
+  let unlocked = 0;
+  const unlockedShotNumbers: string[] = [];
+  const waitingShotNumbers: string[] = [];
+  for (const node of waitingNodes) {
+    const rowKey = nodeRowKey(node);
+    const spec = rowKey ? specByRow.get(rowKey) : undefined;
+    if (!spec || context.waitingForContinuity.has(spec.rowKey)) {
+      if (spec) waitingShotNumbers.push(spec.shotNumber);
+      continue;
+    }
+    const shotImageNode = context.imageByRowKey.get(spec.rowKey);
+    const frameUrl = firstFrameUrl(shotImageNode) ?? '';
+    if (!frameUrl && spec.generationMode !== 'textToVideo') {
+      waitingShotNumbers.push(spec.shotNumber);
+      continue;
+    }
+    if (spec.durationSec === null) {
+      waitingShotNumbers.push(spec.shotNumber);
+      continue;
+    }
+    const modelIssue = scriptVideoModelIssue(
+      spec,
+      params.modelCapabilities,
+      node,
+      graph,
+      context.continuitySourceByRowKey.get(spec.rowKey),
+    );
+    if (modelIssue) {
+      waitingShotNumbers.push(spec.shotNumber);
+      continue;
+    }
+    const continuitySourceId = context.continuitySourceByRowKey.get(spec.rowKey);
+    if (shotImageNode) ensureShotVideoEdge(shotImageNode.id, node.id);
+    if (continuitySourceId && spec.generationMode !== 'firstLastFrame') {
+      ensureShotContinuityEdge(continuitySourceId, node.id);
+    } else {
+      removeShotContinuityEdges(node.id);
+    }
+    ensureScriptVideoAssetReferences({
+      scriptNodeId: params.scriptNodeId,
+      videoNodeId: node.id,
+      firstFrameNodeId: shotImageNode?.id,
+      keyframeNodeIds: [],
+      references: spec.assetReferences,
+      model: params.modelCapabilities,
+    });
+    useCanvasStore.getState().updateNodeData(node.id, {
+      scriptShotTailReferenceUrl: capturedTailUrl(continuitySourceId, graph),
+      scriptShotWaitingForPrevious: false,
+      scriptShotWaitingArmedForBatch: false,
+      canvas_auto_generate_once: true,
+      generationError: null,
+    });
+    unlocked += 1;
+    unlockedShotNumbers.push(spec.shotNumber);
+  }
+  return {
+    ok: true,
+    unlocked,
+    unlockedShotNumbers,
+    waiting: waitingShotNumbers.length,
+    waitingShotNumbers,
   };
 }
 

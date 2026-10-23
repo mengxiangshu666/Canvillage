@@ -253,6 +253,38 @@ async def freezone_story_script_generate(
         job_id=job_id,
     )
 
+
+@router.post(
+    "/projects/{project}/freezone/script/assets/complete",
+    tags=[TAG_FREEZONE_TEXT],
+)
+async def complete_script_asset_contents(
+    project: str,
+    body: FreezoneScriptAssetCompletionRequest,
+    user: dict = Depends(get_api_user),
+):
+    """只补全结构化资产定义；不写画布、不生成图片、不扣媒体费用。"""
+    await _resolve_freezone_project(project, user)
+    from novelvideo.services.freezone_content import (
+        complete_missing_freezone_asset_contents,
+    )
+
+    plan, receipts = await complete_missing_freezone_asset_contents(
+        director_plan=body.director_plan,
+        rows=[row.model_dump() for row in body.rows],
+        source_text=body.source_text,
+        model=body.model or None,
+        max_assets=body.max_assets,
+    )
+    return {
+        "ok": True,
+        "data": {
+            "director_plan": plan,
+            "receipts": receipts,
+        },
+    }
+
+
 @router.get("/projects/{project}/freezone/video/camera-templates", tags=[TAG_FREEZONE_VIDEO])
 async def freezone_video_camera_templates(
     project: str,

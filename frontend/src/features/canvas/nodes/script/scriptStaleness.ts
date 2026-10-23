@@ -92,7 +92,7 @@ export function buildScriptRowSnapshots(
 ): ScriptRowSnapshot[] {
   // 没传订阅台账时也要用同一份纯推导台账：否则「生成分镜」写了资产版本快照，
   // 判过期却按空资产重算，刚生成就会自己判 stale。React / 重跑入口仍传带画布认领的 ledger。
-  const activeLedger = ledger ?? collectScriptAssetLedger(rows);
+  const activeLedger = ledger ?? collectScriptAssetLedger(rows, scriptAssetImageNodes(), directorPlan);
   return buildScriptShotSpecs(rows, activeLedger, undefined, directorPlan).map((shot) => ({
     rowKey: shot.rowKey,
     prompt: shot.prompt,
@@ -205,7 +205,15 @@ function scriptDirectorPlanOf(scriptNodeId: string): FreezoneStoryDirectorPlan |
  * 老画布没有任何资产图节点，算出来与传统口径逐字一致。
  */
 export function scriptAssetLedgerOf(scriptNodeId: string): ScriptAssetLedger {
-  return collectScriptAssetLedger(scriptRowsOf(scriptNodeId), scriptAssetImageNodes(scriptNodeId));
+  const scriptNode = useCanvasStore.getState().nodes.find((node) => node.id === scriptNodeId);
+  const directorPlan = (
+    scriptNode?.data?.scriptResult as { director_plan?: FreezoneStoryDirectorPlan | null } | undefined
+  )?.director_plan;
+  return collectScriptAssetLedger(
+    scriptRowsOf(scriptNodeId),
+    scriptAssetImageNodes(scriptNodeId),
+    directorPlan,
+  );
 }
 
 /**

@@ -252,15 +252,15 @@ export function collectScriptCharacters(rows: FreezoneStoryScriptRow[]): ScriptA
     const shotNumber = scriptRowShotNumber(row, index);
     rowCharacters(row).forEach((character) => {
       const name = character.name || `角色${character.slot}`;
-      const existing = entries.get(name);
+      const explicitId =
+        cellText(row, `character_asset_id_${character.slot}`)
+        || cellText(row, `character_id_${character.slot}`);
+      const identity = explicitId || `character:${name.trim().toLowerCase()}`;
+      const existing = entries.get(identity);
       if (existing) {
         if (!existing.imageUrl && character.imageUrl) existing.imageUrl = character.imageUrl;
         if (!existing.sourceImageUrl && character.imageUrl) existing.sourceImageUrl = character.imageUrl;
-        if (!existing.assetId) {
-          existing.assetId =
-            cellText(row, `character_asset_id_${character.slot}`)
-            || cellText(row, `character_id_${character.slot}`);
-        }
+        if (!existing.assetId && explicitId) existing.assetId = explicitId;
         if (existing.identityLocks.length === 0) {
           existing.identityLocks = splitScriptTags(
             cellText(row, `character_identity_locks_${character.slot}`),
@@ -277,14 +277,12 @@ export function collectScriptCharacters(rows: FreezoneStoryScriptRow[]): ScriptA
         if (!existing.shotNumbers.includes(shotNumber)) existing.shotNumbers.push(shotNumber);
         return;
       }
-      entries.set(name, {
-        key: name,
+      entries.set(identity, {
+        key: identity,
         name,
         description: character.description,
         imageUrl: character.imageUrl,
-        assetId:
-          cellText(row, `character_asset_id_${character.slot}`)
-          || cellText(row, `character_id_${character.slot}`),
+        assetId: explicitId,
         identityLocks: splitScriptTags(
           cellText(row, `character_identity_locks_${character.slot}`),
         ),
@@ -311,19 +309,20 @@ export function collectScriptScenes(rows: FreezoneStoryScriptRow[]): ScriptAsset
   rows.forEach((row, index) => {
     // ponytail: keep the asset ledger spatial. Detail-level labels stay in the shot prompt;
     // upgrade to a structured scene taxonomy when the script schema gains one.
-    const tags = splitScriptTags(cellText(row, 'scene_tags')).filter(isReusableSceneTag);
+    const tags = splitScriptTags(cellText(row, 'scene_tags'));
     if (tags.length === 0) return;
     const shotNumber = scriptRowShotNumber(row, index);
     const reference = rowReferenceImageUrl(row);
     tags.forEach((tag, tagIndex) => {
+      if (!isReusableSceneTag(tag)) return;
       const description = namedAssetDescription(row, 'scene_descriptions', tag);
-      const existing = entries.get(tag);
+      const explicitId = parallelCellTextAt(row, 'scene_asset_ids', tagIndex);
+      const identity = explicitId || `scene:${tag.trim().toLowerCase()}`;
+      const existing = entries.get(identity);
       if (existing) {
         if (!existing.description && description) existing.description = description;
         if (!existing.imageUrl && reference) existing.imageUrl = reference;
-        if (!existing.assetId) {
-          existing.assetId = parallelCellTextAt(row, 'scene_asset_ids', tagIndex);
-        }
+        if (!existing.assetId && explicitId) existing.assetId = explicitId;
         if (existing.identityLocks.length === 0) {
           existing.identityLocks = splitScriptTags(cellText(row, 'scene_identity_locks'));
         }
@@ -333,12 +332,12 @@ export function collectScriptScenes(rows: FreezoneStoryScriptRow[]): ScriptAsset
         if (!existing.shotNumbers.includes(shotNumber)) existing.shotNumbers.push(shotNumber);
         return;
       }
-      entries.set(tag, {
-        key: tag,
+      entries.set(identity, {
+        key: identity,
         name: tag,
         description,
         imageUrl: reference,
-        assetId: parallelCellTextAt(row, 'scene_asset_ids', tagIndex),
+        assetId: explicitId,
         identityLocks: splitScriptTags(cellText(row, 'scene_identity_locks')),
         dependencies: splitScriptTags(cellText(row, 'scene_dependencies')),
         sourceImageUrl: null,
@@ -377,12 +376,12 @@ export function collectScriptProps(rows: FreezoneStoryScriptRow[]): ScriptAssetE
     const shotNumber = scriptRowShotNumber(row, index);
     tags.forEach((tag, tagIndex) => {
       const description = namedAssetDescription(row, 'prop_descriptions', tag);
-      const existing = entries.get(tag);
+      const explicitId = parallelCellTextAt(row, 'prop_asset_ids', tagIndex);
+      const identity = explicitId || `prop:${tag.trim().toLowerCase()}`;
+      const existing = entries.get(identity);
       if (existing) {
         if (!existing.description && description) existing.description = description;
-        if (!existing.assetId) {
-          existing.assetId = parallelCellTextAt(row, 'prop_asset_ids', tagIndex);
-        }
+        if (!existing.assetId && explicitId) existing.assetId = explicitId;
         if (existing.identityLocks.length === 0) {
           existing.identityLocks = splitScriptTags(cellText(row, 'prop_identity_locks'));
         }
@@ -392,12 +391,12 @@ export function collectScriptProps(rows: FreezoneStoryScriptRow[]): ScriptAssetE
         if (!existing.shotNumbers.includes(shotNumber)) existing.shotNumbers.push(shotNumber);
         return;
       }
-      entries.set(tag, {
-        key: tag,
+      entries.set(identity, {
+        key: identity,
         name: tag,
         description,
         imageUrl: null,
-        assetId: parallelCellTextAt(row, 'prop_asset_ids', tagIndex),
+        assetId: explicitId,
         identityLocks: splitScriptTags(cellText(row, 'prop_identity_locks')),
         dependencies: splitScriptTags(cellText(row, 'prop_dependencies')),
         sourceImageUrl: null,

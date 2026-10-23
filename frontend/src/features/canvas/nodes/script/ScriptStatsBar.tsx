@@ -34,6 +34,13 @@ export interface ScriptStatsBarProps {
    * 图片节点建出来会按「请先填写提示词」拒绝提交、一直挂着。
    */
   blockedShotNumbers?: readonly string[];
+  /** 来源覆盖账本；机器结构覆盖与人工内容核对分开显示。 */
+  sourceCoverage?: {
+    machine_status?: string;
+    coverage_status?: string;
+    stale?: boolean;
+    human_content_review?: { status?: string; notes?: string };
+  } | null;
 }
 
 const CHIP_CLASS =
@@ -44,6 +51,7 @@ export function ScriptStatsBar({
   rows,
   compact = false,
   blockedShotNumbers = [],
+  sourceCoverage = null,
 }: ScriptStatsBarProps) {
   if (stats.shotCount === 0) return null;
 
@@ -66,9 +74,31 @@ export function ScriptStatsBar({
     blockedShotNumbers.length > 0 ? `${blockedShotNumbers.length} 镜缺图片提示词、无法出图` : '',
     rhythmIssueCount > 0 ? `${rhythmIssueCount} 处相邻镜景别没换（取景会一样）` : '',
     rhythm.firstShotWithoutCharacter ? '首镜没有人物' : '',
+    sourceCoverage?.stale || sourceCoverage?.coverage_status === 'invalid'
+      ? '来源已变化，旧覆盖结论失效'
+      : sourceCoverage?.coverage_status === 'partial'
+        ? '来源仅部分覆盖，需人工核对遗漏'
+        : sourceCoverage?.coverage_status === 'complete'
+          ? '来源结构完整，内容仍需人工核对'
+          : '',
   ]
     .filter(Boolean)
     .join(' · ');
+  const sourceNeedsAttention = Boolean(
+    sourceCoverage
+    && (sourceCoverage.stale
+      || sourceCoverage.coverage_status === 'invalid'
+      || sourceCoverage.coverage_status === 'partial'),
+  );
+  const sourceLabel = !sourceCoverage
+    ? ''
+    : sourceCoverage.stale || sourceCoverage.coverage_status === 'invalid'
+      ? '来源已变更'
+      : sourceCoverage.coverage_status === 'partial'
+        ? '来源部分覆盖'
+        : sourceCoverage.coverage_status === 'complete'
+          ? '结构完整·内容待核'
+          : '来源未核验';
 
   return (
     <div
@@ -82,6 +112,19 @@ export function ScriptStatsBar({
         <Film className="h-3.5 w-3.5 shrink-0" />
         <span className="tabular-nums">{stats.shotCount}</span> 镜
       </span>
+
+      {sourceLabel && (
+        <span
+          className={`${CHIP_CLASS} ${sourceNeedsAttention ? 'text-amber-200/90' : ''}`}
+          title={
+            sourceCoverage?.human_content_review?.notes
+              || '机器只能核对来源单元与镜号的映射；“完整”不代表剧情、台词或事件没有遗漏。'
+          }
+        >
+          <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
+          {sourceLabel}
+        </span>
+      )}
 
       <span className={CHIP_CLASS} title="各行时长之和；解析不出时长的行不计入">
         <Clock className="h-3.5 w-3.5 shrink-0" />

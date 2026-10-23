@@ -17,6 +17,10 @@ const NON_MODEL_REPAIR_RULES = new Set([
   'script.duration.total_budget.v1',
   'script.plan.sequence_membership.v1',
   'script.keyframe.duplicate_plan.v1',
+  // Asset contracts/identity live outside the row-rewrite output.
+  'script.asset.content.complete.v1',
+  'script.assets.identity_conflict.v1',
+  'script.override.user_edited.v1',
 ]);
 
 const CREATIVE_REVIEW_RULES = new Set([

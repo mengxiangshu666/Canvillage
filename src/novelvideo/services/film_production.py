@@ -24,6 +24,7 @@ def compile_film_preproduction_contract(
     output_spec: Mapping[str, Any] | None = None,
     estimate_inputs: Mapping[str, Any] | None = None,
     rewrite_video_negatives: bool = True,
+    input_context: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Compile story, visual, dialogue, prompt, and estimate gates."""
 
@@ -55,6 +56,7 @@ def compile_film_preproduction_contract(
     prompt_rows, prompt_bundle = compile_film_prompt_rows(
         rows,
         rewrite_video_negatives=rewrite_video_negatives,
+        input_context=input_context,
     )
     prompt_audit = audit_film_prompt_bundle(
         build_film_prompt_bundle(

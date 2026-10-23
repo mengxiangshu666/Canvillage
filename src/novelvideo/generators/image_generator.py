@@ -1191,6 +1191,11 @@ def _direct_character_style_prompt(
     )
     style_prompt = str(snapshot.get("image_prompt") or "").strip()
     negative_prompt = str(snapshot.get("negative_prompt") or "").strip()
+    style_lower = style_prompt.casefold()
+    style_is_illustrative = any(
+        token in style_lower
+        for token in ("anime", "动漫", "二次元", "painterly", "水彩", "手绘", "3d", "三维", "卡通", "插画")
+    )
     lines = [
         "村长无限画布角色资产生成任务。",
         f"角色：{character_name}。",
@@ -1211,7 +1216,7 @@ def _direct_character_style_prompt(
                 "PURPOSE: canonical identity reference board for this one character. Single-page four-view sheet, vertical 2:3 board, two equal-width columns, thin light divider lines, one small caption label at the top-left corner of each cell reading exactly: FACE FRONT / FACE SIDE / BODY FRONT / BACK. Top row occupies about 41% of the board height (head-and-shoulders framing); bottom row about 59% (full standing figure).",
                 "VIEW DISCIPLINE: Only the top-left FACE FRONT cell carries a crisp, fully readable face; it is the single facial identity anchor. FACE SIDE is a pure profile turning toward the left edge at matched head-and-shoulders scale; head outline, ear and hair silhouette stay fully preserved while the face area is deliberately softened and blurred so no readable eyes, nose or lips remain. BODY FRONT shows the complete standing figure with the face area likewise softened and blurred, while hair, head silhouette, clothing and body stay sharp. BACK is a strict back view: no looking over the shoulder, no visible face. Both full-body cells use the identical natural standing stance, identical body scale, identical foot baseline and the same outfit; only viewing direction changes. Head top, soles and long hem stay fully inside the frame.",
                 "BG: seamless light warm-gray studio sweep, one continuous surface behind and under the subject. LIGHT: one soft neutral key from the upper front-left with gentle fill from the right, consistent exposure and colour temperature across all four cells, natural contact shadow under the feet. Neutral base state only: no scene, no action, no emotion, no blood, dirt or wetness.",
-                "AVOID: any text other than the four cell labels; no name, age, attribute or brand tags; no UI, logo or watermark; no extra people or background objects; no dramatic scene lighting; no fashion editorial series; no anime, painterly or 3D-render style; do not blur hair, clothing or body; never show more than one readable face.",
+                f"AVOID: any text other than the four cell labels; no name, age, attribute or brand tags; no UI, logo or watermark; no extra people or background objects; no dramatic scene lighting; no fashion editorial series; {'follow the selected illustration style and do not switch to photorealism or live-action fashion editorial' if style_is_illustrative else 'no anime, painterly or 3D-render style'}; do not blur hair, clothing or body, only the two specified face areas may be blurred; never show more than one readable face.",
             ]
         )
     elif identity:
@@ -1236,7 +1241,8 @@ def _direct_character_style_prompt(
     if prompt_template == CHARACTER_PROMPT_TEMPLATE_FOUR_VIEW:
         lines.extend(
             [
-                "禁止文字、字幕、标签、水印、Logo、海报排版和多余装饰；"
+                "只允许四个格角标 FACE FRONT / FACE SIDE / BODY FRONT / BACK；除此以外的文字、字幕、标签、"
+                "水印、Logo、海报排版和多余装饰一律禁止；"
                 "不要省略背面视图，不要把四视图拆成多张独立图片。",
                 f"必须避免：{negative_prompt}" if negative_prompt else "",
             ]

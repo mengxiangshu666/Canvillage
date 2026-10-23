@@ -15,6 +15,8 @@ export interface FreezoneStoryScriptRow {
   character_state_start?: Record<string, string> | null;
   character_state_end?: Record<string, string> | null;
   shot_id?: string | null; shot_order?: number | null; display_shot_no?: string | null; shot_no?: string | number | null;
+  /** 用户在表格里明确手改的字段；保存/升级不得静默覆盖。 */
+  user_edited_fields?: string[] | null;
   duration?: string | number | null;
   visual_description?: string | null;
   shot_purpose?: string | null;
@@ -28,18 +30,24 @@ export interface FreezoneStoryScriptRow {
   character_1?: string | null;
   character_description_1?: string | null;
   character_image_1?: string | null;
+  character_asset_id_1?: string | null;
+  character_id_1?: string | null;
   character_2?: string | null;
   character_description_2?: string | null;
   character_image_2?: string | null;
+  character_asset_id_2?: string | null;
+  character_id_2?: string | null;
   reference?: string | null;
   keyframe_index?: number | null;
   shot?: string | null;
   character_action?: string | null;
   emotion?: string | null;
   scene_tags?: string | null;
+  scene_asset_ids?: string[] | null;
   scene_descriptions?: Record<string, string> | null;
   prop_descriptions?: Record<string, string> | null;
   prop_tags?: string | null;
+  prop_asset_ids?: string[] | null;
   prop_state_start?: string | null;
   prop_state_end?: string | null;
   prop_state_change?: string | null;
@@ -51,6 +59,8 @@ export interface FreezoneStoryScriptRow {
   transition_plan?: string | null;
   generation_mode?: string | null;
   reference_requirements?: string | null;
+  source_unit_ids?: string[] | null;
+  source_excerpt?: string | null;
   [key: string]: unknown;
 }
 
@@ -152,10 +162,56 @@ export interface FreezoneStoryScriptResult {
   director_plan?: FreezoneStoryDirectorPlan | null;
   rows: FreezoneStoryScriptRow[];
   contract_report?: ScriptContractReport | null;
+  /** 来源覆盖账本；机器结构覆盖与人工内容核对分开记录。 */
+  source_coverage?: {
+    schema?: string;
+    source_hash?: string;
+    input_kind?: string;
+    machine_status?: 'complete' | 'partial' | 'unverifiable' | 'invalid';
+    coverage_status?: 'complete' | 'partial' | 'unverifiable' | 'invalid';
+    transcript_available?: boolean;
+    stale?: boolean;
+    human_content_review?: {
+      status?: 'unverified' | 'partial' | 'complete' | 'rejected';
+      notes?: string;
+      reviewed_at?: string | null;
+    };
+    issues?: { code?: string; message?: string; row_index?: number | null; unit_id?: string | null }[];
+    units?: { unit_id?: string; kind?: string; status?: string; line_start?: number; line_end?: number; excerpt?: string; shot_ids?: string[] }[];
+    video_anchors?: {
+      schema?: string;
+      sampling_mode?: string;
+      source_sha256?: string;
+      source_duration_seconds?: number | null;
+      transcript_available?: boolean;
+      frames?: {
+        index?: number;
+        file?: string;
+        frame_pts?: number | null;
+        time_seconds?: number | null;
+        estimated?: boolean;
+        source_kind?: string;
+      }[];
+    } | null;
+  } | null;
+}
+
+export interface FreezoneStoryAssetContent {
+  role: 'character' | 'scene' | 'prop';
+  name: string;
+  subject_kind?: 'human' | 'child' | 'animal' | 'robot' | 'object' | 'abstract' | 'other';
+  fields?: Record<string, string>;
+  not_applicable?: Record<string, string>;
+  source?: 'source_text' | 'reference_image' | 'assumption' | 'mixed';
+  assumption_reason?: string;
+  reference_image?: string;
 }
 
 export interface FreezoneStoryDirectorPlan {
   target_duration_seconds?: number | null;
+  target_duration_policy?: 'soft' | 'hard' | null;
+  /** 结构化资产基准；旧自由稿为空，不因此判定不完整。 */
+  asset_contents?: FreezoneStoryAssetContent[];
   story_promise?: string;
   protagonist_goal?: string;
   core_conflict?: string;

@@ -292,6 +292,34 @@ def test_script_media_gate_blocks_empty_but_allows_valid_freeform_prompts():
     assert freeform["advisory_count"] > 0
 
 
+def test_structured_asset_gap_blocks_media_but_freeform_script_still_passes():
+    row = {**_row(), "character_1": "沈昭昭_现代"}
+    structured = script_media_action_gate(
+        [row],
+        action=SCRIPT_MEDIA_ACTION_STORYBOARD_IMAGES,
+        director_plan={
+            "asset_contents": [{
+                "role": "character",
+                "name": "沈昭昭_现代",
+                "subject_kind": "human",
+                "fields": {"age_stage": "28岁", "base_wardrobe": "深色大衣"},
+                "source": "source_text",
+            }],
+        },
+    )
+    assert structured["allowed"] is False
+    assert any(
+        issue["rule_id"] == "script.asset.content.complete.v1"
+        for issue in structured["blocking_issues"]
+    )
+    legacy = script_media_action_gate(
+        [row],
+        action=SCRIPT_MEDIA_ACTION_STORYBOARD_IMAGES,
+        director_plan={"asset_contents": []},
+    )
+    assert legacy["allowed"] is True
+
+
 def test_script_media_gate_still_blocks_rows_without_a_prompt():
     result = script_media_action_gate(
         [_row(shot_prompt="", visual="")],

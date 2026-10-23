@@ -66,6 +66,18 @@ async def run_freezone_video_compose(**kwargs: Any) -> Path:
     return await run(**kwargs)
 
 
+async def probe_freezone_video_duration(source_path: str) -> float:
+    from novelvideo.freezone.jobs import _probe_video_duration
+
+    return await _probe_video_duration(source_path)
+
+
+def read_freezone_frame_anchors(project_dir: Path, job_id: str) -> dict[str, Any] | None:
+    from novelvideo.freezone.jobs import read_freezone_frame_anchors as read
+
+    return read(project_dir, job_id)
+
+
 async def run_freezone_video_cut(**kwargs: Any) -> list[dict[str, Any]]:
     from novelvideo.freezone.jobs import run_freezone_video_cut as run
 
@@ -73,6 +85,8 @@ async def run_freezone_video_cut(**kwargs: Any) -> list[dict[str, Any]]:
 
 
 __all__ = [
+    "probe_freezone_video_duration",
+    "read_freezone_frame_anchors",
     "run_freezone_analyze_shots",
     "run_freezone_audio_separate",
     "run_freezone_edit",

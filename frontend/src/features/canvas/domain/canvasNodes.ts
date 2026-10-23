@@ -486,6 +486,8 @@ export interface VideoComposeNodeData extends NodeDisplayData {
    * `ComposeTimelineState`，这里存 unknown 以免领域层反向依赖 compose 特性层。
    */
   draftTimeline?: unknown;
+  /** 逐接点与整片审片记录；绑定当前素材、裁剪、速度和输出文件。 */
+  scriptFilmReview?: unknown;
   [key: string]: unknown;
 }
 

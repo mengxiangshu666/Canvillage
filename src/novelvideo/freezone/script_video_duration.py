@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 import re
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import ValidationError
 from pydantic_ai import Agent, ModelRetry, RunContext
@@ -38,24 +38,51 @@ SCRIPT_CONTENT_DURATION_GUIDANCE = (
 )
 
 
-def explicit_script_duration_target(*texts: str) -> float | None:
-    """Read explicit whole-film timing only; later user steering takes precedence."""
+def _explicit_duration_matches(texts: tuple[str, ...]) -> list[tuple[re.Match[str], float, int]]:
     number_unit = r"(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>秒钟?|seconds?|secs?|s|分钟|minutes?|mins?)(?![A-Za-z])"
     # ponytail: literal explicit timing only; ranges and implied timing need user clarification.
     patterns = (
-        r"(?:整片|全片|总时长|整体时长|视频总长|总长度|total\s+duration)\s*(?:的?时长)?\s*(?:要求|为|是|约|大约|控制在|设为|[:：=])*\s*" + number_unit,
-        r"(?:做|制作|生成|要做|想做)\s*(?:一个|一段|一支|一部|个)?\s*" + number_unit + r"\s*(?:的)?\s*(?:视频|短片|影片|片子|电影|动画)",
+        r"(?:整片|全片|总时长|整体时长|视频总长|总长度|total\s+duration)\s*(?:的?时长)?\s*(?:要求|为|是|约|大约|控制在|设为|必须|务必|硬性|严格|恰好|正好|[:：=])*\s*" + number_unit,
+        r"(?:做|制作|生成|要做|想做)\s*(?:一个|一段|一支|一部|个)?\s*(?:约|大约)?\s*" + number_unit + r"\s*(?:的)?\s*(?:视频|短片|影片|片子|电影|动画)",
     )
-    target = None
-    for text in texts:
-        matches = sorted((match for pattern in patterns for match in re.finditer(pattern, text or "", re.IGNORECASE)), key=lambda match: match.start())
+    found: list[tuple[re.Match[str], float, int]] = []
+    for text_index, text in enumerate(texts):
+        matches = sorted(
+            (match for pattern in patterns for match in re.finditer(pattern, text or "", re.IGNORECASE)),
+            key=lambda match: match.start(),
+        )
         for match in matches:
             value = float(match["value"])
             if match["unit"].casefold() in {"分钟", "minute", "minutes", "min", "mins"}:
                 value *= 60
             if math.isfinite(value) and value > 0:
-                target = value
-    return target
+                found.append((match, value, text_index))
+    return found
+
+
+def explicit_script_duration_target(*texts: str) -> float | None:
+    """Read explicit whole-film timing only; later user steering takes precedence."""
+    matches = _explicit_duration_matches(texts)
+    return matches[-1][1] if matches else None
+
+
+def explicit_script_duration_target_policy(*texts: str) -> Literal["soft", "hard"] | None:
+    """Distinguish "约 60 秒" from an explicit hard requirement.
+
+    Only wording next to the matched target counts; the model never decides this.
+    """
+    matches = _explicit_duration_matches(texts)
+    if not matches:
+        return None
+    match, _value, text_index = matches[-1]
+    text = texts[text_index] or ""
+    prefix = text[max(0, match.start() - 16):match.start("value")]
+    hard_markers = (
+        "必须", "务必", "一定要", "严格", "恰好", "正好", "不能超过", "不得超过",
+        "硬性", "required", "exactly", "must", "no longer than", "not exceed",
+    )
+    folded = prefix.casefold()
+    return "hard" if any(marker.casefold() in folded for marker in hard_markers) else "soft"
 
 
 def resolve_script_video_duration_plan(model_id: str | None) -> dict[str, Any] | None:
@@ -110,8 +137,11 @@ def script_video_duration_instruction(plan: dict[str, Any] | None) -> str:
 
 def validate_script_video_duration(ctx: RunContext[Any], output: Any) -> Any:
     target = ctx.deps.get("target_duration_seconds") if isinstance(ctx.deps, dict) else None
+    target_policy = ctx.deps.get("target_duration_policy") if isinstance(ctx.deps, dict) else None
     if hasattr(output, "director_plan"):
         output.director_plan.target_duration_seconds = target
+        if target is not None:
+            output.director_plan.target_duration_policy = target_policy
     plan = ctx.deps.get("video_duration_plan") if isinstance(ctx.deps, dict) else None
     if not plan:
         return output
@@ -133,7 +163,14 @@ def validate_script_video_duration(ctx: RunContext[Any], output: Any) -> Any:
     return output
 
 
-async def run_duration_planned_script(agent: Any, task: Any, video_model: str | None, *, target_duration_seconds: float | None = None) -> Any:
+async def run_duration_planned_script(
+    agent: Any,
+    task: Any,
+    video_model: str | None,
+    *,
+    target_duration_seconds: float | None = None,
+    target_duration_policy: Literal["soft", "hard"] | None = None,
+) -> Any:
     plan = resolve_script_video_duration_plan(video_model)
     if plan is not None or video_model is not None:
         instruction = script_video_duration_instruction(plan) if plan else (
@@ -143,9 +180,27 @@ async def run_duration_planned_script(agent: Any, task: Any, video_model: str | 
         )
         task = [task[0] + "\n\n" + instruction, *task[1:]] if isinstance(task, list) else task + "\n\n" + instruction
     if target_duration_seconds is not None:
-        instruction = f"用户整片目标为{target_duration_seconds:g}秒。优先保证表演完整、动作因果和跨段连续性，允许合理超出目标；不要为凑秒数压缩反应、增加切口或自动裁剪。导演规划应如实说明时长取舍，不宣称超时的脚本精确满足目标。"
+        if target_duration_policy == "hard":
+            instruction = (
+                f"用户整片目标是硬约束：{target_duration_seconds:g}秒。先按内容求可行安排，"
+                "再复核合法档位与全片目标；若无法兼顾原台词、必要因果或连续动作，"
+                "必须具体说明冲突并保留待决定，不自动删剧情、平均压时或把差额塞给末镜，"
+                "也不得宣称已精确达标。"
+            )
+        else:
+            instruction = (
+                f"用户整片目标是软目标：约{target_duration_seconds:g}秒。优先保证表演完整、"
+                "动作因果和跨段连续性，允许有理由地偏离并如实显示差额；不要为凑秒数压缩反应、"
+                "增加切口或自动裁剪。导演规划应如实说明时长取舍，不宣称超时的脚本精确满足目标。"
+            )
         task = [task[0] + "\n\n" + instruction, *task[1:]] if isinstance(task, list) else task + "\n\n" + instruction
-    run_kwargs: dict[str, Any] = {"deps": {"video_duration_plan": plan, "target_duration_seconds": target_duration_seconds}} if plan or target_duration_seconds is not None else {}
+    run_kwargs: dict[str, Any] = {
+        "deps": {
+            "video_duration_plan": plan,
+            "target_duration_seconds": target_duration_seconds,
+            "target_duration_policy": target_duration_policy,
+        },
+    } if plan or target_duration_seconds is not None else {}
     if isinstance(agent, Agent):
         run_kwargs["event_stream_handler"] = _consume_script_stream
     try:

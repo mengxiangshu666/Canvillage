@@ -150,9 +150,26 @@ async def generate_sequence_rewrite(
         "让新片序中的动作、反应、停顿、状态变化和段尾结果连成因果，"
         "关键画面目标与用途一致，参考资料中的镜数、时长和帧数不作为固定模板。",
     ])
-    from novelvideo.freezone.script_video_duration import run_duration_planned_script
+    from novelvideo.freezone.script_video_duration import (
+        explicit_script_duration_target,
+        explicit_script_duration_target_policy,
+        run_duration_planned_script,
+    )
 
-    result = (await run_duration_planned_script(create_sequence_rewrite_agent(model), task, video_model)).output
+    target_duration = explicit_script_duration_target(source_text)
+    target_policy = explicit_script_duration_target_policy(source_text)
+    result = (await run_duration_planned_script(
+        create_sequence_rewrite_agent(model),
+        task,
+        video_model,
+        **(
+            {
+                "target_duration_seconds": target_duration,
+                "target_duration_policy": target_policy,
+            }
+            if target_duration is not None else {}
+        ),
+    )).output
     updates = [*result.sequence_plans, *([result.sequence_plan] if result.sequence_plan is not None else [])]
     update_ids = [update.sequence_id for update in updates]
     if len(set(update_ids)) != len(update_ids) or set(update_ids) - set(sequence_ids):

@@ -4,6 +4,7 @@ import type { FreezoneStoryScriptRow } from '@/api/ops';
 import { useState } from 'react';
 import { ScanEye } from 'lucide-react';
 import { ScriptAssetReview } from './ScriptAssetReview';
+import { ScriptAssetCompletionButton } from './ScriptAssetCompletionButton';
 import { isRenderableImageSrc, resolveImageDisplayUrl } from '@/features/canvas/application/imageData';
 import {
   SCRIPT_ASSET_ROLE_LABEL,
@@ -40,9 +41,10 @@ export interface ScriptAssetViewProps {
    * 「生成分镜」用台账 A、这里显示台账 B，资产图出图后会出现一边认到一边没认到。
    */
   ledger?: ScriptAssetLedger;
+  scriptNodeId?: string;
 }
 
-export function ScriptAssetView({ rows, ledger }: ScriptAssetViewProps) {
+export function ScriptAssetView({ rows, ledger, scriptNodeId }: ScriptAssetViewProps) {
   const [reviewId, setReviewId] = useState<string | null>(null);
   // 不传台账也要能独立渲染（单测 / 别的入口），所以这里有个内部兜底。
   const computed = useScriptAssetLedger(null, rows);
@@ -63,6 +65,9 @@ export function ScriptAssetView({ rows, ledger }: ScriptAssetViewProps) {
   return (
     <div className="ui-scrollbar flex h-full w-full flex-col gap-3 overflow-auto p-1">
       {reviewedAsset?.imageUrl && <ScriptAssetReview key={`${reviewedAsset.id}-${reviewedAsset.generatedOwnerId}-${reviewedAsset.imageUrl}-${reviewedAsset.revision}-${reviewedAsset.contentHash}`} asset={reviewedAsset} onClose={() => setReviewId(null)} />}
+      {scriptNodeId && (
+        <ScriptAssetCompletionButton scriptNodeId={scriptNodeId} />
+      )}
       {missing.length > 0 && (
         <p className="rounded-[8px] bg-amber-400/[0.08] px-2 py-1.5 text-[11px] text-amber-100/85">
           {`还有 ${describeMissingAssets(missing)}没有可用的资产图（共 ${missing.length} 项）。`}

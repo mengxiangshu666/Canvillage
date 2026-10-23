@@ -905,9 +905,26 @@ async def generate_freezone_shot_rewrite(
         source_text=source_text,
         director_plan=director_plan,
     )
-    from novelvideo.freezone.script_video_duration import run_duration_planned_script
+    from novelvideo.freezone.script_video_duration import (
+        explicit_script_duration_target,
+        explicit_script_duration_target_policy,
+        run_duration_planned_script,
+    )
 
-    response = await run_duration_planned_script(get_freezone_shot_rewrite_agent(model), task, video_model)
+    target_duration = explicit_script_duration_target(source_text)
+    target_policy = explicit_script_duration_target_policy(source_text)
+    response = await run_duration_planned_script(
+        get_freezone_shot_rewrite_agent(model),
+        task,
+        video_model,
+        **(
+            {
+                "target_duration_seconds": target_duration,
+                "target_duration_policy": target_policy,
+            }
+            if target_duration is not None else {}
+        ),
+    )
     rewritten = response.output
 
     table = [dict(row) for row in rows]
@@ -983,6 +1000,9 @@ def merge_freezone_shot_rewrite(
             continue
         target[field] = value
 
+    # An explicit rewrite replaces authored content for this shot; the old
+    # manual-override markers must not claim the new text was user-authored.
+    target["user_edited_fields"] = []
     return target
 
 
@@ -1312,6 +1332,202 @@ def get_freezone_story_script_agent(
     return _story_script_agents[cache_key]
 
 
+FREEZONE_ASSET_CONTENT_SYSTEM_PROMPT = (
+    "你是资产设定校对员。只补全目标资产的结构化基准，不改剧情、不换身份。"
+    "已有事实优先原样保留；原文没有依据的细节只能作为创作假设，并在 assumption_reason 说明。"
+    "每个适用字段写具体可见事实；确实不适用的字段写入 not_applicable 并给理由。"
+    "不能写未知、无、N/A 冒充完整；不能把场景、动作或临时状态写进永久身份基准。"
+)
+
+
+def build_freezone_asset_content_task(
+    *,
+    director_plan: Mapping[str, Any],
+    asset_key: str,
+    source_text: str,
+    rows: Sequence[Mapping[str, Any]],
+) -> str:
+    import json
+
+    contracts = director_plan.get("asset_contents") if isinstance(director_plan, Mapping) else None
+    contracts = [item for item in contracts if isinstance(item, Mapping)] if isinstance(contracts, list) else []
+    target = next(
+        (
+            item for item in contracts
+            if f"{str(item.get('role') or '').strip().lower()}:{str(item.get('name') or '').strip().casefold()}" == asset_key.strip().casefold()
+        ),
+        None,
+    )
+    role, _, name = asset_key.partition(":")
+    relevant = []
+    for index, row in enumerate(rows[:40]):
+        if len(relevant) >= 8:
+            break
+        blob = " ".join(
+            str(row.get(field) or "")
+            for field in ("character_1", "character_2", "scene_tags", "prop_tags", "visual_description")
+        )
+        if name and name.casefold() in blob.casefold():
+            relevant.append({
+                "shot_no": row.get("shot_no"),
+                "shot_id": row.get("shot_id"),
+                "visual_description": str(row.get("visual_description") or "")[:800],
+                "scene_tags": row.get("scene_tags"),
+                "prop_tags": row.get("prop_tags"),
+                "character_1": row.get("character_1"),
+                "character_2": row.get("character_2"),
+            })
+    payload = {
+        "target_asset_key": asset_key,
+        "target_contract": target,
+        "referenced_shots": relevant,
+        "source_excerpt": (source_text or "")[:12000],
+    }
+    return (
+        "请只返回目标资产的完整 FreezoneStoryAssetContent。\n"
+        f"目标角色只能是 {role or '(未知)'}，名称必须保持 {name or '(未知)'}。\n"
+        "已有字段不得删改；只补缺失或明确不适用。\n"
+        "输入：\n"
+        + json.dumps(payload, ensure_ascii=False, indent=2)
+    )
+
+
+def create_freezone_asset_content_agent(
+    model: str | None = None,
+    *,
+    asset_key: str,
+    rows: Sequence[Mapping[str, Any]],
+) -> Agent:
+    from novelvideo.ports.story_script import FreezoneStoryAssetContent
+
+    resolved = resolve_freezone_story_script_model(model)
+    llm_model, _resolved_id = _direct_or_newapi_text_model(
+        kind="text",
+        model_ref=resolved["id"] if resolved["provider"] == "direct" else resolved["model"],
+        model_env="FREEZONE_STORY_SCRIPT_MODEL",
+        default_model=resolved["model"],
+    )
+    agent = Agent(
+        llm_model,
+        system_prompt=FREEZONE_ASSET_CONTENT_SYSTEM_PROMPT,
+        output_type=PromptedOutput(FreezoneStoryAssetContent),
+        output_retries=2,
+        name="Freezone Asset Content Completer",
+    )
+
+    @agent.output_validator
+    def require_only_target_and_complete(contract: FreezoneStoryAssetContent) -> FreezoneStoryAssetContent:
+        from novelvideo.freezone.script_asset_content import (
+            asset_content_issues,
+            normalized_asset_key,
+        )
+
+        if normalized_asset_key(contract.role, contract.name) != asset_key.strip().casefold():
+            raise ModelRetry("只能补全指定资产，不能改角色或名称")
+        issues = [
+            issue
+            for issue in asset_content_issues(
+                rows,
+                {"asset_contents": [contract.model_dump()]},
+            )
+            if issue.get("detail", {}).get("asset_key") == asset_key.strip().casefold()
+        ]
+        if issues:
+            raise ModelRetry(issues[0]["message"])
+        return contract
+
+    return agent
+
+
+async def complete_freezone_asset_content(
+    *,
+    director_plan: Mapping[str, Any],
+    asset_key: str,
+    source_text: str,
+    rows: Sequence[Mapping[str, Any]],
+    model: str | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Complete one asset definition only; never touches rows or media."""
+
+    from novelvideo.freezone.script_asset_content import (
+        asset_content_issues,
+        merge_asset_content_contract,
+    )
+
+    agent = create_freezone_asset_content_agent(model, asset_key=asset_key, rows=rows)
+    task = build_freezone_asset_content_task(
+        director_plan=director_plan,
+        asset_key=asset_key,
+        source_text=source_text,
+        rows=rows,
+    )
+    response = await agent.run(task)
+    contract = response.output
+    plan, changed = merge_asset_content_contract(
+        director_plan,
+        asset_key,
+        fields=contract.fields,
+        not_applicable=contract.not_applicable,
+        assumption_reason=contract.assumption_reason,
+        source=contract.source,
+    )
+    remaining = [
+        issue
+        for issue in asset_content_issues(rows, plan)
+        if issue.get("detail", {}).get("asset_key") == asset_key.strip().casefold()
+    ]
+    if remaining:
+        raise ValueError(remaining[0]["message"])
+    return plan, {
+        "asset_key": asset_key,
+        "changed_fields": changed,
+        "media_repair_triggered": False,
+        "paid_generation_triggered": False,
+    }
+
+
+async def complete_missing_freezone_asset_contents(
+    *,
+    director_plan: Mapping[str, Any],
+    rows: Sequence[Mapping[str, Any]],
+    source_text: str = "",
+    model: str | None = None,
+    max_assets: int = 6,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Complete up to ``max_assets`` assets that currently report content gaps.
+
+    Partial success is kept: one failed asset does not throw away the others.
+    """
+    from novelvideo.freezone.script_asset_content import asset_content_issues
+
+    plan = dict(director_plan)
+    receipts: list[dict[str, Any]] = []
+    keys: list[str] = []
+    for issue in asset_content_issues(rows, plan):
+        key = str((issue.get("detail") or {}).get("asset_key") or "")
+        if key and key not in keys:
+            keys.append(key)
+    for key in keys[: max(1, min(int(max_assets), 20))]:
+        try:
+            plan, receipt = await complete_freezone_asset_content(
+                director_plan=plan,
+                asset_key=key,
+                source_text=source_text,
+                rows=rows,
+                model=model,
+            )
+            receipts.append({**receipt, "status": "completed"})
+        except Exception as exc:  # noqa: BLE001 - report per-asset failure, keep others
+            receipts.append({
+                "asset_key": key,
+                "status": "failed",
+                "error": str(exc)[:1000],
+                "media_repair_triggered": False,
+                "paid_generation_triggered": False,
+            })
+    return plan, receipts
+
+
 def create_freezone_shot_rewrite_agent(model: str | None = None) -> Agent:
     """创建单镜重写 Agent。
 
@@ -1579,9 +1795,13 @@ async def generate_freezone_story_script(
     character_refs: Sequence[Mapping[str, Any]] | None = None,
 ):
     """执行故事脚本生成。"""
-    from novelvideo.freezone.script_video_duration import explicit_script_duration_target
+    from novelvideo.freezone.script_video_duration import (
+        explicit_script_duration_target,
+        explicit_script_duration_target_policy,
+    )
 
     target_duration = explicit_script_duration_target(source_text, prompt)
+    target_policy = explicit_script_duration_target_policy(source_text, prompt)
     if not source_text.strip():
         source_text, prompt = prompt.strip(), ""
     if not source_text:
@@ -1598,7 +1818,13 @@ async def generate_freezone_story_script(
     response = await run_duration_planned_script(get_freezone_story_script_agent(
         model,
         expected_row_count=expected_rows or None,
-    ), task, video_model, **({"target_duration_seconds": target_duration} if target_duration is not None else {}))
+    ), task, video_model, **(
+        {
+            "target_duration_seconds": target_duration,
+            "target_duration_policy": target_policy,
+        }
+        if target_duration is not None else {}
+    ))
     return response.output
 
 
@@ -1761,11 +1987,21 @@ async def generate_freezone_story_script_with_vision(
     ]
     from novelvideo.freezone.script_video_duration import run_duration_planned_script
 
-    from novelvideo.freezone.script_video_duration import explicit_script_duration_target
+    from novelvideo.freezone.script_video_duration import (
+        explicit_script_duration_target,
+        explicit_script_duration_target_policy,
+    )
 
     target_duration = explicit_script_duration_target(source_text, prompt)
+    target_policy = explicit_script_duration_target_policy(source_text, prompt)
     response = await run_duration_planned_script(get_freezone_vision_story_script_agent(model), [task, *attachments], video_model,
-        **({"target_duration_seconds": target_duration} if target_duration is not None else {}))
+        **(
+            {
+                "target_duration_seconds": target_duration,
+                "target_duration_policy": target_policy,
+            }
+            if target_duration is not None else {}
+        ))
     return response.output
 
 

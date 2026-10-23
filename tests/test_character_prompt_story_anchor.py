@@ -95,3 +95,27 @@ def test_unknown_template_falls_back_to_the_single_portrait_prompt(tmp_path):
 
     assert "正面全身角色基准图" in prompt
     assert "character identity board" not in prompt
+
+
+def test_four_view_style_and_label_rules_do_not_contradict(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        "novelvideo.styles.project_style.build_project_style_snapshot",
+        lambda *args, **kwargs: {
+            "image_prompt": "anime painterly watercolor style",
+            "negative_prompt": "",
+        },
+    )
+    prompt = _direct_character_style_prompt(
+        style="anime",
+        project_dir=str(tmp_path),
+        image_model="direct/test",
+        subject_prompt="角色甲",
+        character_name="甲",
+        prompt_template="four_view",
+    )
+
+    assert "anime painterly watercolor style" in prompt
+    assert "no anime, painterly or 3D-render style" not in prompt
+    assert "follow the selected illustration style" in prompt
+    assert "只允许四个格角标" in prompt
+    assert "只允许指定的脸区模糊" in prompt or "only the two specified face areas" in prompt

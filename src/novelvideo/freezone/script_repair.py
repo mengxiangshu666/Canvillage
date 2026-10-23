@@ -38,6 +38,11 @@ NON_MODEL_REPAIR_RULES = frozenset(
         "script.duration.total_budget.v1",
         "script.plan.sequence_membership.v1",
         "script.keyframe.duplicate_plan.v1",
+        # Asset contracts live in the director plan / project identity data, not the
+        # row-rewrite output. A row call would spend money without touching them.
+        "script.asset.content.complete.v1",
+        "script.assets.identity_conflict.v1",
+        "script.override.user_edited.v1",
     }
 )
 

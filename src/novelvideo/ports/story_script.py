@@ -44,6 +44,11 @@ class FreezoneStoryScriptRow(BaseModel):
     display_shot_no: Annotated[str, SkipJsonSchema()] = Field(
         default="", description="用户看到的镜号，允许独立修改"
     )
+    user_edited_fields: Annotated[list[str], SkipJsonSchema()] = Field(
+        default_factory=list,
+        max_length=80,
+        description="用户在画布表格里明确改过的字段；自动编译/升级不得静默覆盖这些字段",
+    )
     shot_no: int = Field(description="镜号")
     sequence_ids: list[str] = Field(default_factory=list, max_length=100, description="本镜所属导演段落编号；与对应sequence.shot_nos双向一致，允许交叉归属")
     duration: float = Field(gt=0, allow_inf_nan=False, description="时长，单位秒，可为小数")
@@ -62,9 +67,21 @@ class FreezoneStoryScriptRow(BaseModel):
     character_1: str = Field(default="", description="角色1")
     character_description_1: str = Field(default="", description="角色描述1")
     character_image_1: str = Field(default="", description="角色图1，由后端回填")
+    character_asset_id_1: Annotated[str | None, SkipJsonSchema()] = Field(
+        default=None, max_length=200, description="角色1的稳定资产身份，由服务端/前端项目数据持有"
+    )
+    character_id_1: Annotated[str | None, SkipJsonSchema()] = Field(
+        default=None, max_length=200, description="角色1资产身份的历史别名"
+    )
     character_2: str = Field(default="", description="角色2")
     character_description_2: str = Field(default="", description="角色描述2")
     character_image_2: str = Field(default="", description="角色图2，由后端回填")
+    character_asset_id_2: Annotated[str | None, SkipJsonSchema()] = Field(
+        default=None, max_length=200, description="角色2的稳定资产身份，由服务端/前端项目数据持有"
+    )
+    character_id_2: Annotated[str | None, SkipJsonSchema()] = Field(
+        default=None, max_length=200, description="角色2资产身份的历史别名"
+    )
     character_state_start: dict[str, Annotated[str, Field(max_length=1000)]] = Field(default_factory=dict, max_length=2, description="本镜角色名到起始服装、装备及持久外观状态的映射；无人物为空。同场未变化时逐字继承前镜结束状态，不含姿态或情绪")
     character_state_end: dict[str, Annotated[str, Field(max_length=1000)]] = Field(default_factory=dict, max_length=2, description="角色名到结束服装、装备及持久外观状态的映射；不变逐字照抄起始，有变化须在实际动作中交代")
     reference: str = Field(default="", description="关键帧参考图，由后端回填")
@@ -73,6 +90,16 @@ class FreezoneStoryScriptRow(BaseModel):
     character_action: str = Field(default="", description="角色动作")
     emotion: str = Field(default="", description="情绪")
     scene_tags: str = Field(default="", description="场景标签")
+    scene_asset_ids: Annotated[list[str] | None, SkipJsonSchema()] = Field(
+        default=None,
+        max_length=30,
+        description="与 scene_tags 同序的稳定场景资产身份；由项目数据持有，模型不生成",
+    )
+    prop_asset_ids: Annotated[list[str] | None, SkipJsonSchema()] = Field(
+        default=None,
+        max_length=30,
+        description="与 prop_tags 同序的稳定道具资产身份；由项目数据持有，模型不生成",
+    )
     scene_descriptions: dict[str, Annotated[str, Field(max_length=1600)]] = Field(
         default_factory=dict, max_length=30,
         description="场景名到可复用空间设定的映射；明确布局、出入口、地标、尺度、固定陈设与材质，不写人物或单镜动作",
@@ -102,6 +129,14 @@ class FreezoneStoryScriptRow(BaseModel):
     reference_requirements: str = Field(
         default="", description="本镜生成前需要的角色、场景、尾帧等参考"
     )
+    source_unit_ids: list[str] = Field(
+        default_factory=list,
+        max_length=100,
+        description="本镜对应的来源单元编号；没有可靠锚点时必须为空，不能拿数量相等冒充覆盖",
+    )
+    source_excerpt: str = Field(
+        default="", max_length=2000, description="来源原文片段或抽帧时间锚点摘要；不是模型改写的剧情"
+    )
     keyframe_plan: list[FreezoneStoryKeyframePlan] = Field(
         default_factory=list,
         max_length=4,
@@ -130,10 +165,34 @@ class FreezoneStoryVisualPlan(BaseModel):
     camera_language: str = Field(default="", max_length=1200, description="服务叙事的视点、构图与运动习惯及适用理由；实际起点、路径、速度、揭示与结束构图逐镜展开")
 
 
+class FreezoneStoryAssetContent(BaseModel):
+    """可核对的资产基准事实；不替代画面描述，也不证明视觉质量。"""
+
+    role: Literal["character", "scene", "prop"] = Field(description="资产族")
+    name: str = Field(min_length=1, max_length=200, description="脚本里稳定引用的资产名")
+    subject_kind: Literal["human", "child", "animal", "robot", "object", "abstract", "other"] = Field(
+        default="other", description="适用性类型；抽象场景、非人角色或特殊道具按此判断哪些字段适用"
+    )
+    fields: dict[str, str] = Field(default_factory=dict, description="结构化基准字段；值必须具体可见，不能只写电影感")
+    not_applicable: dict[str, str] = Field(default_factory=dict, description="字段名到不适用理由；不能拿未知冒充不适用")
+    source: Literal["source_text", "reference_image", "assumption", "mixed"] = Field(
+        default="source_text", description="这些事实来自原文、参考图、创作假设还是混合"
+    )
+    assumption_reason: str = Field(default="", max_length=1000, description="source 为 assumption/mixed 时说明哪部分为空缺补全")
+    reference_image: str = Field(default="", max_length=2000, description="参考图地址；只做依据，不把图上没有的事实写死")
+
+
 class FreezoneStoryDirectorPlan(BaseModel):
     """Shared creative intent, not a claim of verified film quality."""
 
+    asset_contents: list[FreezoneStoryAssetContent] = Field(
+        default_factory=list,
+        max_length=120,
+        description="完整资产基准；旧自由稿可为空。提供后按字段完整性校验，不再靠长描述冒充完整",
+    )
+
     target_duration_seconds: Annotated[float | None, SkipJsonSchema()] = Field(default=None, gt=0, allow_inf_nan=False, description="由用户明确整片时长要求提取，不由模型创作假设填写")
+    target_duration_policy: Annotated[Literal["soft", "hard"] | None, SkipJsonSchema()] = Field(default=None, description="整片时长是软目标还是硬约束；由用户原话提取，模型不得改写")
 
     story_promise: str = Field(default="", max_length=1200, description="向观众承诺的体验")
     protagonist_goal: str = Field(default="", max_length=1200, description="主角目标；无主角作品说明表达主体")
