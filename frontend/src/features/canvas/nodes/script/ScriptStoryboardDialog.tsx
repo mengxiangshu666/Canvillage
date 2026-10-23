@@ -3,10 +3,13 @@
 import { useEffect } from 'react';
 import { Loader2, ImageOff, Sparkles, TriangleAlert } from 'lucide-react';
 
+import type { ImageQuality, ImageSize } from '@/features/canvas/domain/canvasNodes';
 import { DirectModelPicker } from '@/features/canvas/ui/DirectModelPicker';
 import { STORYBOARD_ASPECTS } from '@/features/canvas/domain/storyboardGroup';
 import { SCRIPT_NODE_Z } from './scriptNodeLayout';
 import { formatShotNumbers, describeShotScope, SCRIPT_REFERENCE_IMAGE_CAP, type ScriptPreflight } from './scriptPreflight';
+import type { ScriptImageQualityOption } from './ScriptImageQualityControls';
+import { ScriptImageQualityControls } from './ScriptImageQualityControls';
 import type { ScriptPaidActionGate } from './scriptPaidActionGate';
 
 /**
@@ -53,6 +56,11 @@ export interface ScriptStoryboardDialogProps {
   groupLabel: string;
   model: string;
   aspectKey: string;
+  /** 出图清晰度与画质；只展示当前模型声明的档位。 */
+  imageSize?: ImageSize;
+  imageSizeOptions?: readonly ImageSize[];
+  imageQuality?: ImageQuality | null;
+  imageQualityOptions?: readonly ScriptImageQualityOption[];
   /**
    * 此刻不该动这个弹层（脚本自己正在重新生成：行随时会被替换）。
    * 两个**动手**的按钮（生成 / 仅建节点）会禁用，并在底部说明**为什么** ——
@@ -67,6 +75,8 @@ export interface ScriptStoryboardDialogProps {
   paidActionGate?: ScriptPaidActionGate | null;
   onModelChange: (next: string) => void;
   onAspectChange: (next: string) => void;
+  onSizeChange?: (next: ImageSize) => void;
+  onQualityChange?: (next: ImageQuality) => void;
   onCancel: () => void;
   /** 生成分镜（出图）。 */
   onConfirm: () => void;
@@ -86,12 +96,18 @@ export function ScriptStoryboardDialog({
   groupLabel,
   model,
   aspectKey,
+  imageSize = '1K',
+  imageSizeOptions = ['1K', '2K', '4K'],
+  imageQuality = null,
+  imageQualityOptions = [],
   busy = false,
   busyReason = null,
   priceDisplay = null,
   paidActionGate = null,
   onModelChange,
   onAspectChange,
+  onSizeChange,
+  onQualityChange,
   onCancel,
   onConfirm,
   onCreateOnly,
@@ -253,6 +269,16 @@ export function ScriptStoryboardDialog({
               ))}
             </div>
           </div>
+
+          <ScriptImageQualityControls
+            size={imageSize}
+            sizeOptions={imageSizeOptions}
+            quality={imageQuality}
+            qualityOptions={imageQualityOptions}
+            disabled={busy}
+            onSizeChange={(next) => onSizeChange?.(next)}
+            onQualityChange={(next) => onQualityChange?.(next)}
+          />
         </div>
 
         <footer className="flex items-center justify-between gap-2">

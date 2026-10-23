@@ -5,6 +5,7 @@ import type { FreezoneStoryScriptResult } from '@/api/scriptContract';
 import {
   CANVAS_NODE_TYPES,
   type ImageGenNodeData,
+  type ImageQuality,
   type ImageSize,
   type ScriptAssetViewMode,
   type ScriptAssetGenConfig,
@@ -431,7 +432,8 @@ export function generateScriptAssetImages(
   // 三族各取所需的比例（`auto` / 空 → 角色 2:3、场景 16:9、道具 1:1，见 `scriptAssetAspectFor`）。
   const aspectKeyFor = (role: ScriptAssetRole) => resolveScriptAssetAspect(role, configuredAspect);
   const style = params.style ?? null;
-  const imageSize: ImageSize = params.imageSize ?? '1K';
+  const imageSize: ImageSize = params.imageSize ?? params.config.size ?? '1K';
+  const quality = params.config.quality;
   const generateImages = params.generateImages === true;
 
   const nodeMap = new Map(store.nodes.map((node) => [node.id, node] as const));
@@ -475,6 +477,7 @@ export function generateScriptAssetImages(
         model,
         aspectKey: aspectKeyFor(asset.role),
         imageSize,
+        quality,
         style,
         viewMode,
         generateImages,
@@ -501,6 +504,7 @@ export function generateScriptAssetImages(
         model,
         aspectKey: aspectKeyFor(asset.role),
         imageSize,
+        quality,
         style,
         viewMode,
         generateImages,
@@ -525,6 +529,7 @@ function scriptAssetImageNodeData(params: {
   model: string;
   aspectKey: string;
   imageSize: ImageSize;
+  quality?: ImageQuality;
   style: string | null;
   viewMode: ScriptAssetViewMode;
   generateImages: boolean;
@@ -564,6 +569,7 @@ function scriptAssetImageNodeData(params: {
     }),
     model: params.model,
     size: params.imageSize,
+    ...(params.quality ? { quality: params.quality } : {}),
     requestAspectRatio: params.aspectKey,
     count: 1,
     // 认领键 + 归属：台账靠这两个字段把图认回资产（等价 LibTV 的 linkedNodeId）。

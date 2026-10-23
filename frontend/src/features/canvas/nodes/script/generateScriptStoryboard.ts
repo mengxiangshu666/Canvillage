@@ -6,6 +6,7 @@ import {
   CANVAS_NODE_TYPES,
   isImageGenNode,
   type ImageGenNodeData,
+  type ImageQuality,
   type ImageSize,
   type ScriptImageGenConfig,
   type VideoDeliverySpec,
@@ -122,6 +123,7 @@ function imageNodeDataForShot(params: {
   aspectKey: string;
   deliverySpec: VideoDeliverySpec;
   imageSize: ImageSize;
+  quality?: ImageQuality;
   rowKey: string;
   /** 该镜自带的参考图**全组**（有序，见 {@link shotOwnReferenceUrls}）。 */
   referenceImageUrls: string[];
@@ -136,6 +138,7 @@ function imageNodeDataForShot(params: {
     prompt: params.prompt,
     model: params.model,
     size: params.imageSize,
+    ...(params.quality ? { quality: params.quality } : {}),
     requestAspectRatio: params.deliverySpec.aspectRatio || params.aspectKey,
     deliverySpec: params.deliverySpec,
     count: 1,
@@ -392,7 +395,8 @@ export function generateScriptStoryboard(
   const deliverySpec =
     normalizeScriptDeliverySpec(params.config.deliverySpec) ??
     resolveScriptDeliverySpec(aspectKey);
-  const imageSize: ImageSize = params.imageSize ?? '1K';
+  const imageSize: ImageSize = params.imageSize ?? params.config.size ?? '1K';
+  const quality = params.config.quality;
   const generateImages = params.generateImages === true;
   const shots = params.rows;
   const directorPlan = (scriptNode.data?.scriptResult as { director_plan?: FreezoneStoryDirectorPlan | null } | undefined)?.director_plan;
@@ -489,6 +493,8 @@ export function generateScriptStoryboard(
       pending.forEach((nodeId) => {
         useCanvasStore.getState().updateNodeData(nodeId, {
           model,
+          size: imageSize,
+          ...(quality ? { quality } : {}),
           ...rearmStoryboardMemberPatch(nodeId, currentShotSpecs),
         });
       });
@@ -588,6 +594,7 @@ export function generateScriptStoryboard(
         aspectKey,
         deliverySpec,
         imageSize,
+        quality,
         rowKey: shot.rowKey,
         referenceImageUrls,
         assetRevisionSnapshot: shot.assetRevisionSnapshot,

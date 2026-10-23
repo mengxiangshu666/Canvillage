@@ -42,11 +42,15 @@ import {
   type ScriptAssetViewMode,
   type ScriptAssetGenConfig,
   type ScriptGenAction,
+  type ImageQuality,
+  type ImageSize,
   type ScriptImageGenConfig,
   type ScriptNodeData,
   type StoryVideoGenConfig,
 } from '@/features/canvas/domain/canvasNodes';
 import { resolveImageDisplayUrl } from '@/features/canvas/application/imageData';
+import { runtimeImageModelFromOption } from '@/features/canvas/models/runtimeImageModels';
+import { useFreezoneImageModels } from '@/features/canvas/hooks/useFreezoneImageModels';
 import { focusDerivedNodes } from '@/features/canvas/application/focusDerivedNodes';
 import { resolveNodeDisplayName } from '@/features/canvas/domain/nodeDisplay';
 import {
@@ -547,6 +551,24 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
     },
     [id, imageGenConfig, updateNodeData],
   );
+  // 连续快速点「清晰度 → 画质」时，两个回调都可能闭包到同一份旧 config；
+  // 直接展开旧对象会互相覆盖（实测丢过 size）。统一从 store 取最新值再合并。
+  const patchScriptImageConfig = useCallback(
+    (patch: Partial<ScriptImageGenConfig>) => {
+      const latest = (useCanvasStore.getState().nodes.find((node) => node.id === id)?.data
+        ?.imageGenConfig ?? {}) as ScriptImageGenConfig;
+      updateNodeData(id, { imageGenConfig: { ...latest, ...patch } });
+    },
+    [id, updateNodeData],
+  );
+  const handleStoryboardSizeChange = useCallback(
+    (next: ImageSize) => patchScriptImageConfig({ size: next }),
+    [patchScriptImageConfig],
+  );
+  const handleStoryboardQualityChange = useCallback(
+    (next: ImageQuality) => patchScriptImageConfig({ quality: next }),
+    [patchScriptImageConfig],
+  );
 
   // 资产图的模型 / 比例 / 视图规格：与分镜图分开存 —— 比例默认「自动」，
   // 三族各取所需（角色 2:3 身份板、场景 16:9、道具 1:1），用户也可以一键锁成同一个。
@@ -572,6 +594,22 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
       updateNodeData(id, { assetGenConfig: { ...assetGenConfig, aspectRatio: next } });
     },
     [assetGenConfig, id, updateNodeData],
+  );
+  const patchScriptAssetConfig = useCallback(
+    (patch: Partial<ScriptAssetGenConfig>) => {
+      const latest = (useCanvasStore.getState().nodes.find((node) => node.id === id)?.data
+        ?.assetGenConfig ?? {}) as ScriptAssetGenConfig;
+      updateNodeData(id, { assetGenConfig: { ...latest, ...patch } });
+    },
+    [id, updateNodeData],
+  );
+  const handleAssetSizeChange = useCallback(
+    (next: ImageSize) => patchScriptAssetConfig({ size: next }),
+    [patchScriptAssetConfig],
+  );
+  const handleAssetQualityChange = useCallback(
+    (next: ImageQuality) => patchScriptAssetConfig({ quality: next }),
+    [patchScriptAssetConfig],
   );
   const handleAssetViewModeChange = useCallback(
     (next: ScriptAssetViewMode) => {
@@ -1124,14 +1162,65 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
   // value 取 catalogId：它同时也是图片节点提交时用的 `data.model`（等价 direct/<id>），
   // 计价接口只认这个形式（传上游模型名会 400 invalid image selection）。
   const { models: imageModels, isLoading: imageModelsLoading } = useDirectModelCatalog('image');
+  // 能力合同（清晰度 / 画质档）只在 freezone 模型目录里，按同一个 direct/<id> 对齐。
+  const { models: freezoneImageModels } = useFreezoneImageModels();
   const selectedImageModel = useMemo(
     () => imageModels.find((model) => model.catalogId === storyboardModel) ?? null,
     [imageModels, storyboardModel],
   );
+  // 出图清晰度 / 画质：与图片节点同一条能力口径，只展示当前模型声明的档位。
+  const storyboardCapabilityModel = useMemo(
+    () =>
+      freezoneImageModels.find(
+        (model) =>
+          model.id === storyboardModel || model.id === selectedImageModel?.catalogId,
+      ) ?? null,
+    [freezoneImageModels, selectedImageModel?.catalogId, storyboardModel],
+  );
+  const storyboardRuntimeModel = useMemo(
+    () => (storyboardCapabilityModel ? runtimeImageModelFromOption(storyboardCapabilityModel) : null),
+    [storyboardCapabilityModel],
+  );
+  const storyboardSizeOptions = useMemo<readonly ImageSize[]>(() => {
+    const declared = (storyboardRuntimeModel?.resolutions ?? [])
+      .map((option) => option.value)
+      .filter(Boolean);
+    return (declared.length > 0 ? Array.from(new Set(declared)) : ['1K', '2K', '4K']) as ImageSize[];
+  }, [storyboardRuntimeModel]);
+  const storyboardQualityOptions = useMemo(
+    () =>
+      (storyboardRuntimeModel?.qualityOptions ?? []).filter(
+        (option) => ['low', 'medium', 'high', 'auto'].includes(option.value),
+      ) as Array<{ value: ImageQuality; label: string }>,
+    [storyboardRuntimeModel],
+  );
+  // 默认仍是 1K（与本次改动前的实际出图一致），模型不支持 1K 时才退到它的默认档，
+  // 避免用户什么都没选就默默涨价。
+  const storyboardSize: ImageSize =
+    imageGenConfig.size && storyboardSizeOptions.includes(imageGenConfig.size)
+      ? imageGenConfig.size
+      : storyboardSizeOptions.includes('1K')
+        ? '1K'
+        : (storyboardRuntimeModel?.defaultResolution as ImageSize | undefined)
+          || storyboardSizeOptions[0]
+          || '1K';
+  const storyboardQuality: ImageQuality | null =
+    imageGenConfig.quality && storyboardQualityOptions.some((option) => option.value === imageGenConfig.quality)
+      ? imageGenConfig.quality
+      : (storyboardQualityOptions.find((option) => option.value === 'medium')?.value
+        ?? storyboardQualityOptions[0]?.value
+        ?? null);
   const storyboardCreditCost = useGenerationCreditCost(
     'image_selection',
     selectedImageModel?.catalogId ?? null,
-    { surface: 'canvas', params: { size: '1K' }, quantity: Math.max(0, shotsToGenerate) },
+    {
+      surface: 'canvas',
+      params: {
+        size: storyboardSize,
+        ...(storyboardQuality ? { quality: storyboardQuality } : {}),
+      },
+      quantity: Math.max(0, shotsToGenerate),
+    },
   );
   const storyboardPriceDisplay = useMemo(() => {
     const total = storyboardCreditCost.data?.data.cost;
@@ -1145,10 +1234,52 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
     [assetModel, imageModels],
   );
   const assetModelReady = Boolean(selectedAssetModel);
+  const assetCapabilityModel = useMemo(
+    () =>
+      freezoneImageModels.find(
+        (model) => model.id === assetModel || model.id === selectedAssetModel?.catalogId,
+      ) ?? null,
+    [assetModel, freezoneImageModels, selectedAssetModel?.catalogId],
+  );
+  const assetRuntimeModel = useMemo(
+    () => (assetCapabilityModel ? runtimeImageModelFromOption(assetCapabilityModel) : null),
+    [assetCapabilityModel],
+  );
+  const assetSizeOptions = useMemo<readonly ImageSize[]>(() => {
+    const declared = (assetRuntimeModel?.resolutions ?? [])
+      .map((option) => option.value)
+      .filter(Boolean);
+    return (declared.length > 0 ? Array.from(new Set(declared)) : ['1K', '2K', '4K']) as ImageSize[];
+  }, [assetRuntimeModel]);
+  const assetQualityOptions = useMemo(
+    () =>
+      (assetRuntimeModel?.qualityOptions ?? []).filter(
+        (option) => ['low', 'medium', 'high', 'auto'].includes(option.value),
+      ) as Array<{ value: ImageQuality; label: string }>,
+    [assetRuntimeModel],
+  );
+  const assetSize: ImageSize =
+    assetGenConfig.size && assetSizeOptions.includes(assetGenConfig.size)
+      ? assetGenConfig.size
+      : assetSizeOptions.includes('1K')
+        ? '1K'
+        : (assetRuntimeModel?.defaultResolution as ImageSize | undefined)
+          || assetSizeOptions[0]
+          || '1K';
+  const assetQuality: ImageQuality | null =
+    assetGenConfig.quality && assetQualityOptions.some((option) => option.value === assetGenConfig.quality)
+      ? assetGenConfig.quality
+      : (assetQualityOptions.find((option) => option.value === 'medium')?.value
+        ?? assetQualityOptions[0]?.value
+        ?? null);
   const assetCreditCost = useGenerationCreditCost(
     'image_selection',
     selectedAssetModel?.catalogId ?? null,
-    { surface: 'canvas', params: { size: '1K' }, quantity: 1 },
+    {
+      surface: 'canvas',
+      params: { size: assetSize, ...(assetQuality ? { quality: assetQuality } : {}) },
+      quantity: 1,
+    },
   );
   const assetPriceDisplay = useMemo(() => {
     const total = assetCreditCost.data?.data.cost;
@@ -1379,7 +1510,13 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
         ledger: assetLedger,
         scriptTitle: scriptTitleOrNodeName,
         scriptSize: { width: resolvedWidth, height: resolvedHeight },
-        config: { ...imageGenConfig, model: storyboardModel, aspectRatio: storyboardAspect },
+        config: {
+          ...imageGenConfig,
+          model: storyboardModel,
+          aspectRatio: storyboardAspect,
+          size: storyboardSize,
+          quality: storyboardQuality ?? undefined,
+        },
         generateImages,
       });
       if (!result.ok) {
@@ -1417,6 +1554,8 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
       imageGenConfig,
       storyboardModel,
       storyboardAspect,
+      storyboardSize,
+      storyboardQuality,
       storyboardPaidGate,
       updateNodeData,
     ],
@@ -1446,7 +1585,10 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
           model: selectedAssetModel.catalogId,
           aspectRatio: assetAspect,
           viewMode: assetViewMode,
+          size: assetSize,
+          quality: assetQuality ?? undefined,
         },
+        imageSize: assetSize,
         availableModelIds: imageModels.map((model) => model.catalogId),
         style: assetStyle,
         generateImages,
@@ -1469,6 +1611,8 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
     },
     [
       assetAspect,
+      assetSize,
+      assetQuality,
       assetViewMode,
       assetGenConfig,
       assetLedger,
@@ -1981,6 +2125,10 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
             groupLabel={storyboardGroupName}
             model={storyboardModel}
             aspectKey={storyboardAspect}
+            imageSize={storyboardSize}
+            imageSizeOptions={storyboardSizeOptions}
+            imageQuality={storyboardQuality}
+            imageQualityOptions={storyboardQualityOptions}
             priceDisplay={storyboardPriceDisplay}
             paidActionGate={storyboardPaidGate}
             // 出图是异步的：建完节点就返回，弹层在这期间保持「进行中」态。
@@ -1988,6 +2136,8 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
             busy={isGenerating}
             onModelChange={handleStoryboardModelChange}
             onAspectChange={handleStoryboardAspectChange}
+            onSizeChange={handleStoryboardSizeChange}
+            onQualityChange={handleStoryboardQualityChange}
             onCancel={() => setIsStoryboardDialogOpen(false)}
             onConfirm={handleStoryboardConfirm}
             onCreateOnly={handleStoryboardCreateOnly}
@@ -2003,11 +2153,17 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
             model={selectedAssetModel?.catalogId ?? ''}
             modelReady={assetModelReady}
             aspectKey={assetAspect}
+            imageSize={assetSize}
+            imageSizeOptions={assetSizeOptions}
+            imageQuality={assetQuality}
+            imageQualityOptions={assetQualityOptions}
             viewMode={assetViewMode}
             priceDisplay={assetPriceDisplay}
             busy={isGenerating}
             onModelChange={handleAssetModelChange}
             onAspectChange={handleAssetAspectChange}
+            onSizeChange={handleAssetSizeChange}
+            onQualityChange={handleAssetQualityChange}
             onViewModeChange={handleAssetViewModeChange}
             onCancel={() => setIsAssetDialogOpen(false)}
             onConfirm={handleAssetConfirm}

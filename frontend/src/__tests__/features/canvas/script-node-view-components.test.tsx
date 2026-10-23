@@ -158,6 +158,31 @@ describe('生成分镜确认弹层', () => {
     onConfirm: () => {},
   } as const;
 
+  it('清晰度与画质按模型档位渲染并回调', () => {
+    const onSizeChange = vi.fn();
+    const onQualityChange = vi.fn();
+    renderDialog(
+      <ScriptStoryboardDialog
+        {...baseProps}
+        mode="create"
+        imageSize="2K"
+        imageSizeOptions={['1K', '2K', '4K']}
+        imageQuality="medium"
+        imageQualityOptions={[
+          { value: 'low', label: '低画质' },
+          { value: 'medium', label: '标准画质' },
+          { value: 'high', label: '高画质' },
+        ]}
+        onSizeChange={onSizeChange}
+        onQualityChange={onQualityChange}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: '4K' }));
+    expect(onSizeChange).toHaveBeenCalledWith('4K');
+    fireEvent.click(screen.getByRole('button', { name: '高画质' }));
+    expect(onQualityChange).toHaveBeenCalledWith('high');
+  });
+
   it('首次生成：主按钮是真出图，另有「仅建节点」这个不出图的出口', () => {
     const onConfirm = vi.fn();
     const onCreateOnly = vi.fn();

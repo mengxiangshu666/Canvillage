@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CheckCheck, Loader2, Sparkles, Square, TriangleAlert } from 'lucide-react';
 
+import type { ImageQuality, ImageSize } from '@/features/canvas/domain/canvasNodes';
 import { DirectModelPicker } from '@/features/canvas/ui/DirectModelPicker';
 import { STORYBOARD_ASPECTS } from '@/features/canvas/domain/storyboardGroup';
 import type { ScriptAssetViewMode } from '@/features/canvas/domain/canvasNodes';
@@ -12,6 +13,8 @@ import {
   SCRIPT_ASSET_VIEW_MODE_OPTIONS,
 } from './scriptAssetGen';
 import { SCRIPT_NODE_Z } from './scriptNodeLayout';
+import type { ScriptImageQualityOption } from './ScriptImageQualityControls';
+import { ScriptImageQualityControls } from './ScriptImageQualityControls';
 import {
   SCRIPT_ASSET_ROLE_LABEL,
   SCRIPT_ASSET_ROLE_ORDER,
@@ -44,6 +47,11 @@ export interface ScriptAssetGenDialogProps {
   /** 目录里是否有可实际运行的资产图模型；加载中 / 空目录时禁止提交。 */
   modelReady?: boolean;
   aspectKey: string;
+  /** 出图清晰度与画质；只展示当前模型声明的档位。 */
+  imageSize?: ImageSize;
+  imageSizeOptions?: readonly ImageSize[];
+  imageQuality?: ImageQuality | null;
+  imageQualityOptions?: readonly ScriptImageQualityOption[];
   viewMode: ScriptAssetViewMode;
   /** 此刻不该动这个弹层（脚本自己正在重新生成：行随时会被替换）。 */
   busy?: boolean;
@@ -52,6 +60,8 @@ export interface ScriptAssetGenDialogProps {
   priceDisplay?: string | null;
   onModelChange: (next: string) => void;
   onAspectChange: (next: string) => void;
+  onSizeChange?: (next: ImageSize) => void;
+  onQualityChange?: (next: ImageQuality) => void;
   onViewModeChange: (next: ScriptAssetViewMode) => void;
   onCancel: () => void;
   /** 生成选中的资产图（直接出图）。 */
@@ -66,12 +76,18 @@ export function ScriptAssetGenDialog({
   model,
   modelReady = true,
   aspectKey,
+  imageSize = '1K',
+  imageSizeOptions = ['1K', '2K', '4K'],
+  imageQuality = null,
+  imageQualityOptions = [],
   viewMode,
   busy = false,
   busyReason = null,
   priceDisplay = null,
   onModelChange,
   onAspectChange,
+  onSizeChange,
+  onQualityChange,
   onViewModeChange,
   onCancel,
   onConfirm,
@@ -272,6 +288,15 @@ export function ScriptAssetGenDialog({
               )}
             </div>
           </div>
+          <ScriptImageQualityControls
+            size={imageSize}
+            sizeOptions={imageSizeOptions}
+            quality={imageQuality}
+            qualityOptions={imageQualityOptions}
+            disabled={busy}
+            onSizeChange={(next) => onSizeChange?.(next)}
+            onQualityChange={(next) => onQualityChange?.(next)}
+          />
         </div>
 
         <footer className="flex items-center justify-between gap-2">

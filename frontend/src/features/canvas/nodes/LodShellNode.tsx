@@ -165,7 +165,14 @@ export function withLodShell(type: string, Component: AnyNodeComponent): Compone
 
     useEffect(() => {
       if (!heldShell || wantShell) return;
-      return requestShellUpgrade(() => setHeldShell(false));
+      const cancel = requestShellUpgrade(() => setHeldShell(false));
+      // 兜底：升级队列被卡住时（例如一次没有 moveEnd 的手势把 gestureActive 留在 true），
+      // 外壳会永远不还原成真节点。1.2s 后直接放行；正常路径早已升级并清掉这个定时器。
+      const fallback = window.setTimeout(() => setHeldShell(false), 1200);
+      return () => {
+        cancel();
+        window.clearTimeout(fallback);
+      };
     }, [heldShell, wantShell]);
 
     if (heldShell) {

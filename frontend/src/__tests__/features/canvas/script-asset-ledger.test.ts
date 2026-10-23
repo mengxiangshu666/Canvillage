@@ -558,6 +558,8 @@ describe('资产图出图（第三刀）', () => {
         model: MODEL,
         aspectRatio: '1:1',
         viewMode: 'single_view',
+        size: '4K',
+        quality: 'high',
       },
     });
     expect(second.ok).toBe(true);
@@ -573,6 +575,11 @@ describe('资产图出图（第三刀）', () => {
     expect(reusedCharacter?.data.scriptAssetPlannedViews).toEqual(['front', 'full_body']);
     const reused = useCanvasStore.getState().nodes.filter(isImageGenNode);
     expect(reused.find(node => node.data.scriptAssetId === 'scene:祠堂')?.data.prompt).toContain('生成单幅场景空景参考图');
+    // 清晰度与画质必须跟着配置落到节点上，否则节点仍按旧参数提交。
+    reused.forEach((node) => {
+      expect(node.data.size).toBe('4K');
+      expect(node.data.quality).toBe('high');
+    });
     expect(reused.find(node => node.data.scriptAssetId === 'prop:玉佩')?.data.prompt).toContain('生成单幅道具主视图参考');
     expect(reused.find(node => node.data.scriptAssetId === 'scene:祠堂')?.data.scriptAssetPlannedViews).toEqual(['wide']);
     expect(reused.find(node => node.data.scriptAssetId === 'prop:玉佩')?.data.scriptAssetPlannedViews).toEqual(['hero']);

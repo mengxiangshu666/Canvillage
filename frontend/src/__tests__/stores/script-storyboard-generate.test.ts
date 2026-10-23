@@ -142,6 +142,23 @@ function settleAll() {
 let pendingMembers: string[] = [];
 
 describe('生成分镜 · 派生分镜图组', () => {
+  it('把清晰度与画质写进分镜图节点和脚本配置', () => {
+    seedScriptNode();
+    const result = generate({ config: { size: '4K', quality: 'high' } });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    for (const nodeId of result.nodeIds) {
+      const node = useCanvasStore.getState().nodes.find((candidate) => candidate.id === nodeId);
+      expect(node?.data.size).toBe('4K');
+      expect(node?.data.quality).toBe('high');
+    }
+    const scriptNode = useCanvasStore.getState().nodes.find((node) => node.id === SCRIPT_NODE_ID);
+    expect(scriptNode?.data.imageGenConfig).toMatchObject({
+      size: '4K',
+      quality: 'high',
+    });
+  });
+
   it('生成分镜在首图完成后生成计划状态图，视频搭建复用同一张真实图片', () => {
     seedScriptNode();
     const planned = rows().map((row, index) => index === 0 ? {

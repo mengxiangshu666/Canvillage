@@ -1005,6 +1005,10 @@ export interface ScriptImageGenConfig {
   aspectRatio?: string;
   /** 全片交付规格；缺席时按 aspectRatio 解析同一份稳定规格。 */
   deliverySpec?: VideoDeliverySpec;
+  /** 出图清晰度（1K/2K/4K）；缺席时沿用图片节点默认 1K。 */
+  size?: ImageSize;
+  /** 画质档；只在该模型声明了 qualityOptions 时下发。 */
+  quality?: ImageQuality;
 }
 
 /**
