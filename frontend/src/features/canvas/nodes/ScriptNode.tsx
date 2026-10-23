@@ -1450,10 +1450,12 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
   }, [id, updateNodeData]);
 
   const runAssembleFormalFilm = useCallback(() => {
+    // 未就绪时不再把原因塞进脚本节点的 generationError —— 那条横幅的「重试」
+    // 会去重新生成脚本，和「重出一镜视频」完全是两件事。这里只提示，按钮本身
+    // 在头部就按 shotFilm.ready 禁用并说明原因。
     const result = assembleScriptFilm({ scriptNodeId: id, preview: false });
     if (!result.ok) {
-      updateNodeData(id, { generationError: result.reason });
-      toast.error(result.reason);
+      toast.error(result.reason ?? '镜头视频尚未准备好，不能创建正式成片');
       return;
     }
     updateNodeData(id, { ...CLEARED_GENERATION_ERROR_PATCH });
@@ -1852,7 +1854,23 @@ export const ScriptNode = memo(({ id, data, selected, width, height }: ScriptNod
               filmClipCount={shotFilm.clipCount}
               filmHasCompose={shotFilm.hasCompose}
               onAssembleFilm={runAssembleFilm}
-              onAssembleFormalFilm={runAssembleFormalFilm}
+              onAssembleFormalFilm={() => {
+                if (shotFilm.ready) {
+                  runAssembleFormalFilm();
+                  return;
+                }
+                // 没就绪时不装作能成片：把用户直接带到「逐镜出视频」，
+                // 那里只会排队缺片/过期的镜头，补完再回来点同一个按钮。
+                // 旧版本把这条原因写进了 generationError，横幅上的「重试」会去重生成
+                // 脚本；只在文案确实是这条成片原因时清掉，别误伤真正的脚本失败。
+                if (data.generationError && data.generationError === shotFilm.blockingReason) {
+                  updateNodeData(id, { ...CLEARED_GENERATION_ERROR_PATCH });
+                }
+                setShotVideoError(null);
+                setIsShotVideoDialogOpen(true);
+              }}
+              formalFilmReady={shotFilm.ready}
+              formalFilmReason={shotFilm.blockingReason}
               onDownload={handleDownloadCsv}
               isGenerating={isGenerating}
               columnMenu={
@@ -2324,6 +2342,9 @@ interface ScriptResultHeaderProps {
   onAssembleFilm: () => void;
   /** 严格成片：所有镜头必须已出片且当前版本对得上；产物仍需逐接点审片。 */
   onAssembleFormalFilm: () => void;
+  /** 正式成片的逐镜对账是否已通过；没过时按钮禁用并说明缺哪一镜。 */
+  formalFilmReady?: boolean;
+  formalFilmReason?: string | null;
   onDownload: () => void;
   isGenerating: boolean;
   /** 列显隐菜单（只对表格视图有意义，但一直挂着 —— 切视图回来时状态还在）。 */
@@ -2355,6 +2376,8 @@ function ScriptResultHeader({
   filmHasCompose,
   onAssembleFilm,
   onAssembleFormalFilm,
+  formalFilmReady = true,
+  formalFilmReason = null,
   onDownload,
   isGenerating,
   columnMenu,
@@ -2472,11 +2495,18 @@ function ScriptResultHeader({
             onAssembleFormalFilm();
           }}
           disabled={isGenerating || filmClipCount === 0}
-          title="严格成片：每一镜都必须已出当前版本视频；建好时间线后还要逐接点正常速度看听，才可标记正式认可"
-          aria-label="正式成片"
+          title={
+            !formalFilmReady
+              ? `还差镜头视频：${formalFilmReason ?? '有镜头视频没对上当前脚本'}。点这里先去补齐，补齐后再点一次即可正式成片。`
+              : '严格成片：每一镜都必须已出当前版本视频；建好时间线后还要逐接点正常速度看听，才可标记正式认可'
+          }
+          aria-label={!formalFilmReady ? '正式成片（还差镜头视频，点击去补齐）' : '正式成片'}
         >
           <Film className="h-3.5 w-3.5" />
           {!compact && '正式成片'}
+          {!formalFilmReady && (
+            <span className="ml-0.5 inline-block h-1.5 w-1.5 rounded-full bg-amber-300/90" aria-hidden />
+          )}
         </button>
         <button
           type="button"
