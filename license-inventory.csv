@@ -1221,6 +1221,7 @@ frontend/src/features/canvas/nodes/script/ScriptContractBanner.tsx,Elastic-2.0,2
 frontend/src/features/canvas/nodes/script/ScriptCreativeView.tsx,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 frontend/src/features/canvas/nodes/script/ScriptDirectorPlan.tsx,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 frontend/src/features/canvas/nodes/script/ScriptFilmReviewPanel.tsx,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
+frontend/src/features/canvas/nodes/script/ScriptImageQualityControls.tsx,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 frontend/src/features/canvas/nodes/script/ScriptLibtvEditor.tsx,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 frontend/src/features/canvas/nodes/script/ScriptReadinessBanner.tsx,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
 frontend/src/features/canvas/nodes/script/ScriptResultTable.tsx,Elastic-2.0,2026 SuperTale contributors,REUSE.toml aggregate annotation
