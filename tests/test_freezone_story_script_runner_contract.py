@@ -459,6 +459,71 @@ async def test_long_explicit_script_generates_in_batches_and_merges_once(
 
 
 @pytest.mark.asyncio
+async def test_batch_budget_uses_request_duration_and_sets_plan_target(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """请求里的 duration_sec 要变成整片目标，并按镜头数分给每一批。"""
+    import re
+
+    from novelvideo.services.freezone_content import plan_script_source_batches
+    from novelvideo.task_backend.runners import freezone as runner
+
+    budgets: list[float | None] = []
+    prompts: list[str] = []
+
+    async def fake_generate(**kwargs: object) -> FreezoneStoryScriptGenerateData:
+        batch_source = str(kwargs["source_text"])
+        numbers = [int(value) for value in re.findall(r"镜(\d+)：", batch_source)]
+        budgets.append(kwargs.get("duration_sec"))  # type: ignore[arg-type]
+        prompts.append(str(kwargs.get("prompt") or ""))
+        rows = []
+        for number in numbers:
+            row = _row(number)
+            row["character_1"] = "老渔夫"
+            row["character_description_1"] = CARD
+            row["scene_descriptions"] = {"旧码头": "雨夜木栈桥与货轮"}
+            row["prop_descriptions"] = {"马灯": "铜制马灯，玻璃罩有裂纹"}
+            rows.append(FreezoneStoryScriptRow(**row))
+        return FreezoneStoryScriptGenerateData(
+            title="预算批次",
+            director_plan={"story_promise": "按预算讲完", "rhythm_curve": "连续"},
+            rows=rows,
+        )
+
+    monkeypatch.setattr(
+        "novelvideo.services.freezone_content.generate_freezone_story_script",
+        fake_generate,
+    )
+    source = (chr(10) * 2).join(f"镜{number}：第{number}镜的事件。" for number in range(1, 21))
+    batches = plan_script_source_batches(source, list(range(1, 21)))
+    result = await runner._generate_batched_story_script(
+        source_text=source,
+        prompt="",
+        model="test",
+        video_model=None,
+        character_refs=[],
+        project_dir=tmp_path,
+        job_id="budget-20",
+        batches=batches,
+        duration_sec=96,
+    )
+    assert len(budgets) == 3
+    assert all(budget is not None and budget > 0 for budget in budgets)
+    assert abs(sum(float(budget) for budget in budgets) - 96) < 0.01
+    assert all("整片总时长目标是约 96 秒" in prompt for prompt in prompts)
+    # 后续批次必须带上第一批的风格段与角色卡，避免先漂移再靠合同修。
+    assert "以下锚点来自第 1 批" not in prompts[0]
+    assert all("以下锚点来自第 1 批" in prompt for prompt in prompts[1:])
+    assert all(STYLE in prompt for prompt in prompts[1:])
+    assert all(CARD in prompt for prompt in prompts[1:])
+    assert all("场景基准说明" in prompt for prompt in prompts[1:])
+    assert all("道具基准说明" in prompt for prompt in prompts[1:])
+    assert result.director_plan.target_duration_seconds == 96
+    assert result.director_plan.target_duration_policy == "soft"
+
+
+@pytest.mark.asyncio
 async def test_batch_checkpoints_reuse_completed_batches_on_retry(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

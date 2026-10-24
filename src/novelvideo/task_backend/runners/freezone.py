@@ -1534,6 +1534,7 @@ async def _run_freezone_story_script_async(
                 project_dir=project_dir,
                 job_id=job_id,
                 batches=batches,
+                duration_sec=float(duration_sec) if duration_sec else None,
             )
         else:
             _update(ctx, "freezone_story_script", job_id, 0.1, "开始生成故事脚本...")
@@ -1542,8 +1543,22 @@ async def _run_freezone_story_script_async(
                 prompt=prompt,
                 model=str(payload.get("model") or ""),
                 character_refs=character_refs,
+                duration_sec=float(duration_sec) if duration_sec else None,
                 **duration_kwargs,
             )
+    from novelvideo.freezone.script_video_duration import (
+        explicit_script_duration_target,
+        explicit_script_duration_target_policy,
+    )
+
+    total_target = explicit_script_duration_target(source_text, prompt)
+    total_policy = explicit_script_duration_target_policy(source_text, prompt)
+    if total_target is None and isinstance(duration_sec, (int, float)) and duration_sec > 0:
+        total_target = float(duration_sec)
+        total_policy = "soft"
+    if total_target is not None:
+        data.director_plan.target_duration_seconds = total_target
+        data.director_plan.target_duration_policy = total_policy or "soft"
     bind_story_script_assets(data, frame_urls=frame_urls, character_refs=character_refs)
     save_script_checkpoint(
         project_dir,
@@ -1726,6 +1741,58 @@ def _resolve_story_script_rewrite_index(
     return None
 
 
+def _story_batch_canonical_anchors(data: Any) -> str:
+    """抽取第一批的风格段与角色卡，供后续批次逐字复用。
+
+    批量生成时后续批次看不到第一批的原文，模型会重写第 7 段或改角色卡；
+    合同虽然能修回去，但那等于先漂移再纠正。这里把锚点直接写进下一批的提示词。
+    """
+    from novelvideo.freezone.script_contract import (
+        SHOT_SEGMENT_ORDER,
+        classify_segments,
+        split_prompt_segments,
+    )
+
+    style = ""
+    cards: dict[str, str] = {}
+    scenes: dict[str, str] = {}
+    props: dict[str, str] = {}
+    for row in getattr(data, "rows", []) or []:
+        prompt = str(getattr(row, "shot_prompt", "") or "")
+        roles = classify_segments(prompt, SHOT_SEGMENT_ORDER)
+        if not style and "style" in roles:
+            segments = split_prompt_segments(prompt)
+            if roles.index("style") < len(segments):
+                style = f"[{segments[roles.index('style')].strip()}]"
+        for slot in (1, 2):
+            name = str(getattr(row, f"character_{slot}", "") or "").strip()
+            card = str(getattr(row, f"character_description_{slot}", "") or "").strip()
+            if name and card and name not in cards:
+                cards[name] = card
+        for bucket, key in ((scenes, "scene_descriptions"), (props, "prop_descriptions")):
+            values = getattr(row, key, None)
+            if isinstance(values, dict):
+                for asset_name, description in values.items():
+                    text = str(description or "").strip()
+                    if asset_name and text:
+                        bucket.setdefault(str(asset_name), text)
+    if not style and not cards and not scenes and not props:
+        return ""
+    parts = ["以下锚点来自第 1 批，必须逐字复用，不得改写："]
+    if style:
+        parts.append(f"第 7 段视觉风格/质感：{style}")
+    if cards:
+        parts.append("角色卡（character_description_N）：")
+        parts.extend(f"- {name}: {card}" for name, card in cards.items())
+    if scenes:
+        parts.append("场景基准说明（scene_descriptions，必须逐字复用）：")
+        parts.extend(f"- {name}: {value}" for name, value in scenes.items())
+    if props:
+        parts.append("道具基准说明（prop_descriptions，必须逐字复用）：")
+        parts.extend(f"- {name}: {value}" for name, value in props.items())
+    return " | ".join(parts)
+
+
 async def _generate_batched_story_script(
     *,
     source_text: str,
@@ -1736,6 +1803,7 @@ async def _generate_batched_story_script(
     project_dir: Path,
     job_id: str,
     batches: list[dict[str, Any]],
+    duration_sec: float | None = None,
 ) -> Any:
     """Generate long explicit-shot scripts in bounded batches.
 
@@ -1754,11 +1822,33 @@ async def _generate_batched_story_script(
         script_checkpoint_fingerprint,
     )
 
+    from novelvideo.freezone.script_video_duration import (
+        explicit_script_duration_target,
+        explicit_script_duration_target_policy,
+    )
+
+    total_target = explicit_script_duration_target(source_text, prompt)
+    total_policy = explicit_script_duration_target_policy(source_text, prompt)
+    if total_target is None and isinstance(duration_sec, (int, float)) and duration_sec > 0:
+        total_target = float(duration_sec)
+        total_policy = "soft"
+    total_shots = sum(len(batch.get("shot_numbers") or []) for batch in batches)
     results: list[Any] = []
     global_excerpt = source_text[:6000]
     for batch_index, batch in enumerate(batches):
         batch_source = str(batch["source_text"] or "")
         batch_numbers = [int(number) for number in batch.get("shot_numbers") or []]
+        batch_target = (
+            total_target * len(batch_numbers) / total_shots
+            if total_target is not None and total_shots > 0 else None
+        )
+        budget_rule = (
+            f"整片总时长目标是约 {total_target:g} 秒（{total_policy or 'soft'}）；"
+            f"本批 {len(batch_numbers)} 镜约占 {batch_target:.1f} 秒，"
+            "逐镜 duration 之和应接近本批预算，并在 duration_reason 里说明取舍。"
+            if batch_target is not None
+            else ""
+        )
         plan_rule = (
             "director_plan 必须描述整部片子的共同意图与全局段落，但 sequences.shot_nos 仍只能写本批镜号；"
             if batch_index == 0
@@ -1769,7 +1859,12 @@ async def _generate_batched_story_script(
             f"全片背景节选（只用于理解上下文，不要为节选里的其他镜生成 rows）：{global_excerpt}\n"
             f"只输出这些镜：{batch_numbers}；不要输出批次之外的镜头。"
             + plan_rule
+            + (("\n" + budget_rule) if budget_rule else "")
         )
+        if batch_index > 0 and results:
+            anchors = _story_batch_canonical_anchors(results[0])
+            if anchors:
+                batch_prompt = f"{batch_prompt} {anchors}"
         # Batch checkpoints are intentionally source-scoped: a failed task is
         # retried as a new job id, and completed batches must still be reusable.
         # They are only consulted in batched mode; short scripts never see them.
@@ -1789,6 +1884,7 @@ async def _generate_batched_story_script(
                 prompt=batch_prompt,
                 model=model,
                 character_refs=character_refs,
+                duration_sec=batch_target,
                 **({"video_model": video_model} if video_model is not None else {}),
             )
             save_script_checkpoint(
@@ -1821,6 +1917,9 @@ async def _generate_batched_story_script(
                 plan.sequences.append(sequence_index[sequence.sequence_id])
                 continue
             existing.shot_nos = sorted(set([*existing.shot_nos, *sequence.shot_nos]))
+    if total_target is not None:
+        plan.target_duration_seconds = total_target
+        plan.target_duration_policy = total_policy or "soft"
     title = first.title or "脚本"
     return FreezoneStoryScriptGenerateData(
         title=title,

@@ -1793,6 +1793,7 @@ async def generate_freezone_story_script(
     model: str | None = None,
     video_model: str | None = None,
     character_refs: Sequence[Mapping[str, Any]] | None = None,
+    duration_sec: float | None = None,
 ):
     """执行故事脚本生成。"""
     from novelvideo.freezone.script_video_duration import (
@@ -1802,6 +1803,11 @@ async def generate_freezone_story_script(
 
     target_duration = explicit_script_duration_target(source_text, prompt)
     target_policy = explicit_script_duration_target_policy(source_text, prompt)
+    # 请求里的 duration_sec 也是整片目标（参考视频时长 / 用户点名时长）；
+    # 文本里没有明确写法时用它，按软目标处理，避免 96 秒请求生成出 146 秒却无人提醒。
+    if target_duration is None and isinstance(duration_sec, (int, float)) and duration_sec > 0:
+        target_duration = float(duration_sec)
+        target_policy = "soft"
     if not source_text.strip():
         source_text, prompt = prompt.strip(), ""
     if not source_text:
@@ -1994,6 +2000,9 @@ async def generate_freezone_story_script_with_vision(
 
     target_duration = explicit_script_duration_target(source_text, prompt)
     target_policy = explicit_script_duration_target_policy(source_text, prompt)
+    if target_duration is None and isinstance(duration_sec, (int, float)) and duration_sec > 0:
+        target_duration = float(duration_sec)
+        target_policy = "soft"
     response = await run_duration_planned_script(get_freezone_vision_story_script_agent(model), [task, *attachments], video_model,
         **(
             {
