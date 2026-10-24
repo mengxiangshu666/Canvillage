@@ -1956,6 +1956,58 @@ def _rewrite_duration_segment(segment: str, seconds: float) -> str:
     return replaced
 
 
+def story_batch_canonical_anchors(data: Any) -> str:
+    """Return the style/card/scene/prop anchors that later batches must copy.
+
+    Batched generation gives later batches only a source excerpt, so they tend to
+    rewrite segment 7 or the asset baselines. The contract can repair that, but
+    repairing after drift is worse than handing the exact strings to the next batch.
+    """
+
+    def value(row: Any, name: str) -> Any:
+        return row.get(name) if isinstance(row, Mapping) else getattr(row, name, None)
+
+    style = ""
+    cards: dict[str, str] = {}
+    scenes: dict[str, str] = {}
+    props: dict[str, str] = {}
+    rows = value(data, "rows") or []
+    for row in rows:
+        prompt = str(value(row, "shot_prompt") or "")
+        roles = classify_segments(prompt, SHOT_SEGMENT_ORDER)
+        if not style and "style" in roles:
+            segments = split_prompt_segments(prompt)
+            if roles.index("style") < len(segments):
+                style = f"[{segments[roles.index('style')].strip()}]"
+        for slot in (1, 2):
+            name = str(value(row, f"character_{slot}") or "").strip()
+            card = str(value(row, f"character_description_{slot}") or "").strip()
+            if name and card and name not in cards:
+                cards[name] = card
+        for bucket, key in ((scenes, "scene_descriptions"), (props, "prop_descriptions")):
+            values = value(row, key)
+            if isinstance(values, Mapping):
+                for asset_name, description in values.items():
+                    text = str(description or "").strip()
+                    if asset_name and text:
+                        bucket.setdefault(str(asset_name), text)
+    if not style and not cards and not scenes and not props:
+        return ""
+    parts = ["以下锚点来自第 1 批，必须逐字复用，不得改写："]
+    if style:
+        parts.append(f"第 7 段视觉风格/质感：{style}")
+    if cards:
+        parts.append("角色卡（character_description_N）：")
+        parts.extend(f"- {name}: {card}" for name, card in cards.items())
+    if scenes:
+        parts.append("场景基准说明（scene_descriptions，必须逐字复用）：")
+        parts.extend(f"- {name}: {entry}" for name, entry in scenes.items())
+    if props:
+        parts.append("道具基准说明（prop_descriptions，必须逐字复用）：")
+        parts.extend(f"- {name}: {entry}" for name, entry in props.items())
+    return " | ".join(parts)
+
+
 def enforce_story_script_contract(
     data: dict[str, Any], *, target_index: int | None = None,
     target_indices: Sequence[int] | None = None,
@@ -2097,6 +2149,7 @@ __all__ = [
     "SCRIPT_REFERENCE_IMAGE_CAP",
     "SHOT_PROMPT_SEGMENT_COUNT",
     "SHOT_SEGMENT_LABELS_ZH",
+    "story_batch_canonical_anchors",
     "SHOT_SEGMENT_ORDER",
     "SEVERITY_ADVISORY",
     "SEVERITY_BLOCKING",

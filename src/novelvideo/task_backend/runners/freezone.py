@@ -1546,7 +1546,7 @@ async def _run_freezone_story_script_async(
                 duration_sec=float(duration_sec) if duration_sec else None,
                 **duration_kwargs,
             )
-    from novelvideo.freezone.script_video_duration import (
+    from novelvideo.services.freezone_content import (
         explicit_script_duration_target,
         explicit_script_duration_target_policy,
     )
@@ -1741,58 +1741,6 @@ def _resolve_story_script_rewrite_index(
     return None
 
 
-def _story_batch_canonical_anchors(data: Any) -> str:
-    """抽取第一批的风格段与角色卡，供后续批次逐字复用。
-
-    批量生成时后续批次看不到第一批的原文，模型会重写第 7 段或改角色卡；
-    合同虽然能修回去，但那等于先漂移再纠正。这里把锚点直接写进下一批的提示词。
-    """
-    from novelvideo.freezone.script_contract import (
-        SHOT_SEGMENT_ORDER,
-        classify_segments,
-        split_prompt_segments,
-    )
-
-    style = ""
-    cards: dict[str, str] = {}
-    scenes: dict[str, str] = {}
-    props: dict[str, str] = {}
-    for row in getattr(data, "rows", []) or []:
-        prompt = str(getattr(row, "shot_prompt", "") or "")
-        roles = classify_segments(prompt, SHOT_SEGMENT_ORDER)
-        if not style and "style" in roles:
-            segments = split_prompt_segments(prompt)
-            if roles.index("style") < len(segments):
-                style = f"[{segments[roles.index('style')].strip()}]"
-        for slot in (1, 2):
-            name = str(getattr(row, f"character_{slot}", "") or "").strip()
-            card = str(getattr(row, f"character_description_{slot}", "") or "").strip()
-            if name and card and name not in cards:
-                cards[name] = card
-        for bucket, key in ((scenes, "scene_descriptions"), (props, "prop_descriptions")):
-            values = getattr(row, key, None)
-            if isinstance(values, dict):
-                for asset_name, description in values.items():
-                    text = str(description or "").strip()
-                    if asset_name and text:
-                        bucket.setdefault(str(asset_name), text)
-    if not style and not cards and not scenes and not props:
-        return ""
-    parts = ["以下锚点来自第 1 批，必须逐字复用，不得改写："]
-    if style:
-        parts.append(f"第 7 段视觉风格/质感：{style}")
-    if cards:
-        parts.append("角色卡（character_description_N）：")
-        parts.extend(f"- {name}: {card}" for name, card in cards.items())
-    if scenes:
-        parts.append("场景基准说明（scene_descriptions，必须逐字复用）：")
-        parts.extend(f"- {name}: {value}" for name, value in scenes.items())
-    if props:
-        parts.append("道具基准说明（prop_descriptions，必须逐字复用）：")
-        parts.extend(f"- {name}: {value}" for name, value in props.items())
-    return " | ".join(parts)
-
-
 async def _generate_batched_story_script(
     *,
     source_text: str,
@@ -1822,9 +1770,10 @@ async def _generate_batched_story_script(
         script_checkpoint_fingerprint,
     )
 
-    from novelvideo.freezone.script_video_duration import (
+    from novelvideo.services.freezone_content import (
         explicit_script_duration_target,
         explicit_script_duration_target_policy,
+        story_batch_canonical_anchors,
     )
 
     total_target = explicit_script_duration_target(source_text, prompt)
@@ -1862,7 +1811,7 @@ async def _generate_batched_story_script(
             + (("\n" + budget_rule) if budget_rule else "")
         )
         if batch_index > 0 and results:
-            anchors = _story_batch_canonical_anchors(results[0])
+            anchors = story_batch_canonical_anchors(results[0])
             if anchors:
                 batch_prompt = f"{batch_prompt} {anchors}"
         # Batch checkpoints are intentionally source-scoped: a failed task is

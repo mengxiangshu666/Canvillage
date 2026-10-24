@@ -85,10 +85,22 @@ def enforce_story_script_contract(data: dict[str, Any], *, target_index: int | N
     return enforce(data, target_index=target_index, target_indices=target_indices)
 
 
-def explicit_script_duration_target(source_text: str) -> float | None:
+def explicit_script_duration_target_policy(*texts: str) -> str | None:
+    from novelvideo.freezone.script_video_duration import explicit_script_duration_target_policy as resolve
+
+    return resolve(*texts)
+
+
+def story_batch_canonical_anchors(data: object) -> str:
+    from novelvideo.freezone.script_contract import story_batch_canonical_anchors as build
+
+    return build(data)
+
+
+def explicit_script_duration_target(*texts: str) -> float | None:
     from novelvideo.freezone.script_video_duration import explicit_script_duration_target as resolve
 
-    return resolve(source_text)
+    return resolve(*texts)
 
 
 def script_rows_fingerprint(rows: list[dict[str, Any]]) -> str:
@@ -258,6 +270,8 @@ __all__ = [
     "get_video_camera_template",
     "append_script_shot_visual_context",
     "explicit_script_duration_target",
+    "explicit_script_duration_target_policy",
+    "story_batch_canonical_anchors",
     "script_rows_fingerprint",
     "audio_speech_output_path",
     "bind_story_script_assets",
