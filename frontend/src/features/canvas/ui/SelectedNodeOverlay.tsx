@@ -25,6 +25,8 @@ import {
   type ExportImageNodeResultKind,
 } from '@/features/canvas/domain/canvasNodes';
 import { NodeActionToolbar } from './NodeActionToolbar';
+import { CanvasAllFeaturesPanel } from './CanvasAllFeaturesPanel';
+import { canvasEventBus } from '@/features/canvas/application/canvasServices';
 import { AssetCommitHandle } from './AssetCommitHandle';
 import { MultiAngleEditorOverlay } from './MultiAngleEditorOverlay';
 import { LightEditorOverlay } from './LightEditorOverlay';
@@ -131,6 +133,25 @@ export const SelectedNodeOverlay = memo(() => {
   const [rotateNodeId, setRotateNodeId] = useState<string | null>(null);
   const [gridActionRequest, setGridActionRequest] = useState<GridActionRequest | null>(null);
   const [extractFramesNodeId, setExtractFramesNodeId] = useState<string | null>(null);
+  // 画布底栏「全部功能」：只对当前选中的节点生效，选别的节点或取消选中就关掉。
+  const [allFeaturesNodeId, setAllFeaturesNodeId] = useState<string | null>(null);
+
+  useEffect(() => {
+    return canvasEventBus.subscribe('canvas/all-features/open', () => {
+      const state = useCanvasStore.getState();
+      const nodeId = state.selectedNodeId;
+      if (!nodeId || !selectCanvasNodeById(state.nodes, nodeId)) {
+        toast.info('先选中一个图片或视频节点，再打开全部功能');
+        return;
+      }
+      setAllFeaturesNodeId(nodeId);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!allFeaturesNodeId) return;
+    if (selectedNode?.id !== allFeaturesNodeId) setAllFeaturesNodeId(null);
+  }, [allFeaturesNodeId, selectedNode]);
 
   const multiAngleNode = useCanvasStore((state) =>
     selectCanvasNodeById(state.nodes, multiAngleNodeId),
@@ -562,6 +583,7 @@ export const SelectedNodeOverlay = memo(() => {
     ?? outpaintNodeId
     ?? rotateNodeId
     ?? gridActionRequest?.nodeId
+    ?? allFeaturesNodeId
     ?? null;
 
   useEffect(() => {
@@ -608,6 +630,21 @@ export const SelectedNodeOverlay = memo(() => {
       )}
       {selectedNode && !rotateNodeId && !effectiveOverlayNodeId && (
         <AssetCommitHandle node={selectedNode} />
+      )}
+      {selectedNode && allFeaturesNodeId === selectedNode.id && (
+        <CanvasAllFeaturesPanel
+          node={selectedNode}
+          onClose={() => setAllFeaturesNodeId(null)}
+          onOpenUpscale={handleOpenUpscale}
+          onOpenMultiAngleEditor={handleOpenMultiAngleEditor}
+          onOpenLightEditor={handleOpenLightEditor}
+          onOpenScene360={handleOpenScene360}
+          onOpenOutpaint={handleOpenOutpaint}
+          onOpenRedraw={handleOpenRedraw}
+          onOpenErase={handleOpenErase}
+          onOpenRotate={handleOpenRotate}
+          onOpenExtractFrames={handleOpenExtractFrames}
+        />
       )}
       {multiAngleNode && multiAngleImageSource && (
         <MultiAngleEditorOverlay

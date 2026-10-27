@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 
-import pytest
 
 from novelvideo.agent_tools.native_registry import build_native_registry
 from novelvideo.agent_tools.turn_intent import (
@@ -13,7 +12,7 @@ from novelvideo.agent_tools.turn_intent import (
     infer_turn_intent_contract,
 )
 from novelvideo.agent_tools.village_canvas import capability_side_effect
-from novelvideo.chat.turn_intent import TurnIntentRuntime, tool_has_side_effect
+from tests.legacy_turn_intent import TurnIntentRuntime, tool_has_side_effect
 
 
 def _requirement(
@@ -284,137 +283,6 @@ class _DenyFence:
 
     def note_tool_invocation(self, name: str, arguments: dict) -> None:
         return None
-
-
-@pytest.mark.asyncio
-async def test_harness_freezes_and_projects_receipt_before_registry_result() -> None:
-    from novelvideo.chat.village_harness import _build_tool
-
-    runtime = TurnIntentRuntime(
-        prompt="优化当前节点",
-        turn_id="turn-1",
-        project_id="project-1",
-        canvas_id="canvas-1",
-    )
-    registry = _Registry()
-    tool = _build_tool(
-        registry,
-        "village_canvas_dispatch_action",
-        {
-            "name": "village_canvas_dispatch_action",
-            "description": "test",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "request": {"type": "string"},
-                    "commands": {"type": "array", "items": {"type": "object"}},
-                },
-            },
-        },
-        turn_intent=runtime,
-    )
-
-    payload = json.loads(
-        await tool.function(
-            request="优化当前节点",
-            commands=[{"type": "update_node_prompt"}],
-        )
-    )
-
-    assert registry.calls == [
-        (
-            "village_canvas_dispatch_action",
-            {
-                "request": "优化当前节点",
-                "commands": [{"type": "update_node_prompt"}],
-            },
-        )
-    ]
-    assert payload["turn_intent_receipt"]["status"] == "locked"
-    assert payload["turn_intent_receipt"]["source"] == (
-        "runtime_side_effect_preflight"
-    )
-
-
-@pytest.mark.asyncio
-async def test_harness_freezes_before_skill_fence_denial_and_projects_receipt() -> None:
-    from novelvideo.chat.village_harness import _build_tool
-
-    runtime = TurnIntentRuntime(
-        prompt="生成一条视频",
-        turn_id="turn-1",
-        project_id="project-1",
-        canvas_id="canvas-1",
-    )
-    fence = _DenyFence(runtime)
-    registry = _Registry()
-    tool = _build_tool(
-        registry,
-        "village_canvas_capability",
-        {
-            "name": "village_canvas_capability",
-            "description": "test",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "action": {"type": "string"},
-                    "capability_id": {"type": "string"},
-                    "arguments": {"type": "object"},
-                },
-            },
-        },
-        skill_fence=fence,
-        turn_intent=runtime,
-    )
-
-    payload = json.loads(
-        await tool.function(
-            action="invoke",
-            capability_id="creative.generate_sketches",
-            arguments={"episode": 1},
-        )
-    )
-
-    assert fence.locked_at_denial is True
-    assert registry.calls == []
-    assert payload["error_code"] == "test_paid_media_denied"
-    assert payload["turn_intent_receipt"]["status"] == "locked"
-    assert payload["turn_intent_receipt"]["source"] == (
-        "runtime_side_effect_preflight"
-    )
-
-
-@pytest.mark.asyncio
-async def test_harness_turn_intent_tool_does_not_enter_registry() -> None:
-    from novelvideo.chat.village_harness import _build_tool
-
-    runtime = TurnIntentRuntime(prompt="交付结果", turn_id="turn-1")
-    registry = _Registry()
-    tool = _build_tool(
-        registry,
-        TURN_INTENT_TOOL_NAME,
-        {
-            "name": TURN_INTENT_TOOL_NAME,
-            "description": "test",
-            "parameters": {
-                "type": "object",
-                "properties": {"contract": {"type": "object"}},
-                "required": ["contract"],
-            },
-        },
-        turn_intent=runtime,
-    )
-
-    payload = json.loads(
-        await tool.function(contract=_contract())
-    )
-
-    assert payload["ok"] is True
-    assert payload["action"] == "frozen"
-    assert payload["turn_intent_receipt"]["status"] == "frozen"
-    assert payload["turn_intent_receipt"]["source"] == "explicit"
-    assert len(payload["turn_intent_receipt"]["contract_hash"]) == 64
-    assert registry.calls == []
 
 
 def test_inferred_delivery_ignores_media_words_inside_canvas_prompt() -> None:

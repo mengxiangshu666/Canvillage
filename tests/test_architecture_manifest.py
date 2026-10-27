@@ -23,9 +23,10 @@ def _write_json(path: Path, payload: dict) -> None:
 def test_repository_manifest_is_current() -> None:
     report = validate_manifest(repo_root=ROOT)
     assert report["finding_count"] == 0
-    assert report["owner_count"] == 19
+    # companion 在 T-260 随搭子系统一并移除，清单与计数同步降一。
+    assert report["owner_count"] == 18
     assert report["backend_domain_count"] == 8
-    assert report["frontend_feature_count"] == 8
+    assert report["frontend_feature_count"] == 7
     assert report["critical_contract_count"] >= 10
 
 

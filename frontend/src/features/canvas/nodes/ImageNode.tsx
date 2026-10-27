@@ -51,6 +51,7 @@ import {
   regenerateExportImageNode,
 } from '@/features/canvas/application/regenerateExportNode';
 import { useNodeGenerationTaskState } from '@/features/canvas/application/useNodeGenerationTaskState';
+import { useGenerationTick } from '@/features/canvas/application/generationTicker';
 import { mirrorResultImageToOrigin } from '@/features/canvas/application/mirrorResultToOrigin';
 import { useCancelNodeGeneration } from '@/features/canvas/application/useCancelNodeGeneration';
 import { selectConnectedCanvasEdges } from '@/features/canvas/application/canvasEdgeIndex';
@@ -96,12 +97,15 @@ export const ImageNode = memo(({ id, data, selected, type, width, height }: Imag
   // 只订阅「是否该用原图」这个离散布尔(在 zoom 阈值处翻转),而非连续 zoom 值 ——
   // 缩放过程中本节点只在跨过阈值的那一帧重渲染,而非每一帧。
   const preferOriginalImage = useStore((state) => shouldUseOriginalImageByZoom(state.transform[2]));
-  const [now, setNow] = useState(() => Date.now());
   const [isRecovering, setIsRecovering] = useState(false);
   const isExportResultNode = type === CANVAS_NODE_TYPES.exportImage;
   // `task` 是 task-center 里那条真实任务：刷新后靠 generationTaskKey 重新接上，
   // 因此进度条在重载后仍从后端进度续显，而不是归零重估。
   const { isGenerating, task: generationTask } = useNodeGenerationTaskState(data);
+  // Shared 120ms clock, only subscribed while this node is generating. Each
+  // generating node used to own its own interval, so the timer count grew with
+  // the number of concurrent generations.
+  const now = useGenerationTick(isGenerating);
   const generationError =
     typeof (data as { generationError?: unknown }).generationError === 'string'
       ? ((data as { generationError?: string }).generationError ?? '').trim()
@@ -172,20 +176,6 @@ export const ImageNode = memo(({ id, data, selected, type, width, height }: Imag
   useEffect(() => {
     updateNodeInternals(id);
   }, [id, resolvedHeight, resolvedWidth, updateNodeInternals]);
-
-  useEffect(() => {
-    if (!isGenerating) {
-      return;
-    }
-
-    const timer = window.setInterval(() => {
-      setNow(Date.now());
-    }, 120);
-
-    return () => {
-      window.clearInterval(timer);
-    };
-  }, [isGenerating]);
 
   const waitedMinutes = useMemo(() => {
     if (!isGenerating || generationStartedAt === null) {

@@ -81,6 +81,48 @@ export interface Character {
   restore_url?: string;
 }
 
+export interface CharacterSignatureFeature {
+  feature: string;
+  priority?: string;
+  region?: string;
+  visual_expression?: string;
+  identity_function?: string;
+}
+
+/** 一句话/参考图解析出的角色档案（后端 CharacterProfile 的镜像）。 */
+export interface CharacterProfile {
+  suggested_name?: string;
+  gender?: string;
+  age_group?: string;
+  era?: string;
+  region?: string;
+  brief?: string;
+  face_prompt?: string;
+  appearance_details?: string;
+  body_type?: string;
+  signature_features?: CharacterSignatureFeature[];
+  generation_prompt?: string;
+  negative_constraints?: string;
+  source_facts?: string[];
+  reasonable_inferences?: string[];
+  design_additions?: string[];
+}
+
+export interface CharacterProfileFields {
+  gender?: string;
+  age_group?: string;
+  description?: string;
+  face_prompt?: string;
+  body_type?: string;
+}
+
+export interface CharacterProfileResult {
+  profile: CharacterProfile;
+  character_fields?: CharacterProfileFields;
+  identity_fields?: CharacterProfileFields & { appearance_details?: string };
+  generation_prompt?: string;
+}
+
 export interface Identity {
   identity_id: string;
   identity_name: string;

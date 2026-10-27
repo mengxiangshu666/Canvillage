@@ -10,7 +10,6 @@
       "tests/test_chat_service_user_agent_scope.py",
       "tests/test_chat_json_render_error_log.py",
       "tests/test_native_village_canvas_plugin.py",
-      "tests/test_agent_runtime_skills.py",
       "tests/test_character_quality.py",
       "tests/test_agent_plugin_registry.py",
       "tests/test_memory_index.py",

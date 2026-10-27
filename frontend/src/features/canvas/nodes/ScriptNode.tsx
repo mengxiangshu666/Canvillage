@@ -142,6 +142,7 @@ import {
 import { areCanvasNodePropsEqual } from './videoNodeRenderProps';
 import { ScriptCreativeView } from './script/ScriptCreativeView';
 import { ScriptVideoReview } from './script/ScriptVideoReview';
+import { ScriptKeyframeReview } from './script/ScriptKeyframeReview';
 import { ScriptDirectorPlan } from './script/ScriptDirectorPlan';
 import { directorPlanGenerationInstruction } from './script/directorSequenceCoverage';
 import { ScriptAssetView } from './script/ScriptAssetView';
@@ -2327,6 +2328,7 @@ function ScriptViewBody({
 }) {
   if (view === 'creative') return <ScriptCreativeView rows={rows} scriptNodeId={scriptNodeId} ledger={ledger} />;
   if (view === 'video') return <ScriptVideoReview rows={rows} scriptNodeId={scriptNodeId} onRewrite={rowOperations?.onRewrite} disabled={rowActionsDisabled} />;
+  if (view === 'keyframe') return <ScriptKeyframeReview rows={rows} scriptNodeId={scriptNodeId} />;
   if (view === 'asset') return <ScriptAssetView rows={rows} ledger={ledger} scriptNodeId={scriptNodeId} />;
   return (
     <ScriptResultTable

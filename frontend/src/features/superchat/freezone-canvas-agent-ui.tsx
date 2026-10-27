@@ -97,11 +97,11 @@ export const FREEZONE_AGENT_DRAWER_CLASS = "canvas-agent-drawer-chat";
 export const FREEZONE_AGENT_WELCOME_CLASS = "chat-welcome-root";
 // Keep the versioned key so historical oversized drawer preferences do not leak in.
 export const FREEZONE_AGENT_WIDTH_KEY = "st.freezone.agentDrawerWidth.v2";
-export const FREEZONE_AGENT_WIDTH_V4_KEY = "st.freezone.agentDrawerWidth.v4";
-export const FREEZONE_AGENT_WIDTH_MIN = 320;
-export const FREEZONE_AGENT_WIDTH_MAX = 560;
-export const FREEZONE_AGENT_WIDTH_DEFAULT_WIDE = 370;
-export const FREEZONE_AGENT_WIDTH_DEFAULT_NARROW = 360;
+export const FREEZONE_AGENT_WIDTH_V4_KEY = "st.freezone.agentDrawerWidth.v5";
+export const FREEZONE_AGENT_WIDTH_MIN = 280;
+export const FREEZONE_AGENT_WIDTH_MAX = 520;
+export const FREEZONE_AGENT_WIDTH_DEFAULT_WIDE = 330;
+export const FREEZONE_AGENT_WIDTH_DEFAULT_NARROW = 300;
 
 export type WorkflowItemSelectionGroup = {
   stepId: string;
@@ -115,7 +115,7 @@ export const LIBTV_WELCOME_GREETING = "你好，我是小树。告诉我这次�
 export const LIBTV_WELCOME_CREATE_TOGETHER = "和小树一起把作品做出来";
 export const LIBTV_WELCOME_SKILL_REFRESH = "换一批";
 export const LIBTV_CHAT_INPUT_PLACEHOLDER = "告诉小树要做什么，或者 @ 引用节点 / 素材";
-export const LIBTV_CHAT_RICH_INPUT_PLACEHOLDER = "描述交付目标，或用 @ 引用节点、/ 调用技能";
+export const LIBTV_CHAT_RICH_INPUT_PLACEHOLDER = "开始你的创作，或者 @ 引用工作流/节点/资源";
 export const LIBTV_ADD_TO_AGENT = "交给小树";
 export const LIBTV_HEADER_SUBTITLE = "对齐目标，直接落地";
 export const LIBTV_THINKING = "思考中…";
@@ -140,6 +140,20 @@ export const LIBTV_WELCOME_SKILL_TITLES: readonly string[] = [
   "Skill 已加载，等待你的输入_",
   "/skill：你的创作入口",
   "Skill 就位，ready when you are",
+];
+
+export type CanvasAgentQuickAction = "canvas" | "script" | "upload" | "optimize";
+
+/** LibTV TV Director 欢迎态的四条快捷入口。 */
+export const CANVAS_AGENT_QUICK_ACTIONS: ReadonlyArray<{
+  id: CanvasAgentQuickAction;
+  label: string;
+  icon: LucideIcon;
+}> = [
+  { id: "canvas", label: "添加画布开始创作", icon: LayoutGrid },
+  { id: "script", label: "从模板预设开始剧本原创", icon: Clapperboard },
+  { id: "upload", label: "上传故事板改编", icon: Film },
+  { id: "optimize", label: "批量优化提示词", icon: Wand2 },
 ];
 
 const SKILL_PAGE_SIZE = 4;
@@ -246,7 +260,7 @@ export function SkillGlyph({
 }
 
 export function defaultFreezoneAgentWidth(viewportWidth = typeof window !== "undefined" ? window.innerWidth : 1440): number {
-  if (viewportWidth >= 1520) return 370;
+  if (viewportWidth >= 1520) return FREEZONE_AGENT_WIDTH_DEFAULT_WIDE;
   return FREEZONE_AGENT_WIDTH_DEFAULT_NARROW;
 }
 
@@ -293,6 +307,7 @@ export function FreezoneWelcomeSkills({
   displayName,
   showSkillPicker = true,
   compact = false,
+  onQuickAction,
 }: {
   selectedIds: readonly string[];
   onToggle: (skillId: string) => void;
@@ -301,6 +316,7 @@ export function FreezoneWelcomeSkills({
   showSkillPicker?: boolean;
   /** LibTV-like empty state used by the canvas-only Agent workbench. */
   compact?: boolean;
+  onQuickAction?: (action: CanvasAgentQuickAction) => void;
 }) {
   const [page, setPage] = useState(0);
   const [skillPickerOpen, setSkillPickerOpen] = useState(false);
@@ -324,54 +340,26 @@ export function FreezoneWelcomeSkills({
         )}
         data-welcome-ui="village-agent-libtv"
       >
-        <div className="village-agent-welcome-libtv-head">
-          <div className="min-w-0">
-            <p className="village-agent-welcome-eyebrow">小树创作台</p>
-            <h2>选择一个 Skill，让创作更快一步</h2>
-          </div>
-          {pageCount > 1 && (
-            <button
-              type="button"
-              onClick={refreshBatch}
-              disabled={disabled}
-              className="village-agent-welcome-refresh"
-              title={LIBTV_WELCOME_SKILL_REFRESH}
-            >
-              <RefreshCw className="size-3.5" aria-hidden />
-              <span>{LIBTV_WELCOME_SKILL_REFRESH}</span>
-            </button>
-          )}
+        <div className="flex flex-col items-center text-center">
+          <div className="mb-4 size-12 rounded-full bg-[radial-gradient(circle_at_35%_28%,#a8fbff_0%,#3ed8ff_38%,#0b8cff_72%,#0b4bb8_100%)] shadow-[0_0_38px_rgba(34,211,238,0.42)]" aria-hidden />
+          <h2 className="text-[15px] font-semibold leading-6 text-[#f2f2f3]">
+            让小树帮助你的无限创意
+          </h2>
         </div>
-        <div className="village-agent-welcome-skill-grid" aria-label="小树推荐技能">
-          {visible.map((skill) => {
-            const selected = selectedIds.includes(skill.id);
+        <div className="mt-6 flex flex-col gap-1.5" aria-label="快捷开始">
+          {CANVAS_AGENT_QUICK_ACTIONS.map((action) => {
+            const Icon = action.icon;
             return (
               <button
-                key={skill.id}
+                key={action.id}
                 type="button"
                 disabled={disabled}
-                aria-pressed={selected}
-                aria-label={`使用技能 ${skill.label}`}
-                title={`${skill.description} · ${selected ? "已选中，点击取消" : "点击挂到输入区"}`}
-                onClick={() => onToggle(skill.id)}
-                className={cn(
-                  "flex items-center gap-2 overflow-hidden rounded-2xl border-[0.5px] border-[#363636] bg-white/[0.03] p-3 text-left transition-colors hover:bg-white/[0.06]",
-                  "village-agent-welcome-skill-card",
-                  selected && "is-selected",
-                  disabled && "pointer-events-none opacity-40",
-                )}
+                onClick={() => onQuickAction?.(action.id)}
+                className="group flex h-10 w-full items-center gap-2 rounded-xl border-[0.5px] border-[#363636] bg-white/[0.03] px-3 text-left text-[12px] text-white/72 transition-colors hover:bg-white/[0.06] hover:text-white disabled:pointer-events-none disabled:opacity-40"
               >
-                <SkillGlyph
-                  skillId={skill.id}
-                  coverImage={skill.coverImage}
-                  className="size-9 rounded-[10px]"
-                  iconClassName="size-4"
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="village-agent-welcome-skill-title">{skill.label}</span>
-                  <span className="village-agent-welcome-skill-tag">/{skillDisplayTag(skill)}</span>
-                </span>
-                {selected && <BadgeCheck className="size-4 shrink-0 text-cyan-200/90" aria-hidden />}
+                <Icon className="size-4 shrink-0 text-white/45" aria-hidden />
+                <span className="min-w-0 flex-1 truncate">{action.label}</span>
+                <ChevronDown className="size-3.5 shrink-0 -rotate-90 text-white/22" aria-hidden />
               </button>
             );
           })}

@@ -22,9 +22,12 @@ from typing import Any, Awaitable, Callable, Mapping
 import httpx
 
 from novelvideo.agent_tools.village_canvas import TOOLS as CANVAS_TOOLS
+from novelvideo.chat.tool_error_messages import format_tool_failure, tool_error_code
+from novelvideo.tool_failure_disposition import ToolFailureLedger
 
 
 SIDECAR_TTL_SECONDS = 15 * 60
+_TOOL_FAILURE_LEDGER = ToolFailureLedger()
 
 # Model-facing tools are intentionally few and typed.  The sidecar may use its
 # own skills and planning; it cannot reach arbitrary product routes.
@@ -77,7 +80,7 @@ _WORKFLOW_NEGATIVE_RE = re.compile(
     r"(?:工作流|workflow|分镜|镜头|整片|成片|多镜|storyboard|shot|sequence)"
 )
 _STRUCTURE_COMMAND_TYPES = frozenset(
-    {"insert_starter_workflow", "create_shot_sequence"}
+    {"insert_starter_workflow"}
 )
 _WORKFLOW_TOOL_NAMES = frozenset(
     {
@@ -291,10 +294,26 @@ def delivery_receipt_for_tool(
 
 # Internal contract tools are exposed to the model by the sidecar.  The chat UI
 # and the assistant's own wording use Village names, never vendor names.
+_INTERNAL_TOOL_NAMES = frozenset(
+    {
+        "record_user_intent",
+        "get_delivery_evidence",
+        "report_delivery",
+        "submit_structured_output",
+    }
+)
+
 _DISPLAY_TOOL_NAMES = {
-    "record_user_intent": "village_turn_intent",
-    "get_delivery_evidence": "village_delivery_evidence",
-    "report_delivery": "village_delivery_check",
+    "village_canvas_read_compact": "读取画布",
+    "village_canvas_dispatch_action": "执行画布操作",
+    "village_canvas_apply_commands": "修改画布",
+    "freezone_run_node": "运行节点",
+    "freezone_stop_task": "停止任务",
+    "village_canvas_start_workflow_run": "启动工作流",
+    "village_canvas_command_workflow_run": "操作工作流",
+    "village_canvas_get_workflow_run": "查看工作流",
+    "village_canvas_list_tasks": "查看任务列表",
+    "village_canvas_get_task": "查看任务详情",
 }
 
 _IDENTITY_TERMS = re.compile(
@@ -317,6 +336,14 @@ def display_tool_name(name: str) -> str:
     return _DISPLAY_TOOL_NAMES.get(name, name)
 
 
+def _tool_result_text(display: str, success: bool, output: str) -> str:
+    """Keep tool output readable: parse the structured failure before trimming."""
+
+    if success:
+        return f"✅ {display}已完成。"
+    return format_tool_failure(display, output)
+
+
 SYSTEM_PROMPT = """你是村长无限画布的创作 Agent「小树」。
 
 本轮由村长画布通过受控工具网关提供能力。硬约束：
@@ -326,6 +353,9 @@ SYSTEM_PROMPT = """你是村长无限画布的创作 Agent「小树」。
 - 只使用当前请求里真实提供的工具；不要臆造画布、任务、工作流或素材事实。
 - 画布写入必须拿到服务端回执（command_id、revision、applied_ops、readback_verified）；
   任务启动只能说明“已受理”，不能说明“已生成完成”。
+- 遇到 `canvas_revision_conflict`：这是版本冲突，不是参数错误。不要改提示词，也不要
+  连续读工作流或无关节点；重新读取画布一次拿到最新 revision，然后原样重试一次。
+  第二次仍冲突就停下告诉用户，不要声称已经写入。
 - 交付前必须用 report_delivery 逐项引用真实回执；没有回执就明确失败或等待，
   不得用“已保存”“已恢复”“下次继续”掩盖未执行。
 - 纯文本才用 response 交付；涉及图片、视频或音频产物时，record_user_intent 的
@@ -338,18 +368,25 @@ SYSTEM_PROMPT = """你是村长无限画布的创作 Agent「小树」。
   然后马上交付。
 - report_delivery 的 requirements 必须逐字复用冻结合同的 id 和 statement，
   不得改写；连续失败两次就停止重试，向用户说明已完成什么、卡在哪里，不要留空。
+- 回复直接给结果，用中文短句；不要复述内部工具名、合同 JSON、证据 ID 或执行
+  过程，除非用户明确要求看步骤。
+- 同一目标已经有 paused/running 的工作流时，先读它并取消或继续；不要同时另建
+  节点或另起工作流，避免画布上出现重复节点。
 - 启动图片/视频/音频任务前先查该节点是否已有 active task；已有就等待或复用，
   不要重复启动。修改既有节点用 dispatch_action；apply_commands 只在新建或
   已有 ready_write checkpoint 时使用。
 - 任务等待时不要密集轮询；状态没变就说明还在跑，隔几秒再查。
 - 能在一个批次完成的画布改动，必须一次用 dispatch_action 或 apply_commands
   提交；不要一个节点一次调用，也不要把同一批改动拆成很多轮。
+- 用户没有明确要求分镜、镜头序列或批量出图时，不要把一个想法/一段脚本自动铺成
+  多张图片节点或镜头链；不要用多个单图节点模拟批量分镜。需要多镜时先问清楚，
+  或只改脚本表，等用户明确要求再建节点。
 - 读写要节制：刚读过的 revision 和已有回执足够时不要重复读、不要重复验证；
   只在缺少新事实时再读一次。
 - 用户说“随意发挥/看着办”时，先做最小可交付的一步，不要自动启动整片制作、
   批量工作流或批量付费媒体；需要扩大范围时先说明下一步。
 - 角色卡、单图、资产补齐这类请求直接创建节点并生成，不要启动
-  custom-canvas-workflow，也不要用 insert_starter_workflow 或 create_shot_sequence
+  custom-canvas-workflow，也不要用 insert_starter_workflow
   铺设用户没有要求的分镜节点。
 - 复用已有节点/运行时先读当前状态；只有用户明确重做才创建新对象。
 - 对外身份只叫「小树」/「村长无限画布」。不要提 TapCanvas、DeepSeek Harness、
@@ -375,15 +412,6 @@ def sidecar_url() -> str:
     return str(
         os.environ.get("VILLAGE_AGENT_SIDECAR_URL") or "http://127.0.0.1:8790"
     ).rstrip("/")
-
-
-def chat_backend_enabled() -> bool:
-    """True only when the operator explicitly routes chat through the sidecar."""
-
-    return str(os.environ.get("VILLAGE_CHAT_AGENT_BACKEND") or "").strip().lower() in {
-        "xiaoshu",
-        "tapcanvas",
-    }
 
 
 def cleanup_contexts(now: float | None = None) -> None:
@@ -494,6 +522,7 @@ async def invoke_native_tool(
 
     from novelvideo.agent_tools.native_registry import build_native_registry
     from novelvideo.agent_tools.village_canvas import agent_api_context
+    from novelvideo.tool_failure_disposition import attach_disposition
 
     with agent_api_context(
         VILLAGE_CANVAS_API_URL=str(context["api_url"]),
@@ -503,14 +532,28 @@ async def invoke_native_tool(
         VILLAGE_CANVAS_TURN_ID=str(context.get("turn_id") or ""),
     ):
         registry = build_native_registry(full=True)
-        return await registry.invoke(
+        result = await registry.invoke(
             name, authorized_tool_arguments(name, arguments, context)
         )
+    return attach_disposition(
+        result,
+        tool_name=name,
+        ledger=_TOOL_FAILURE_LEDGER,
+        turn_id=str(context.get("turn_id") or ""),
+    )
+
+
+_AGENT_TOKEN_CACHE: dict[tuple[str, str], tuple[str, float]] = {}
+_AGENT_TOKEN_TTL_SECONDS = 3600
 
 
 async def _create_agent_token(username: str, project_id: str) -> str:
     from novelvideo.ports import get_auth_session_port
 
+    cache_key = (username, str(project_id or ""))
+    cached = _AGENT_TOKEN_CACHE.get(cache_key)
+    if cached is not None and cached[1] > time.time() + 60:
+        return cached[0]
     token = await get_auth_session_port().create_agent_session(
         username=username,
         scopes=[
@@ -524,18 +567,25 @@ async def _create_agent_token(username: str, project_id: str) -> str:
         ttl_seconds=24 * 3600,
         agent_kind="xiaoshu",
         worker_id=f"xiaoshu:{username}",
-        current_scope_kind="project",
-        current_project_id=project_id,
+        current_scope_kind="project" if project_id else "home",
+        current_project_id=project_id or None,
         metadata={"source": "xiaoshu_sidecar"},
+    )
+    _AGENT_TOKEN_CACHE[cache_key] = (
+        token.value,
+        time.time() + _AGENT_TOKEN_TTL_SECONDS,
     )
     return token.value
 
 
 def _system_prompt(*, project_id: str, canvas_id: str, turn_id: str) -> str:
-    facts = (
-        f"\n当前项目：{project_id}；当前画布：{canvas_id}。"
-        "只能通过 mcp__tapcanvas__ 工具读写，禁止猜测其他项目或画布。"
-    )
+    if project_id:
+        facts = (
+            f"\n当前项目：{project_id}；当前画布：{canvas_id}。"
+            "只能通过 mcp__tapcanvas__ 工具读写，禁止猜测其他项目或画布。"
+        )
+    else:
+        facts = "\n当前是未进入项目的对话：没有画布、任务或素材工具可用，只回答问题本身。"
     if turn_id:
         facts += (
             f"\n本轮 turn_id：{turn_id}。画布写入和任务启动的 source_turn_id"
@@ -554,6 +604,17 @@ _SIDECAR_HTTP_TIMEOUT = httpx.Timeout(
     write=30.0,
     pool=10.0,
 )
+
+_SIDECAR_CLIENT: httpx.AsyncClient | None = None
+
+
+def _sidecar_client() -> httpx.AsyncClient:
+    """Reuse one keep-alive connection pool for every turn."""
+
+    global _SIDECAR_CLIENT
+    if _SIDECAR_CLIENT is None or _SIDECAR_CLIENT.is_closed:
+        _SIDECAR_CLIENT = httpx.AsyncClient(timeout=_SIDECAR_HTTP_TIMEOUT)
+    return _SIDECAR_CLIENT
 
 
 async def _consume_sidecar_stream(
@@ -617,6 +678,7 @@ async def run_turn(
     task_authorization: Mapping[str, Any] | None = None,
     user_request: str | None = None,
     event_sink: Callable[[str, Mapping[str, Any]], Awaitable[None]] | None = None,
+    reference_images: list[str] | None = None,
 ) -> dict[str, Any]:
     """Run one real sidecar turn and return its text plus tool trace.
 
@@ -634,7 +696,7 @@ async def run_turn(
     agent_token = await _create_agent_token(username, project_id)
     turn_token = secrets.token_urlsafe(32)
     turn_key = str(turn_id or "").strip()
-    workflow_authorized = workflow_requested(user_request or prompt)
+    workflow_authorized = bool(project_id) and workflow_requested(user_request or prompt)
     register_context(
         turn_token,
         api_url=api_base_url(),
@@ -669,9 +731,13 @@ async def run_turn(
         "requiredSkillCalls": [],
         "externalSkills": [],
         "externalSkillResolverConfig": None,
-        "referenceImages": [],
+        "referenceImages": list(reference_images or []),
         "assetInputs": [],
-        "remoteTools": remote_tool_definitions(include_workflow=workflow_authorized),
+        "remoteTools": (
+            remote_tool_definitions(include_workflow=workflow_authorized)
+            if project_id
+            else []
+        ),
         "remoteToolCatalog": [],
         "remoteToolConfig": {
             "endpoint": f"{api_base_url()}/api/v1/agent-sidecar/mcp/{turn_token}",
@@ -680,16 +746,16 @@ async def run_turn(
         },
     }
     try:
-        async with httpx.AsyncClient(timeout=_SIDECAR_HTTP_TIMEOUT) as client:
-            async with client.stream(
-                "POST", f"{sidecar_url()}/chat", json=payload
-            ) as response:
-                if response.status_code >= 400:
-                    body = (await response.aread()).decode("utf-8", "replace")
-                    raise SidecarError(
-                        f"小树 Agent 服务拒绝了本轮请求：HTTP {response.status_code}：{body[:2000]}"
-                    )
-                result = await _consume_sidecar_stream(response, event_sink)
+        client = _sidecar_client()
+        async with client.stream(
+            "POST", f"{sidecar_url()}/chat", json=payload
+        ) as response:
+            if response.status_code >= 400:
+                body = (await response.aread()).decode("utf-8", "replace")
+                raise SidecarError(
+                    f"小树 Agent 服务拒绝了本轮请求：HTTP {response.status_code}：{body[:2000]}"
+                )
+            result = await _consume_sidecar_stream(response, event_sink)
     except httpx.HTTPError as exc:
         raise SidecarError(
             f"小树 Agent 服务不可用：{type(exc).__name__}: {exc}"
@@ -731,6 +797,67 @@ def _canvas_patch_event(call: Mapping[str, Any]) -> dict[str, Any] | None:
     return _canvas_patch_from_text(raw)
 
 
+_HISTORY_MESSAGE_LIMIT = 12
+_HISTORY_CHAR_BUDGET = 6000
+_HISTORY_MESSAGE_CHARS = 800
+
+
+def _recent_conversation_lines(
+    username: str,
+    project: str,
+    conversation_id: str,
+    canvas_id: str | None,
+    *,
+    current_prompt: str,
+) -> list[str]:
+    """Load bounded prior turns so the session-per-turn sidecar keeps context."""
+
+    from novelvideo.chat.store import ChatScope, chat_store
+
+    try:
+        scope = ChatScope(
+            kind="project" if project else "home",
+            id=project or None,
+            canvas_id=canvas_id,
+            conversation_id=conversation_id,
+        )
+        rows = chat_store.list_messages(
+            username, scope, limit=_HISTORY_MESSAGE_LIMIT + 2
+        )
+    except Exception:
+        return []
+    lines: list[str] = []
+    for row in rows:
+        role = str(row.get("role") or "").strip()
+        text = str(row.get("content") or "").strip()
+        if role not in {"user", "assistant"} or not text:
+            continue
+        if role == "user" and text == current_prompt:
+            continue
+        if len(text) > _HISTORY_MESSAGE_CHARS:
+            text = text[:_HISTORY_MESSAGE_CHARS] + "…"
+        lines.append(f"{role}: {text}")
+    kept: list[str] = []
+    total = 0
+    for line in reversed(lines):
+        if total + len(line) > _HISTORY_CHAR_BUDGET:
+            break
+        kept.append(line)
+        total += len(line)
+    return list(reversed(kept))
+
+
+def _prompt_with_history(prompt: str, lines: list[str]) -> str:
+    if not lines:
+        return prompt
+    return (
+        "<conversation_history>\n"
+        + "\n".join(lines)
+        + "\n</conversation_history>\n\n"
+        + prompt
+    )
+
+
 async def stream_chat_turn(
     username: str,
     project: str,
@@ -743,6 +870,7 @@ async def stream_chat_turn(
     canvas_id: str | None = None,
     turn_id: str | None = None,
     model: str | None = None,
+    reference_images: list[str] | None = None,
 ) -> dict[str, Any]:
     """Chat adapter: run the sidecar and project its trace into chat events."""
 
@@ -752,6 +880,14 @@ async def stream_chat_turn(
     turn_key = str(turn_id or uuid.uuid4().hex)
     task_authorization = task_authorization_from_prompt(prompt)
     human_prompt = _human_user_text(prompt)
+    history_lines = _recent_conversation_lines(
+        username,
+        project,
+        conversation_id,
+        canvas_id,
+        current_prompt=human_prompt,
+    )
+    model_prompt = _prompt_with_history(human_prompt, history_lines)
     thread_id = f"xiaoshu:{project}:{conversation_id or 'default'}"
     await on_event(
         {
@@ -782,6 +918,10 @@ async def stream_chat_turn(
             return
         call_id = str(data.get("toolCallId") or "")
         raw_name = str(data.get("toolName") or "agent.tool")
+        if raw_name in _INTERNAL_TOOL_NAMES:
+            # Intent freeze and delivery self-check are internal machinery; the
+            # chat shows the answer, not the plumbing.
+            return
         display = display_tool_name(raw_name)
         phase = str(data.get("phase") or "")
         if phase == "started":
@@ -813,9 +953,10 @@ async def stream_chat_turn(
                 "tool_terminal": True,
                 "tool_success": success,
                 "tool_failed": not success,
+                "tool_error_code": tool_error_code(output) if not success else "",
                 "tool_call_id": call_id,
                 "name": display,
-                "text": output,
+                "text": _tool_result_text(display, success, output),
             }
         )
         seen_tool_calls.add(call_id)
@@ -824,13 +965,14 @@ async def stream_chat_turn(
         username=username,
         project_id=project,
         canvas_id=str(canvas_id or "default"),
-        prompt=human_prompt,
+        prompt=model_prompt,
         conversation_id=conversation_id,
         model=model,
         turn_id=turn_key,
         task_authorization=task_authorization,
         user_request=human_prompt,
         event_sink=project_sidecar_event,
+        reference_images=reference_images,
     )
     for call in result.get("tool_calls") or []:
         if not isinstance(call, Mapping):
@@ -844,6 +986,8 @@ async def stream_chat_turn(
                     patched_calls.add(call_id)
             continue
         raw_name = str(call.get("name") or "agent.tool")
+        if raw_name in _INTERNAL_TOOL_NAMES:
+            continue
         name = display_tool_name(raw_name)
         status = str(call.get("status") or "")
         success = status == "succeeded"
@@ -870,9 +1014,10 @@ async def stream_chat_turn(
                 "tool_terminal": True,
                 "tool_success": success,
                 "tool_failed": not success,
+                "tool_error_code": tool_error_code(output) if not success else "",
                 "tool_call_id": call_id,
                 "name": name,
-                "text": output,
+                "text": _tool_result_text(name, success, output),
             }
         )
     final_text = product_text(result.get("text") or "")
@@ -903,7 +1048,6 @@ __all__ = [
     "SIDECAR_TOOL_NAMES",
     "SidecarError",
     "api_base_url",
-    "chat_backend_enabled",
     "cleanup_contexts",
     "get_context",
     "invoke_native_tool",

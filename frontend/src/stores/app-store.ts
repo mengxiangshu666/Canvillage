@@ -12,7 +12,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { quotaSafeStateStorage } from "@/lib/localStorageQuota";
-import { DEFAULT_BUILTIN_PET_SLUG } from "@/features/companion/petdex/petdex-pets";
 import type { ProjectStatus } from "@/types/project";
 
 export const TASK_PANEL_HEIGHT_MIN = 200;
@@ -36,33 +35,6 @@ interface AppState {
   taskPanelHeight: number;
   aiAssistantOpen: boolean;
   aiAssistantWidth: number;
-  /**
-   * 顶部陪伴形象：某只 petdex 宠物的 slug（内置目录与用户导入共用这一套）。
-   * 属全局 UI 偏好（region-agnostic），随 village-app 持久化、不随区域切换清除。
-   */
-  companionKind: string;
-  /**
-   * 选中的宠物（来自 manifest，含同源精灵图地址）。导入宠物的 spritesheetUrl 是会话级
-   * blob，刷新后按 slug 重解析；内置宠物以目录 pets.json 为准。
-   */
-  companionPet: {
-    slug: string;
-    displayName: string;
-    spritesheetUrl: string;
-    submittedBy?: string;
-    cols?: number;
-    rows?: number;
-    /** 导入宠物（IndexedDB）。spritesheetUrl 是会话级 blob，刷新后按 slug 重解析。 */
-    imported?: boolean;
-  } | null;
-  /**
-   * 陪伴形象在视口中的位置（占视口宽/高的百分比 0–100），可在整页任意拖动。
-   * null = 未拖动过，用默认落点。拖动后写入并持久化。属全局 UI 偏好。
-   */
-  companionXPercent: number | null;
-  companionYPercent: number | null;
-  /** 是否隐藏陪伴形象（workbuddy）。true = 全局隐藏。属全局 UI 偏好，持久化。 */
-  companionHidden: boolean;
   toggleAiAssistant: () => void;
   setLanguage: (lang: string) => void;
   setTheme: (theme: Theme) => void;
@@ -73,9 +45,6 @@ interface AppState {
   setTaskPanelHeight: (h: number) => void;
   setAiAssistantOpen: (open: boolean) => void;
   setAiAssistantWidth: (w: number) => void;
-  setCompanion: (kind: string, pet: AppState["companionPet"]) => void;
-  setCompanionPosition: (xPercent: number, yPercent: number) => void;
-  setCompanionHidden: (hidden: boolean) => void;
   /**
    * Re-clamp viewport-relative panel dimensions against the current window size.
    * Call this on window `resize` so a panel sized on a large screen (or restored
@@ -99,26 +68,6 @@ function clampTaskPanelHeight(height: number): number {
   return Math.min(max, Math.max(TASK_PANEL_HEIGHT_MIN, Math.round(height)));
 }
 
-function persistedCompanionPet(pet: AppState["companionPet"]): AppState["companionPet"] {
-  if (!pet) return null;
-  const spritesheetUrl =
-    pet.spritesheetUrl &&
-    !pet.spritesheetUrl.startsWith("data:") &&
-    !pet.spritesheetUrl.startsWith("blob:") &&
-    pet.spritesheetUrl.length <= 2048
-      ? pet.spritesheetUrl
-      : "";
-  return {
-    slug: pet.slug,
-    displayName: pet.displayName,
-    spritesheetUrl,
-    submittedBy: pet.submittedBy,
-    cols: pet.cols,
-    rows: pet.rows,
-    imported: pet.imported,
-  };
-}
-
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
@@ -129,11 +78,6 @@ export const useAppStore = create<AppState>()(
       projectLibraryOpen: false,
       aiAssistantOpen: false,
       aiAssistantWidth: AI_ASSISTANT_WIDTH_DEFAULT,
-      companionKind: DEFAULT_BUILTIN_PET_SLUG,
-      companionPet: null,
-      companionXPercent: null,
-      companionYPercent: null,
-      companionHidden: false,
       toggleAiAssistant: () =>
         set((s) => ({ aiAssistantOpen: !s.aiAssistantOpen })),
       setLanguage: (lang) => set({ language: lang }),
@@ -147,10 +91,6 @@ export const useAppStore = create<AppState>()(
       setAiAssistantOpen: (open) => set({ aiAssistantOpen: open }),
       setAiAssistantWidth: (w) => set({ aiAssistantWidth: clampAiAssistantWidth(w) }),
       setTaskPanelHeight: (h) => set({ taskPanelHeight: clampTaskPanelHeight(h) }),
-      setCompanion: (kind, pet) => set({ companionKind: kind, companionPet: pet }),
-      setCompanionPosition: (xPercent, yPercent) =>
-        set({ companionXPercent: xPercent, companionYPercent: yPercent }),
-      setCompanionHidden: (hidden) => set({ companionHidden: hidden }),
       clampDimensionsToViewport: () =>
         set((s) => {
           const aiAssistantWidth = clampAiAssistantWidth(s.aiAssistantWidth);
@@ -172,19 +112,14 @@ export const useAppStore = create<AppState>()(
         const base = (persisted ?? {}) as Record<string, unknown>;
         delete base.sidebarCollapsed;
         delete base.sidebarWidth;
-        if (fromVersion < 6) {
-          base.companionXPercent = null;
-          base.companionYPercent = null;
-        }
-        if (fromVersion < 4 && base.companionKind == null) {
-          base.companionKind = DEFAULT_BUILTIN_PET_SLUG;
-        }
         if (fromVersion < 8) {
-          // Piko 与三只第三方宠物已下架：旧选择（含已不存在的 slug）一律回到默认搭子，
-          // 免得留下一个解析不到的空形象。
+          // 搭子系统已整体移除，旧宠物字段不再使用；顺手清掉 Piko 遗留字段。
           delete base.pikoAccessory;
-          base.companionKind = DEFAULT_BUILTIN_PET_SLUG;
-          base.companionPet = null;
+          delete base.companionKind;
+          delete base.companionPet;
+          delete base.companionXPercent;
+          delete base.companionYPercent;
+          delete base.companionHidden;
         }
         if (fromVersion < 1) {
           return {
@@ -217,11 +152,8 @@ export const useAppStore = create<AppState>()(
         return base;
       },
       partialize: (state) => {
-        const { companionXPercent: _x, companionYPercent: _y, projectLibraryOpen: _library, ...persisted } = state;
-        return {
-          ...persisted,
-          companionPet: persistedCompanionPet(state.companionPet),
-        };
+        const { projectLibraryOpen: _library, ...persisted } = state;
+        return persisted;
       },
     },
   ),

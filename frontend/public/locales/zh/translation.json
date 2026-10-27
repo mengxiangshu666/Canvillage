@@ -99,57 +99,6 @@
       "skip": "跳过此版本"
     }
   },
-  "myBuddy": {
-    "dragHint": "拖动可调整位置",
-    "taskRunning": "任务进行中 · {{name}}",
-    "taskSuccess": "任务完成 · {{name}}",
-    "taskFailure": "任务失败 · {{name}}",
-    "companion": {
-      "entry": "搭子",
-      "title": "选择你的搭子",
-      "titleBadgeAlt": "我的OK搭子",
-      "importCta": "导入搭子",
-      "toggleVisibility": "显示搭子"
-    },
-    "import": {
-      "button": "导入",
-      "title": "导入 petdex 宠物",
-      "desc": "选择从 petdex 下载的 spritesheet.webp（必选）和 pet.json（可选），导入后即可在画廊中选用。",
-      "spritesheetTitle": "点击或拖入 spritesheet.webp",
-      "spritesheetHint": "必选 · webp / png 精灵图",
-      "missingSpritesheet": "还缺宠物精灵图。pet.json 只包含配置，不能代替画面；已为你打开精灵图选择窗口。",
-      "jsonTitle": "点击或拖入 pet.json",
-      "jsonHint": "可选 · 用于读取名称",
-      "choose": "选择文件",
-      "replace": "更换",
-      "gridError": "精灵图尺寸 {{w}}×{{h}} 不是 {{cols}}×{{rows}} 网格的整数倍，无法正确切帧。请用标准 8×9 精灵图，或在 pet.json 里声明正确的 cols/rows。",
-      "hint": "宠物仅存在本地浏览器（IndexedDB），不上传服务器；精灵图需为 petdex 标准 8×9 网格。",
-      "confirm": "导入"
-    },
-    "gallery": {
-      "title": "选择陪伴形象",
-      "tabLibrary": "宠物库",
-      "tabMine": "我的宠物",
-      "select": "选择",
-      "selected": "已选",
-      "search": "搜索宠物名称…",
-      "loading": "加载中…",
-      "empty": "没有匹配的宠物",
-      "emptyMine": "还没有导入宠物，点「导入」添加"
-    },
-    "debug": {
-      "suffix": "调试",
-      "auto": "自动",
-      "stateSimulation": "状态模拟",
-      "triggerUpdateDialog": "触发更新弹窗"
-    },
-    "actions": {
-      "idle": "待机",
-      "typing": "敲键盘",
-      "flag": "举旗",
-      "repair": "检查盒子"
-    }
-  },
   "aiAssistant": {
     "formatCheck": {
       "title": "剧本格式检查",
@@ -1420,6 +1369,7 @@
       "character_portrait": "角色肖像",
       "identity_image": "身份图",
       "identity_portrait": "身份肖像",
+      "character_profile_parse": "角色档案解析",
       "script_writer": "剧本创作",
       "literal_script_writer": "逐字剧本",
       "director_notes": "场景调度",
@@ -2770,7 +2720,13 @@
       "starter": "工作流起步器",
       "starterTooltip": "插入可编辑工作流",
       "settings": "画布设置",
-      "settingsTooltip": "调整画布交互、显示与连线"
+      "settingsTooltip": "调整画布交互、显示与连线",
+      "allFeatures": "全部功能",
+      "allFeaturesTooltip": "按图片/视频分组列出当前节点可用的工具",
+      "characters": "角色",
+      "charactersTooltip": "打开角色造型室，挑角色和造型放进画布",
+      "materials": "素材库",
+      "materialsTooltip": "风格库与特效库"
     },
     "trackpad": {
       "enable": "开启触控板平移",

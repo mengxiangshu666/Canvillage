@@ -17,6 +17,7 @@ import {
   Languages,
   Library,
   Loader2,
+  SlidersHorizontal,
   Upload,
   WandSparkles,
   X,
@@ -230,9 +231,6 @@ import {
   orderedReferenceUrlsWithOwnFirst,
 } from '@/features/canvas/nodes/referenceOrdering';
 import { useReferenceMentionSync } from '@/features/canvas/nodes/useReferenceMentionSync';
-import {
-  referenceInsertText,
-} from '@/features/canvas/nodes/shared/referenceStripBadges';
 import { ReferenceChipNumberBadge } from '@/features/canvas/nodes/shared/ReferenceStripBadge';
 import { mergePromptOptimizationLockedConstraints } from '@/features/freezone/promptOptimizationPayload';
 import {
@@ -939,11 +937,20 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
   const handleInsertReference = useCallback(
     (mentionName: string) => {
       if (!mentionName) return;
-      promptEditorRef.current?.insertTextAtCursor(
-        referenceInsertText(mentionName),
+      const candidate = mentionCandidates.find((item) => item.name === mentionName);
+      // 直接落 chip：纯文本插入要等下一次重建（刷新）才会变成带缩略图的引用。
+      // 找不到候选（例如超出模型参考上限的那几张）也落一个无缩略图的 chip，
+      // 不能退回纯文本——那正是「点一下只看到 @图片N」的来源。
+      promptEditorRef.current?.insertMentionAtCursor(
+        candidate ?? {
+          key: `mention:${mentionName}`,
+          name: mentionName,
+          imageUrl: "",
+          index: 0,
+        },
       );
     },
-    [],
+    [mentionCandidates],
   );
 
   const [isAssetLibraryOpen, setIsAssetLibraryOpen] = useState(false);
@@ -1024,6 +1031,11 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
   );
   // 收起态浮动面板固定基础尺寸；放大用居中弹窗（见下方 OperationPanelShell）。
   const [panelExpanded, setPanelExpanded] = useState(false);
+  // 参数面板默认不跟着选中冒出来；只有标题栏参数按钮或双击节点才打开。
+  const [opsPanelOpen, setOpsPanelOpen] = useState(false);
+  useEffect(() => {
+    if (!selected) setOpsPanelOpen(false);
+  }, [selected]);
   const [stylePickerOpen, setStylePickerOpen] = useState(false);
   const panelHeight = OPERATIONS_PANEL_HEIGHT;
   const panelWidth = Math.max(resolvedWidth, OPERATIONS_PANEL_MIN_WIDTH);
@@ -1900,7 +1912,12 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
   // 画册展开时一并隐藏 OpsPanel——展开瞬间已 setSelectedNode(null)，这里再兜
   // 一道，防止展开后用户点节点重新选中时面板叠到宫格上。
   const showImageOpsPanel =
-    selected && !isBoxSelecting && !hasActiveOverlay && !mainlineCanvasReadonly && !albumExpanded;
+    selected &&
+    opsPanelOpen &&
+    !isBoxSelecting &&
+    !hasActiveOverlay &&
+    !mainlineCanvasReadonly &&
+    !albumExpanded;
 
   return (
     <div
@@ -1908,6 +1925,13 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
       className="group relative h-full w-full overflow-visible transition-[width,height] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
       style={{ width: resolvedWidth, height: resolvedHeight }}
       onClick={() => setSelectedNode(id)}
+      onDoubleClick={(event) => {
+        const target = event.target as HTMLElement | null;
+        if (target?.closest('input, textarea, button, a')) return;
+        event.stopPropagation();
+        setSelectedNode(id);
+        setOpsPanelOpen((value) => !value);
+      }}
     >
       {/* 叠卡画册的卡片边缘：从主图右下方探出，张数与画册一致（最多露 3 张）。
           先渲染、被后面的主卡覆盖，只露出错位的边。 */}
@@ -1966,17 +1990,35 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
             titleText={resolvedTitle}
             editable
             onTitleChange={(nextTitle) => updateNodeData(id, { displayName: nextTitle })}
+            rightSlot={
+              <div className="flex items-center gap-1">
+                {visiblePreviewUrl && naturalSize ? (
+                  <ResolutionHonestyBadge
+                    inline
+                    media="image"
+                    requestedTier={
+                      (data as ImageGenNodeData).lastRequestedImageSize ?? size
+                    }
+                    actualWidth={naturalSize.width}
+                    actualHeight={naturalSize.height}
+                  />
+                ) : null}
+                <button
+                  type="button"
+                  className="nodrag inline-flex h-6 w-6 items-center justify-center rounded text-white/65 transition-colors hover:bg-white/10 hover:text-white"
+                  title={opsPanelOpen ? '收起生成参数' : '打开生成参数'}
+                  aria-label={opsPanelOpen ? '收起生成参数' : '打开生成参数'}
+                  aria-expanded={opsPanelOpen}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setOpsPanelOpen((value) => !value);
+                  }}
+                >
+                  <SlidersHorizontal className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            }
           />
-          {visiblePreviewUrl && naturalSize ? (
-            <ResolutionHonestyBadge
-              media="image"
-              requestedTier={
-                (data as ImageGenNodeData).lastRequestedImageSize ?? size
-              }
-              actualWidth={naturalSize.width}
-              actualHeight={naturalSize.height}
-            />
-          ) : null}
         </>
       )}
       <CandidateBindingBadges roles={candidateBindingRoles} />
@@ -2025,6 +2067,11 @@ export const ImageGenNode = memo(({ id, data, selected, width, height }: ImageGe
               src={visiblePreviewUrl}
               alt={resolvedTitle}
               viewerSourceUrl={visiblePreviewUrl}
+              // 双击图片留给本节点的「开/关生成参数」——CanvasNodeImage 默认会
+              // 在双击时打开全屏查看器并 stopPropagation，节点上的 onDoubleClick
+              // 就永远收不到事件，参数面板等于没有入口。全屏查看改走工具条的
+              // 「全屏查看」按钮（与视频节点一致）。
+              disableViewer
               onLoad={(event) => {
                 const naturalW = event.currentTarget.naturalWidth;
                 const naturalH = event.currentTarget.naturalHeight;

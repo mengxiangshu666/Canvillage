@@ -13,6 +13,11 @@ from collections.abc import Mapping
 from copy import deepcopy
 from typing import Any
 
+from .asset_states import (
+    AssetStateError,
+    normalize_asset_states,
+    validate_asset_state_ledger,
+)
 from .cinematic_contract import build_cinematic_contract
 
 
@@ -155,6 +160,16 @@ def _asset_lock(asset: Mapping[str, Any]) -> dict[str, Any]:
             item_limit=160,
         ),
         "views": sorted(_asset_views(merged)),
+        "states": [
+            _mapping(item)
+            for item in (
+                merged.get("states")
+                or merged.get("asset_states")
+                or merged.get("assetStates")
+                or []
+            )
+            if isinstance(item, Mapping)
+        ][:32],
     }
 
 
@@ -309,6 +324,7 @@ def build_visual_bible(
         if isinstance(item, Mapping)
     ]
     style_anchor = _mapping(vision.get("style_anchor"))
+    visual_plan = _mapping(vision.get("visual_bible"))
     cinematic = build_cinematic_contract(
         director_vision=vision,
         project_dna=dna,
@@ -358,6 +374,29 @@ def build_visual_bible(
             or spec.get("world_logic"),
             limit=30,
         ),
+        "style_contract": {
+            "planned_changes": _list(
+                visual_plan.get("planned_changes")
+                or style_anchor.get("planned_changes")
+                or vision.get("planned_changes"),
+                limit=30,
+                item_limit=1200,
+            ),
+            "forbidden_drift": _list(
+                visual_plan.get("forbidden_drift")
+                or style_anchor.get("forbidden_drift")
+                or vision.get("forbidden_drift"),
+                limit=30,
+                item_limit=600,
+            ),
+            "reference_choices": _list(
+                visual_plan.get("reference_choices")
+                or style_anchor.get("reference_choices")
+                or vision.get("reference_choices"),
+                limit=30,
+                item_limit=1200,
+            ),
+        },
         "reference_boards": [
             _mapping(item)
             for item in (
@@ -442,8 +481,30 @@ def audit_visual_bible(value: object) -> dict[str, Any]:
         if isinstance(item, Mapping)
     ]
     view_plan = _mapping(bible.get("asset_view_plan"))
+    style_contract = _mapping(bible.get("style_contract"))
     issues = _duplicate_lock_issues(asset_locks)
     visual_applicable = bool(look or color or lighting)
+    if visual_applicable:
+        missing_style_parts = [
+            (key, label)
+            for key, label in (
+                ("planned_changes", "计划内变化"),
+                ("forbidden_drift", "禁止漂移"),
+                ("reference_choices", "参考取舍"),
+            )
+            if not _list(style_contract.get(key), limit=30)
+        ]
+        if missing_style_parts:
+            issues.append(
+                {
+                    "code": "visual.style_contract_incomplete",
+                    "severity": "advisory",
+                    "message": "视觉圣经缺少风格契约的 "
+                    + "、".join(label for _, label in missing_style_parts),
+                    "fix": "补计划内变化、禁止漂移和参考取舍；这三项只提醒，不阻断旧项目。",
+                    "missing_fields": [key for key, _ in missing_style_parts],
+                }
+            )
     if visual_applicable and not _text(look.get("look_id")):
         issues.append(
             {
@@ -482,6 +543,22 @@ def audit_visual_bible(value: object) -> dict[str, Any]:
                     "fix": "至少锁定脸部/服装/场景几何/道具外观中的一项。",
                 }
             )
+        if lock.get("states"):
+            try:
+                states = normalize_asset_states(lock.get("states"), asset_id=asset_id)
+            except AssetStateError as exc:
+                issues.append(
+                    {
+                        "code": exc.code,
+                        "asset_id": asset_id,
+                        "message": exc.message,
+                        "fix": "状态必须是独立图片，带小写 id、路径、锁定标记和逐字描述。",
+                    }
+                )
+            else:
+                issues.extend(
+                    validate_asset_state_ledger(states, asset_id=asset_id)
+                )
     assets = [
         _mapping(item)
         for item in (view_plan.get("assets") or [])
@@ -490,8 +567,13 @@ def audit_visual_bible(value: object) -> dict[str, Any]:
     missing_views = [
         item for item in assets if _list(item.get("missing_views"), limit=40)
     ]
+    blocking_issues = [
+        issue for issue in issues if issue.get("severity") != "advisory"
+    ]
     observations: dict[str, bool | None] = {
-        "visual_bible_locked": not issues if visual_applicable or asset_locks else None,
+        "visual_bible_locked": (
+            not blocking_issues if visual_applicable or asset_locks else None
+        ),
         "asset_view_plan_ready": (
             not missing_views if assets else None
         ),
@@ -501,6 +583,7 @@ def audit_visual_bible(value: object) -> dict[str, Any]:
         "schema": VISUAL_BIBLE_AUDIT_SCHEMA,
         "passed": not failed,
         "issues": issues,
+        "advisory_count": len(issues) - len(blocking_issues),
         "missing_view_count": len(missing_views),
         "gate_observations": observations,
     }

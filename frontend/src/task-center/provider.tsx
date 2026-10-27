@@ -203,10 +203,40 @@ export function TaskCenterProvider({
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Pruning tick
+  // Pruning tick. Runs on an idle slot when the browser offers one, so the
+  // store write never lands in the middle of a canvas drag frame.
   useEffect(() => {
-    const id = setInterval(() => useTaskCenterStore.getState().prune(), PRUNE_INTERVAL_MS);
-    return () => clearInterval(id);
+    let cancelled = false;
+    let timeoutId: number | null = null;
+    let idleHandle: number | null = null;
+
+    const schedule = () => {
+      if (cancelled) return;
+      timeoutId = window.setTimeout(() => {
+        timeoutId = null;
+        if (cancelled) return;
+        if (typeof window.requestIdleCallback === 'function') {
+          idleHandle = window.requestIdleCallback(() => {
+            idleHandle = null;
+            if (cancelled) return;
+            useTaskCenterStore.getState().prune();
+            schedule();
+          }, { timeout: PRUNE_INTERVAL_MS });
+          return;
+        }
+        useTaskCenterStore.getState().prune();
+        schedule();
+      }, PRUNE_INTERVAL_MS);
+    };
+
+    schedule();
+    return () => {
+      cancelled = true;
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
+      if (idleHandle !== null && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleHandle);
+      }
+    };
   }, []);
 
   // Main lifecycle: hydrate-first, then open stream with snapshot=false.

@@ -16,10 +16,7 @@ vi.mock("@/features/superchat/superchat-panel", () => ({
   ),
 }));
 
-import {
-  FreezoneChatDock,
-  resolveVillageAgentCompanionAnchor,
-} from "./FreezoneShell";
+import { FreezoneChatDock } from "./FreezoneShell";
 
 describe("FreezoneChatDock panel lifetime", () => {
   beforeEach(() => {
@@ -87,60 +84,6 @@ describe("FreezoneChatDock panel lifetime", () => {
     expect(view.queryByRole("button", { name: "打开小树" })).not.toBeInTheDocument();
   });
 
-  it("anchors 搭子 to the real Agent edge and clears the temporary anchor on close", () => {
-    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
-      left: 900,
-      top: 20,
-      width: 500,
-      height: 820,
-      right: 1400,
-      bottom: 840,
-      x: 900,
-      y: 20,
-      toJSON: () => ({}),
-    });
-    const view = render(
-      <FreezoneChatDock
-        open
-        onOpenChange={vi.fn()}
-        canvasId="canvas-a"
-        canvasRevision={12}
-        projectStyleId="style-a"
-        title="小树"
-        description="小树抽屉"
-        toggleLabel="打开小树"
-      />,
-    );
-
-    expect(document.documentElement.style.getPropertyValue("--village-agent-companion-left")).toBe("858px");
-    expect(document.documentElement.style.getPropertyValue("--village-agent-companion-top")).toBe("72px");
-
-    view.rerender(
-      <FreezoneChatDock
-        open={false}
-        onOpenChange={vi.fn()}
-        canvasId="canvas-a"
-        canvasRevision={12}
-        projectStyleId="style-a"
-        title="小树"
-        description="小树抽屉"
-        toggleLabel="打开小树"
-      />,
-    );
-    expect(document.documentElement.style.getPropertyValue("--village-agent-companion-left")).toBe("");
-    expect(document.documentElement.style.getPropertyValue("--village-agent-companion-top")).toBe("");
-  });
-
-  it("recomputes the edge anchor when a floating Agent moves", () => {
-    expect(resolveVillageAgentCompanionAnchor(
-      { left: 420, top: 120 },
-      { width: 1440, height: 900 },
-    )).toEqual({ left: 378, top: 172 });
-    expect(resolveVillageAgentCompanionAnchor(
-      { left: 680, top: 240 },
-      { width: 1440, height: 900 },
-    )).toEqual({ left: 638, top: 292 });
-  });
 
   it("moves the floating Agent on the compositor and commits once on release", () => {
     window.localStorage.setItem('village.canvas.agent.presentation', 'floating');

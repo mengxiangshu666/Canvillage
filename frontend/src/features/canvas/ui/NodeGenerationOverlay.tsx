@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: Elastic-2.0
 // Copyright (c) 2026 ClaymoreLab
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Loader2, Square } from 'lucide-react';
+
+import { useGenerationTick } from '../application/generationTicker';
 
 type NodeGenerationOverlayProps = {
   /**
@@ -65,17 +67,8 @@ export function NodeGenerationOverlay({
   onCancel,
   cancelPending = false,
 }: NodeGenerationOverlayProps) {
-  const [now, setNow] = useState(() => Date.now());
+  const now = useGenerationTick();
   const [mountedAt] = useState(() => Date.now());
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setNow(Date.now());
-    }, 120);
-    return () => {
-      window.clearInterval(timer);
-    };
-  }, []);
 
   const percent = resolveGenerationProgress(progress);
   const indeterminate = percent === null;

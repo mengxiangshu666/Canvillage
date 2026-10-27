@@ -1,0 +1,26 @@
+{
+  "id": "libtv_emoji_oil_painting",
+  "name": "搞怪emoji油画",
+  "label": "搞怪emoji油画",
+  "family": "three_d",
+  "era": "",
+  "palette": "vivid toy-like colors, glossy highlights, simple material separation",
+  "lighting": "soft studio HDRI, gentle rim light, clean contact shadows",
+  "optics": "50mm product lens, moderate depth of field, no wide-angle distortion",
+  "composition": "centered product-like subject on a clean background",
+  "camera_motion": "slow turntable orbit or slight push-in, stable horizon",
+  "style_instructions": "A classic Renaissance optimization, delicate strokes of oil paintings, rich in color, with a character to express the mood of the emoji, small emoji icon is 3D with a reflective plastic texture, the icon and the oil painting to form a stark contras",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "搞怪emoji油画",
+  "tags": [
+    "搞怪emoji油画",
+    "libtv",
+    "3D潮玩"
+  ],
+  "model_overrides": {},
+  "style_family": "animation",
+  "animation_subtype": "3d",
+  "image_prompt": "A classic Renaissance optimization, delicate strokes of oil paintings, rich in color, with a character to express the mood of the emoji, small emoji icon is 3D with a reflective plastic texture, the icon and the oil painting to form a stark contras",
+  "video_prompt": "A classic Renaissance optimization, delicate strokes of oil paintings, rich in color, with a character to express the mood of the emoji, small emoji icon is 3D with a reflective plastic texture, the icon and the oil painting to form a stark contras. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

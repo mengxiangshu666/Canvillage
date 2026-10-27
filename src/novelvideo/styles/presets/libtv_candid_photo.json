@@ -1,0 +1,26 @@
+{
+  "id": "libtv_candid_photo",
+  "name": "超真实感照片",
+  "label": "超真实感照片",
+  "family": "photography",
+  "era": "",
+  "palette": "natural film colors, low saturation, warm highlights and deep shadows",
+  "lighting": "available light with soft shadows, slight underexposure, visible grain",
+  "optics": "35mm snapshot lens, shallow depth of field, mild lens falloff",
+  "composition": "off-center candid framing with believable background detail",
+  "camera_motion": "handheld drift or static frame, no smooth commercial dolly",
+  "style_instructions": "Realistic photos with a slightly blurred texture, as if the cell phone was accidentally taken the picture",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "超真实感照片",
+  "tags": [
+    "超真实感照片",
+    "libtv",
+    "摄影胶片"
+  ],
+  "model_overrides": {},
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Realistic photos with a slightly blurred texture, as if the cell phone was accidentally taken the picture",
+  "video_prompt": "Realistic photos with a slightly blurred texture, as if the cell phone was accidentally taken the picture. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

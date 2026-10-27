@@ -2,7 +2,6 @@
 // Copyright (c) 2026 ClaymoreLab
 import { Link, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import {
-  Bot,
   BookOpenText,
   Clapperboard,
   Film,
@@ -30,7 +29,6 @@ import { useAppStore } from "@/stores/app-store";
 export type HomeViewIntent = "home" | "all" | "new";
 
 export const HOME_VIEW_EVENT = "village:home-view";
-export const COMPANION_MANAGER_EVENT = "village:open-companion-manager";
 
 // 跨路由时首页还没挂载，事件会被丢掉；先把意图存成模块级待办，首页挂载后再取走。
 let pendingHomeView: HomeViewIntent | null = null;
@@ -70,8 +68,9 @@ export function AppSidebar() {
   const openHomeView = (intent: HomeViewIntent) => {
     setProjectLibraryOpen(intent !== "home");
     requestHomeView(intent);
-    if (pathname !== "/") {
-      void navigate({ to: "/" });
+    // 首页已经改成门户页，工作台在 /studio；侧栏里的「首页」指工作台。
+    if (pathname !== "/studio") {
+      void navigate({ to: "/studio" });
     }
   };
 
@@ -101,9 +100,9 @@ export function AppSidebar() {
       >
         <div className="village-nav-group-label pb-2 pt-1">工作台</div>
         <Link
-          to="/"
+          to="/studio"
           onClick={() => setProjectLibraryOpen(false)}
-          data-active={pathname === "/" && !projectLibraryOpen ? "true" : "false"}
+          data-active={pathname === "/studio" && !projectLibraryOpen ? "true" : "false"}
           className="village-nav-item"
         >
           <span className="flex size-4 items-center justify-center" aria-hidden="true">
@@ -121,7 +120,7 @@ export function AppSidebar() {
         <button
           type="button"
           onClick={() => openHomeView("all")}
-          data-active={pathname === "/" && projectLibraryOpen ? "true" : "false"}
+          data-active={pathname === "/studio" && projectLibraryOpen ? "true" : "false"}
           className="village-nav-item w-full text-left"
         >
           <FolderOpen className="size-4" aria-hidden="true" />
@@ -145,15 +144,6 @@ export function AppSidebar() {
         >
           <Plus className="size-4" aria-hidden="true" />
           新建画布
-        </button>
-        <button
-          type="button"
-          onClick={() => window.dispatchEvent(new Event(COMPANION_MANAGER_EVENT))}
-          data-active="false"
-          className="village-nav-item w-full text-left"
-        >
-          <Bot className="size-4" aria-hidden="true" />
-          管理搭子
         </button>
 
         {project ? (

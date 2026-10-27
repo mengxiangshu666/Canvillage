@@ -75,6 +75,10 @@ from novelvideo.services.delivery_fps import (
 )
 
 
+from .delivery_content_guard import (
+    build_delivery_content_guard,
+    strict_content_guard_failure,
+)
 from .media_dispatch_support import (
     _text,
     _requested_delivery_seconds,
@@ -2055,6 +2059,14 @@ async def reconcile_workflow_compose(
         height=int(final_artifact["height"]),
         subtitles_required=bool(options.get("add_subtitles")),
     )
+    content_guard = build_delivery_content_guard(final_path, shot_video_items)
+    if content_guard is not None:
+        final_artifact["content_guard"] = content_guard
+        guard_failure = strict_content_guard_failure(
+            final_artifact, content_guard, delivery_qc
+        )
+        if guard_failure is not None:
+            return guard_failure
     duration_mismatch = _compose_duration_mismatch(
         artifact, delivery_qc, requested_seconds
     )

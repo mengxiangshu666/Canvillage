@@ -51,6 +51,31 @@ def content_moderation_payload(exc: BaseException | None = None) -> dict[str, An
     return payload
 
 
+def classify_provider_error(value: object) -> str:
+    """Map upstream provider failures to stable, resumable error codes."""
+
+    message = str(value or "").casefold()
+    if not message:
+        return ""
+    if "timeout" in message or "timed out" in message:
+        return "provider_timeout"
+    if (
+        "insufficient balance" in message
+        or "insufficient_quota" in message
+        or "余额不足" in message
+        or "balance" in message
+        and "402" in message
+    ):
+        return "provider_balance_insufficient"
+    if "401" in message or "invalid_api_key" in message or "unauthorized" in message:
+        return "provider_auth_failed"
+    if "429" in message or "rate limit" in message:
+        return "provider_rate_limited"
+    if "503" in message or "502" in message or "504" in message:
+        return "provider_unavailable"
+    return ""
+
+
 def preserve_provider_diagnostics(wrapped: BaseException, source: BaseException) -> BaseException:
     """Copy ``provider_error_metadata`` onto a re-wrapped exception.
 

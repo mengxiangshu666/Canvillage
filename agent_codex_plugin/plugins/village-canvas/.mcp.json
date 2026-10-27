@@ -1,0 +1,61 @@
+{
+  "mcpServers": {
+    "village_canvas": {
+      "command": "node",
+      "args": [
+        "./scripts/village-canvas-mcp.mjs"
+      ],
+      "cwd": ".",
+      "startup_timeout_sec": 20,
+      "tool_timeout_sec": 3600,
+      "default_tools_approval_mode": "prompt",
+      "tools": {
+        "village_canvas_help": {
+          "approval_mode": "approve"
+        },
+        "health": {
+          "approval_mode": "approve"
+        },
+        "project.list": {
+          "approval_mode": "approve"
+        },
+        "project.inspect": {
+          "approval_mode": "approve"
+        },
+        "canvas.list": {
+          "approval_mode": "approve"
+        },
+        "canvas.context": {
+          "approval_mode": "approve"
+        },
+        "canvas.inspect": {
+          "approval_mode": "approve"
+        },
+        "node.list": {
+          "approval_mode": "approve"
+        },
+        "node.inspect": {
+          "approval_mode": "approve"
+        },
+        "model.list": {
+          "approval_mode": "approve"
+        },
+        "model.capabilities": {
+          "approval_mode": "approve"
+        },
+        "task.list": {
+          "approval_mode": "approve"
+        },
+        "task.inspect": {
+          "approval_mode": "approve"
+        },
+        "workflow.list": {
+          "approval_mode": "approve"
+        },
+        "workflow.status": {
+          "approval_mode": "approve"
+        }
+      }
+    }
+  }
+}

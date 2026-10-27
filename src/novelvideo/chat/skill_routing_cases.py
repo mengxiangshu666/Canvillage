@@ -420,6 +420,16 @@ SKILL_ROUTING_CASES: tuple[SkillRoutingCase, ...] = (
         discriminator="ComfyUI式生产管线、成熟度和成本设计，而不是产品工程治理或LoRA训练。",
     ),
     SkillRoutingCase(
+        skill_name="village-canvas-runtime-tools",
+        prompt=(
+            "你刚才说画布已经写入，但我没看到回执，也不确定当前会话到底挂了哪些工具。"
+            "请先核对当前回合真实可用的工具面和权限，说明哪些能读、哪些能写画布、"
+            "哪些会启动付费媒体，再给出下一步；没有真实回执就说没有，不要用终端或"
+            "本地文件模拟一次工具调用。"
+        ),
+        discriminator="核对会话工具面、权限和真实回执，而不是某个具体生成任务失败后的恢复。",
+    ),
+    SkillRoutingCase(
         skill_name="village-canvas",
         prompt=(
             "我是这个项目的新用户，想先知道当前有哪些剧集、任务做到哪一步、上传过的"

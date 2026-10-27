@@ -571,97 +571,18 @@ def _prompt_with_user_context(
 
 
 def _chat_backend() -> str:
-    preferred = (
-        os.environ.get("VILLAGE_CANVAS_CHAT_BACKEND")
-        or "village"
-    ).strip().lower() or "village"
-    if preferred == "claude":
-        if is_claude_backend_available():
-            return "claude"
-        raise RuntimeError(
-            "VILLAGE_CANVAS_CHAT_BACKEND=claude requested but Claude is unavailable. "
-            "Install claude-agent-sdk and ensure CLAUDE_CLI_PATH points to a valid claude binary."
-        )
+    """The 小树 sidecar is the only chat brain; the name stays for stored rows."""
+
     return "village"
 
 
-def _claude_cli_path() -> Path:
-    configured = os.environ.get("CLAUDE_CLI_PATH", "").strip()
-    if configured:
-        return Path(configured).expanduser()
-    resolved = shutil.which("claude")
-    if resolved:
-        return Path(resolved)
-    return Path.home() / ".local" / "bin" / "claude"
-
-
-
-
-
-
-def _claude_model() -> str | None:
-    model = os.environ.get("CLAUDE_MODEL", "").strip()
-    return model or None
-
-
-def _claude_sdk_available() -> bool:
-    return importlib.util.find_spec("claude_agent_sdk") is not None
-
-
-def is_claude_backend_available() -> bool:
-    return _claude_cli_path().exists() and _claude_sdk_available()
-
-
-
-
 def is_chat_backend_available() -> bool:
-    try:
-        backend = _chat_backend()
-    except RuntimeError:
-        return False
-    if backend == "claude":
-        return is_claude_backend_available()
     return bool(list_village_agent_models())
 
 
 def get_chat_backend_name() -> str:
     return _chat_backend()
 
-
-def _repo_skill_roots() -> list[Path]:
-    root = _repo_root()
-    return [
-        root / "agent_skills",
-        root / ".claude" / "skills",
-    ]
-
-
-def _skill_sources() -> list[tuple[str, Path]]:
-    sources: dict[str, Path] = {}
-    for repo_skills_root in _repo_skill_roots():
-        if not repo_skills_root.exists():
-            continue
-        for child in sorted(repo_skills_root.iterdir()):
-            if child.is_dir() and (child / "SKILL.md").exists():
-                # Keep the first matching skill name so .claude/skills remains the default
-                # source when both locations expose the same skill.
-                sources.setdefault(child.name, child)
-
-    configured = (
-        os.environ.get("VILLAGE_CANVAS_CLAUDE_SKILL_PATH")
-        or ""
-    ).strip()
-    if configured:
-        sources["village-canvas"] = Path(configured).expanduser()
-
-    return [(name, path) for name, path in sorted(sources.items()) if path.exists()]
-
-
-def _sync_project_skills(skills_dir: Path) -> None:
-    for skill_name, src in _skill_sources():
-        dst = skills_dir / skill_name
-        if not dst.exists():
-            shutil.copytree(src, dst)
 
 
 def _now_iso() -> str:
@@ -766,6 +687,12 @@ def _chat_db_path(
     project_dir: str | Path | None = None,
     project_state_dir: str | Path | None = None,
 ) -> Path:
+    if not str(project or "").strip():
+        # Home scope has no project id; keep it on the same database the chat
+        # store uses for ``ChatScope(kind="home")``.
+        db_path = _state_root() / username / "_home" / "chat.db"
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        return db_path
     if project_state_dir is not None:
         db_path = Path(project_state_dir) / "chat.db"
         _migrate_legacy_chat_db(

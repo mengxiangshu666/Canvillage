@@ -157,8 +157,6 @@ def _contract_steps(section: str, *, limit: int = 8) -> list[str]:
 def _infer_canvas_commands(*values: str) -> list[str]:
     text = " ".join(values).lower()
     commands = ["freezone_get_canvas_snapshot", "freezone_emit_canvas_command"]
-    if any(token in text for token in ("分镜", "镜头", "脚本", "故事", "shot", "storyboard")):
-        commands.append("create_shot_sequence")
     if any(token in text for token in ("图片", "图像", "海报", "草图", "image", "poster")):
         commands.append("create_image_prompt_node")
     if any(token in text for token in ("视频", "动画", "mv", "video", "animation")):

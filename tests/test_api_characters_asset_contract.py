@@ -98,6 +98,7 @@ def test_create_character_accepts_react_extra_payload(monkeypatch, tmp_path):
             "age_group": "middle",
             "description": "冷静的捕快",
             "face_prompt": "sharp eyes, stern face",
+            "body_type": "",
         },
     }
     saved = store.get_character("秦昭")

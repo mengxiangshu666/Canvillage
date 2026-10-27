@@ -1,0 +1,30 @@
+{
+  "name": "xiaoshu-agent",
+  "upstream": {
+    "project": "TapCanvas agents-cli",
+    "package": "agents",
+    "version": "1.0.0",
+    "path_in_upstream": "apps/agents-cli",
+    "license": "MIT",
+    "copyright": "2025 Beq",
+    "commit": "0c68d4f5e345c6ac4d23ca7689c07804b785c378",
+    "committed_at": "2026-10-22T00:08:31-07:00"
+  },
+  "vendored_at": "2026-10-25",
+  "contents": [
+    "dist",
+    "src",
+    "harness",
+    "skills",
+    "knowledge",
+    "agent-definitions",
+    "scripts"
+  ],
+  "excluded": [
+    "node_modules",
+    "*.log"
+  ],
+  "runtime_dependencies": "pnpm install --prod --frozen-lockfile in the materialized runtime directory",
+  "notes": "Bundled as the product's only chat agent brain; isolation patch harness/tapcanvas.patch.yml is verified before every start.",
+  "layout": "apps/agents-cli mirrors the upstream package; packages/schemas holds its two runtime-only workspace dependencies"
+}

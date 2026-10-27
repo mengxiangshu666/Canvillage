@@ -31,16 +31,13 @@ class LocalLifecycle:
                 close_backend()
         except Exception:
             logger.exception("Inline task backend shutdown failed")
-        # Drop in-process Agent transcripts before the process exits.
+        # The 小树 sidecar owns its own process; drop only our per-turn contexts.
         try:
-            from novelvideo.chat.village_harness import pool as village_pool
+            from novelvideo.chat.tapcanvas_sidecar import cleanup_contexts
+
+            cleanup_contexts()
         except Exception:
-            logger.exception("Village Agent pool shutdown import failed")
-            return
-        try:
-            await village_pool.close_all()
-        except Exception:
-            logger.exception("Village Agent pool shutdown failed")
+            logger.exception("Sidecar turn context cleanup failed")
 
 
 NoOpLifecycle = LocalLifecycle

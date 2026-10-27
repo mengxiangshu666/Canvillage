@@ -1087,40 +1087,6 @@ def test_gateway_spreads_large_agent_batch_without_node_overlap(tmp_path: Path):
             )
 
 
-def test_gateway_places_shot_sequence_cards_without_overlap(tmp_path: Path):
-    _seed_canvas(tmp_path)
-    envelope = {
-        "schema": "canvas_chat_commands.v1",
-        "command_id": "sequence-layout-command",
-        "commands": [
-            {
-                "type": "create_shot_sequence",
-                "display_name": "连续分镜",
-                "prompts": ["第一镜头", "第二镜头", "第三镜头"],
-                "x": 200,
-                "y": 120,
-            }
-        ],
-    }
-
-    receipt = _gateway(tmp_path).apply(canvas_id="canvas-1", envelope=envelope)
-
-    assert receipt["applied_ops"] == 1
-    snapshot = canvas_store.read_canvas(tmp_path, "canvas-1")
-    assert snapshot is not None
-    sequence = [
-        node
-        for node in snapshot["nodes"]
-        if node.get("data", {}).get("agent_command_id") == "sequence-layout-command"
-    ]
-    assert len(sequence) == 3
-    sequence.sort(key=lambda node: float(node["position"]["y"]))
-    for previous, current in zip(sequence, sequence[1:]):
-        assert (
-            float(current["position"]["y"]) - float(previous["position"]["y"]) >= 408.0
-        )
-
-
 def test_gateway_moves_overlapping_single_agent_create(tmp_path: Path):
     _seed_canvas(tmp_path)
     envelope = {

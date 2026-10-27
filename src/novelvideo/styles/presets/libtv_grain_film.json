@@ -1,0 +1,26 @@
+{
+  "id": "libtv_grain_film",
+  "name": "噪点胶片",
+  "label": "噪点胶片",
+  "family": "photography",
+  "era": "",
+  "palette": "natural film colors, low saturation, warm highlights and deep shadows",
+  "lighting": "available light with soft shadows, slight underexposure, visible grain",
+  "optics": "35mm snapshot lens, shallow depth of field, mild lens falloff",
+  "composition": "off-center candid framing with believable background detail",
+  "camera_motion": "handheld drift or static frame, no smooth commercial dolly",
+  "style_instructions": "Polaroid film, multi-noise low fidelity film photography, bright subjects on dark backgrounds,No white frames for film,low saturation",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "噪点胶片",
+  "tags": [
+    "噪点胶片",
+    "libtv",
+    "摄影胶片"
+  ],
+  "model_overrides": {},
+  "style_family": "live_action",
+  "animation_subtype": "",
+  "image_prompt": "Polaroid film, multi-noise low fidelity film photography, bright subjects on dark backgrounds,No white frames for film,low saturation",
+  "video_prompt": "Polaroid film, multi-noise low fidelity film photography, bright subjects on dark backgrounds,No white frames for film,low saturation. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

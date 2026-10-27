@@ -35,17 +35,6 @@ def attach_agent_created_node_ids(raw_input: dict) -> dict:
         if not isinstance(command, dict):
             continue
         command_type = str(command.get("type") or "").strip()
-        if command_type == "create_shot_sequence":
-            created_ids = []
-            for prompt in command.get("prompts") or []:
-                if not str(prompt or "").strip():
-                    continue
-                sequence += 1
-                created_ids.append(mint_agent_node_id(command_id, sequence))
-            if created_ids:
-                command["created_node_ids"] = created_ids
-                command["created_node_id"] = created_ids[-1]
-            continue
         if command_type not in created_types:
             continue
         sequence += 1

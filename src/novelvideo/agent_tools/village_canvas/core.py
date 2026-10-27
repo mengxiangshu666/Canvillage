@@ -182,7 +182,17 @@ RENDER_PREREQ_CHAT_PREFIX = (
 )
 
 
+class ToolArgumentError(ValueError):
+    """模型给的参数无法收敛到声明的形状。
+
+    和普通的 ValueError 分开，是为了让失败处置能认出「这是参数错、改参数就能过」，
+    而不是笼统的 FZ_TOOL_ERROR；后者既没有中文文案，也会被当成未知错误。
+    """
+
+
 def _classify_freezone_error(exc: Exception) -> str:
+    if isinstance(exc, ToolArgumentError):
+        return "tool_arguments_invalid"
     msg = str(exc or "").strip()
     low = msg.lower()
     if "canvas_id is required" in low or ("canvas_id" in low and "required" in low):

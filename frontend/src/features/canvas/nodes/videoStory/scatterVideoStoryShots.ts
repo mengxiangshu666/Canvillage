@@ -3,12 +3,14 @@
 import {
   CANVAS_NODE_TYPES,
   isImageGenNode,
+  type CanvasEdge,
   type CanvasNode,
   type ImageGenNodeData,
   type ImageSize,
   type VideoStoryRow,
 } from '@/features/canvas/domain/canvasNodes';
 import { resolveAbsolutePosition, useCanvasStore } from '@/stores/canvasStore';
+import { nodeIndexFor } from '@/features/canvas/application/nodeIndex';
 import {
   rearmImageNodePatch,
   watchStoryboardSettle,
@@ -281,6 +283,53 @@ function readScatterContext(videoStoryNodeId: string):
     memberIds,
     classification: classifyExistingScatter(memberIds, scatterable),
   };
+}
+
+/**
+ * The node objects every video-story plan reads (source, its group, its derived
+ * shot/image/video nodes, and one hop around them).
+ *
+ * Subscribed through `useShallow`, this list keeps identical object references
+ * while the user drags an unrelated node, so the memoized plans don't re-run on
+ * position frames. A data change on any related node replaces that object and
+ * therefore invalidates the memos — no hand-maintained field list to forget.
+ *
+ * The set is deliberately a superset: over-including a node only costs one
+ * extra recompute when that node changes, while under-including one would show
+ * a stale shot count.
+ */
+export function selectVideoStoryRelatedNodes(
+  state: { nodes: readonly CanvasNode[]; edges: readonly CanvasEdge[] },
+  videoStoryNodeId: string,
+): CanvasNode[] {
+  const index = nodeIndexFor(state.nodes);
+  const sourceNode = index.get(videoStoryNodeId);
+  const groupId = sourceNode?.data?.[VIDEO_STORY_LINKED_GROUP_FIELD];
+  const group = typeof groupId === 'string' && groupId.length > 0 ? groupId : null;
+
+  const ids = new Set<string>([videoStoryNodeId]);
+  if (group) ids.add(group);
+  for (const node of state.nodes) {
+    if (
+      node.parentId === group
+      || node.data?.videoStorySourceNodeId === videoStoryNodeId
+    ) {
+      ids.add(node.id);
+    }
+  }
+  for (const edge of state.edges) {
+    if (edge.source === videoStoryNodeId) ids.add(edge.target);
+  }
+  for (const edge of state.edges) {
+    if (ids.has(edge.source)) ids.add(edge.target);
+    if (ids.has(edge.target)) ids.add(edge.source);
+  }
+
+  const related: CanvasNode[] = [];
+  for (const node of state.nodes) {
+    if (ids.has(node.id)) related.push(node);
+  }
+  return related;
 }
 
 /**

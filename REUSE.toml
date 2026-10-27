@@ -35,6 +35,14 @@ SPDX-License-Identifier = "MIT"
 
 [[annotations]]
 path = [
+    "third_party/xiaoshu-agent/1.0.0/**",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "2025 Beq"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = [
     "agent_skills/village-canvas-shotcraft/references/upstream/cards/**",
     "agent_skills/village-canvas-shotcraft/references/upstream/core/**",
     "agent_skills/village-canvas-shotcraft/references/upstream/catalog.json",

@@ -18,6 +18,7 @@ export const TASK_TYPES = {
   CHARACTER_PORTRAIT: "character_portrait",
   IDENTITY_IMAGE: "identity_image",
   IDENTITY_PORTRAIT: "identity_portrait",
+  CHARACTER_PROFILE_PARSE: "character_profile_parse",
   // Script
   SCRIPT_WRITER: "script_writer",
   LITERAL_SCRIPT_WRITER: "literal_script_writer",

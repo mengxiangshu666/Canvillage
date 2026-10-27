@@ -1296,7 +1296,7 @@ async def test_workflow_storyboard_images_are_durable_and_deduplicated(
     from fastapi.testclient import TestClient
     from novelvideo.api.routes import workflows
     from novelvideo.chat.agent_runtime import build_specialist_result
-    from novelvideo.chat.village_turn_policy import DirectorWorkflowRun
+    from tests.legacy_director_fixture import DirectorWorkflowRun
     from novelvideo.chat.workflow_stage_receipts import STAGE_ARTIFACT_KIND
 
     async def resolve_context(*, user, project_id, required_role):
@@ -1572,7 +1572,7 @@ async def test_workflow_storyboard_failure_projects_and_retries_exact_item(
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
     from novelvideo.api.routes import workflows
-    from novelvideo.chat.village_turn_policy import DirectorWorkflowRun
+    from tests.legacy_director_fixture import DirectorWorkflowRun
 
     async def resolve_context(*, user, project_id, required_role):
         assert user["username"] == ctx.requester_username
@@ -2099,7 +2099,7 @@ async def test_workflow_shot_videos_are_durable_and_deduplicated(
     from fastapi.testclient import TestClient
     from novelvideo.api.routes import workflows
     from novelvideo.chat.agent_runtime import build_specialist_result
-    from novelvideo.chat.village_turn_policy import DirectorWorkflowRun
+    from tests.legacy_director_fixture import DirectorWorkflowRun
     from novelvideo.chat.workflow_stage_receipts import STAGE_ARTIFACT_KIND
 
     async def resolve_context(*, user, project_id, required_role):
@@ -2710,7 +2710,7 @@ async def test_workflow_final_film_is_durable_and_recovers(
     from fastapi.testclient import TestClient
     from novelvideo.api.routes import workflows
     from novelvideo.chat.agent_runtime import build_specialist_result
-    from novelvideo.chat.village_turn_policy import DirectorWorkflowRun
+    from tests.legacy_director_fixture import DirectorWorkflowRun
     from novelvideo.chat.workflow_stage_receipts import STAGE_ARTIFACT_KIND
 
     async def resolve_context(*, user, project_id, required_role):

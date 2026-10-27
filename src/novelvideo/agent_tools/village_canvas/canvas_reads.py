@@ -17,6 +17,7 @@ from .canvas_reads_vision import (  # noqa: F401
 from .contracts import _canvas_payload_from_response
 from .core import (
     SCRIPT_UPLOAD_EXTENSIONS,
+    ToolArgumentError,
     _agent_context_value,
     _audio_ui_spec,
     _canvas_id_from_args,
@@ -461,11 +462,15 @@ def _handle_generation_history(args: dict[str, Any], **_: Any) -> str:
     """Read a bounded projection of persistent media task history."""
     try:
         project = _project_from_args(args)
-        try:
-            run_limit = max(1, min(int(args.get("run_limit") or 500), 1000))
-            limit = max(1, min(int(args.get("limit") or 100), 200))
-        except (TypeError, ValueError):
-            raise ValueError("run_limit and limit must be bounded integers") from None
+        run_limit = _page_number(
+            args.get("run_limit") or 500,
+            minimum=1,
+            maximum=1000,
+            field="run_limit",
+        )
+        limit = _page_number(
+            args.get("limit") or 100, minimum=1, maximum=200, field="limit"
+        )
         response = _request(
             "GET",
             f"/api/v1/projects/{project}/tasks",
@@ -2180,8 +2185,10 @@ def _page_number(
         number = None
     if number is None:
         if maximum is None:
-            raise ValueError(f"{field} must be a non-negative integer")
-        raise ValueError(f"{field} must be an integer between {minimum} and {maximum}")
+            raise ToolArgumentError(f"{field} must be a non-negative integer")
+        raise ToolArgumentError(
+            f"{field} must be an integer between {minimum} and {maximum}"
+        )
     if maximum is None:
         return max(int(number), minimum)
     return min(max(int(number), minimum), maximum)
@@ -2208,6 +2215,24 @@ def _bounded_page_limit(
         return default, None
     limit = _page_number(value, minimum=1, maximum=maximum, field="node_limit")
     return limit, (None if limit == value else value)
+
+
+def _bounded_prompt_chars(value: object) -> tuple[int, int | None]:
+    """Clamp the prompt excerpt length; the original is echoed when it moved.
+
+    Ask-for-more is the normal case here: the compact read returns only
+    has_prompt at 0, so a model that wants the text guesses a length. A guess
+    past the cap is still a length — clamp it instead of failing the read.
+    1500 is truncated to 500 and reported as adjusted; only a value that is not
+    a number at all stays a hard argument error.
+    """
+
+    if value is None:
+        return 0, None
+    prompt_chars = _page_number(
+        value, minimum=0, maximum=500, field="prompt_chars"
+    )
+    return prompt_chars, (None if prompt_chars == value else value)
 
 
 def _handle_get_canvas_snapshot(args: dict[str, Any], **_: Any) -> str:
@@ -2461,13 +2486,9 @@ def _handle_read_canvas_compact(args: dict[str, Any], **_: Any) -> str:
         node_limit, requested_node_limit = _bounded_page_limit(
             args.get("node_limit"), default=40, maximum=200
         )
-        prompt_chars = args.get("prompt_chars", 0)
-        if (
-            not isinstance(prompt_chars, int)
-            or isinstance(prompt_chars, bool)
-            or not 0 <= prompt_chars <= 500
-        ):
-            raise ValueError("prompt_chars must be an integer between 0 and 500")
+        prompt_chars, requested_prompt_chars = _bounded_prompt_chars(
+            args.get("prompt_chars")
+        )
 
         raw = _request(
             "GET",
@@ -2538,6 +2559,15 @@ def _handle_read_canvas_compact(args: dict[str, Any], **_: Any) -> str:
                     else {}
                 ),
             },
+            "prompt_chars": prompt_chars,
+            **(
+                {
+                    "requested_prompt_chars": requested_prompt_chars,
+                    "prompt_chars_adjusted": True,
+                }
+                if requested_prompt_chars is not None
+                else {}
+            ),
             "nodes": [_compact_canvas_node(node, prompt_chars) for node in page_nodes],
             "edges": page_edges,
             "reference_manifest": _canvas_reference_manifest(

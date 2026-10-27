@@ -1570,7 +1570,7 @@ export const NodeActionToolbar = memo(
                 onClick={(event) => {
                   event.stopPropagation();
                   closeDownloadMenu();
-                  // 双击图片本来就能进全屏查看器；这里把它提成显式按钮，
+                  // 图片节点的双击留给「开/关生成参数」，全屏查看只能走这里，
                   // 与视频节点的「全屏查看」对齐（libtv 图片尾部也有这一项）。
                   openImageViewer(imageSource);
                 }}

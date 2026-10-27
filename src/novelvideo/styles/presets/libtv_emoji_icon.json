@@ -1,0 +1,26 @@
+{
+  "id": "libtv_emoji_icon",
+  "name": "emoji风格图标",
+  "label": "emoji风格图标",
+  "family": "three_d",
+  "era": "",
+  "palette": "vivid toy-like colors, glossy highlights, simple material separation",
+  "lighting": "soft studio HDRI, gentle rim light, clean contact shadows",
+  "optics": "50mm product lens, moderate depth of field, no wide-angle distortion",
+  "composition": "centered product-like subject on a clean background",
+  "camera_motion": "slow turntable orbit or slight push-in, stable horizon",
+  "style_instructions": "3D emoji style, iphone emoji style, minimalist icons, quirky art,white background",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "emoji风格图标",
+  "tags": [
+    "emoji风格图标",
+    "libtv",
+    "3D潮玩"
+  ],
+  "model_overrides": {},
+  "style_family": "animation",
+  "animation_subtype": "3d",
+  "image_prompt": "3D emoji style, iphone emoji style, minimalist icons, quirky art,white background",
+  "video_prompt": "3D emoji style, iphone emoji style, minimalist icons, quirky art,white background. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

@@ -36,6 +36,13 @@ agent_skills/village-canvas-shotcraft/references/upstream/** -text whitespace=cr
 /assets/partners/** export-ignore
 /src/novelvideo/assets/login_bgm.mp3 export-ignore
 
+# Preview media captured from libtv belongs to its template authors. The style
+# prompts and template metadata stay in source; the media itself does not ship.
+/frontend/public/effects/templates/** export-ignore
+/frontend/public/video/effect-templates/** export-ignore
+/frontend/public/images/skill-covers/libtv/** export-ignore
+/src/novelvideo/styles/presets/libtv_*.webp export-ignore
+
 # These checks describe private development records, not product behavior.
 /tests/test_ai_change_context.py export-ignore
 /tests/test_ai_continuity_surface.py export-ignore

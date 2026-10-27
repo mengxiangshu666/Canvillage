@@ -43,7 +43,7 @@ describe('canvas interaction performance mode', () => {
     const pause = vi.spyOn(video, 'pause').mockImplementation(() => undefined);
     const play = vi.spyOn(video, 'play').mockResolvedValue(undefined);
 
-    const end = beginCanvasInteraction('companion-drag');
+    const end = beginCanvasInteraction('node-drag');
     expect(pause).toHaveBeenCalledOnce();
     end();
     expect(play).toHaveBeenCalledOnce();

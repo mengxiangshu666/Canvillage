@@ -1,12 +1,11 @@
 import { useRef, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 import { Download, LocateFixed, Play, RefreshCw } from 'lucide-react';
 import type { FreezoneStoryScriptRow } from '@/api/scriptContract';
 import type { CanvasNode } from '@/features/canvas/domain/canvasNodes';
 import { readScriptShotId } from '@/features/canvas/domain/scriptShotIdentity';
 import { resolveImageDisplayUrl } from '@/features/canvas/application/imageData';
 import { focusDerivedNodes } from '@/features/canvas/application/focusDerivedNodes';
-import { useCanvasStore } from '@/stores/canvasStore';
+import { useScriptGraphSlice } from './useScriptGraphSlice';
 import { downloadUrlAsFile } from '@/lib/browserDownload';
 import { buildScriptRowKeys, scriptRowShotNumber } from './scriptViews';
 import { scriptRowFingerprint } from './scriptRowFingerprint';
@@ -32,7 +31,7 @@ export function ScriptVideoReview({ rows, scriptNodeId, onRewrite, disabled }: {
   rows: FreezoneStoryScriptRow[]; scriptNodeId: string;
   onRewrite?: (rowIndex: number) => void; disabled?: boolean;
 }) {
-  const graph = useCanvasStore(useShallow(state => ({ nodes: state.nodes, edges: state.edges })));
+  const graph = useScriptGraphSlice(scriptNodeId);
   const videos = scriptShotVideoNodesInRowOrder(scriptNodeId, graph);
   const items = scriptVideoReviewRows(rows, videos, graph);
   const currentKeys = new Set(items.map(item => item.key));

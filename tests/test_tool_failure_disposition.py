@@ -17,6 +17,8 @@ from novelvideo.tool_failure_disposition import (
     ASK_USER_NOW,
     FIX_PARAMS,
     MODIFY_RETRY_BUDGET,
+    REFRESH_AND_RETRY,
+    REFRESH_RETRY_BUDGET,
     RETRY_AS_IS,
     ToolFailureLedger,
     attach_disposition,
@@ -30,6 +32,31 @@ def test_transient_failure_is_retryable_as_is():
     assert advice["disposition"] == RETRY_AS_IS
     assert advice["ask_user_now"] is False
     assert "与你的参数无关" in advice["instruction"]
+
+
+def test_canvas_revision_conflict_refreshes_then_retries_once():
+    """版本冲突不是参数错误：先重读画布，再原样重试；第二次才停手。"""
+
+    ledger = ToolFailureLedger()
+    first = ledger.record_and_advise(
+        tool_name="village_canvas_dispatch_action",
+        payload={"ok": False, "error_code": "canvas_revision_conflict"},
+        turn_id="turn-conflict",
+    )
+    assert first["disposition"] == REFRESH_AND_RETRY
+    assert first["base_disposition"] == REFRESH_AND_RETRY
+    assert first["retry_budget"] == REFRESH_RETRY_BUDGET
+    assert first["retry_remaining"] == 1
+    assert "重新读取画布" in first["instruction"]
+    assert "不要改提示词" in first["instruction"]
+
+    second = ledger.record_and_advise(
+        tool_name="village_canvas_dispatch_action",
+        payload={"ok": False, "error_code": "canvas_revision_conflict"},
+        turn_id="turn-conflict",
+    )
+    assert second["disposition"] == ASK_USER_NOW
+    assert second["ask_user_now"] is True
 
 
 def test_parameter_failure_says_rewriting_the_prompt_will_not_help():
@@ -120,14 +147,3 @@ def test_only_failures_get_guidance():
     )
     assert ok_result == {"ok": True, "revision": 5}
     assert ledger.record_and_advise.__self__._counts == {}
-
-
-def test_disposition_survives_result_truncation_whitelist():
-    """disposition 必须在压缩白名单里。
-
-    超长失败结果会被 compact 成 `_RESULT_KEYS` 里那几个键；漏掉它，Agent 恰好在
-    最需要指引的时候拿不到指引。"""
-
-    from novelvideo.chat.village_harness import _RESULT_KEYS
-
-    assert "disposition" in _RESULT_KEYS

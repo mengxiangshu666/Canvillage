@@ -2183,8 +2183,7 @@ export function scriptShotVideoGraphNodes(
   nodes: readonly CanvasNode[],
   edges: readonly CanvasEdge[] = [],
 ): CanvasNode[] {
-  const scriptNode = nodes.find((node) => node.id === scriptNodeId);
-  if (!scriptNode) return [];
+  const scriptNode = nodes.find((node) => node.id === scriptNodeId) ?? null;
   const graph: CanvasGraphSlice = { nodes: [...nodes], edges: [...edges] };
   const imageIds = new Set(
     [...scriptStoryboardImagesByRowKey(scriptNodeId, graph).values()].map((node) => node.id),
@@ -2193,14 +2192,18 @@ export function scriptShotVideoGraphNodes(
     node.data?.[SCRIPT_SHOT_VIDEO_SOURCE_FIELD] === scriptNodeId && isVideoNode(node),
   ).map(node => node.id));
   const upstreamIds = new Set(edges.filter(edge => videoIds.has(edge.target)).map(edge => edge.source));
-  const collected: CanvasNode[] = [scriptNode];
+  const collected: CanvasNode[] = scriptNode ? [scriptNode] : [];
   nodes.forEach((node) => {
     const capture = node.data?.captureMetadata as Record<string, unknown> | undefined;
     const capturedTail = capture?.source_kind === 'video_frame_capture'
       && capture.capture_mode === 'last' && videoIds.has(String(capture.source_node_id));
     const ownsAsset = Boolean(node.data?.scriptAssetId) && node.data?.scriptAssetOwnerId === scriptNodeId;
+    // Keyframes belong to the same review chain: reworking one must refresh the
+    // keyframe tab even though it is neither a storyboard image nor a video
+    // upstream asset.
+    const keyframe = node.data?.scriptShotKeyframeSourceNodeId === scriptNodeId;
     if (node.id !== scriptNodeId && (imageIds.has(node.id) || videoIds.has(node.id)
-      || ownsAsset || upstreamIds.has(node.id) || capturedTail)) collected.push(node);
+      || ownsAsset || upstreamIds.has(node.id) || capturedTail || keyframe)) collected.push(node);
   });
   return collected;
 }

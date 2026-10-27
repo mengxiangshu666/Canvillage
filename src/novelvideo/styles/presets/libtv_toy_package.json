@@ -1,0 +1,26 @@
+{
+  "id": "libtv_toy_package",
+  "name": "卡通玩具",
+  "label": "卡通玩具",
+  "family": "three_d",
+  "era": "",
+  "palette": "vivid toy-like colors, glossy highlights, simple material separation",
+  "lighting": "soft studio HDRI, gentle rim light, clean contact shadows",
+  "optics": "50mm product lens, moderate depth of field, no wide-angle distortion",
+  "composition": "centered product-like subject on a clean background",
+  "camera_motion": "slow turntable orbit or slight push-in, stable horizon",
+  "style_instructions": "This style is characterized by a cute 3D toy inside its package, including a few elements, such as a name, related to the original content",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "卡通玩具",
+  "tags": [
+    "卡通玩具",
+    "libtv",
+    "3D潮玩"
+  ],
+  "model_overrides": {},
+  "style_family": "animation",
+  "animation_subtype": "3d",
+  "image_prompt": "This style is characterized by a cute 3D toy inside its package, including a few elements, such as a name, related to the original content",
+  "video_prompt": "This style is characterized by a cute 3D toy inside its package, including a few elements, such as a name, related to the original content. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

@@ -74,16 +74,28 @@ describe("freezone LibTV-parity agent chrome", () => {
   });
 
   it("renders the canvas-only empty state as a compact LibTV-style Skill grid", () => {
+    const onQuickAction = vi.fn();
     render(createElement(FreezoneWelcomeSkills, {
       selectedIds: [],
       onToggle: vi.fn(),
       compact: true,
+      onQuickAction,
     }));
 
-    expect(screen.getByText("选择一个 Skill，让创作更快一步")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "换一批" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /使用技能/ })).toHaveLength(4);
+    expect(screen.getByText("让小树帮助你的无限创意")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "换一批" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /使用技能/ })).not.toBeInTheDocument();
     expect(screen.queryByText("今天一起创作点什么？")).not.toBeInTheDocument();
+    for (const label of [
+      "添加画布开始创作",
+      "从模板预设开始剧本原创",
+      "上传故事板改编",
+      "批量优化提示词",
+    ]) {
+      expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+    }
+    fireEvent.click(screen.getByRole("button", { name: "批量优化提示词" }));
+    expect(onQuickAction).toHaveBeenCalledWith("optimize");
   });
 
   it("director console v1 is always derivable for freezone chrome", () => {
@@ -108,10 +120,10 @@ describe("freezone LibTV-parity agent chrome", () => {
   });
 
   it("matches LibTV default widths and clamps resize", () => {
-    expect(defaultFreezoneAgentWidth(1600)).toBe(370);
-    expect(defaultFreezoneAgentWidth(1400)).toBe(360);
-    expect(clampFreezoneAgentWidth(200)).toBe(320);
-    expect(clampFreezoneAgentWidth(900)).toBe(560);
+    expect(defaultFreezoneAgentWidth(1600)).toBe(330);
+    expect(defaultFreezoneAgentWidth(1400)).toBe(300);
+    expect(clampFreezoneAgentWidth(200)).toBe(280);
+    expect(clampFreezoneAgentWidth(900)).toBe(520);
     expect(clampFreezoneAgentWidth(380)).toBe(380);
   });
 

@@ -2,7 +2,7 @@
 // Copyright (c) 2026 ClaymoreLab
 import { useEffect, useRef, useState, type ComponentType } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock, Hand, Keyboard, MousePointer2, Plus, Settings2, Sparkles, WandSparkles } from 'lucide-react';
+import { Clock, Hand, Keyboard, LayoutGrid, Library, MousePointer2, Plus, Settings2, Sparkles, UsersRound, WandSparkles } from 'lucide-react';
 
 import type { CanvasNodeType } from '@/features/canvas/domain/canvasNodes';
 import type { CanvasAsset } from '@/features/canvas/domain/canvasAssets';
@@ -18,8 +18,21 @@ import { CanvasStarterWorkflowPanel } from './CanvasStarterWorkflowPanel';
 import { CanvasSkillQuickPickPanel } from './CanvasSkillQuickPickPanel';
 import { CanvasSettingsPanel } from './CanvasSettingsPanel';
 import { useCanvasToolStore } from './canvasToolStore';
+import { canvasEventBus } from '@/features/canvas/application/canvasServices';
 
-type QuickPanel = 'add' | 'skills' | 'starter' | 'tool' | 'history' | 'shortcuts' | 'settings';
+type QuickPanel =
+  | 'add'
+  | 'skills'
+  | 'starter'
+  | 'tool'
+  | 'history'
+  | 'shortcuts'
+  | 'settings'
+  // 不是弹层：点一下交给画布上的「全部功能」面板（由 SelectedNodeOverlay 持有）。
+  | 'features'
+  // 角色造型室 / 风格库 / 特效库：由 FreezoneShell 持有的浮层。
+  | 'characters'
+  | 'materials';
 
 // 悬停即开 / 离开延迟关闭的轻量 popover 面板（区别于 history 那种 modal）。
 const HOVER_POPOVER_PANELS: ReadonlySet<QuickPanel> = new Set(['add']);
@@ -30,6 +43,7 @@ const ANCHORED_POPOVER_PANELS: ReadonlySet<QuickPanel> = new Set([
   'tool',
   'shortcuts',
   'settings',
+  'materials',
 ]);
 
 interface CanvasQuickActionBarProps {
@@ -57,6 +71,24 @@ interface QuickActionDef {
 
 const ACTIONS: QuickActionDef[] = [
   { key: 'add', icon: Plus, labelKey: 'canvas.quickbar.addNode', primary: true },
+  {
+    key: 'features',
+    icon: LayoutGrid,
+    labelKey: 'canvas.quickbar.allFeatures',
+    tooltipKey: 'canvas.quickbar.allFeaturesTooltip',
+  },
+  {
+    key: 'characters',
+    icon: UsersRound,
+    labelKey: 'canvas.quickbar.characters',
+    tooltipKey: 'canvas.quickbar.charactersTooltip',
+  },
+  {
+    key: 'materials',
+    icon: Library,
+    labelKey: 'canvas.quickbar.materials',
+    tooltipKey: 'canvas.quickbar.materialsTooltip',
+  },
   { key: 'skills', icon: Sparkles, labelKey: 'canvas.quickbar.skills', tooltipKey: 'canvas.quickbar.skillsTooltip' },
   { key: 'starter', icon: WandSparkles, labelKey: 'canvas.quickbar.starter', tooltipKey: 'canvas.quickbar.starterTooltip' },
   { key: 'tool', icon: MousePointer2, labelKey: 'canvas.toolbar.toolGroupLabel' },
@@ -124,6 +156,14 @@ export function CanvasQuickActionBar({
 
   const handleActionClick = (action: QuickActionDef) => {
     const panel = action.key;
+    if (panel === 'features') {
+      canvasEventBus.publish('canvas/all-features/open', undefined);
+      return;
+    }
+    if (panel === 'characters') {
+      canvasEventBus.publish('canvas/character-studio/open', undefined);
+      return;
+    }
     if (HOVER_POPOVER_PANELS.has(panel)) {
       cancelPopoverClose();
       setOpenPanel(panel);
@@ -167,7 +207,7 @@ export function CanvasQuickActionBar({
         }`}
       >
         <div
-          className="nopan nowheel pointer-events-auto relative"
+          className="nopan nowheel pointer-events-auto relative flex items-center gap-2"
           onPointerEnter={cancelPopoverClose}
           onPointerLeave={() => {
             if (openPanel != null && HOVER_POPOVER_PANELS.has(openPanel)) {
@@ -233,6 +273,37 @@ export function CanvasQuickActionBar({
             <div className={`absolute left-1/2 -translate-x-1/2 ${popoverAnchorClass}`}>
               <div className={popoverEnterClass}>
                 <CanvasShortcutsPanel onClose={() => setOpenPanel(null)} />
+              </div>
+            </div>
+          )}
+
+          {openPanel === 'materials' && (
+            <div className={`absolute left-1/2 -translate-x-1/2 ${popoverAnchorClass}`}>
+              <div className={popoverEnterClass}>
+                <div className="flex min-w-[176px] flex-col gap-1 rounded-[10px] border border-white/10 bg-[#1b1b1f]/97 p-1.5 shadow-xl backdrop-blur-md">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenPanel(null);
+                      canvasEventBus.publish('canvas/style-library/open', undefined);
+                    }}
+                    className="flex h-9 items-center gap-2 rounded-md px-2.5 text-left text-[12.5px] text-white/78 transition-colors hover:bg-white/8 hover:text-white"
+                  >
+                    <Sparkles className="size-3.5 text-white/45" />
+                    风格库
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenPanel(null);
+                      canvasEventBus.publish('canvas/effect-library/open', undefined);
+                    }}
+                    className="flex h-9 items-center gap-2 rounded-md px-2.5 text-left text-[12.5px] text-white/78 transition-colors hover:bg-white/8 hover:text-white"
+                  >
+                    <WandSparkles className="size-3.5 text-white/45" />
+                    特效库
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -308,6 +379,16 @@ export function CanvasQuickActionBar({
               );
             })}
           </div>
+          {/* Agent 光球：LibTV 那样挂在底栏右侧，点一下开关小树的创作台。 */}
+          <button
+            type="button"
+            aria-label="打开小树"
+            title="小树 · 画布 Agent"
+            className="canvas-agent-orb"
+            onClick={() => canvasEventBus.publish('canvas/agent/toggle', undefined)}
+          >
+            <span className="canvas-agent-orb__core" aria-hidden="true" />
+          </button>
         </div>
       </div>
 

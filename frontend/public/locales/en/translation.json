@@ -99,57 +99,6 @@
       "skip": "Skip this version"
     }
   },
-  "myBuddy": {
-    "dragHint": "Drag to reposition",
-    "taskRunning": "Running · {{name}}",
-    "taskSuccess": "Done · {{name}}",
-    "taskFailure": "Failed · {{name}}",
-    "companion": {
-      "entry": "Companion",
-      "title": "Choose your companion",
-      "titleBadgeAlt": "My OK buddy",
-      "importCta": "Import companion",
-      "toggleVisibility": "Show companion"
-    },
-    "import": {
-      "button": "Import",
-      "title": "Import petdex pet",
-      "desc": "Pick a spritesheet.webp (required) and pet.json (optional) downloaded from petdex; it becomes available in the gallery.",
-      "spritesheetTitle": "Click or drop spritesheet.webp",
-      "spritesheetHint": "Required · webp / png spritesheet",
-      "missingSpritesheet": "The pet image is still missing. pet.json only contains configuration and cannot replace the artwork; the spritesheet picker is now open.",
-      "jsonTitle": "Click or drop pet.json",
-      "jsonHint": "Optional · used for the name",
-      "choose": "Choose file",
-      "replace": "Replace",
-      "gridError": "Spritesheet {{w}}×{{h}} isn't a multiple of a {{cols}}×{{rows}} grid, so frames won't slice correctly. Use a standard 8×9 sheet, or declare the right cols/rows in pet.json.",
-      "hint": "Pets are stored only in your browser (IndexedDB), never uploaded; the spritesheet must be petdex's standard 8×9 grid.",
-      "confirm": "Import"
-    },
-    "gallery": {
-      "title": "Choose a companion",
-      "tabLibrary": "Library",
-      "tabMine": "My pets",
-      "select": "Select",
-      "selected": "Selected",
-      "search": "Search pet name…",
-      "loading": "Loading…",
-      "empty": "No matching pets",
-      "emptyMine": "No imported pets yet — click Import to add"
-    },
-    "debug": {
-      "suffix": " Debug",
-      "auto": "Auto",
-      "stateSimulation": "State sim",
-      "triggerUpdateDialog": "Trigger update dialog"
-    },
-    "actions": {
-      "idle": "Idle",
-      "typing": "Typing",
-      "flag": "Flag",
-      "repair": "Check box"
-    }
-  },
   "aiAssistant": {
     "formatCheck": {
       "title": "Script Format Check",
@@ -1420,6 +1369,7 @@
       "character_portrait": "Character portrait",
       "identity_image": "Identity image",
       "identity_portrait": "Identity portrait",
+      "character_profile_parse": "Character profile parse",
       "script_writer": "Script writer",
       "literal_script_writer": "Literal script",
       "director_notes": "Scene planning",
@@ -2770,7 +2720,13 @@
       "starter": "Starter Workflows",
       "starterTooltip": "Insert an editable workflow graph",
       "settings": "Canvas Settings",
-      "settingsTooltip": "Adjust canvas interaction, display and edges"
+      "settingsTooltip": "Adjust canvas interaction, display and edges",
+      "allFeatures": "All Features",
+      "allFeaturesTooltip": "Browse the tools available for the selected node",
+      "characters": "Characters",
+      "charactersTooltip": "Open the character studio and drop a look onto the canvas",
+      "materials": "Materials",
+      "materialsTooltip": "Style and effect libraries"
     },
     "trackpad": {
       "enable": "Enable trackpad panning",

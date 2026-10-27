@@ -134,7 +134,7 @@ export function ProjectSwitcher({ current }: { current: string }) {
       >
         <DropdownMenuGroup>
           <DropdownMenuItem
-            onClick={() => navigate({ to: "/" })}
+            onClick={() => navigate({ to: "/studio" })}
             className="min-h-8 gap-2 rounded-sm px-2 py-1.5 text-xs focus:bg-white/8 focus:text-current"
           >
             <ArrowLeft className="size-3.5" />

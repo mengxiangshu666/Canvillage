@@ -302,6 +302,10 @@ export interface VideoCreativeHandoff {
     role: 'character' | 'scene' | 'prop' | 'reference' | 'frame_design' | 'opening_frame' | 'state_frame' | 'end_frame' | 'continuity_frame' | 'motion' | 'style';
     name: string;
     sourceNodeId?: string;
+    /** 这一槽实际绑定的资产身份；空数组表示无身份参考（如上一镜尾帧）。 */
+    assetIds?: string[];
+    /** 状态变体短 id（wet/dirty/lit），与 assetIds 一起构成 C01@wet 语义。 */
+    assetState?: string;
     responsibility: string;
     prohibited: string;
   }>;

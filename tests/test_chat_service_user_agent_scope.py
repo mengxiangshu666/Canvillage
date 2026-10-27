@@ -9,7 +9,7 @@ import pytest
 
 from novelvideo.api.routes import chat as chat_routes
 from novelvideo.api.routes.workflows import _workflow_run_event_stream
-from novelvideo.chat import backend_sdk
+from tests import legacy_backend_events as backend_sdk
 from novelvideo.chat import service as chat_service
 from novelvideo.chat.agent_events import attach_agent_event
 from novelvideo.chat.store import ChatScope, chat_store
@@ -2377,21 +2377,6 @@ def test_claude_sessions_are_scope_scoped(monkeypatch, tmp_path):
     assert state_file.exists()
 
 
-def test_user_agent_workspace_is_not_project_workspace(monkeypatch, tmp_path):
-    monkeypatch.setenv("NOVELVIDEO_STATE_DIR", str(tmp_path / "state"))
-    monkeypatch.setenv("NOVELVIDEO_OUTPUT_DIR", str(tmp_path / "output"))
-
-    chat_service.ensure_user_claude_workspace("admin", "project-a")
-
-    workspace = chat_service._user_agent_workspace("admin")
-    assert workspace == tmp_path / "state" / "admin" / ".chat_agents"
-    assert (workspace / ".claude" / "settings.local.json").exists()
-    assert (workspace / ".claude" / "skills").is_dir()
-
-    project_workspace = Path(tmp_path / "output" / "admin" / "project-a")
-    assert not (project_workspace / ".claude").exists()
-
-
 def test_pid_is_alive_rejects_invalid_values_without_probing(monkeypatch):
     monkeypatch.setattr(
         chat_service.os,
@@ -3946,155 +3931,3 @@ async def test_director_preflight_delegation_fills_defaults_and_releases_the_gat
     assert contract["fields"]["creative_subject"]["source"] == "user"
 
 
-@pytest.mark.anyio
-@pytest.mark.parametrize("with_receipt", [True, False])
-async def test_village_provider_failure_after_verified_canvas_receipt_finishes_turn(
-    monkeypatch,
-    tmp_path,
-    with_receipt,
-) -> None:
-    from novelvideo.chat.backend_sdk import ChatBackendEvent
-    from novelvideo.chat.village_harness import pool as village_pool
-
-    receipt = {
-        "schema": "canvas_chat_commands.v1",
-        "project_id": "project-a",
-        "canvas_id": "canvas-a",
-        "command_id": "turn-provider-failure:update-shot-137",
-        "revision": 7,
-        "server_applied": True,
-        "applied_ops": 1,
-        "structure_status": "server_applied_verified",
-        "commands": [
-            {
-                "type": "update_node_prompt",
-                "node_id": "shot-137",
-                "prompt": "updated",
-            }
-        ],
-    }
-
-    class ProviderFailingThread:
-        id = "village-provider-failure"
-
-        async def stream(self, *_args, **kwargs):
-            turn_id = str(kwargs.get("turn_id") or "turn-provider-failure")
-            yield ChatBackendEvent(
-                type="thread_started",
-                thread_id=self.id,
-                turn_id=turn_id,
-            )
-            if with_receipt:
-                yield ChatBackendEvent(
-                    type="canvas_patch",
-                    thread_id=self.id,
-                    turn_id=turn_id,
-                    raw=receipt,
-                )
-            raise RuntimeError(
-                "status_code: 503, model_name: gemini-3.8-flash, "
-                "body: {'message': 'auth_concurrency_limit'}"
-            )
-
-    async def get_for_user(*_args, **_kwargs):
-        return ProviderFailingThread()
-
-    async def knowledge_packet(*_args, **_kwargs):
-        assert _kwargs["semantic_applicability"] is True
-        assert _kwargs["applicability_context"]["model_id"] == "test-video-model"
-        assert _kwargs["applicability_context"]["node_type"] == "videoNode"
-        assert _kwargs["applicability_context"]["generation_mode"] == "imageToVideo"
-        return {
-            "context": "",
-            "execution_context": "",
-            "execution_rule_ids": [],
-            "memory_ids": [],
-            "applicability_context": {},
-        }
-
-    async def current_canvas_facts(*_args, **_kwargs):
-        return {
-            "project_id": "project-a",
-            "canvas_id": "canvas-a",
-            "revision": 6,
-            "node_count": 1,
-            "edge_count": 0,
-            "focus": {"selected_node_ids": ["video-target"]},
-            "nodes": [{"id": "video-target", "type": "videoNode", "model_id": "test-video-model", "generation_mode": "imageToVideo"}],
-        }
-
-    async def live_director_context(*_args, **_kwargs):
-        return {}
-
-    persisted: list[str] = []
-
-    def add_assistant_message(*args, **_kwargs):
-        content = str(args[2] if len(args) > 2 else "")
-        persisted.append(content)
-        return {"content": content}
-
-    monkeypatch.setattr(village_pool, "get_for_user", get_for_user)
-    monkeypatch.setattr(chat_service, "build_knowledge_packet", knowledge_packet)
-    monkeypatch.setattr(chat_service, "_current_canvas_facts", current_canvas_facts)
-    monkeypatch.setattr(chat_service, "_build_live_director_context", live_director_context)
-    monkeypatch.setattr(
-        chat_service,
-        "_prompt_with_user_context",
-        lambda _username, _project, prompt, **_kwargs: prompt,
-    )
-    monkeypatch.setattr(
-        chat_service,
-        "_assistant_history_contents",
-        lambda *_args, **_kwargs: [],
-    )
-    monkeypatch.setattr(
-        chat_service,
-        "_trace_history_contents",
-        lambda *_args, **_kwargs: [],
-    )
-    monkeypatch.setattr(
-        chat_service,
-        "_director_clarification_from_event_store",
-        lambda **_kwargs: None,
-    )
-    monkeypatch.setattr(chat_service, "add_assistant_message", add_assistant_message)
-    monkeypatch.setattr(chat_service, "_extract_media", lambda *_args, **_kwargs: [])
-    monkeypatch.setattr(chat_service, "save_checkpoint", lambda *_args, **_kwargs: None)
-
-    events: list[dict] = []
-
-    async def on_event(event):
-        events.append(event)
-
-    if not with_receipt:
-        with pytest.raises(RuntimeError, match="auth_concurrency_limit"):
-            await chat_service._stream_assistant_reply_village(
-                "alice",
-                "project-a",
-                "优化 shot-137 的提示词",
-                on_event,
-                project_state_dir=tmp_path,
-                canvas_id="canvas-a",
-                turn_id="turn-provider-failure",
-                model="test-model",
-            )
-        assert all(event["type"] != "done" for event in events)
-        assert persisted == []
-        return
-
-    message = await chat_service._stream_assistant_reply_village(
-        "alice",
-        "project-a",
-        "优化 shot-137 的提示词",
-        on_event,
-        project_state_dir=tmp_path,
-        canvas_id="canvas-a",
-        turn_id="turn-provider-failure",
-        model="test-model",
-    )
-
-    assert "已经由服务端确认保存" in message["content"]
-    assert "没有自动重试" in message["content"]
-    assert events[-1]["type"] == "done"
-    assert events[-1]["message"] == message
-    assert persisted == [message["content"]]

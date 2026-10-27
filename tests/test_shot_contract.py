@@ -212,6 +212,39 @@ def test_shot_contract_preserves_structured_creative_handoff() -> None:
     assert validate_shot_contract(contract) == []
 
 
+def test_reference_slot_binds_asset_ids_and_state() -> None:
+    reference = {
+        "scope": "video",
+        "imageNumber": 1,
+        "role": "character",
+        "name": "阿箬",
+        "assetIds": ["C01", "C01", " C02 "],
+        "assetState": "WET",
+        "responsibility": "只取身份与服装",
+        "prohibited": "不继承姿势与背景",
+    }
+    contract = build_shot_contract(
+        {"creative_handoff": {"referenceResponsibilities": [reference]}}
+    )
+    saved = contract["creative_handoff"]["reference_responsibilities"][0]
+    assert saved["asset_ids"] == ["C01", "C02"]
+    assert saved["asset_state"] == "wet"
+
+
+def test_reference_slot_ignores_blank_or_invalid_state() -> None:
+    reference = {
+        "scope": "video", "imageNumber": 1, "role": "reference", "name": "尾帧",
+        "assetIds": ["", "  "], "assetState": "wet scene",
+        "responsibility": "只取动作承接", "prohibited": "不继承身份",
+    }
+    contract = build_shot_contract(
+        {"creative_handoff": {"referenceResponsibilities": [reference]}}
+    )
+    saved = contract["creative_handoff"]["reference_responsibilities"][0]
+    assert "asset_ids" not in saved
+    assert "asset_state" not in saved
+
+
 def test_reference_responsibilities_preserve_scope_and_hash_through_persistence() -> None:
     storyboard_reference = {
         "scope": "storyboard", "imageNumber": 1, "role": "character", "name": "阿波",

@@ -82,6 +82,12 @@ THIRD_PARTY_PATH_OVERRIDES: tuple[tuple[str, str, str, str], ...] = (
         "vendored awesome-gpt-image-2 case/style snapshot and LICENSE",
     ),
     (
+        "third_party/xiaoshu-agent/1.0.0/",
+        "MIT",
+        "2025 Beq",
+        "vendored TapCanvas agents-cli at commit 0c68d4f5e345c6ac4d23ca7689c07804b785c378 (LICENSE and UPSTREAM_PROVENANCE.json)",
+    ),
+    (
         "frontend/public/viewer-kit/quaternius/",
         "CC0-1.0",
         "Quaternius",
@@ -128,9 +134,17 @@ OWNER_CONFIRMED_MEDIA: tuple[str, ...] = (
 )
 UNVERIFIED_LOCAL_MEDIA: tuple[str, ...] = (
     "frontend/public/expression-head/libtv-mood-proxy/",
+    "frontend/public/effects/templates/",
+    "frontend/public/video/effect-templates/",
+    "frontend/public/images/skill-covers/libtv/",
     "frontend/public/login-cinematic/fonts/DingTalk_JinBuTi_Title.woff2",
     "assets/partners/",
     "src/novelvideo/assets/login_bgm.mp3",
+)
+# Style presets keep their own distilled prompt text; only the libtv sample
+# images are third-party media and stay out of the public export.
+UNVERIFIED_LOCAL_MEDIA_PATTERNS: tuple[tuple[str, str], ...] = (
+    ("src/novelvideo/styles/presets/libtv_", ".webp"),
 )
 
 
@@ -556,6 +570,14 @@ SPDX-License-Identifier = "MIT"
 
 [[annotations]]
 path = [
+    "third_party/xiaoshu-agent/1.0.0/**",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "2025 Beq"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = [
     "agent_skills/village-canvas-shotcraft/references/upstream/cards/**",
     "agent_skills/village-canvas-shotcraft/references/upstream/core/**",
     "agent_skills/village-canvas-shotcraft/references/upstream/catalog.json",
@@ -585,8 +607,17 @@ def _matches_path(path: str, prefix: str) -> bool:
     return path.startswith(prefix) if prefix.endswith("/") else path == prefix
 
 
-def _inventory_row(path: str) -> dict[str, str]:
+def _is_unverified_local_media(path: str) -> bool:
     if any(_matches_path(path, prefix) for prefix in UNVERIFIED_LOCAL_MEDIA):
+        return True
+    return any(
+        path.startswith(prefix) and path.endswith(suffix)
+        for prefix, suffix in UNVERIFIED_LOCAL_MEDIA_PATTERNS
+    )
+
+
+def _inventory_row(path: str) -> dict[str, str]:
+    if _is_unverified_local_media(path):
         return {
             "path": path,
             "license_expression": "NOASSERTION",

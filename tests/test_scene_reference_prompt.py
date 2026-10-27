@@ -79,6 +79,19 @@ async def test_scene_reference_newapi_uses_normalized_gateway_base_url(monkeypat
         "_call_newapi_image_api",
         fake_call_newapi_image_api,
     )
+    # This test exercises the legacy newapi path; give it a model without
+    # depending on the operator's local .env.
+    monkeypatch.setattr(
+        scene_reference_images,
+        "NEWAPI_IMAGE_MODEL",
+        "test-image-model",
+    )
+    # This test exercises the legacy newapi path; a locally configured direct
+    # image model must not take precedence and turn it into a direct request.
+    monkeypatch.setattr(
+        "novelvideo.generators.direct_image_models.resolve_direct_image_model",
+        lambda model: None,
+    )
 
     await scene_reference_images.generate_scene_reference_image(
         project_dir=tmp_path,

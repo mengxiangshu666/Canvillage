@@ -57,9 +57,15 @@ export function ensureShotKeyframeNodes(params: {
         scope: 'keyframe' as const, imageNumber: refIndex + 1, role,
         name: opening ? '本镜首图' : asset ? `${asset.roleLabel} ${asset.name}` : '参考图',
         ...(opening ? { sourceNodeId: shotImageNode.id } : {}),
+        ...(asset?.assetId ? { assetIds: [asset.assetId] } : {}),
         ...scriptReferenceResponsibility(role),
       };
     });
+    const keyframeAssetIds = [...new Set(
+      refs.flatMap(url => spec.assetReferences
+        .filter(reference => reference.assetId && reference.imageUrl === url)
+        .map(reference => String(reference.assetId))),
+    )];
     const creativeHandoff: VideoCreativeHandoff = { ...spec.creativeHandoff, referenceResponsibilities: [
       ...(spec.creativeHandoff.referenceResponsibilities ?? []).filter(reference => reference.scope === 'storyboard'),
       ...referenceResponsibilities,
@@ -92,6 +98,7 @@ export function ensureShotKeyframeNodes(params: {
       scriptShotKeyframeFingerprint: spec.rowFingerprint, scriptShotKeyframeIndex: index,
       scriptShotKeyframeRole: item.role, scriptShotKeyframeState: item.state, scriptShotKeyframePurpose: item.purpose,
       scriptShotKeyframeStrategy: item.generation_strategy || 'state_edit', scriptShotKeyframeFraming: item.framing || '',
+      scriptShotKeyframeAssetIds: keyframeAssetIds,
       scriptCreativeHandoff: creativeHandoff,
       ...(refreshed ? { imageUrl: null, previewImageUrl: null, generationBatch: null, generationError: null } : {}),
       ...(generateImages && !inputIssue && !current?.data.isGenerating && (!completedImage(current) || refreshed)

@@ -6,7 +6,6 @@ export type CanvasInteractionKind =
   | 'agent-resize'
   | 'canvas-pan'
   | 'canvas-zoom'
-  | 'companion-drag'
   | 'node-drag'
   | 'node-resize'
   | 'selection-drag';

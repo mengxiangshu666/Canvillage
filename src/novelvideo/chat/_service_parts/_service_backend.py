@@ -37,58 +37,6 @@ async def _create_page_agent_session_token(
     return token.value
 
 
-def _project_skill_settings_payload(
-    username: str,
-    project: str,
-    agent_token: str = "",
-) -> dict[str, Any]:
-    env = {
-        "VILLAGE_CANVAS_USERNAME": username,
-        "VILLAGE_CANVAS_AGENT_SCOPE": "user",
-        "VILLAGE_CANVAS_API_URL": _load_api_url(),
-        "VILLAGE_CANVAS_AGENT_TOKEN": agent_token,
-    }
-    if project:
-        env["VILLAGE_CANVAS_PROJECT_ID"] = project
-    return {"env": env}
-
-
-def _write_user_skill_settings(username: str, project: str, agent_token: str = "") -> None:
-    workspace = _user_agent_workspace(username)
-    claude_dir = workspace / ".claude"
-    claude_dir.mkdir(parents=True, exist_ok=True)
-    payload = _project_skill_settings_payload(username, project, agent_token)
-    (claude_dir / "settings.local.json").write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
-
-
-def ensure_user_claude_workspace(username: str, project: str, agent_token: str = "") -> None:
-    workspace = _user_agent_workspace(username)
-    claude_dir = workspace / ".claude"
-    skills_dir = claude_dir / "skills"
-    claude_dir.mkdir(parents=True, exist_ok=True)
-    skills_dir.mkdir(parents=True, exist_ok=True)
-    _write_user_skill_settings(username, project, agent_token)
-    _sync_project_skills(skills_dir)
-
-
-
-
-def _build_claude_env(username: str, project: str, agent_token: str = "") -> dict[str, str]:
-    env = os.environ.copy()
-    env["VILLAGE_CANVAS_USERNAME"] = username
-    env["VILLAGE_CANVAS_AGENT_SCOPE"] = "user"
-    if project:
-        env["VILLAGE_CANVAS_PROJECT_ID"] = project
-    env["VILLAGE_CANVAS_API_URL"] = _load_api_url()
-    env["VILLAGE_CANVAS_AGENT_TOKEN"] = agent_token
-    return env
-
-
-
-
 def _extract_media(
     content: str,
     username: str,
@@ -294,57 +242,6 @@ def _filter_markdown_duplicate_images(
     return filtered
 
 
-def _build_claude_thread(
-    username: str,
-    project: str,
-    agent_token: str,
-    conversation_id: str = DEFAULT_CHAT_CONVERSATION_ID,
-    canvas_id: str | None = None,
-):
-    ensure_user_claude_workspace(username, project, agent_token)
-    workspace = _user_agent_workspace(username)
-    client = ClaudeSdkClient(
-        cli_path=_claude_cli_path(),
-        cwd=workspace,
-        env=_build_claude_env(username, project, agent_token),
-        model=_claude_model(),
-    )
-    session_id = _get_claude_session_id(username, project, conversation_id, canvas_id)
-    return client.thread_resume(session_id) if session_id else client.thread_start()
-
-
-
-
-
-
-
-
-
-
-async def interrupt_chat_turn(
-    username: str,
-    project: str,
-    thread_id: str,
-    turn_id: str,
-    *,
-    agent_engine: AgentEngine | None = None,
-) -> bool:
-    thread_id = str(thread_id or "").strip()
-    turn_id = str(turn_id or "").strip()
-    backend = normalize_agent_engine(agent_engine) if agent_engine else _chat_backend()
-    if backend == "village":
-        return False
-    if backend == "claude":
-        if not thread_id:
-            return False
-        try:
-            return await interrupt_live_claude_client(thread_id)
-        except Exception as exc:
-            if "closed stdout" in str(exc):
-                return True
-            raise
-    return False
-
 
 async def stream_assistant_reply(
     username: str,
@@ -457,27 +354,7 @@ async def stream_assistant_reply(
         director_context = _director_clarification_context(director_preflight)
         if director_context:
             model_prompt = "\n\n".join((model_prompt, director_context))
-        backend = normalize_agent_engine(agent_engine) if agent_engine else _chat_backend()
-        if backend == "village":
-            return await _stream_assistant_reply_village(
-                username,
-                project,
-                model_prompt,
-                on_event,
-                project_dir=project_dir,
-                project_state_dir=project_state_dir,
-                conversation_id=conversation_id,
-                image_parts=image_parts,
-                model=model,
-                agent_model_config=agent_model_config,
-                turn_id=turn_id,
-                checkpoint_turn_id=checkpoint_turn_id,
-                canvas_id=canvas_id,
-                research_enabled=research_enabled,
-            )
-        if backend != "claude":
-            raise RuntimeError(f"Unsupported chat backend: {backend}")
-        return await _stream_assistant_reply_claude(
+        return await _stream_assistant_reply_village(
             username,
             project,
             model_prompt,
@@ -485,8 +362,13 @@ async def stream_assistant_reply(
             project_dir=project_dir,
             project_state_dir=project_state_dir,
             conversation_id=conversation_id,
-            canvas_id=canvas_id,
+            image_parts=image_parts,
+            model=model,
+            agent_model_config=agent_model_config,
             turn_id=turn_id,
+            checkpoint_turn_id=checkpoint_turn_id,
+            canvas_id=canvas_id,
+            research_enabled=research_enabled,
         )
     finally:
         heartbeat_task.cancel()

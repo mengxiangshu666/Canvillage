@@ -329,6 +329,18 @@ RULE_CATALOG: dict[str, dict[str, str]] = {
         "severity": SEVERITY_ADVISORY,
         "summary": "同场相邻镜头的明确左右方向不能无解释反转",
     },
+    "script.prompt.sound_coverage.v1": {
+        "severity": SEVERITY_ADVISORY,
+        "summary": "音效列的每个声音落点都应在视频运动提示词里出现",
+    },
+    "script.prompt.state_coverage.v1": {
+        "severity": SEVERITY_ADVISORY,
+        "summary": "道具结束状态与状态变化应写进视频运动提示词",
+    },
+    "script.continuity.static_anchor.v1": {
+        "severity": SEVERITY_ADVISORY,
+        "summary": "连续动作接力的上一镜结束状态疑似静止，下一镜可能从静止起飞",
+    },
 }
 
 
@@ -685,6 +697,8 @@ def validate_script_rows(
     _check_shot_no_sequence(table, report)
     _check_viewability(table, report)
     _check_continuity(table, report)
+    _check_prompt_coverage(table, report)
+    _check_static_anchor(table, report)
     _check_shot_planning(table, report)
     _check_film_plan(table, director_plan or {}, target_duration_seconds, report)
     _check_character_states(table, report)
@@ -1523,6 +1537,155 @@ def _check_continuity(table: Sequence[Mapping[str, Any]], report: ScriptContract
                     },
                 )
             )
+
+
+_PROMPT_TOKEN_SPLIT_RE = re.compile(r"[、,，;；/|]+")
+_PROMPT_TOKEN_NOISE = {"", "无", "没有", "none", "n/a", "-", "—"}
+_STATIC_ANCHOR_MARKERS = (
+    "静止",
+    "站定",
+    "停住",
+    "停止",
+    "悬停",
+    "定格",
+    "不动",
+    "收势",
+    "刹住",
+    "静立",
+)
+_MOTION_ANCHOR_MARKERS = (
+    "奔跑",
+    "跑",
+    "行走",
+    "走",
+    "冲",
+    "跳",
+    "飞",
+    "挥",
+    "推",
+    "拉",
+    "转身",
+    "起步",
+    "起跳",
+    "落下",
+    "加速",
+    "速度",
+    "奔",
+    "扑",
+    "踢",
+    "抛",
+    "甩",
+    "滑行",
+    "冲刺",
+    "爬",
+)
+
+
+def _normalize_prompt_text(value: object) -> str:
+    return re.sub(r"\s+", "", str(value or "")).casefold()
+
+
+def _prompt_tokens(value: object) -> list[str]:
+    return [
+        token.strip()
+        for token in _PROMPT_TOKEN_SPLIT_RE.split(str(value or ""))
+        if token.strip() and token.strip().casefold() not in _PROMPT_TOKEN_NOISE
+    ]
+
+
+def _check_prompt_coverage(
+    table: Sequence[Mapping[str, Any]], report: ScriptContractReport,
+) -> None:
+    """Check that planned sound and prop states actually reached the prompt.
+
+    These are advisory because the same fact can be phrased differently in a
+    prompt.  The goal is to make "written in the plan but missing from the
+    prompt" visible before generation, not to pretend a substring proves the
+    model will obey it.
+    """
+
+    for index, row in enumerate(table):
+        prompt = _normalize_prompt_text(row.get("video_motion_prompt"))
+        if not prompt:
+            continue
+        for field_name, label, rule_id in (
+            ("sound", "音效", "script.prompt.sound_coverage.v1"),
+            ("prop_state_end", "道具结束状态", "script.prompt.state_coverage.v1"),
+            ("prop_state_change", "道具状态变化", "script.prompt.state_coverage.v1"),
+        ):
+            tokens = [
+                token
+                for token in _prompt_tokens(row.get(field_name))
+                if len(token) >= 2
+            ]
+            missing = [token for token in tokens if _normalize_prompt_text(token) not in prompt]
+            if not missing:
+                continue
+            report.issues.append(
+                ScriptIssue(
+                    rule_id=rule_id,
+                    severity=SEVERITY_ADVISORY,
+                    message=(
+                        f"{label}里的 {'、'.join(missing)} 没有出现在视频运动提示词里；"
+                        "只写在计划里，模型不会自己执行"
+                    ),
+                    row_index=index,
+                    shot_no=_shot_no_of(row, index),
+                    field=field_name,
+                    detail={"missing": missing, "prompt_field": "video_motion_prompt"},
+                )
+            )
+
+
+def _check_static_anchor(
+    table: Sequence[Mapping[str, Any]], report: ScriptContractReport,
+) -> None:
+    """Flag a continuous handoff whose outgoing anchor reads as a still frame.
+
+    The failure is measured, not theoretical: an anchor image drawn as a static
+    pose makes both sides of the seam start at zero velocity.  This rule only
+    warns; a shot that is intentionally a stop is allowed once the user confirms.
+    """
+
+    for index in range(1, len(table)):
+        previous = table[index - 1]
+        if not re.search(
+            r"continuous_action|continuous-action|动作衔接|连续动作",
+            _row_text(previous, "transition_plan"),
+            re.IGNORECASE,
+        ):
+            continue
+        end_state = _row_text(previous, "end_state")
+        start_state = _row_text(table[index], "start_state")
+        if not end_state:
+            continue
+        static_marker = next(
+            (marker for marker in _STATIC_ANCHOR_MARKERS if marker in end_state),
+            "",
+        )
+        if not static_marker:
+            continue
+        if any(marker in start_state for marker in _MOTION_ANCHOR_MARKERS):
+            continue
+        report.issues.append(
+            ScriptIssue(
+                rule_id="script.continuity.static_anchor.v1",
+                severity=SEVERITY_ADVISORY,
+                message=(
+                    f"第 {index} 镜结束状态含「{static_marker}」，第 {index + 1} 镜开始状态"
+                    "没有运动证据；接力链可能从静止起飞。给锚点帧补速度证据"
+                    "（倾斜躯干、绷紧衣料、后拖头发、速度线），或确认这一镜本来就要停。"
+                ),
+                row_index=index - 1,
+                shot_no=_shot_no_of(previous, index - 1),
+                field="end_state",
+                detail={
+                    "static_marker": static_marker,
+                    "next_row_index": index,
+                    "next_start_state": start_state,
+                },
+            )
+        )
 
 
 def _check_shot_planning(

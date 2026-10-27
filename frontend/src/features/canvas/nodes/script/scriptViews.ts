@@ -38,7 +38,7 @@ import { SCRIPT_CHARACTER_SLOT_COUNT } from './scriptFields';
  * （先前这里的注释引用的是 `scriptAssetViewLabel` 作为「LibTV 三视图」的来源，
  * 那个 key 只出现在 `getDefaultScriptV2Views` 里，等于把两代节点的视图集当成了一套。）
  */
-export type ScriptViewId = 'table' | 'creative' | 'asset' | 'video';
+export type ScriptViewId = 'table' | 'creative' | 'asset' | 'video' | 'keyframe';
 
 export interface ScriptViewDef {
   id: ScriptViewId;
@@ -50,6 +50,7 @@ export const SCRIPT_VIEWS: ScriptViewDef[] = [
   { id: 'creative', label: '创意视图' },
   { id: 'asset', label: '资产视图' },
   { id: 'video', label: '视频素材' },
+  { id: 'keyframe', label: '关键帧验收' },
 ];
 
 export const DEFAULT_SCRIPT_VIEW_ID: ScriptViewId = 'table';

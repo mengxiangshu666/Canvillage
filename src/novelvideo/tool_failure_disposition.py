@@ -33,9 +33,22 @@ RETRY_AS_IS = "retry_as_is"
 FIX_PARAMS = "fix_params"
 MODIFY_THEN_ASK = "modify_then_ask"
 ASK_USER_NOW = "ask_user_now"
+# 第四档：先刷新服务端事实再原样重试。版本冲突不是参数错误，
+# 改提示词或字段都不会让它消失；必须先重新读取画布拿到最新 revision。
+REFRESH_AND_RETRY = "retry_after_refresh"
 
 # 改参数档最多重试几次就升级给用户。取自 libtv 的「修改后重试 2 次仍未通过」。
 MODIFY_RETRY_BUDGET = 2
+
+# 刷新后重试：第一次冲突允许「重读 + 原样重试」，第二次仍冲突就停手。
+REFRESH_RETRY_BUDGET = 2
+
+# —— ⓪ 先刷新再原样重试：服务端事实已变，不是入参错误 ——
+_REFRESH_CODES = frozenset(
+    {
+        "canvas_revision_conflict",
+    }
+)
 
 # 原样可重试没有硬上限——但也要给一个天花板，否则「稍后重试」会变成死循环。
 RETRY_AS_IS_BUDGET = 3
@@ -100,6 +113,11 @@ _INSTRUCTIONS: Mapping[str, str] = {
         "只改这些地方（补字段、换枚举值、改通道）；"
         "重写提示词正文不会让这个错误消失，别用它代替改参数。"
     ),
+    REFRESH_AND_RETRY: (
+        "这是画布版本冲突，不是参数错误。不要改提示词，也不要连续读工作流或无关节点；"
+        "重新读取画布一次拿到最新 revision，然后**原样重试一次**。"
+        "第二次仍然冲突时停下来告诉用户，说明本次没有覆盖任何内容。"
+    ),
     MODIFY_THEN_ASK: (
         "先修改参数或提示词再重试。修改后最多重试 2 次；"
         "两次仍然失败时**停下来直接问用户**，不要继续重试，也不要声称任务已保存或可恢复。"
@@ -136,6 +154,8 @@ def _base_disposition(error_code: str) -> str:
     code = raw.casefold()
     if not raw:
         return MODIFY_THEN_ASK
+    if raw in _REFRESH_CODES or code in _REFRESH_CODES:
+        return REFRESH_AND_RETRY
     if raw in _RETRY_AS_IS_CODES or code in _RETRY_AS_IS_CODES:
         return RETRY_AS_IS
     if raw in _FIX_PARAMS_CODES or code in _FIX_PARAMS_CODES:
@@ -164,11 +184,12 @@ class ToolFailureLedger:
 
         code = _extract_error_code(payload)
         disposition = _base_disposition(code)
-        budget = (
-            RETRY_AS_IS_BUDGET
-            if disposition == RETRY_AS_IS
-            else MODIFY_RETRY_BUDGET
-        )
+        if disposition == RETRY_AS_IS:
+            budget = RETRY_AS_IS_BUDGET
+        elif disposition == REFRESH_AND_RETRY:
+            budget = REFRESH_RETRY_BUDGET
+        else:
+            budget = MODIFY_RETRY_BUDGET
         key = (turn_id or self.turn_id, str(tool_name or ""), code or disposition)
         attempt = self._counts.get(key, 0) + 1
         self._counts[key] = attempt
@@ -218,6 +239,8 @@ __all__ = [
     "FIX_PARAMS",
     "MODIFY_RETRY_BUDGET",
     "MODIFY_THEN_ASK",
+    "REFRESH_AND_RETRY",
+    "REFRESH_RETRY_BUDGET",
     "RETRY_AS_IS",
     "ToolFailureLedger",
     "attach_disposition",

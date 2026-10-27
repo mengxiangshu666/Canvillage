@@ -25,7 +25,8 @@
       "useScenario": "卡通动画短片创作",
       "inputType": "故事文本或分镜脚本",
       "outputContent": "2D/2.5D风格化动画视频",
-      "skillIdName": "2d-animation-director"
+      "skillIdName": "2d-animation-director",
+      "cover_image": "/images/skill-covers/libtv/cartoon-flow.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -40,7 +41,8 @@
       "useScenario": "视频风格转绘、漫剧写实化、视频内容二次创作",
       "inputType": "原始视频文件（3D/动漫/真人）",
       "outputContent": "真人风格转绘视频",
-      "skillIdName": "video-to-live-action-converter"
+      "skillIdName": "video-to-live-action-converter",
+      "cover_image": "/images/skill-covers/libtv/video-to-real-life-converter.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -55,7 +57,8 @@
       "useScenario": "独立电影、Cult电影、荒诞视觉实验",
       "inputType": "故事剧本、情绪描述",
       "outputContent": "A24风格概念图、氛围短片、情绪音乐",
-      "skillIdName": "a24-cinematic-aesthetic-generator"
+      "skillIdName": "a24-cinematic-aesthetic-generator",
+      "cover_image": "/images/skill-covers/libtv/a24-cinematic-aesthetic.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -70,7 +73,8 @@
       "useScenario": "视频后期包装",
       "inputType": "原始视频素材",
       "outputContent": "带美化字幕的视频成品",
-      "skillIdName": "ai-video-subtitle-styler"
+      "skillIdName": "ai-video-subtitle-styler",
+      "cover_image": "/images/skill-covers/libtv/subtitle-generator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -85,7 +89,8 @@
       "useScenario": "竖屏短视频创作、品牌活动开场、职场与生活趣事分享",
       "inputType": "模特/场景参考图或脱口秀主题文本",
       "outputContent": "视觉提示词、中文脱口秀脚本、节奏控制表及视频生成方案",
-      "skillIdName": "ai-virtual-talkshow-pro"
+      "skillIdName": "ai-virtual-talkshow-pro",
+      "cover_image": "/images/skill-covers/libtv/ai-model-talkshow-producer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -100,7 +105,8 @@
       "useScenario": "短剧一站式创作",
       "inputType": "故事大纲或分集剧本",
       "outputContent": "高清短剧成片视频",
-      "skillIdName": "ai-short-drama-producer"
+      "skillIdName": "ai-short-drama-producer",
+      "cover_image": "/images/skill-covers/libtv/ai-short-drama-flow.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -115,7 +121,8 @@
       "useScenario": "AI音乐创作与词曲编排",
       "inputType": "创作主题、风格倾向或参考歌词",
       "outputContent": "歌曲结构、歌词及AI音乐生成指令",
-      "skillIdName": "ai-music-songwriting-expert"
+      "skillIdName": "ai-music-songwriting-expert",
+      "cover_image": "/images/skill-covers/libtv/ai-song-composer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -130,7 +137,8 @@
       "useScenario": "单曲视觉化、新歌预告片、社交媒体短视频宣传",
       "inputType": "音乐音频、人物/产品参考图、风格描述词",
       "outputContent": "人物三视图、场景图、分镜提示词、成品视频",
-      "skillIdName": "pop-mv-master-pro"
+      "skillIdName": "pop-mv-master-pro",
+      "cover_image": "/images/skill-covers/libtv/pop-music-video.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -145,7 +153,8 @@
       "useScenario": "复古游戏概念设计、低模动画短片、梦核艺术创作",
       "inputType": "游戏主题、剧情概要、角色设定或风格参考图",
       "outputContent": "创意方案、低模资产设计、分镜脚本及视频生成提示词",
-      "skillIdName": "ps1-retro-lowpoly-3d-generator"
+      "skillIdName": "ps1-retro-lowpoly-3d-generator",
+      "cover_image": "/images/skill-covers/libtv/ps1-low-poly-retro-3d.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -175,7 +184,8 @@
       "useScenario": "潮流海报、MV视觉、数码产品广告、虚拟偶像封面",
       "inputType": "创意主题、产品信息、风格参考及视频规格",
       "outputContent": "视觉策划方案、分镜脚本、多模态 Prompt 及剪辑建议",
-      "skillIdName": "y2k-jelly-aesthetic-director"
+      "skillIdName": "y2k-jelly-aesthetic-director",
+      "cover_image": "/images/skill-covers/libtv/y2k-jelly-aesthetic-director.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -205,7 +215,8 @@
       "useScenario": "哥特风视频创作、暗黑题材短剧分镜、电影质感资产生成",
       "inputType": "故事剧本、风格偏好、画面比例",
       "outputContent": "具备自动分镜的高质感哥特风格动态漫剧视频",
-      "skillIdName": "gothic-dark-film-generator"
+      "skillIdName": "gothic-dark-film-generator",
+      "cover_image": "/images/skill-covers/libtv/gothic-hollywood-cinema.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -220,7 +231,8 @@
       "useScenario": "短剧内容制作、海外漫剧创作",
       "inputType": "剧本内容 + 风格/比例设置",
       "outputContent": "连贯的题材风格化视频",
-      "skillIdName": "werewolf-vampire-drama-builder"
+      "skillIdName": "werewolf-vampire-drama-builder",
+      "cover_image": "/images/skill-covers/libtv/werewolf-vampire-short-drama.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -235,7 +247,8 @@
       "useScenario": "汽车广告、高端消费品TVC、信息流广告",
       "inputType": "简单文本指令或参考图片",
       "outputContent": "15-30秒高质感快切风格视频",
-      "skillIdName": "car-fast-cut-tvc-pro"
+      "skillIdName": "car-fast-cut-tvc-pro",
+      "cover_image": "/images/skill-covers/libtv/high-impact-car-tvc.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -265,7 +278,8 @@
       "useScenario": "电影创作、广告制作、短视频分镜",
       "inputType": "剧本文字或创意需求",
       "outputContent": "分镜脚本与专业级视频",
-      "skillIdName": "pro-film-video-maker"
+      "skillIdName": "pro-film-video-maker",
+      "cover_image": "/images/skill-covers/libtv/film-drama-producer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -295,7 +309,8 @@
       "useScenario": "风格迁移与一致性创作",
       "inputType": "参考图片 + 主体描述",
       "outputContent": "风格提示词与视觉创作结果",
-      "skillIdName": "style-transfer-extractor"
+      "skillIdName": "style-transfer-extractor",
+      "cover_image": "/images/skill-covers/libtv/acong-style-extractor-0.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -310,7 +325,8 @@
       "useScenario": "剧本创作与一致性校验",
       "inputType": "剧本文件或剧本梗概",
       "outputContent": "人物关系图谱与世界观设定集",
-      "skillIdName": "script-consistency-guardian"
+      "skillIdName": "script-consistency-guardian",
+      "cover_image": "/images/skill-covers/libtv/character-worldview-locking.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -325,7 +341,8 @@
       "useScenario": "美食短视频制作、个人 IP 打造、烹饪博主内容创作",
       "inputType": "人物肖像照片 + 风格需求",
       "outputContent": "电影感烹饪分镜卡与短视频文件",
-      "skillIdName": "cinematic-chef-video-maker"
+      "skillIdName": "cinematic-chef-video-maker",
+      "cover_image": "/images/skill-covers/libtv/cooking-tutorial-video-71a5fc5f6ae546d58b0b8d75abc87608-6902536a.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -355,7 +372,8 @@
       "useScenario": "宇宙恐怖与克苏鲁视觉创作",
       "inputType": "创意构思、参考图或场景描述",
       "outputContent": "宇宙恐怖视觉素材、分镜脚本与视频提示词",
-      "skillIdName": "cthulhu-cosmic-horror-director"
+      "skillIdName": "cthulhu-cosmic-horror-director",
+      "cover_image": "/images/skill-covers/libtv/cthulhu-horror-titan-director.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -370,7 +388,8 @@
       "useScenario": "发布会策划、品牌营销、年会开场",
       "inputType": "品牌关键词及视觉风格描述",
       "outputContent": "高质感开场视频",
-      "skillIdName": "brand-launch-video-generator"
+      "skillIdName": "brand-launch-video-generator",
+      "cover_image": "/images/skill-covers/libtv/corporate-launch-opener.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -385,7 +404,8 @@
       "useScenario": "写实运镜与表演创作",
       "inputType": "视频描述提示词",
       "outputContent": "真实感电影短片",
-      "skillIdName": "realistic-cinema-performance-engine"
+      "skillIdName": "realistic-cinema-performance-engine",
+      "cover_image": "/images/skill-covers/libtv/cinematic-motion-realism.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -400,7 +420,8 @@
       "useScenario": "品牌与服务短TVC创作",
       "inputType": "品牌卖点、人群画像及视觉参考图",
       "outputContent": "创意方案、分镜脚本与成片提示词",
-      "skillIdName": "dramatic-tvc-ad-creator"
+      "skillIdName": "dramatic-tvc-ad-creator",
+      "cover_image": "/images/skill-covers/libtv/narrative-tvc-creator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -415,7 +436,8 @@
       "useScenario": "漫剧与短剧前期分镜筹备",
       "inputType": "完整剧本或分集草稿文本",
       "outputContent": "分集大纲、场景要素表与镜头拆解底稿",
-      "skillIdName": "manga-script-decomposer"
+      "skillIdName": "manga-script-decomposer",
+      "cover_image": "/images/skill-covers/libtv/script-structural-decomposer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -430,7 +452,8 @@
       "useScenario": "动作场面预演与分镜创作",
       "inputType": "动作构思描述或逻辑脚本",
       "outputContent": "火柴人分镜图及 PREVIS 预演视频",
-      "skillIdName": "action-previs-stickman-generator"
+      "skillIdName": "action-previs-stickman-generator",
+      "cover_image": "/images/skill-covers/libtv/action-previs-71a5fc5f6ae546d58b0b8d75abc87608-7c9fad77.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -445,7 +468,8 @@
       "useScenario": "搞笑视频制作、社媒爆款内容、拟人化角色创作",
       "inputType": "动物品种、场景描述、服装要求及台词内容",
       "outputContent": "拟人动物竖屏口播视频（含对口型及背景声）",
-      "skillIdName": "funny-animal-vlogger-gen"
+      "skillIdName": "funny-animal-vlogger-gen",
+      "cover_image": "/images/skill-covers/libtv/anthropomorphic-animal-vlogger.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -460,7 +484,8 @@
       "useScenario": "视频风格化、动漫短片创作、社交媒体创意视频",
       "inputType": "视频素材",
       "outputContent": "厚涂艺术风格化视频",
-      "skillIdName": "spider-verse-style-video"
+      "skillIdName": "spider-verse-style-video",
+      "cover_image": "/images/skill-covers/libtv/impasto-toon-shading.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -475,7 +500,8 @@
       "useScenario": "5-10分钟叙事短片创作",
       "inputType": "故事创意或核心事件说明",
       "outputContent": "标准格式短片剧本及创作文档",
-      "skillIdName": "short-film-narrative-writer"
+      "skillIdName": "short-film-narrative-writer",
+      "cover_image": "/images/skill-covers/libtv/short-film-writer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -490,7 +516,8 @@
       "useScenario": "古典武侠短片创作、电影分镜设计、武侠氛围视频生成",
       "inputType": "武侠创意描述、剧情梗概或角色参考图",
       "outputContent": "分镜脚本、视频生成提示词、声音设计及剪辑方案",
-      "skillIdName": "classical-wuxia-film-director"
+      "skillIdName": "classical-wuxia-film-director",
+      "cover_image": "/images/skill-covers/libtv/hujinquanwuxia.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -520,7 +547,8 @@
       "useScenario": "个人荣誉视频及庆典整活",
       "inputType": "两张人脸照片 + 姓名奖项文本",
       "outputContent": "15秒多机位颁奖感成片",
-      "skillIdName": "celebrity-award-video-maker"
+      "skillIdName": "celebrity-award-video-maker",
+      "cover_image": "/images/skill-covers/libtv/celebrity-award-moment.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -535,7 +563,8 @@
       "useScenario": "高奢、时尚、汽车及3C品牌广告制作",
       "inputType": "代言人图 + 场景参考 + 品牌简报",
       "outputContent": "品牌广告视频成片及全套策划方案",
-      "skillIdName": "brand-celebrity-ad-director"
+      "skillIdName": "brand-celebrity-ad-director",
+      "cover_image": "/images/skill-covers/libtv/brand-commercial-director.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -550,7 +579,8 @@
       "useScenario": "科幻插画与短视频创作",
       "inputType": "科幻创意概念/文本描述",
       "outputContent": "复古风格插画与视频生成方案",
-      "skillIdName": "retro-space-opera-director"
+      "skillIdName": "retro-space-opera-director",
+      "cover_image": "/images/skill-covers/libtv/fugugejudaoyan.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -565,7 +595,8 @@
       "useScenario": "品牌怀旧短片与复古产品广告创作",
       "inputType": "产品信息、卖点、情绪主题或参考图",
       "outputContent": "广告创意方案、视频分镜脚本及AI生成提示词",
-      "skillIdName": "retro-tv-ad-director"
+      "skillIdName": "retro-tv-ad-director",
+      "cover_image": "/images/skill-covers/libtv/retro-film-ad-director.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -580,7 +611,8 @@
       "useScenario": "长篇剧集与网剧开发",
       "inputType": "剧本大纲与季度规划参数",
       "outputContent": "季度规划表与分集连贯剧本",
-      "skillIdName": "multi-episode-series-writer"
+      "skillIdName": "multi-episode-series-writer",
+      "cover_image": "/images/skill-covers/libtv/episodic-series-writer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -595,7 +627,8 @@
       "useScenario": "长镜头短片与多剪辑分镜创作",
       "inputType": "标记索引的宫格拼版图",
       "outputContent": "高度受控的连贯长镜头视频",
-      "skillIdName": "grid-index-video-director"
+      "skillIdName": "grid-index-video-director",
+      "cover_image": "/images/skill-covers/libtv/grid-cutsheet-film.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -610,7 +643,8 @@
       "useScenario": "温情电影创作、社会纪实片、氛围感广告设计",
       "inputType": "故事剧本或叙事文本",
       "outputContent": "电影感视频、情绪版及场景视觉资产",
-      "skillIdName": "taiwan-new-wave-cinema-aesthetic"
+      "skillIdName": "taiwan-new-wave-cinema-aesthetic",
+      "cover_image": "/images/skill-covers/libtv/taiwan-new-wave-aesthetic-ad7396f8e0a5497ab352f403f290c82f-00e974d5.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -625,7 +659,8 @@
       "useScenario": "品牌视觉策划、短视频创意、广告分镜设计",
       "inputType": "产品信息、角色描述、画幅与时长",
       "outputContent": "广告分镜脚本、视觉调性说明及音效建议",
-      "skillIdName": "pocari-style-ad-director"
+      "skillIdName": "pocari-style-ad-director",
+      "cover_image": "/images/skill-covers/libtv/pocari-commercial-director-0.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -640,7 +675,8 @@
       "useScenario": "视频风格转换",
       "inputType": "视频文件",
       "outputContent": "风格化转绘视频",
-      "skillIdName": "multi-style-video-stylizer"
+      "skillIdName": "multi-style-video-stylizer",
+      "cover_image": "/images/skill-covers/libtv/video-to-real-life-converter-0bfcda928d704e8da3d20977029a31b8-audit-reg-1784545402.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -655,7 +691,8 @@
       "useScenario": "动画短片创作",
       "inputType": "文字剧情或故事脚本",
       "outputContent": "手绘风电影级动画视频",
-      "skillIdName": "ghibli-animation-director"
+      "skillIdName": "ghibli-animation-director",
+      "cover_image": "/images/skill-covers/libtv/ghibli-anime-style-71a5fc5f6ae546d58b0b8d75abc87608-2ad54926.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -670,7 +707,8 @@
       "useScenario": "青春短片、纯爱电影、美学广告",
       "inputType": "故事剧本与核心视觉元素",
       "outputContent": "美学资产及电影感视频短片",
-      "skillIdName": "shunji-iwai-movie-aesthetic"
+      "skillIdName": "shunji-iwai-movie-aesthetic",
+      "cover_image": "/images/skill-covers/libtv/shunji-iwai-cinematic-aesthetic.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -685,7 +723,8 @@
       "useScenario": "电商带货、视频种草、短视频营销",
       "inputType": "商品图 + 商品信息 + 剧情方向",
       "outputContent": "15秒带货短剧成片（脚本+分镜+剪辑）",
-      "skillIdName": "viral-ecom-short-drama"
+      "skillIdName": "viral-ecom-short-drama",
+      "cover_image": "/images/skill-covers/libtv/product-short-drama-generator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -700,7 +739,8 @@
       "useScenario": "品牌动态视觉、海报背景生成",
       "inputType": "视觉风格与场景描述",
       "outputContent": "高质量平面风格动态视频",
-      "skillIdName": "pro-graphic-visual-expert"
+      "skillIdName": "pro-graphic-visual-expert",
+      "cover_image": "/images/skill-covers/libtv/pro-graphic-styler.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -730,7 +770,8 @@
       "useScenario": "影视分镜创作与动态脚本展示",
       "inputType": "单张参考图或场景文本描述",
       "outputContent": "15秒专业级镜头调度视频",
-      "skillIdName": "cinematic-camera-director"
+      "skillIdName": "cinematic-camera-director",
+      "cover_image": "/images/skill-covers/libtv/cinematic-shot-scheduler.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -745,7 +786,8 @@
       "useScenario": "动作短片制作、动漫特效预览、热血短视频创作",
       "inputType": "场景动作描述、技能名称及风格意图",
       "outputContent": "15-30秒高清打斗特效视频（横/竖屏）",
-      "skillIdName": "cinematic-action-fx-generator"
+      "skillIdName": "cinematic-action-fx-generator",
+      "cover_image": "/images/skill-covers/libtv/cinematic-vfx-creator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -760,7 +802,8 @@
       "useScenario": "情绪特写、独白微表情演绎、角色设定",
       "inputType": "中文情绪词、表情演化时间轴、FAC 描述",
       "outputContent": "高保真微表情视频片段",
-      "skillIdName": "micro-expression-master"
+      "skillIdName": "micro-expression-master",
+      "cover_image": "/images/skill-covers/libtv/micro-expression-analyst.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -775,7 +818,8 @@
       "useScenario": "短视频创作、内容IP孵化、情景剧脚本撰写",
       "inputType": "一句话故事创意",
       "outputContent": "剧本、角色三视图、场景参考图、视频生成提示词",
-      "skillIdName": "sitcom-video-generator"
+      "skillIdName": "sitcom-video-generator",
+      "cover_image": "/images/skill-covers/libtv/sitcom-script-writer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -790,7 +834,8 @@
       "useScenario": "产品上线宣传、应用商店视频、演示汇报",
       "inputType": "Figma/UI 界面截图",
       "outputContent": "分镜脚本、视觉方案及视频生成提示词",
-      "skillIdName": "ui-to-promo-video"
+      "skillIdName": "ui-to-promo-video",
+      "cover_image": "/images/skill-covers/libtv/promo-video-0.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -805,7 +850,8 @@
       "useScenario": "IP二创、创意动画、玩具测评、社交媒体展示",
       "inputType": "手办玩具照片 + 风格描述",
       "outputContent": "分镜脚本、设计素材、背景音乐及成品视频",
-      "skillIdName": "figure-animation-master"
+      "skillIdName": "figure-animation-master",
+      "cover_image": "/images/skill-covers/libtv/toy-figure-animator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -820,7 +866,8 @@
       "useScenario": "电商短视频、口播种草、营销素材批量制作",
       "inputType": "产品图、卖点文本",
       "outputContent": "角色场景方案、带货脚本、高转化UGC视频",
-      "skillIdName": "ugc-ecommerce-video-generator"
+      "skillIdName": "ugc-ecommerce-video-generator",
+      "cover_image": "/images/skill-covers/libtv/ugc-video-sales-script.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -835,7 +882,8 @@
       "useScenario": "短视频口播、讲解视频、数字人视频制作",
       "inputType": "口播主题、数字人偏好及发布平台",
       "outputContent": "脚本全案、人设建议、提词器格式及交付清单",
-      "skillIdName": "digital-avatar-video-director"
+      "skillIdName": "digital-avatar-video-director",
+      "cover_image": "/images/skill-covers/libtv/avatar-script-studio.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -850,7 +898,8 @@
       "useScenario": "品牌广告、视觉营销、短视频创作",
       "inputType": "产品图及卖点描述",
       "outputContent": "视觉方案、分镜脚本及广告视频",
-      "skillIdName": "new-chinese-aesthetic-tvc-pro"
+      "skillIdName": "new-chinese-aesthetic-tvc-pro",
+      "cover_image": "/images/skill-covers/libtv/neo-chinese-aesthetic-tvc.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -865,7 +914,8 @@
       "useScenario": "日系动漫创作、唯美MV、情感短视频",
       "inputType": "故事文本、剧本大纲",
       "outputContent": "新海诚风格动漫视频及全套设计资产",
-      "skillIdName": "shinkai-anime-aesthetic-generator"
+      "skillIdName": "shinkai-anime-aesthetic-generator",
+      "cover_image": "/images/skill-covers/libtv/shinkai-aesthetic-styler.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -880,7 +930,8 @@
       "useScenario": "电影感旅拍创作",
       "inputType": "旅行主题、文案脚本、角色与场景参考图",
       "outputContent": "电影级叙事旅拍短片",
-      "skillIdName": "travel-vlog-master"
+      "skillIdName": "travel-vlog-master",
+      "cover_image": "/images/skill-covers/libtv/cinematic-travel-vlog-maker.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -895,7 +946,8 @@
       "useScenario": "短视频创作、病毒式广告营销、品牌创意设计",
       "inputType": "创意点子、产品图片、核心卖点",
       "outputContent": "创意脚本、情绪版、角色场景图、成品视频",
-      "skillIdName": "nonsense-comedy-video-creator"
+      "skillIdName": "nonsense-comedy-video-creator",
+      "cover_image": "/images/skill-covers/libtv/absurdist-comedy-maker.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -910,7 +962,8 @@
       "useScenario": "电子产品复古广告、社媒素材、品牌视觉设定",
       "inputType": "产品实拍图或渲染图",
       "outputContent": "复古风格 TVC 视频",
-      "skillIdName": "retro-electronic-tvc-generator"
+      "skillIdName": "retro-electronic-tvc-generator",
+      "cover_image": "/images/skill-covers/libtv/y2k-retro-electronics-tvc.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -925,7 +978,8 @@
       "useScenario": "音乐MV创作",
       "inputType": "场景描述或创意概念",
       "outputContent": "复古胶片感青春视频",
-      "skillIdName": "jpop-idol-mv-generator"
+      "skillIdName": "jpop-idol-mv-generator",
+      "cover_image": "/images/skill-covers/libtv/idol-mv-71a5fc5f6ae546d58b0b8d75abc87608-ce1b6fd9.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -940,7 +994,8 @@
       "useScenario": "情绪短片创作、日系校园剧、生活方式短片、雨景/清晨街道拍摄规划",
       "inputType": "人物、场景、情绪、参考图或时长要求",
       "outputContent": "分镜脚本、视频生成提示词、视觉风格指南及制作简报",
-      "skillIdName": "japanese-blue-realistic-director"
+      "skillIdName": "japanese-blue-realistic-director",
+      "cover_image": "/images/skill-covers/libtv/japanese-blues-aesthetic-director.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -955,7 +1010,8 @@
       "useScenario": "校园Vlog、清新风格广告、情感短片创作",
       "inputType": "场景描述或动作指令",
       "outputContent": "具有日系胶片质感的动态视频",
-      "skillIdName": "japanese-cinematic-youth-video"
+      "skillIdName": "japanese-cinematic-youth-video",
+      "cover_image": "/images/skill-covers/libtv/campus-drama-writer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -970,7 +1026,8 @@
       "useScenario": "复古风格短片、怀旧电影创作、奢华品牌视觉表达",
       "inputType": "场景文本描述或视频素材",
       "outputContent": "2.39:1 宽画幅美式复古电影视频",
-      "skillIdName": "golden-age-hollywood-cinematic"
+      "skillIdName": "golden-age-hollywood-cinematic",
+      "cover_image": "/images/skill-covers/libtv/gatsby-artdeco-style.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -985,7 +1042,8 @@
       "useScenario": "短视频特效、创意广告、社交媒体内容",
       "inputType": "主角照片 + 场景文字描述",
       "outputContent": "电影级特效视频成片",
-      "skillIdName": "time-stop-cinematic-generator"
+      "skillIdName": "time-stop-cinematic-generator",
+      "cover_image": "/images/skill-covers/libtv/time-stop-cinematic-vfx.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1000,7 +1058,8 @@
       "useScenario": "动画风格致敬 / 角色变身设计",
       "inputType": "角色特征与变身关键元素",
       "outputContent": "赛璐璐质感变身动画视频",
-      "skillIdName": "cel-style-magical-girl-transform"
+      "skillIdName": "cel-style-magical-girl-transform",
+      "cover_image": "/images/skill-covers/libtv/mahou-shoujo-90s-71a5fc5f6ae546d58b0b8d75abc87608-5fd9098a.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1015,7 +1074,8 @@
       "useScenario": "家庭电影创作、温情品牌广告",
       "inputType": "故事大纲或剧本片段",
       "outputContent": "电影样片、情绪版与视觉分镜图",
-      "skillIdName": "koreeda-style-cinema-generator"
+      "skillIdName": "koreeda-style-cinema-generator",
+      "cover_image": "/images/skill-covers/libtv/koreeda-film-aesthetic-ad7396f8e0a5497ab352f403f290c82f-e8810017.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1030,7 +1090,8 @@
       "useScenario": "暗黑童话与哥特玩偶视频创作",
       "inputType": "创意简述、角色设定或参考图",
       "outputContent": "全流程视频分镜、提示词与声效设计",
-      "skillIdName": "gothic-doll-cinema-director"
+      "skillIdName": "gothic-doll-cinema-director",
+      "cover_image": "/images/skill-covers/libtv/dark-doll-horror-director.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1045,7 +1106,8 @@
       "useScenario": "电影分镜与视频创作",
       "inputType": "场景描述及风格参数",
       "outputContent": "杜琪峰风格视频提示词及样片",
-      "skillIdName": "johnnie-to-cinematic-style"
+      "skillIdName": "johnnie-to-cinematic-style",
+      "cover_image": "/images/skill-covers/libtv/johnnie-to-blocking-style.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1060,7 +1122,8 @@
       "useScenario": "商业广告、品牌宣传、产品发布",
       "inputType": "产品图及核心卖点描述",
       "outputContent": "多维视图、分镜脚本及成片视频",
-      "skillIdName": "minimalist-tech-tvc-creator"
+      "skillIdName": "minimalist-tech-tvc-creator",
+      "cover_image": "/images/skill-covers/libtv/apple-style.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1075,7 +1138,8 @@
       "useScenario": "音乐视频制作、氛围感创意短片、品牌视觉实验",
       "inputType": "音乐音频、参考图像（人脸/造型/产品）",
       "outputContent": "角色设定图、场景概念图、视频分镜提示词、成品短片",
-      "skillIdName": "dreamcore-video-generator"
+      "skillIdName": "dreamcore-video-generator",
+      "cover_image": "/images/skill-covers/libtv/dreamcore-generator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1090,7 +1154,8 @@
       "useScenario": "原创角色设定、Boss设计、AI短片创作、游戏技能策划",
       "inputType": "角色原型、核心能力、世界观背景及视频比例",
       "outputContent": "角色全案设定、图像生成提示词及15秒视频演示脚本",
-      "skillIdName": "sss-character-concept-architect"
+      "skillIdName": "sss-character-concept-architect",
+      "cover_image": "/images/skill-covers/libtv/conceptual-character-creator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1105,7 +1170,8 @@
       "useScenario": "超短片创作、实验短片脚本、短视频广告创意",
       "inputType": "创意主题、反常识设定或故事雏形",
       "outputContent": "包含视听建议的结构化文字剧本",
-      "skillIdName": "concept-short-film-script-creator"
+      "skillIdName": "concept-short-film-script-creator",
+      "cover_image": "/images/skill-covers/libtv/ultrashort-concept-writer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1120,7 +1186,8 @@
       "useScenario": "视频适配与分镜重构",
       "inputType": "视频、分镜或图像素材",
       "outputContent": "画幅转换后的视频或分镜稿",
-      "skillIdName": "aspect-ratio-converter"
+      "skillIdName": "aspect-ratio-converter",
+      "cover_image": "/images/skill-covers/libtv/aspect-reframe.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1135,7 +1202,8 @@
       "useScenario": "音乐MV制作、视觉艺术创作、角色动态展示",
       "inputType": "多张角色参考图",
       "outputContent": "15秒极黑美学音乐短片",
-      "skillIdName": "death-metal-mv-creator"
+      "skillIdName": "death-metal-mv-creator",
+      "cover_image": "/images/skill-covers/libtv/eldritch-metal-choral-animator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1150,7 +1218,8 @@
       "useScenario": "萌宠IP、儿童故事、治愈系短片、节日祝福",
       "inputType": "角色类型、主题想法或视频时长",
       "outputContent": "角色设定、场景分镜、视频生成提示词及剪辑建议",
-      "skillIdName": "healing-felt-video-director"
+      "skillIdName": "healing-felt-video-director",
+      "cover_image": "/images/skill-covers/libtv/felted-doll-video-director.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1165,7 +1234,8 @@
       "useScenario": "汽车营销与引流",
       "inputType": "汽车卖点与促销信息",
       "outputContent": "短视频脚本与拍摄方案",
-      "skillIdName": "car-sales-video-creator"
+      "skillIdName": "car-sales-video-creator",
+      "cover_image": "/images/skill-covers/libtv/car-sales-video-producer-304b2067d104429f8182f60b6b346f92-4e30fb71.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1180,7 +1250,8 @@
       "useScenario": "水墨武侠短片、国漫短剧、动作分镜创作",
       "inputType": "剧本梗概或文字创意",
       "outputContent": "写意水墨风格动画视频",
-      "skillIdName": "ink-martial-arts-animator"
+      "skillIdName": "ink-martial-arts-animator",
+      "cover_image": "/images/skill-covers/libtv/ink-wash-wuxia-animator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1195,7 +1266,8 @@
       "useScenario": "服装上新种草、电商带货短视频、模特试穿展示",
       "inputType": "女装产品图 + 风格描述",
       "outputContent": "15秒真人感竖屏带货视频",
-      "skillIdName": "fashion-live-video-pro"
+      "skillIdName": "fashion-live-video-pro",
+      "cover_image": "/images/skill-covers/libtv/fashion-commerce-video-workflow.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1210,7 +1282,8 @@
       "useScenario": "美妆电商投放与社交媒体种草",
       "inputType": "产品图片与基础参数配置",
       "outputContent": "15秒带货脚本与全套视频生成方案",
-      "skillIdName": "beauty-ugc-video-generator"
+      "skillIdName": "beauty-ugc-video-generator",
+      "cover_image": "/images/skill-covers/libtv/realistic-beauty-product-review.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1225,7 +1298,8 @@
       "useScenario": "古典日式短片、妖怪神话角色设计、屏风绘卷视频创作",
       "inputType": "创意主题、参考图及视频参数",
       "outputContent": "浮世绘分镜脚本、动态提示词及视觉资产规划",
-      "skillIdName": "ukiyoe-aesthetic-director"
+      "skillIdName": "ukiyoe-aesthetic-director",
+      "cover_image": "/images/skill-covers/libtv/ukiyo-e-animation-director.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1240,7 +1314,8 @@
       "useScenario": "游戏宣传片、实机演示、概念展示",
       "inputType": "三段式演示脚本与视觉资产要求",
       "outputContent": "3A级实机成片、角色卡、UI关键帧",
-      "skillIdName": "3a-gameplay-pv-expert"
+      "skillIdName": "3a-gameplay-pv-expert",
+      "cover_image": "/images/skill-covers/libtv/gameplay-pv-builder.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1255,7 +1330,8 @@
       "useScenario": "短视频电商创作",
       "inputType": "爆款视频描述或脚本",
       "outputContent": "脚本分镜与视频生成全案",
-      "skillIdName": "short-video-viral-replicator"
+      "skillIdName": "short-video-viral-replicator",
+      "cover_image": "/images/skill-covers/libtv/short-video-sales-planner.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1270,7 +1346,8 @@
       "useScenario": "短视频带货、创意特效制作",
       "inputType": "参考视频 + 替换内容描述",
       "outputContent": "同风格高转化短视频",
-      "skillIdName": "viral-video-reconstructor"
+      "skillIdName": "viral-video-reconstructor",
+      "cover_image": "/images/skill-covers/libtv/viral-video-replicator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1285,7 +1362,8 @@
       "useScenario": "男频短剧创作（战神、玄幻、重生、商战）",
       "inputType": "网文文本或短剧剧本",
       "outputContent": "高燃短剧成品视频",
-      "skillIdName": "male-short-drama-generator"
+      "skillIdName": "male-short-drama-generator",
+      "cover_image": "/images/skill-covers/libtv/xingran-nanpintongyongban.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1300,7 +1378,8 @@
       "useScenario": "创意短片、品牌故事、MV 片段",
       "inputType": "剧本、故事文本或对白文案",
       "outputContent": "分镜脚本、视觉资产、BGM 建议及视频成品",
-      "skillIdName": "wong-kar-wai-cinematic-style"
+      "skillIdName": "wong-kar-wai-cinematic-style",
+      "cover_image": "/images/skill-covers/libtv/wong-kar-wai-film-aesthetic.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1315,7 +1394,8 @@
       "useScenario": "高端产品广告与梦境视觉艺术片",
       "inputType": "产品信息、参考图、视频时长及氛围要求",
       "outputContent": "视觉概念、资产拆分、提示词矩阵及分镜脚本",
-      "skillIdName": "glass-crystal-dream-video-pro"
+      "skillIdName": "glass-crystal-dream-video-pro",
+      "cover_image": "/images/skill-covers/libtv/glass-crystal-dream-video.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1330,7 +1410,8 @@
       "useScenario": "女频甜宠短剧创作与制作",
       "inputType": "剧情设定、角色参考图及风格偏好",
       "outputContent": "爆款短剧脚本、可视化分镜及成片建议",
-      "skillIdName": "sweet-romance-drama-director"
+      "skillIdName": "sweet-romance-drama-director",
+      "cover_image": "/images/skill-covers/libtv/female-drama-short-0.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1345,7 +1426,8 @@
       "useScenario": "亚洲旅行记录、城市漫游分镜、社交媒体Vlog脚本创作",
       "inputType": "城市、人物关系、季节时间、情绪氛围",
       "outputContent": "Vlog脚本、12张分镜图提示词、15秒视频时间轴及提示词",
-      "skillIdName": "authentic-asia-travel-vlog"
+      "skillIdName": "authentic-asia-travel-vlog",
+      "cover_image": "/images/skill-covers/libtv/lifestyle-travel-vlog.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1360,7 +1442,8 @@
       "useScenario": "旅行Vlog、景区宣传片、短视频旅拍创作",
       "inputType": "旅拍主题/文案/创意 + 可选参考图",
       "outputContent": "分镜视频、海报矩阵、旁白配音及宣发文案",
-      "skillIdName": "cinematic-travel-vlog-maker"
+      "skillIdName": "cinematic-travel-vlog-maker",
+      "cover_image": "/images/skill-covers/libtv/cinematic-travel-video-producer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1375,7 +1458,8 @@
       "useScenario": "短剧创作、短视频营销、分镜可视化",
       "inputType": "故事大纲或分集脚本",
       "outputContent": "电影感高清短剧视频",
-      "skillIdName": "cinematic-short-drama-director"
+      "skillIdName": "cinematic-short-drama-director",
+      "cover_image": "/images/skill-covers/libtv/cinematic-skit-workflow.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1390,7 +1474,8 @@
       "useScenario": "电影静帧创作",
       "inputType": "画面描述文本",
       "outputContent": "电影质感静帧图片",
-      "skillIdName": "cinematic-frame-generator"
+      "skillIdName": "cinematic-frame-generator",
+      "cover_image": "/images/skill-covers/libtv/cinematic-image-transformer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1405,7 +1490,8 @@
       "useScenario": "品牌视频、社交媒体营销、创意短片",
       "inputType": "产品卖点、品牌调性、核心诉求",
       "outputContent": "皮克斯风格 3D 动画脚本及视频提示词",
-      "skillIdName": "pixar-3d-animation-ad-builder"
+      "skillIdName": "pixar-3d-animation-ad-builder",
+      "cover_image": "/images/skill-covers/libtv/pixar-3d-ad-creator-5de625e86d1143e6a4fd948ca25ec34b-31e12640.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1420,7 +1506,8 @@
       "useScenario": "品牌营销与卡通短视频创作",
       "inputType": "品牌名称、主角设定、视频时长及比例",
       "outputContent": "带配乐的皮克斯风格 3D 广告视频",
-      "skillIdName": "pixar-style-ad-generator"
+      "skillIdName": "pixar-style-ad-generator",
+      "cover_image": "/images/skill-covers/libtv/pixar-animated-ad-creator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1435,7 +1522,8 @@
       "useScenario": "美妆短视频种草与分镜创作",
       "inputType": "产品图 + 核心卖点",
       "outputContent": "测评脚本与视频生成提示词",
-      "skillIdName": "beauty-ugc-video-generator"
+      "skillIdName": "beauty-ugc-video-generator",
+      "cover_image": "/images/skill-covers/libtv/beauty-blogger-reviewer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1450,7 +1538,8 @@
       "useScenario": "爆款视频拆解与内容迭代优化",
       "inputType": "视频脚本或内容逐字稿",
       "outputContent": "结构化诊断报告与修改指令",
-      "skillIdName": "short-video-diagnostic-analyst"
+      "skillIdName": "short-video-diagnostic-analyst",
+      "cover_image": "/images/skill-covers/libtv/shortvideo-diagnostics.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1465,7 +1554,8 @@
       "useScenario": "节日祝福、情感短片、品牌宣传",
       "inputType": "故事梗概、画幅与时长设置",
       "outputContent": "微缩风格成片、分镜脚本、BGM旁白",
-      "skillIdName": "tilt-shift-healing-video-maker"
+      "skillIdName": "tilt-shift-healing-video-maker",
+      "cover_image": "/images/skill-covers/libtv/tilt-shift-miniature-animator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1480,7 +1570,8 @@
       "useScenario": "短片/广告空镜规划、剪辑覆盖设计、风格化场景延展",
       "inputType": "场景描述或风格参考图",
       "outputContent": "5组结构化镜头设计方案与生图提示词",
-      "skillIdName": "b-roll-coverage-designer"
+      "skillIdName": "b-roll-coverage-designer",
+      "cover_image": "/images/skill-covers/libtv/b-roll-coverage-planner.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1495,7 +1586,8 @@
       "useScenario": "穿搭种草、品牌社媒营销",
       "inputType": "商品图片 + 风格要求",
       "outputContent": "模特三视图、场景图、完整成片",
-      "skillIdName": "xhs-fashion-video-generator"
+      "skillIdName": "xhs-fashion-video-generator",
+      "cover_image": "/images/skill-covers/libtv/blogger-outfit-video.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1510,7 +1602,8 @@
       "useScenario": "自媒体批量口播创作",
       "inputType": "长视频回放或文本主题",
       "outputContent": "带字幕与BGM的竖屏成品视频",
-      "skillIdName": "vertical-video-creator"
+      "skillIdName": "vertical-video-creator",
+      "cover_image": "/images/skill-covers/libtv/vertical-talking-video.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1525,7 +1618,8 @@
       "useScenario": "童话改编、少儿短视频、创意广告、绘本视频化",
       "inputType": "故事文本或剧本内容",
       "outputContent": "粘土风格定格动画短片",
-      "skillIdName": "claymation-video-creator"
+      "skillIdName": "claymation-video-creator",
+      "cover_image": "/images/skill-covers/libtv/claymation-short-film-creator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1540,7 +1634,8 @@
       "useScenario": "女频短剧、甜宠虐恋内容工业化创作",
       "inputType": "短剧剧本或网文素材",
       "outputContent": "完整短剧视频成片",
-      "skillIdName": "female-drama-video-generator"
+      "skillIdName": "female-drama-video-generator",
+      "cover_image": "/images/skill-covers/libtv/xingrannvpin.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1555,7 +1650,8 @@
       "useScenario": "绘本动画、国风寓言、品牌手工感短片",
       "inputType": "故事梗概、主题词或参考图",
       "outputContent": "视觉资产设计、分镜脚本及音视频提示词",
-      "skillIdName": "paper-cutout-stopmotion-director"
+      "skillIdName": "paper-cutout-stopmotion-director",
+      "cover_image": "/images/skill-covers/libtv/paper-art-stop-motion-director.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1570,7 +1666,8 @@
       "useScenario": "电影级氛围短片、品牌视觉片、艺术概念片",
       "inputType": "故事脚本、sref 代码或风格描述",
       "outputContent": "视觉统一的短片成片及分镜关键帧",
-      "skillIdName": "unified-aesthetic-film-generator"
+      "skillIdName": "unified-aesthetic-film-generator",
+      "cover_image": "/images/skill-covers/libtv/aesthetic-tone-consistency.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1585,7 +1682,8 @@
       "useScenario": "人文纪录片、生活流短片、城市变迁创作",
       "inputType": "剧本素材或故事创意",
       "outputContent": "人文叙事短片及全套分镜素材",
-      "skillIdName": "old-town-humanistic-film-generator"
+      "skillIdName": "old-town-humanistic-film-generator",
+      "cover_image": "/images/skill-covers/libtv/old-town-documentary-narrator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1600,7 +1698,8 @@
       "useScenario": "短视频创意与喜剧创作",
       "inputType": "宠物种类 + 武侠剧情描述",
       "outputContent": "复古港风萌宠武侠视频",
-      "skillIdName": "vintage-pet-wuxia-comedy"
+      "skillIdName": "vintage-pet-wuxia-comedy",
+      "cover_image": "/images/skill-covers/libtv/shaw-comedy-style.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1615,7 +1714,8 @@
       "useScenario": "产品教程、种草视频、分步教学短片",
       "inputType": "产品信息、时长、达人照片",
       "outputContent": "分步视频、步骤分镜、英文脚本、人设图",
-      "skillIdName": "step-by-step-tutorial-video-generator"
+      "skillIdName": "step-by-step-tutorial-video-generator",
+      "cover_image": "/images/skill-covers/libtv/step-by-step-tutorial-video.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1630,7 +1730,8 @@
       "useScenario": "史诗级短片制作、电影感视频生成、经典影视致敬",
       "inputType": "风格选择、画面比例、剧本内容",
       "outputContent": "詹姆斯卡梅隆风格电影短视频",
-      "skillIdName": "james-cameron-cinematic-tribute"
+      "skillIdName": "james-cameron-cinematic-tribute",
+      "cover_image": "/images/skill-covers/libtv/james-cameron-cinematic-style-builder.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1645,7 +1746,8 @@
       "useScenario": "角色 IP 包装、运动品牌短片、社媒视觉素材",
       "inputType": "角色设定图或外貌细节描述",
       "outputContent": "角色设定图、足球动作脚本及视频生成提示词",
-      "skillIdName": "freestyle-football-video-generator"
+      "skillIdName": "freestyle-football-video-generator",
+      "cover_image": "/images/skill-covers/libtv/soccer-action-cinematic.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1660,7 +1762,8 @@
       "useScenario": "影视风格短片、科幻废土场景建模、建筑美学展示",
       "inputType": "场景描述或核心关键词",
       "outputContent": "苏式美学风格化视频文件",
-      "skillIdName": "soviet-brutalism-vibe"
+      "skillIdName": "soviet-brutalism-vibe",
+      "cover_image": "/images/skill-covers/libtv/cuyezhuyi.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1675,7 +1778,8 @@
       "useScenario": "西部风格短片创作",
       "inputType": "场景描述与角色设定",
       "outputContent": "电影感西部片短视频",
-      "skillIdName": "western-duel-director"
+      "skillIdName": "western-duel-director",
+      "cover_image": "/images/skill-covers/libtv/eastwood-western-style.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1690,7 +1794,8 @@
       "useScenario": "人文纪录片创作、纪实短片制作",
       "inputType": "地域场景描述与人物细节",
       "outputContent": "具有空气感的纪实视频片段",
-      "skillIdName": "observational-documentary-generator"
+      "skillIdName": "observational-documentary-generator",
+      "cover_image": "/images/skill-covers/libtv/life-observed-doc.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1705,7 +1810,8 @@
       "useScenario": "角色设计、动画建模、游戏原画创作",
       "inputType": "参考图 + 角色特征描述",
       "outputContent": "角色四视图绘图提示词",
-      "skillIdName": "character-orthographic-prompt-pro"
+      "skillIdName": "character-orthographic-prompt-pro",
+      "cover_image": "/images/skill-covers/libtv/character-four-view-stylist.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1720,7 +1826,8 @@
       "useScenario": "电影/剧集片头创作、视觉艺术表现",
       "inputType": "故事梗概、剧名或剧本片段",
       "outputContent": "视觉分镜、镜头脚本及视频生成提示词",
-      "skillIdName": "surreal-opening-generator"
+      "skillIdName": "surreal-opening-generator",
+      "cover_image": "/images/skill-covers/libtv/surrealist-visual-intro.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1735,7 +1842,8 @@
       "useScenario": "影视选角、短剧筹备、角色设定",
       "inputType": "剧本、人物表或角色描述",
       "outputContent": "角色特写、全身照及三视图",
-      "skillIdName": "ai-casting-director"
+      "skillIdName": "ai-casting-director",
+      "cover_image": "/images/skill-covers/libtv/casting-director-ad7396f8e0a5497ab352f403f290c82f-bcb6e710.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1750,7 +1858,8 @@
       "useScenario": "长片电影剧本开发、故事大纲细化",
       "inputType": "故事大纲、人物原型或核心冲突",
       "outputContent": "标准格式剧本、节拍表或深度人物小传",
-      "skillIdName": "feature-film-script-expert"
+      "skillIdName": "feature-film-script-expert",
+      "cover_image": "/images/skill-covers/libtv/feature-film-writer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1765,7 +1874,8 @@
       "useScenario": "创意短片、品牌故事、MV制作",
       "inputType": "剧本、故事文本或带对白的文案",
       "outputContent": "人物场景设定、分镜 Prompt 及视频成片",
-      "skillIdName": "wes-anderson-cinema-aesthetic"
+      "skillIdName": "wes-anderson-cinema-aesthetic",
+      "cover_image": "/images/skill-covers/libtv/wes-anderson-aesthetics.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1780,7 +1890,8 @@
       "useScenario": "电商上新、品牌Lookbook、小红书穿搭种草",
       "inputType": "单张服装产品原图",
       "outputContent": "韩系实拍质感广告短视频",
-      "skillIdName": "korean-fashion-magazine-ad"
+      "skillIdName": "korean-fashion-magazine-ad",
+      "cover_image": "/images/skill-covers/libtv/wander-fashion-lookbook-ad.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1795,7 +1906,8 @@
       "useScenario": "视频与图像风格重绘",
       "inputType": "视频/图像 + 风格要求",
       "outputContent": "风格化视频文件",
-      "skillIdName": "video-style-transfer"
+      "skillIdName": "video-style-transfer",
+      "cover_image": "/images/skill-covers/libtv/style-repaint.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1810,7 +1922,8 @@
       "useScenario": "品牌广告创作",
       "inputType": "产品图及描述",
       "outputContent": "电影级TVC创意方案",
-      "skillIdName": "luxury-brand-tvc-director"
+      "skillIdName": "luxury-brand-tvc-director",
+      "cover_image": "/images/skill-covers/libtv/luxury-brand-tvc-creator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1825,7 +1938,8 @@
       "useScenario": "品牌新品发布、时尚配饰种草、短视频广告宣传",
       "inputType": "配饰产品原图",
       "outputContent": "高机能风格广告视频",
-      "skillIdName": "techwear-accessory-ad-video"
+      "skillIdName": "techwear-accessory-ad-video",
+      "cover_image": "/images/skill-covers/libtv/wander-high-energy-fashion-ad.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1840,7 +1954,8 @@
       "useScenario": "品牌广告、电商详情页、社交媒体投放、新品视觉包装",
       "inputType": "单张产品实拍图",
       "outputContent": "3x3故事板、视觉风格参考、15秒商业视频生成方案",
-      "skillIdName": "skincare-luxury-tvc-generator"
+      "skillIdName": "skincare-luxury-tvc-generator",
+      "cover_image": "/images/skill-covers/libtv/skincare-tvc-producer.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1855,7 +1970,8 @@
       "useScenario": "品牌宣传片、产品动效展示、创意短视频广告",
       "inputType": "品牌理念、产品描述、动效风格偏好",
       "outputContent": "高能视觉冲击力品牌视频",
-      "skillIdName": "hyper-kinetic-brand-reel"
+      "skillIdName": "hyper-kinetic-brand-reel",
+      "cover_image": "/images/skill-covers/libtv/high-md-flow-71a5fc5f6ae546d58b0b8d75abc87608-3b6b9674.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1870,7 +1986,8 @@
       "useScenario": "电商大促海报、科技产品宣发、社交媒体营销素材",
       "inputType": "商品描述/图片 + 营销文案 + 画面比例要求",
       "outputContent": "2K/4K 高清商业海报，含专业文字排版与产品细节",
-      "skillIdName": "premium-marketing-poster-pro"
+      "skillIdName": "premium-marketing-poster-pro",
+      "cover_image": "/images/skill-covers/libtv/premium-marketing-poster.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1885,7 +2002,8 @@
       "useScenario": "音乐MV与时尚短片创作",
       "inputType": "创意描述或风格关键词",
       "outputContent": "高品质时尚音乐视频",
-      "skillIdName": "fashion-mv-visual-generator"
+      "skillIdName": "fashion-mv-visual-generator",
+      "cover_image": "/images/skill-covers/libtv/fashion-visual-mv-creator.webp"
     },
     "model": "aurora-3-lite"
   },
@@ -1900,7 +2018,8 @@
       "useScenario": "复古短片创作、喜剧广告制作、视频脚本规划",
       "inputType": "喜剧梗概、核心道具、角色描述",
       "outputContent": "全流程剧本、分镜规划、视频生成提示词",
-      "skillIdName": "silent-comedy-film-director"
+      "skillIdName": "silent-comedy-film-director",
+      "cover_image": "/images/skill-covers/libtv/silent-comedy-director.webp"
     },
     "model": "aurora-3-lite"
   }

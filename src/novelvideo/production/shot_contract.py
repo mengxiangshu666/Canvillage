@@ -184,6 +184,24 @@ def _creative_handoff(value: object) -> dict[str, Any]:
                 "name": _text(item.get("name"), None) if isinstance(item.get("name"), str) else "",
                 "responsibility": _text(responsibility, None), "prohibited": _text(prohibited, None),
             }
+            raw_asset_ids = item.get("assetIds") or item.get("asset_ids")
+            if isinstance(raw_asset_ids, str):
+                raw_asset_ids = [raw_asset_ids]
+            if isinstance(raw_asset_ids, (list, tuple)):
+                asset_ids: list[str] = []
+                for raw_asset_id in raw_asset_ids:
+                    asset_id = _text(raw_asset_id, 300)
+                    if asset_id and asset_id not in asset_ids:
+                        asset_ids.append(asset_id)
+                    if len(asset_ids) >= 32:
+                        break
+                if asset_ids:
+                    reference["asset_ids"] = asset_ids
+            asset_state = _text(
+                item.get("assetState") or item.get("asset_state"), 32
+            ).casefold()
+            if asset_state and asset_state.replace("_", "").replace("-", "").isalnum():
+                reference["asset_state"] = asset_state
             node_id = item.get("sourceNodeId") or item.get("source_node_id")
             if isinstance(node_id, str) and node_id.strip():
                 reference["source_node_id"] = _text(node_id, 120)

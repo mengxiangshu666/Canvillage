@@ -1,0 +1,26 @@
+{
+  "id": "libtv_puppet",
+  "name": "布偶风格",
+  "label": "布偶风格",
+  "family": "three_d",
+  "era": "",
+  "palette": "vivid toy-like colors, glossy highlights, simple material separation",
+  "lighting": "soft studio HDRI, gentle rim light, clean contact shadows",
+  "optics": "50mm product lens, moderate depth of field, no wide-angle distortion",
+  "composition": "centered product-like subject on a clean background",
+  "camera_motion": "slow turntable orbit or slight push-in, stable horizon",
+  "style_instructions": "This style is characterized by its use of puppetry, featuring characters with exaggerated features, large expressive eyes, and vibrant colors",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "布偶风格",
+  "tags": [
+    "布偶风格",
+    "libtv",
+    "3D潮玩"
+  ],
+  "model_overrides": {},
+  "style_family": "animation",
+  "animation_subtype": "3d",
+  "image_prompt": "This style is characterized by its use of puppetry, featuring characters with exaggerated features, large expressive eyes, and vibrant colors",
+  "video_prompt": "This style is characterized by its use of puppetry, featuring characters with exaggerated features, large expressive eyes, and vibrant colors. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

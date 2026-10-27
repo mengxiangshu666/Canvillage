@@ -28,8 +28,16 @@ interface BeamRecord {
   removalTimer: number | null;
 }
 
+export type CanvasNodeBeamState = 'running' | 'selected';
+
 export interface CanvasNodeBorderBeamManager {
   setSuspended(suspended: boolean): void;
+  /**
+   * Drive the beam from canvas state instead of watching the DOM. Callers pass
+   * the nodes that should glow, keyed by node id; an empty map clears all
+   * beams. When never called, the manager falls back to scanning node classes.
+   */
+  setActiveNodes(active: ReadonlyMap<string, CanvasNodeBeamState>): void;
   sync(): void;
   destroy(): void;
   activeCount(): number;
@@ -39,6 +47,15 @@ function activeNodeElements(stage: HTMLElement): Set<HTMLElement> {
   return new Set(
     Array.from(stage.querySelectorAll<HTMLElement>(ACTIVE_NODE_SELECTOR)),
   );
+}
+
+function nodeElementsById(stage: HTMLElement): Map<string, HTMLElement> {
+  const byId = new Map<string, HTMLElement>();
+  for (const element of stage.querySelectorAll<HTMLElement>(NODE_SELECTOR)) {
+    const id = element.getAttribute('data-id');
+    if (id) byId.set(id, element);
+  }
+  return byId;
 }
 
 function nodeBorderRadius(node: HTMLElement): number {
@@ -54,6 +71,9 @@ export function createCanvasNodeBorderBeamManager(
   let destroyed = false;
   let suspended = false;
   let syncQueued = false;
+  // Set by `setActiveNodes`. Null keeps the legacy class-scanning behaviour,
+  // which the DOM-level tests rely on.
+  let drivenNodes: ReadonlyMap<string, CanvasNodeBeamState> | null = null;
 
   const destroyRecord = (node: HTMLElement, record: BeamRecord) => {
     if (record.removalTimer !== null) {
@@ -105,9 +125,30 @@ export function createCanvasNodeBorderBeamManager(
     }, FADE_OUT_MS);
   };
 
+  const collectActive = (): Map<HTMLElement, CanvasNodeBeamState> => {
+    const active = new Map<HTMLElement, CanvasNodeBeamState>();
+    if (suspended) return active;
+    if (drivenNodes === null) {
+      for (const node of activeNodeElements(stage)) {
+        active.set(
+          node,
+          node.classList.contains('canvas-node-generating') ? 'running' : 'selected',
+        );
+      }
+      return active;
+    }
+    if (drivenNodes.size === 0) return active;
+    const byId = nodeElementsById(stage);
+    for (const [id, state] of drivenNodes) {
+      const element = byId.get(id);
+      if (element) active.set(element, state);
+    }
+    return active;
+  };
+
   const sync = () => {
     if (destroyed) return;
-    const activeNodes = suspended ? new Set<HTMLElement>() : activeNodeElements(stage);
+    const activeNodes = collectActive();
 
     for (const [node, record] of records) {
       if (!node.isConnected || !stage.contains(node)) {
@@ -117,11 +158,9 @@ export function createCanvasNodeBorderBeamManager(
       if (!activeNodes.has(node)) deactivate(node, record);
     }
 
-    for (const node of activeNodes) {
+    for (const [node, state] of activeNodes) {
       const record = ensureRecord(node);
-      record.overlay.dataset.state = node.classList.contains('canvas-node-generating')
-        ? 'running'
-        : 'selected';
+      record.overlay.dataset.state = state;
       record.controller.setActive(true);
     }
   };
@@ -135,23 +174,24 @@ export function createCanvasNodeBorderBeamManager(
     });
   };
 
+  // Only node mount/unmount matters now: selection and generation state is
+  // pushed in through `setActiveNodes`, so we no longer observe every class
+  // change on every node (which fired on any status flip anywhere).
   const stageObserver = new MutationObserver((mutations) => {
-    if (mutations.some((mutation) => (
-      mutation.type === 'childList'
-      || (
-        mutation.type === 'attributes'
-        && mutation.target instanceof Element
-        && mutation.target.matches(NODE_SELECTOR)
-      )
-    ))) {
-      queueSync();
+    for (const mutation of mutations) {
+      if (mutation.type !== 'childList') continue;
+      for (const node of [...mutation.addedNodes, ...mutation.removedNodes]) {
+        if (!(node instanceof HTMLElement)) continue;
+        if (node.matches(NODE_SELECTOR) || node.querySelector(NODE_SELECTOR)) {
+          queueSync();
+          return;
+        }
+      }
     }
   });
   stageObserver.observe(stage, {
     subtree: true,
     childList: true,
-    attributes: true,
-    attributeFilter: ['class'],
   });
 
   sync();
@@ -160,6 +200,11 @@ export function createCanvasNodeBorderBeamManager(
     setSuspended(next) {
       if (destroyed || suspended === next) return;
       suspended = next;
+      sync();
+    },
+    setActiveNodes(active) {
+      if (destroyed) return;
+      drivenNodes = active;
       sync();
     },
     sync,

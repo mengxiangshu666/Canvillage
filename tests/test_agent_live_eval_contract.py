@@ -189,7 +189,7 @@ def test_skill_routing_cases_cover_every_runtime_skill_without_leaking_ids() -> 
     runtime_names = {skill.name for skill in list_agent_skills()}
     case_names = {case.skill_name for case in SKILL_ROUTING_CASES}
 
-    assert len(SKILL_ROUTING_LIVE_CASES) == 45
+    assert len(SKILL_ROUTING_LIVE_CASES) == 46
     assert len(case_names) == len(SKILL_ROUTING_CASES)
     assert case_names == runtime_names
     assert all(case.skill_name not in case.prompt for case in SKILL_ROUTING_CASES)
@@ -277,7 +277,7 @@ def test_skill_routing_group_expands_to_the_full_catalog() -> None:
     ids = _parse_case_ids("skill_routing")
 
     assert ids == [case.id for case in SKILL_ROUTING_LIVE_CASES]
-    assert len(ids) == 45
+    assert len(ids) == 46
     assert "read_only" not in ids
 
 

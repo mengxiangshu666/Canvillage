@@ -475,6 +475,7 @@ class CharacterCreate(BaseModel):
     age_group: str = "youth"
     description: str = ""
     face_prompt: str = ""
+    body_type: str = ""
 
 
 class CharacterReviewRequest(BaseModel):
@@ -2477,6 +2478,13 @@ class IdentityCreate(BaseModel):
     identity_name: str
     age_group: str = ""
     appearance_details: str = ""
+
+
+class CharacterProfileParseRequest(BaseModel):
+    """角色档案解析入参：一句话描述或参考图 URL，二选一（复刻 parse 语义）。"""
+
+    description: str = ""
+    image_url: str = ""
 
 
 class IdentityImageGenRequest(BaseModel):

@@ -20,6 +20,22 @@ DIALOGUE_SOUND_SCHEMA = "dialogue_sound_contract.v1"
 DIALOGUE_SOUND_AUDIT_SCHEMA = "dialogue_sound_audit.v1"
 DIALOGUE_SOUND_REVISION_PREFIX = "dialogue-sound.v1:"
 
+#: Evidence-backed speaking window.  The numbers come from Dream's paid H3
+#: measurements (F-DLG-01/F-DLG-02): below 5.0 chars/second the model tends to
+#: invent syllables into an idle mouth; above 7.0 it swallows words.  This is a
+#: default profile, not a claim that the village channel has been re-measured;
+#: callers may pass their own profile and the product must re-verify on its own
+#: models before treating the window as settled.
+DIALOGUE_RATE_PROFILE: dict[str, float | str] = {
+    "unit": "cjk_chars_per_second",
+    "min": 5.0,
+    "max": 7.0,
+    "slow": 0.8,
+    "source": "dream-director failure F-DLG-01/F-DLG-02; product live verification pending",
+}
+SEVERITY_BLOCKING = "blocking"
+SEVERITY_ADVISORY = "advisory"
+
 _CJK_RE = re.compile(r"[\u3400-\u9fff]")
 _SPEAKER_PATTERNS = (
     re.compile(
@@ -337,16 +353,28 @@ def validate_dialogue_sound_contract(value: object) -> dict[str, Any]:
     return contract
 
 
-def _issue(code: str, message: str, *, shot_id: str = "", fix: str = "") -> dict[str, str]:
+def _issue(
+    code: str,
+    message: str,
+    *,
+    shot_id: str = "",
+    fix: str = "",
+    severity: str = SEVERITY_BLOCKING,
+) -> dict[str, str]:
     return {
         "code": code,
         "message": message,
+        "severity": severity,
         **({"shot_id": shot_id} if shot_id else {}),
         **({"fix": fix} if fix else {}),
     }
 
 
-def audit_dialogue_sound_contract(value: object) -> dict[str, Any]:
+def audit_dialogue_sound_contract(
+    value: object,
+    *,
+    rate_profile: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
     try:
         contract = validate_dialogue_sound_contract(value)
     except ValueError as exc:
@@ -357,6 +385,10 @@ def audit_dialogue_sound_contract(value: object) -> dict[str, Any]:
             "gate_observations": {"dialogue_sound_contract_valid": False},
         }
 
+    profile = _mapping(rate_profile) if rate_profile is not None else dict(DIALOGUE_RATE_PROFILE)
+    rate_min = _number(profile.get("min"), default=5.0)
+    rate_max = _number(profile.get("max"), default=7.0)
+    rate_slow = _number(profile.get("slow"), default=0.8)
     window = _mapping(contract.get("target_window_seconds"))
     maximum = _number(window.get("max"), default=8.0)
     issues: list[dict[str, str]] = []
@@ -406,22 +438,34 @@ def audit_dialogue_sound_contract(value: object) -> dict[str, Any]:
                 )
             cps = turn.get("chars_per_second")
             if isinstance(cps, (int, float)) and not isinstance(cps, bool):
-                if cps > 4.5:
+                if cps > rate_max:
                     issues.append(
                         _issue(
                             "dialogue.rate_too_fast",
-                            f"台词语速约 {cps:.1f} 字/秒，模型和观众都来不及处理",
+                            f"台词语速约 {cps:.1f} 字/秒，超过 {rate_max:.1f} 上限；模型会吞字",
                             shot_id=shot_id,
                             fix="删信息、拆句，或把镜头时长扩到能容纳台词的窗口。",
                         )
                     )
-                if cps < 1.0 and _text_length(text) > 5:
+                elif cps < rate_slow and _text_length(text) > 5:
                     issues.append(
                         _issue(
                             "dialogue.rate_too_slow",
-                            f"台词语速约 {cps:.1f} 字/秒，可能听成停帧或漏词",
+                            f"台词语速约 {cps:.1f} 字/秒，明显低于 {rate_slow:.1f}；可能听成停帧或漏词",
                             shot_id=shot_id,
                             fix="核对话速；轻声、濒死或长停顿必须有明确表演动机。",
+                            severity=SEVERITY_ADVISORY,
+                        )
+                    )
+                elif cps < rate_min and _text_length(text) > 5:
+                    issues.append(
+                        _issue(
+                            "dialogue.rate_low_density",
+                            f"台词语速约 {cps:.1f} 字/秒，低于 {rate_min:.1f}；"
+                            "嘴部空闲时模型可能自造杂音（Dream 实测 4.7 字/秒出现 32% 杂音）",
+                            shot_id=shot_id,
+                            fix="加长镜头、补可见动作或提高台词密度；不要用静音填满说话窗口。",
+                            severity=SEVERITY_ADVISORY,
                         )
                     )
         if len(turns) > 1:
@@ -460,13 +504,27 @@ def audit_dialogue_sound_contract(value: object) -> dict[str, Any]:
                     fix="至少声明一种画内声音；完全静音也必须写成明确的静音合同。",
                 )
             )
+    blocking = [
+        issue for issue in issues if issue.get("severity", SEVERITY_BLOCKING) == SEVERITY_BLOCKING
+    ]
+    advisory = [
+        issue for issue in issues if issue.get("severity") == SEVERITY_ADVISORY
+    ]
     observations: dict[str, bool | None] = {
-        "dialogue_sound_contract_valid": not issues if contract.get("shots") else None
+        "dialogue_sound_contract_valid": not blocking if contract.get("shots") else None
     }
     return {
         "schema": DIALOGUE_SOUND_AUDIT_SCHEMA,
-        "passed": not issues,
+        "passed": not blocking,
         "issues": issues,
+        "blocking_count": len(blocking),
+        "advisory_count": len(advisory),
+        "rate_profile": {
+            "min": rate_min,
+            "max": rate_max,
+            "slow": rate_slow,
+            "source": _text(profile.get("source"), limit=300),
+        },
         "speech_shot_count": speech_shot_count,
         "gate_observations": observations,
     }

@@ -2216,60 +2216,6 @@ button:hover .st-keyframe-video-play {
     box-shadow: 0 1px 5px rgb(0 0 0 / 0.42);
   }
 
-  .companion-capsule-entry {
-    position: relative;
-    overflow: visible;
-  }
-
-  .companion-capsule-entry__icon {
-    transition:
-      filter 150ms ease,
-      transform 150ms ease;
-  }
-
-  .companion-capsule-entry::after {
-    content: "";
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 2px;
-    height: 2px;
-    opacity: 0;
-    background: rgb(255 255 255 / 0.96);
-    box-shadow:
-      2px 0 0 rgb(103 232 249 / 0.88),
-      -2px 0 0 rgb(255 255 255 / 0.54),
-      0 2px 0 rgb(255 255 255 / 0.62),
-      0 -2px 0 rgb(103 232 249 / 0.72);
-    image-rendering: pixelated;
-    pointer-events: none;
-  }
-
-  .companion-capsule-entry:hover .companion-capsule-entry__icon {
-    filter: brightness(1.22) saturate(1.12) drop-shadow(0 0 4px rgb(34 211 238 / 0.32));
-    transform: translateY(-1px);
-  }
-
-  .companion-capsule-entry:hover::after {
-    animation: companion-capsule-sparkle 620ms steps(3, end) both;
-  }
-
-  @keyframes companion-capsule-sparkle {
-    0%,
-    100% {
-      opacity: 0;
-      transform: translate(0, 0);
-    }
-    34% {
-      opacity: 1;
-      transform: translate(-2px, -1px);
-    }
-    68% {
-      opacity: 0.55;
-      transform: translate(1px, -3px);
-    }
-  }
-
   @keyframes superchat-thinking-wave {
     0%,
     100% {
@@ -3217,9 +3163,12 @@ button:hover .st-keyframe-video-play {
     align-items: center;
     border-radius: 7px;
     padding: 1px 6px;
-    background: rgba(10, 10, 11, 0.34);
+    /* Every node carries this capsule, so a backdrop blur here costs one
+       composited blur layer per node and scales linearly with node count.
+       A slightly more opaque flat fill reads the same over node media and
+       keeps the header legible without the per-node compositing. */
+    background: rgba(10, 10, 11, 0.55);
     box-shadow: none;
-    backdrop-filter: blur(8px);
   }
 
   .village-canvas-stage .village-video-media-card,
@@ -4195,9 +4144,7 @@ html[data-village-interacting='true'] .village-canvas-stage .canvas-dock-surface
 html[data-village-interacting='true'] .village-canvas-stage .canvas-tool-surface,
 html[data-village-interacting='true'] .village-canvas-stage .neo-canvas-view-switcher,
 html[data-village-interacting='true'] .village-canvas-stage .neo-canvas-quickbar,
-html[data-village-interacting='true'] .village-canvas-stage .canvas-navigation-group,
-html[data-village-interacting='true'] .mybuddy-companion-floating,
-html[data-village-interacting='true'] .mybuddy-companion-motion-layer {
+html[data-village-interacting='true'] .village-canvas-stage .canvas-navigation-group {
   transition: none !important;
 }
 
@@ -4247,12 +4194,10 @@ html[data-village-interacting='true'] .village-canvas-stage .canvas-processing-e
   animation-play-state: paused !important;
 }
 
-.mybuddy-companion-floating,
 .village-agent-floating {
   contain: layout style;
 }
 
-html[data-village-interacting='true'] .mybuddy-companion-floating,
 html[data-village-interacting='true'] .village-agent-floating {
   will-change: transform;
 }
@@ -5324,6 +5269,69 @@ html[data-village-interacting='true']
     linear-gradient(180deg, #0b0b0d 0%, var(--background) 34%);
 }
 .village-home-workbench.village-studio-home::before { display: none; }
+
+/* 首页氛围层：常驻点阵之上再叠一层同样的点阵，用跟随指针的圆形 mask 提亮，
+   再加一层很淡的主色光晕。坐标变量由 HomeAtmosphere 在 rAF 里写入。
+   只在首页挂载——画布、工作流这些要长时间盯着看的界面不参与。 */
+.village-home-atmosphere {
+  --home-pointer-x: -480px;
+  --home-pointer-y: -480px;
+  --home-pointer-active: 0;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+/* 压过 `.village-home-workbench > *` 的统一 z-index: 1，氛围层必须在内容后面。 */
+.village-home-workbench > .village-home-atmosphere { z-index: 0; }
+
+.village-home-atmosphere__dots,
+.village-home-atmosphere__radiance {
+  position: absolute;
+  inset: 0;
+}
+
+.village-home-atmosphere__dots {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--foreground) 55%, transparent) 0.7px,
+    transparent 0.85px
+  );
+  background-size: 24px 24px;
+  opacity: calc(var(--home-pointer-active) * 0.85);
+  transition: opacity 180ms ease;
+  -webkit-mask-image: radial-gradient(
+    circle 190px at var(--home-pointer-x) var(--home-pointer-y),
+    #000 0%,
+    rgb(0 0 0 / 55%) 46%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    circle 190px at var(--home-pointer-x) var(--home-pointer-y),
+    #000 0%,
+    rgb(0 0 0 / 55%) 46%,
+    transparent 78%
+  );
+}
+
+.village-home-atmosphere__radiance {
+  opacity: var(--home-pointer-active);
+  transition: opacity 180ms ease;
+  background: radial-gradient(
+    circle 260px at var(--home-pointer-x) var(--home-pointer-y),
+    color-mix(in oklch, var(--primary) 9%, transparent),
+    color-mix(in oklch, var(--primary) 4%, transparent) 40%,
+    transparent 74%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .village-home-atmosphere__dots,
+  .village-home-atmosphere__radiance { transition: none; }
+}
+
 .village-studio-content {
   width: min(1360px, 100%);
   margin-inline: auto;
@@ -5959,16 +5967,8 @@ html[data-village-interacting='true']
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
-.dark .village-app-header button:not(.companion-capsule-entry):hover { background: #232323; }
+.dark .village-app-header button:hover { background: #232323; }
 .dark .village-app-header button:focus-visible { outline: 2px solid #09caf5; outline-offset: 1px; }
-.dark .village-app-header .companion-capsule-entry {
-  height: 30px;
-  border-radius: 7px;
-  padding-inline: 8px;
-  color: #a3a3ab;
-}
-.dark .village-app-header .companion-capsule-entry:hover { background: #232323; color: #fff; }
-
 .dark .village-mobile-nav {
   min-height: 46px;
   border-bottom: 1px solid var(--village-lib-border-soft);
@@ -6742,4 +6742,58 @@ html[data-village-interacting='true']
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
+}
+
+/* ── 画布底栏右侧的 Agent 光球 ──
+   替换原来的搭子形象：不再有吉祥物、拖动、宠物库，只剩一个开关小树创作台的入口。 */
+.canvas-agent-orb {
+  position: relative;
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(125 249 255 / 22%);
+  border-radius: 999px;
+  background: radial-gradient(circle at 34% 28%, rgb(96 231 255 / 30%), rgb(10 30 44 / 92%) 72%);
+  box-shadow:
+    0 0 0 1px rgb(125 249 255 / 8%),
+    0 0 18px rgb(56 189 248 / 28%),
+    0 10px 24px rgb(0 0 0 / 40%);
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.canvas-agent-orb:hover {
+  transform: translateY(-1px) scale(1.04);
+  border-color: rgb(125 249 255 / 45%);
+  box-shadow:
+    0 0 0 1px rgb(125 249 255 / 14%),
+    0 0 28px rgb(56 189 248 / 45%),
+    0 12px 28px rgb(0 0 0 / 45%);
+}
+.canvas-agent-orb:active { transform: scale(0.96); }
+.canvas-agent-orb:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgb(125 249 255 / 55%),
+    0 0 24px rgb(56 189 248 / 40%);
+}
+.canvas-agent-orb__core {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 32% 28%, #e8fdff 0%, #7de9ff 34%, #2aa8d8 68%, #0b4a66 100%);
+  box-shadow:
+    inset 0 0 6px rgb(255 255 255 / 55%),
+    0 0 14px rgb(72 211 255 / 65%);
+  animation: canvas-agent-orb-breathe 3.2s ease-in-out infinite;
+}
+@keyframes canvas-agent-orb-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .canvas-agent-orb { transition: none; }
+  .canvas-agent-orb__core { animation: none; }
 }

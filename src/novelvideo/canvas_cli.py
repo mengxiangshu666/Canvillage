@@ -27,7 +27,6 @@ WRITE_COMMANDS = {
     "create_image_prompt_node",
     "create_video_prompt_node",
     "annotate",
-    "create_shot_sequence",
     "insert_starter_workflow",
     "update_node_prompt",
     "update_node_label",

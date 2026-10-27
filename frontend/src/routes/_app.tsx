@@ -28,7 +28,6 @@ import { initObservability } from "@/lib/observability";
 import { TaskCenterProvider } from "@/task-center/provider";
 import { TaskStatusBar } from "@/components/task-center/status-bar";
 import { TaskPanel } from "@/components/task-center/panel";
-import { MyBuddyCompanion } from "@/features/companion/MyBuddyCompanion";
 import { VersionUpdateDialog } from "@/features/version-update/VersionUpdateDialog";
 import { cn } from "@/lib/utils";
 
@@ -60,8 +59,10 @@ function AppLayout() {
   })();
   const isFreezonePage = /^\/projects\/[^/]+\/freezone$/.test(pathname);
   const isHomePage = pathname === "/";
-  // 画布是全屏工作区，不挂侧栏；其余路由用同一条侧栏承担一级导航。
-  const showSidebar = !isFreezonePage;
+  const isStudioPage = pathname === "/studio";
+  // 首页是门户式整屏页面，工作台是「电视」式整屏页面；两者都自带浮动导航，
+  // 不挂侧栏和顶栏。其余路由仍用统一侧栏。
+  const showSidebar = !isFreezonePage && !isHomePage && !isStudioPage;
 
   // Keep viewport-relative panel sizes (AI assistant width, task panel height)
   // within the current window. Runs once on mount to fix persisted values that
@@ -172,8 +173,7 @@ function AppLayout() {
         <div className="flex min-h-0 flex-1 overflow-hidden">
           {showSidebar ? <AppSidebar /> : null}
           <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
-            <Header showBrand={!showSidebar} />
-            {!canvasOnlyProduct && !isFreezonePage ? <MyBuddyCompanion /> : null}
+            {isHomePage || isStudioPage ? null : <Header showBrand={!showSidebar} />}
             <VersionUpdateDialog />
             <div className="flex min-h-0 flex-1 overflow-hidden">
               <main
@@ -181,7 +181,7 @@ function AppLayout() {
                 tabIndex={-1}
                 className={cn(
                   "village-scroll min-w-0 flex-1 overflow-y-auto focus:outline-none [scrollbar-gutter:stable]",
-                  isHomePage ? "p-0" : "p-6",
+                  isHomePage || isStudioPage ? "p-0" : "p-6",
                 )}
               >
                 <motion.div
@@ -198,8 +198,12 @@ function AppLayout() {
                 </motion.div>
               </main>
             </div>
-            <TaskPanel overlay={canvasOnlyProduct && isFreezonePage} />
-            <TaskStatusBar overlay={canvasOnlyProduct && isFreezonePage} />
+            {isHomePage ? null : (
+              <>
+                <TaskPanel overlay={canvasOnlyProduct && isFreezonePage} />
+                <TaskStatusBar overlay={canvasOnlyProduct && isFreezonePage} />
+              </>
+            )}
           </div>
         </div>
       </div>

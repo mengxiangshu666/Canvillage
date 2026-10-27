@@ -24,6 +24,17 @@ const RULE_TITLES: Record<string, string> = {
   'script.viewability.static_standoff.v1': '静态对峙过长：画面没有事件',
   'script.viewability.action_share.v1': '缺少动作镜：打戏只剩过场',
   'script.viewability.pacing.v1': '节奏没有长短对比',
+  'script.prompt.sound_coverage.v1': '音效没有写进视频提示词',
+  'script.prompt.state_coverage.v1': '道具状态没有写进视频提示词',
+  'script.continuity.static_anchor.v1': '接力锚点疑似静止',
+  'script.assets.identity_conflict.v1': '同一资产身份指向不同对象',
+  'script.asset.content.complete.v1': '资产设定缺字段',
+  'script.override.user_edited.v1': '这些字段是你手改过的',
+  'script.continuity.repeated_visual_event.v1': '相邻镜头重复同一个视觉事件',
+  'script.continuity.screen_direction.v1': '同场运动方向反转',
+  'script.planning.framing_run.v1': '连续多镜同一景别',
+  'script.planning.opening_dialogue.v1': '开场只有对白，缺少视觉事件',
+  'script.camera.contradiction.v1': '摄影指令可能互相矛盾',
 };
 
 /** 合同规则 ID 翻成人话；未知规则原样返回，便于诊断新规则。 */

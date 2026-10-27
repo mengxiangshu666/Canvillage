@@ -151,9 +151,10 @@ def test_single_compiled_node_creation_stays_on_canvas_when_delivery_flag_leaks(
 
 
 def test_multi_prompt_creation_is_not_treated_as_single_canvas_creation():
-    assert single_atomic_canvas_creation_batch(
-        [{"type": "create_shot_sequence", "prompts": ["镜头一", "镜头二"]}]
-    ) is False
+    assert single_atomic_canvas_creation_batch([
+        {"type": "create_image_prompt_node", "prompt": "镜头一"},
+        {"type": "create_image_prompt_node", "prompt": "镜头二"},
+    ]) is False
 
 
 def test_action_router_keeps_canvas_connections_out_of_durable_workflow():

@@ -4601,74 +4601,6 @@ def test_vision_reader_names_a_missing_media_root_instead_of_blaming_the_url(
         )
 
 
-def test_agent_turn_carries_the_project_media_root_into_tool_context(monkeypatch):
-    """A media-reading tool is blind unless the turn hands down the media root.
-
-    The harness replaced an engine that resolved the project context and exported
-    `VILLAGE_CANVAS_PROJECT_OUTPUT_DIR`; the replacement passed only the project
-    id, so `/static/projects/<id>/...` -- the only form canvas nodes carry -- had
-    no directory to resolve against and every vision read failed.
-    """
-
-    import inspect
-    import unittest.mock
-
-    from novelvideo.chat import village_harness
-
-    thread = village_harness.VillageAgentThread(
-        id="t1", model_id="m1", scope_kind="project", project_id="p1"
-    )
-    for name in ("stream", "_stream_turn"):
-        assert (
-            "current_project_dir" in inspect.signature(getattr(thread, name)).parameters
-        ), name
-
-    # The service layer already holds the resolved project dir; it has to hand it
-    # down, or the harness has nothing to publish no matter what it accepts.
-    from novelvideo.chat._service_parts import _service_village
-
-    assert "current_project_dir=" in inspect.getsource(
-        _service_village._stream_assistant_reply_village
-    ), "the project turn must forward the resolved media root to the harness"
-
-    captured: dict[str, str] = {}
-
-    class _Bound(Exception):
-        """Raised where the turn binds tool context, to stop the turn there."""
-
-    def spy_context(**values: str) -> object:
-        captured.update(values)
-        raise _Bound
-
-    monkeypatch.setattr(village_harness, "agent_api_context", spy_context)
-    monkeypatch.setattr(village_harness, "_api_url", lambda: "http://api.test")
-    monkeypatch.setattr(
-        village_harness, "resolve_village_agent_model", lambda value: value
-    )
-    monkeypatch.setattr(
-        village_harness,
-        "get_direct_pydantic_model",
-        lambda *a: unittest.mock.MagicMock(),
-    )
-    import pydantic_ai
-
-    monkeypatch.setattr(pydantic_ai, "Agent", lambda *a, **k: object())
-
-    async def drain() -> None:
-        thread._token = "tok"
-        with pytest.raises(_Bound):
-            async for _ in thread.stream(
-                "看看这张图",
-                current_project="p1",
-                current_project_dir="/media/local/1",
-            ):
-                pass
-
-    asyncio.run(drain())
-    assert captured.get("VILLAGE_CANVAS_PROJECT_OUTPUT_DIR") == "/media/local/1"
-    assert captured.get("VILLAGE_CANVAS_PROJECT_ID") == "p1"
-
-
 def test_vision_reader_refuses_private_addresses():
     """The vision source is model-supplied, so it is an SSRF surface."""
 
@@ -7725,6 +7657,67 @@ def test_canvas_page_limit_is_clamped_instead_of_failing_the_read(monkeypatch):
     )
 
     assert "node_cursor must be a non-negative integer" in str(bad_cursor)
+
+
+def test_compact_read_clamps_prompt_chars_instead_of_failing(monkeypatch):
+    plugin = _load_plugin_module()
+    monkeypatch.setenv("VILLAGE_CANVAS_PROJECT_ID", "project-a")
+    monkeypatch.setattr(
+        plugin,
+        "_request",
+        lambda *_args, **_kwargs: {
+            "ok": True,
+            "data": {
+                "canvas_id": "canvas-a",
+                "revision": 3,
+                "nodes": [
+                    {
+                        "id": "node-1",
+                        "type": "imageGenNode",
+                        "data": {"prompt": "p" * 800},
+                    }
+                ],
+                "edges": [],
+            },
+        },
+    )
+
+    clamped = plugin._handle_read_canvas_compact(
+        {"canvas_id": "canvas-a", "prompt_chars": 1500}
+    )
+
+    assert clamped["prompt_chars"] == 500
+    assert clamped["requested_prompt_chars"] == 1500
+    assert clamped["prompt_chars_adjusted"] is True
+    assert len(clamped["nodes"][0]["prompt_excerpt"]) == 500
+    assert clamped["nodes"][0]["prompt_truncated"] is True
+
+    numeric_text = plugin._handle_read_canvas_compact(
+        {"canvas_id": "canvas-a", "prompt_chars": "120"}
+    )
+
+    assert numeric_text["prompt_chars"] == 120
+    assert numeric_text["requested_prompt_chars"] == "120"
+    assert numeric_text["prompt_chars_adjusted"] is True
+
+    default = plugin._handle_read_canvas_compact({"canvas_id": "canvas-a"})
+
+    assert default["prompt_chars"] == 0
+    assert "prompt_chars_adjusted" not in default
+
+    not_a_number = plugin._handle_read_canvas_compact(
+        {"canvas_id": "canvas-a", "prompt_chars": "full"}
+    )
+
+    assert "prompt_chars must be an integer between 0 and 500" in str(not_a_number)
+    assert (
+        plugin._classify_freezone_error(
+            plugin.ToolArgumentError(
+                "prompt_chars must be an integer between 0 and 500"
+            )
+        )
+        == "tool_arguments_invalid"
+    )
 
 
 def test_snapshot_does_not_echo_internal_command_receipts(monkeypatch):

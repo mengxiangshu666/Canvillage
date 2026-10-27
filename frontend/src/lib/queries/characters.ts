@@ -11,6 +11,7 @@ import type { QueryFunctionContext } from "@tanstack/react-query";
 import { jsonWithBackendError } from "@/lib/api-errors";
 import { api } from "@/lib/api";
 import { p } from "@/lib/api-path";
+import { awaitTaskCompletion } from "@/api/tasks";
 import { queryKeys } from "@/lib/query-keys";
 import type { ErrorResponse, OkResponse, TaskResponse } from "@/types/api";
 import type {
@@ -18,6 +19,7 @@ import type {
   CharacterAssetHistory,
   CharacterAssetKind,
   CharacterAssetRestoreResult,
+  CharacterProfileResult,
   CharacterVoiceSamples,
   CharacterVoiceSlot,
   Identity,
@@ -56,9 +58,52 @@ export function useBuildCharacters(project: string) {
 export function useCreateCharacter(project: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: { name: string; role?: string; gender?: string; is_main?: boolean; description?: string; face_prompt?: string }) =>
+    mutationFn: (data: { name: string; role?: string; gender?: string; age_group?: string; is_main?: boolean; description?: string; face_prompt?: string; body_type?: string }) =>
       api.post(p`api/v1/projects/${project}/characters`, { json: data }).json<OkResponse<Character>>(),
     onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.characters(project) }),
+  });
+}
+
+export interface ParseCharacterProfileInput {
+  description?: string;
+  /** 项目内参考图 URL（/static/... 或 /api/v1/projects/.../media/...）。 */
+  imageUrl?: string;
+}
+
+/**
+ * 一句话或一张项目内参考图 → 角色档案。
+ *
+ * 后端把重 LLM 调用挂进任务队列，这里等任务完成再取 `result`；调用方只
+ * 需要在等待期间显示 busy。描述与参考图二选一（后端会拒绝同时给两个）。
+ */
+export function useParseCharacterProfile(project: string) {
+  return useMutation({
+    mutationFn: async (input: ParseCharacterProfileInput) => {
+      const description = (input.description ?? "").trim();
+      const imageUrl = (input.imageUrl ?? "").trim();
+      const body =
+        imageUrl && !description
+          ? { image_url: imageUrl }
+          : { description };
+      const receipt = await jsonWithBackendError<TaskResponse | ErrorResponse>(
+        api.post(p`api/v1/projects/${project}/characters/parse-profile`, {
+          json: body,
+          throwHttpErrors: false,
+        }),
+      );
+      if (!receipt.ok) {
+        throw new Error(receipt.error || "角色档案解析未能开始");
+      }
+      if (!receipt.task_key) {
+        throw new Error("角色档案解析没有返回任务编号");
+      }
+      const completed = await awaitTaskCompletion(receipt.task_key, project);
+      const result = completed.result as CharacterProfileResult | null | undefined;
+      if (!result?.profile) {
+        throw new Error("角色档案解析完成，但没有返回档案内容");
+      }
+      return result;
+    },
   });
 }
 

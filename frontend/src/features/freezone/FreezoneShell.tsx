@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: Elastic-2.0
 // Copyright (c) 2026 ClaymoreLab
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import { resolveVillageAgentCompanionAnchor } from "./agent-companion-anchor";
-export { resolveVillageAgentCompanionAnchor } from "./agent-companion-anchor";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Canvas } from "@/features/canvas/Canvas";
+import { CharacterStudioModal } from "@/features/canvas/ui/CharacterStudioModal";
+import { StyleLibraryModal } from "@/features/canvas/ui/StyleLibraryModal";
+import { EffectLibraryModal } from "@/features/canvas/ui/EffectLibraryModal";
 import {
   CANVAS_NODE_TYPES,
   DEFAULT_NODE_WIDTH,
@@ -40,7 +41,6 @@ import { rememberLastCanvas, writeUrl } from "@/lib/url-params";
 import { canvasOnlyProduct } from "@/lib/product-mode";
 import { cn } from "@/lib/utils";
 import { SuperChatPanel, type ComposerHandoffSnapshot } from "@/features/superchat/superchat-panel";
-import { MyBuddyCompanion } from "@/features/companion/MyBuddyCompanion";
 import {
   clampFreezoneAgentWidth,
   FREEZONE_AGENT_DRAWER_CLASS,
@@ -1361,6 +1361,24 @@ export function FreezoneShell({ project, canvasId }: FreezoneShellProps) {
   const [chatOpen, setChatOpen] = useState(
     () => resolveInitialFreezoneAgentOpen(canvasOnlyProduct) || Boolean(homeHandoff?.draft),
   );
+  // 底栏三件套：角色造型室 / 风格库 / 特效库（由 canvasEventBus 打开）。
+  const [characterStudioOpen, setCharacterStudioOpen] = useState(false);
+  const [styleLibraryOpen, setStyleLibraryOpen] = useState(false);
+  const [effectLibraryOpen, setEffectLibraryOpen] = useState(false);
+  useEffect(() => {
+    const unsubscribers = [
+      canvasEventBus.subscribe('canvas/character-studio/open', () =>
+        setCharacterStudioOpen(true),
+      ),
+      canvasEventBus.subscribe('canvas/style-library/open', () =>
+        setStyleLibraryOpen(true),
+      ),
+      canvasEventBus.subscribe('canvas/effect-library/open', () =>
+        setEffectLibraryOpen(true),
+      ),
+    ];
+    return () => unsubscribers.forEach((unsubscribe) => unsubscribe());
+  }, []);
   const executedCanvasCommandIdsRef = useRef(new Set<string>());
   const [canvasView, setCanvasView] = useState<"workflow" | "storyboard">("workflow");
   const activePowerTool = useNodePowerHubStore((state) => state.activeTool);
@@ -1373,6 +1391,19 @@ export function FreezoneShell({ project, canvasId }: FreezoneShellProps) {
     if (open) closePowerTool();
     setChatOpen(open);
   }, [closePowerTool]);
+  // 底栏右侧的 Agent 光球通过 canvasEventBus 开关创作台；用 ref 读最新状态，
+  // 避免订阅回调里拿到旧的 chatOpen。
+  const chatOpenRef = useRef(chatOpen);
+  useEffect(() => {
+    chatOpenRef.current = chatOpen;
+  }, [chatOpen]);
+  useEffect(
+    () =>
+      canvasEventBus.subscribe('canvas/agent/toggle', () => {
+        handleChatOpenChange(!chatOpenRef.current);
+      }),
+    [handleChatOpenChange],
+  );
   const sync = useCanvasSync(projectId, canvasId);
   // Keep the command listener stable while the sync revision advances. A
   // revision update must not create a window in which a one-shot patch event
@@ -2180,13 +2211,21 @@ export function FreezoneShell({ project, canvasId }: FreezoneShellProps) {
           />
         )}
       </div>
-      {shouldShowVillageCompanionAgentEntry(canvasOnlyProduct, chatOpen) ? (
-        <MyBuddyCompanion
-          agentEntryMode
-          agentActive={chatOpen}
-          onActivateAgent={() => handleChatOpenChange(!chatOpen)}
-        />
-      ) : null}
+      <CharacterStudioModal
+        open={characterStudioOpen}
+        project={projectId}
+        onClose={() => setCharacterStudioOpen(false)}
+      />
+      <StyleLibraryModal
+        open={styleLibraryOpen}
+        project={projectId}
+        onClose={() => setStyleLibraryOpen(false)}
+      />
+      <EffectLibraryModal
+        open={effectLibraryOpen}
+        project={projectId}
+        onClose={() => setEffectLibraryOpen(false)}
+      />
       <NodeReplaceDragPreview />
       {pushState && (
         <CommitDialog
@@ -2244,13 +2283,6 @@ export function resolveInitialFreezoneAgentOpen(isCanvasOnlyProduct: boolean): b
   return !isCanvasOnlyProduct;
 }
 
-export function shouldShowVillageCompanionAgentEntry(
-  isCanvasOnlyProduct: boolean,
-  _agentOpen: boolean,
-): boolean {
-  return isCanvasOnlyProduct;
-}
-
 type VillageAgentPresentation = "docked" | "floating";
 
 type VillageAgentFloatingFrame = {
@@ -2265,12 +2297,6 @@ const VILLAGE_AGENT_FLOATING_FRAME_KEY = "village.canvas.agent.floatingFrame.v3"
 const VILLAGE_AGENT_FLOATING_MIN_WIDTH = 560;
 const VILLAGE_AGENT_FLOATING_MIN_HEIGHT = 560;
 const VILLAGE_AGENT_FLOATING_MARGIN = 18;
-
-function clearVillageAgentCompanionAnchor(root: HTMLElement): void {
-  root.style.removeProperty("--village-agent-companion-left");
-  root.style.removeProperty("--village-agent-companion-top");
-  delete root.dataset.villageAgentCompanionPresentation;
-}
 
 function defaultVillageAgentFloatingFrame(): VillageAgentFloatingFrame {
   const viewportWidth = typeof window === "undefined" ? 1440 : window.innerWidth;
@@ -2410,29 +2436,6 @@ export function FreezoneChatDock({
   } | null>(null);
   const floating = canvasOnlyProduct && presentation === "floating";
 
-  useLayoutEffect(() => {
-    if (!canvasOnlyProduct || typeof document === "undefined") return;
-    const root = document.documentElement;
-    const agentFrame = floatingAsideRef.current;
-    if (!isDesktop || !open || !panelVisible || !agentFrame) {
-      clearVillageAgentCompanionAnchor(root);
-      return;
-    }
-    const anchor = resolveVillageAgentCompanionAnchor(agentFrame.getBoundingClientRect(), {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-    root.style.setProperty("--village-agent-companion-left", `${anchor.left}px`);
-    root.style.setProperty("--village-agent-companion-top", `${anchor.top}px`);
-    root.dataset.villageAgentCompanionPresentation = floating ? "floating" : "docked";
-  }, [drawerWidth, floating, floatingFrame, isDesktop, open, panelVisible]);
-
-  useEffect(() => {
-    if (!canvasOnlyProduct || typeof document === "undefined") return;
-    const root = document.documentElement;
-    return () => clearVillageAgentCompanionAnchor(root);
-  }, []);
-
   useEffect(() => {
     if (!canvasOnlyProduct || typeof document === "undefined") return;
     const root = document.documentElement;
@@ -2554,16 +2557,6 @@ export function FreezoneChatDock({
         const deltaX = next.x - interaction.startFrame.x;
         const deltaY = next.y - interaction.startFrame.y;
         agentFrame.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0)`;
-        const anchor = resolveVillageAgentCompanionAnchor(
-          {
-            left: interaction.startViewportLeft + deltaX,
-            top: interaction.startViewportTop + deltaY,
-          },
-          { width: window.innerWidth, height: window.innerHeight },
-        );
-        const root = document.documentElement;
-        root.style.setProperty('--village-agent-companion-left', `${anchor.left}px`);
-        root.style.setProperty('--village-agent-companion-top', `${anchor.top}px`);
       } else {
         agentFrame.style.width = `${next.width}px`;
         agentFrame.style.height = `${next.height}px`;

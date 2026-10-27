@@ -8,8 +8,13 @@ import {
   type ResolutionHonestyInput,
 } from "@/features/canvas/domain/resolutionHonesty";
 
+// 默认浮在节点右上角；节点标题栏要用 rightSlot 放按钮时改成 inline，
+// 让角标和按钮排在同一行——两者都锚 right-1 会互相盖住（角标 z-20 压住按钮）。
+const BADGE_FLOATING_POSITION_CLASS = "absolute -top-7 right-1";
+const BADGE_INLINE_POSITION_CLASS = "relative";
+
 const BADGE_BASE_CLASS =
-  "absolute -top-7 right-1 z-20 flex max-w-[min(100%,220px)] items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium tabular-nums backdrop-blur-sm";
+  "z-20 flex max-w-[min(100%,220px)] items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium tabular-nums backdrop-blur-sm";
 
 const BADGE_OK_CLASS =
   "border-white/10 bg-black/55 text-white/70";
@@ -24,6 +29,11 @@ export interface ResolutionHonestyBadgeProps {
   actualHeight: number | null | undefined;
   /** Optional override icon; defaults by media. */
   icon?: LucideIcon;
+  /**
+   * 放在标题栏 rightSlot 里时置 true：不再绝对定位到节点右上角，
+   * 而是跟着标题行排版，避免压住同一角落的按钮。
+   */
+  inline?: boolean;
   className?: string;
 }
 
@@ -37,6 +47,7 @@ export function ResolutionHonestyBadge({
   actualWidth,
   actualHeight,
   icon,
+  inline = false,
   className,
 }: ResolutionHonestyBadgeProps) {
   const result = evaluateResolutionHonesty({
@@ -53,7 +64,9 @@ export function ResolutionHonestyBadge({
 
   return (
     <div
-      className={`${BADGE_BASE_CLASS} ${
+      className={`${
+        inline ? BADGE_INLINE_POSITION_CLASS : BADGE_FLOATING_POSITION_CLASS
+      } ${BADGE_BASE_CLASS} ${
         result.isMismatch ? BADGE_MISMATCH_CLASS : BADGE_OK_CLASS
       } ${className ?? ""}`}
       title={result.tooltip}

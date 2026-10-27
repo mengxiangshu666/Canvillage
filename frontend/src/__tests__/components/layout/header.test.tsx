@@ -4,10 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  Header,
-  resolveCompanionManagerEntryCopy,
-} from "@/components/layout/header";
+import { Header } from "@/components/layout/header";
 
 const runtimeState = vi.hoisted(() => ({ authRequired: true, isCe: false }));
 const authState = vi.hoisted(() => ({
@@ -161,17 +158,6 @@ describe("Header runtime gating", () => {
       expect(resetUserSessionStateMock).toHaveBeenCalled();
     });
     expect(authState.logout).toHaveBeenCalled();
-  });
-
-  it("keeps the companion manager available and gives Village Canvas explicit copy", () => {
-    expect(resolveCompanionManagerEntryCopy(true, "Companion")).toEqual({
-      label: "管理搭子",
-      title: "更换、导入或管理你的搭子",
-    });
-    expect(resolveCompanionManagerEntryCopy(false, "Companion")).toEqual({
-      label: "Companion",
-      title: "Companion",
-    });
   });
 
   it("offers the avatar entry on the community edition too", async () => {

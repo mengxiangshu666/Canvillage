@@ -10,7 +10,8 @@ describe('script video reference roles at submission', () => {
         id, type: CANVAS_NODE_TYPES.upload, position: { x: 0, y: 0 },
         data: { imageUrl: `/${id}.png`, ...(id === 'state' ? {
           scriptShotKeyframeState: '右手释放[栏杆]后，左脚仍支撑在板面', scriptShotKeyframePurpose: '锁定释放结果',
-        } : {}) },
+          scriptShotKeyframeAssetIds: ['C02'],
+        } : {}), ...(id === 'character' ? { scriptAssetId: 'C01' } : {}) },
       })),
       { id: 'video', type: CANVAS_NODE_TYPES.video, position: { x: 0, y: 0 },
         data: { scriptShotSourceNodeId: 'script', referenceOrder: ['opening', 'state', 'character', 'scene', 'prop'] } },
@@ -75,6 +76,9 @@ describe('script video reference roles at submission', () => {
     expect(compiled.references?.map(item => [item.scope, item.imageNumber, item.role, item.sourceNodeId])).toEqual([
       ['video', 1, 'opening_frame', 'opening'], ['video', 2, 'state_frame', 'state'],
       ['video', 3, 'character', 'character'], ['video', 4, 'scene', 'scene'], ['video', 5, 'prop', 'prop'],
+    ]);
+    expect(compiled.references?.map(item => item.assetIds ?? [])).toEqual([
+      [], ['C02'], ['C01'], [], [],
     ]);
     expect(compiled.references?.[1].responsibility).toContain('锁定释放结果');
     expect(compiled.references?.[1].prohibited).toContain('不覆盖开场');

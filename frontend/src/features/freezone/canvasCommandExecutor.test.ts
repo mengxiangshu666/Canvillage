@@ -15,7 +15,6 @@ import { useCanvasStore } from "@/stores/canvasStore";
 import {
   applyStructureEnvelopeToStore,
   resolveInitialFreezoneAgentOpen,
-  shouldShowVillageCompanionAgentEntry,
 } from "./FreezoneShell";
 
 function resetCanvasStore(): void {
@@ -651,11 +650,5 @@ describe("Village Canvas companion Agent entry", () => {
   it("starts the Village Agent collapsed while preserving Village Infinite Canvas's default", () => {
     expect(resolveInitialFreezoneAgentOpen(true)).toBe(false);
     expect(resolveInitialFreezoneAgentOpen(false)).toBe(true);
-  });
-
-  it("keeps the same 搭子 visible while the Village Agent opens and closes", () => {
-    expect(shouldShowVillageCompanionAgentEntry(true, false)).toBe(true);
-    expect(shouldShowVillageCompanionAgentEntry(true, true)).toBe(true);
-    expect(shouldShowVillageCompanionAgentEntry(false, false)).toBe(false);
   });
 });

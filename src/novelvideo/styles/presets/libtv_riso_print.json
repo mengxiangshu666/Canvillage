@@ -1,0 +1,26 @@
+{
+  "id": "libtv_riso_print",
+  "name": "riso噪点插画",
+  "label": "riso噪点插画",
+  "family": "illustration",
+  "era": "",
+  "palette": "flat high-saturation colors, limited palette, clean separation between shapes",
+  "lighting": "even illustration lighting, minimal cast shadows, readable silhouettes",
+  "optics": "orthographic 2D drawing, no photographic lens distortion",
+  "composition": "single readable subject with clean negative space",
+  "camera_motion": "static frame; if animated, use gentle 2D parallax",
+  "style_instructions": "Multi-noise pixel style icon, risograph, screen print style pixel art, electronic art，color gradient",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "riso噪点插画",
+  "tags": [
+    "riso噪点插画",
+    "libtv",
+    "插画漫画"
+  ],
+  "model_overrides": {},
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "image_prompt": "Multi-noise pixel style icon, risograph, screen print style pixel art, electronic art，color gradient",
+  "video_prompt": "Multi-noise pixel style icon, risograph, screen print style pixel art, electronic art，color gradient. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

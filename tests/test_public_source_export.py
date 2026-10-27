@@ -142,6 +142,15 @@ def test_repository_export_attributes_keep_product_and_license_files() -> None:
     assert "docs/PUBLIC_SOURCE_RELEASE.md" in paths
     assert "AGENTS.md" not in paths
     assert not any(name.startswith(("frontend/public/expression-head/libtv-mood-proxy/", "assets/partners/")) for name in paths)
+    assert not any(
+        name.startswith((
+            "frontend/public/effects/templates/",
+            "frontend/public/video/effect-templates/",
+        ))
+        for name in paths
+    )
+    assert "src/novelvideo/styles/presets/libtv_lego.webp" not in paths
+    assert "src/novelvideo/styles/presets/libtv_lego.json" in paths
     assert "src/novelvideo/assets/login_bgm.mp3" not in paths
     assert "frontend/public/login-cinematic/fonts/DingTalk_JinBuTi_Title.woff2" not in paths
     assert {

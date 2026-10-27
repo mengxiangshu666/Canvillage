@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import subprocess
@@ -34,6 +35,11 @@ RUN_API = ROOT / "village_canvas_run_api.py"
 OPEN_WHEN_READY = ROOT / "village_canvas_open_when_ready.py"
 API_URL = "http://127.0.0.1:8784"
 PID_FILE = ROOT / "runtime" / "api.pid"
+SIDECAR_DIR = ROOT / "runtime" / "agent_sidecar"
+SIDECAR_APP = SIDECAR_DIR / "apps" / "agents-cli"
+SIDECAR_NODE = ROOT / "runtime" / "node" / "node.exe"
+SIDECAR_URL = "http://127.0.0.1:8790"
+SIDECAR_PID_FILE = ROOT / "workspace" / "agent-sidecar" / "sidecar-8790.pid"
 
 _SET_RE = re.compile(r'^\s*set\s+"([A-Za-z_][A-Za-z0-9_]*)=(.*?)"\s*$')
 _SETP_RE = re.compile(r'^\s*set\s+/p\s+([A-Za-z_][A-Za-z0-9_]*)=\s*<?"?([^<"]+)"?\s*$')
@@ -120,6 +126,71 @@ def _is_running() -> bool:
     return True
 
 
+def _sidecar_healthy() -> bool:
+    try:
+        with urllib.request.urlopen(f"{SIDECAR_URL}/health", timeout=2) as response:
+            if not 200 <= response.status < 300:
+                return False
+            payload = json.loads(response.read().decode("utf-8") or "{}")
+            return bool(payload.get("ok", True))
+    except Exception:
+        return False
+
+
+_SIDECAR_LOG_HANDLES: list[object] = []
+
+
+def _start_sidecar(env: dict[str, str]) -> None:
+    """Start the bundled 小树 sidecar when it is not already serving."""
+    if _sidecar_healthy():
+        return
+    env = {**os.environ, **env}
+    entry = SIDECAR_APP / "dist" / "cli" / "index.js"
+    if not SIDECAR_NODE.is_file():
+        return
+    if not entry.is_file():
+        installer = ROOT / "scripts" / "install_agent_sidecar.py"
+        if installer.is_file():
+            print("[村长无限画布] 首次运行，安装小树 Agent 运行时 ...")
+            subprocess.run(
+                [sys.executable, str(installer)],
+                cwd=str(ROOT),
+                env=env,
+                creationflags=0x08000000,
+            )
+    if not entry.is_file():
+        return
+    SIDECAR_PID_FILE.parent.mkdir(parents=True, exist_ok=True)
+    out = open(SIDECAR_PID_FILE.parent / "sidecar-8790.out.log", "ab")
+    err = open(SIDECAR_PID_FILE.parent / "sidecar-8790.err.log", "ab")
+    _SIDECAR_LOG_HANDLES.extend((out, err))
+    try:
+        process = subprocess.Popen(
+            [
+                str(SIDECAR_NODE),
+                str(entry),
+                "serve",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8790",
+            ],
+            cwd=str(SIDECAR_APP),
+            env=env,
+            stdout=out,
+            stderr=err,
+            creationflags=0x08000000,
+        )
+    except OSError:
+        return
+    SIDECAR_PID_FILE.write_text(str(process.pid), encoding="ascii")
+    # Wait briefly so the first chat message does not hit a cold sidecar.
+    for _ in range(20):
+        if _sidecar_healthy():
+            return
+        time.sleep(0.5)
+
+
 def _open_web() -> None:
     try:
         webbrowser.open(_with_launch_cache_bust(f"{API_URL}/"))
@@ -143,13 +214,14 @@ def _with_launch_cache_bust(url: str) -> str:
 
 def main() -> int:
     web_only = "--web" in sys.argv
+    env = _read_startbat_env()
     if _is_running():
+        _start_sidecar(env)
         if not web_only:
             print("[村长无限画布] 8784 已在运行，仅打开网页。")
         _open_web()
         return 0
 
-    env = _read_startbat_env()
     # 兜底：确保关键变量即使 bat 解析异常也存在
     env.setdefault("PYTHONUTF8", "1")
     # Empty inherited values are not usable; treat them like missing values so
@@ -170,6 +242,13 @@ def main() -> int:
     env.setdefault("ROOT", str(ROOT))
     if env.get("ROOT") in (None, "", "%~dp0"):
         env["ROOT"] = str(ROOT)
+    env.setdefault("VILLAGE_AGENT_SIDECAR_URL", SIDECAR_URL)
+    sidecar_skills = ROOT / "runtime" / "agent_sidecar" / "skills"
+    if sidecar_skills.is_dir():
+        env["AGENTS_SKILLS_DIR"] = str(sidecar_skills)
+    env.setdefault(
+        "DSH_AGENTS_HOME", str(ROOT / "runtime" / "agent_sidecar" / ".agents-home")
+    )
     # 前端产物目录：路径无效时强制指向 ROOT/frontend/dist
     frontend_dist = env.get("VILLAGE_CANVAS_FRONTEND_DIST", "")
     if not frontend_dist or "%" in frontend_dist or not Path(frontend_dist).is_dir():
@@ -197,6 +276,7 @@ def main() -> int:
         env=merged,
         creationflags=creationflags,
     )
+    _start_sidecar(merged)
 
     # 等待就绪
     for _ in range(30):

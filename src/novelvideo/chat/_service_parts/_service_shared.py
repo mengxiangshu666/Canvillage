@@ -25,10 +25,6 @@ from typing import Any
 from urllib.parse import quote, unquote, urlparse
 from urllib.request import Request, urlopen
 
-from novelvideo.chat.backend_sdk import (
-    ClaudeSdkClient,
-    interrupt_live_claude_client,
-)
 from novelvideo.chat.context_checkpoint import (
     build_checkpoint,
     checkpoint_prompt,
@@ -65,11 +61,8 @@ from novelvideo.chat.memory_feedback import (
     classify_execution_feedback,
     has_actionable_teaching_signal,
 )
+from novelvideo.shared.provider_errors import classify_provider_error as _classify_provider_error
 from novelvideo.chat.expert_arbitration import build_expert_plan
-from novelvideo.chat.agent_runtime import (
-    AgentHandoffLedger,
-    find_specialist_result,
-)
 from novelvideo.chat.shared_context import (
     build_canvas_observation,
     build_shared_agent_context,

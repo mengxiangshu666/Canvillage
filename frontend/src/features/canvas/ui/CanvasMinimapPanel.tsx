@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react';
 import { Bookmark, Maximize2, Minimize2, X } from 'lucide-react';
 import { MiniMap } from '@xyflow/react';
 
+import { useCanvasStore } from '@/stores/canvasStore';
 import { CanvasMinimapBookmarksOverlay } from './CanvasMinimapBookmarksOverlay';
 
 interface CanvasMinimapPanelProps {
   expanded: boolean;
   open: boolean;
+  /** Optional override; by default the panel watches for a dragged node itself. */
   suspended?: boolean;
   onClose: () => void;
   onExpandedChange: (expanded: boolean) => void;
@@ -17,11 +19,17 @@ interface CanvasMinimapPanelProps {
 export function CanvasMinimapPanel({
   expanded,
   open,
-  suspended = false,
+  suspended: suspendedProp,
   onClose,
   onExpandedChange,
 }: CanvasMinimapPanelProps) {
   const [bookmarksVisible, setBookmarksVisible] = useState(false);
+  // Own the drag signal: it is a boolean selector, so the panel stops
+  // repainting during a drag without the Canvas shell subscribing to `nodes`.
+  const hasDraggingNode = useCanvasStore((state) =>
+    state.nodes.some((node) => node.dragging === true),
+  );
+  const suspended = suspendedProp ?? hasDraggingNode;
 
   useEffect(() => {
     if (!open || !expanded) setBookmarksVisible(false);

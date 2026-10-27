@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Elastic-2.0
 // Copyright (c) 2026 ClaymoreLab
 import { create } from 'zustand';
-import { dedupePlainConnectionEdges, hasConnectionBetween } from '@/features/canvas/edges/canvasConnectionDedupe';
+import { dedupePlainConnectionEdges } from '@/features/canvas/edges/canvasConnectionDedupe';
 import {
   type Viewport,
   addEdge,
@@ -67,6 +67,7 @@ import { foldLegacyCameraMovement } from '@/features/canvas/domain/promptCamera'
 import { nodeCatalog } from '@/features/canvas/application/nodeCatalog';
 import { selectIsCanvasBoxSelecting } from '@/features/canvas/application/canvasNodeIndex';
 import { canvasNodeFactory } from '@/features/canvas/application/canvasServices';
+import { planGroupSourceEdges, resolveGroupSourceIds } from '@/features/canvas/application/groupSourceEdges';
 import {
   aspectRatioFromImageDimensions,
   ensureAtLeastOneMinEdge,
@@ -1595,6 +1596,7 @@ function createDefaultStoryboardExportOptions(): StoryboardExportOptions {
   };
 }
 
+
 export const useCanvasStore = create<CanvasState>((set, get) => ({
   nodes: [],
   edges: [],
@@ -1749,28 +1751,22 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
 
   onConnect: (connection) => {
-    const sourceHandle = normalizeHandleId(connection.sourceHandle) ?? 'source';
     const targetHandle = normalizeHandleId(connection.targetHandle) ?? 'target';
     set((state) => {
-      // 3D 世界节点只用一张上游图生成，因此入边唯一：已有其它上游时拒绝新连接。
-      // 这是所有连线路径(手动拖线 / 拖到空白生成节点)的共同收口处。
-      const targetNode = state.nodes.find((node) => node.id === connection.target);
-      if (targetNode?.type === CANVAS_NODE_TYPES.threeDWorld && state.edges.some((edge) => edge.target === connection.target && edge.source !== connection.source)) return {};
-      if (hasConnectionBetween(state.edges, connection)) return {};
-      // 上游类型规则收口：挡掉任何绕过 UI 校验的连接（如音频←非文本）。
-      const sourceNode = state.nodes.find((node) => node.id === connection.source);
-      if (
-        sourceNode &&
-        targetNode &&
-        !isUpstreamConnectionAllowed(sourceNode.type, targetNode.type)
-      ) {
-        return {};
-      }
+      const pending = planGroupSourceEdges({
+        nodes: state.nodes,
+        edges: state.edges,
+        sourceId: connection.source,
+        targetId: connection.target,
+        targetHandle,
+      });
+      if (pending.length === 0) return {};
+      const nextEdges = pending.reduce<CanvasEdge[]>(
+        (edges, candidate) => addEdge<CanvasEdge>(candidate, edges),
+        state.edges
+      );
       return {
-        edges: addEdge<CanvasEdge>(
-          { ...connection, sourceHandle, targetHandle, type: 'disconnectableEdge' },
-          state.edges
-        ),
+        edges: nextEdges,
         history: {
           past: pushSnapshot(state.history.past, createSnapshot(state.nodes, state.edges)),
           future: [],
@@ -2340,41 +2336,43 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
   addEdge: (source, target) => {
     const state = get();
-    // Check if both nodes exist
-    const sourceNode = state.nodes.find((n) => n.id === source);
     const targetNode = state.nodes.find((n) => n.id === target);
-    if (!sourceNode || !targetNode) {
+    if (!targetNode || !nodeHasTargetHandle(targetNode.type)) {
       return null;
     }
-    if (!nodeHasSourceHandle(sourceNode.type) || !nodeHasTargetHandle(targetNode.type)) {
+    const newEdges: CanvasEdge[] = [];
+    // 组源展开成组内成员：直接连组，生成节点读不到任何素材。
+    for (const sourceId of resolveGroupSourceIds(state.nodes, source)) {
+      const sourceNode = state.nodes.find((n) => n.id === sourceId);
+      if (!sourceNode || !nodeHasSourceHandle(sourceNode.type)) continue;
+      // 上游类型规则收口（如音频←非文本）。
+      if (!isUpstreamConnectionAllowed(sourceNode.type, targetNode.type)) continue;
+      const edgeId = `e-${sourceId}-${target}`;
+      if (
+        state.edges.some((e) => e.id === edgeId) ||
+        newEdges.some((e) => e.id === edgeId)
+      ) {
+        continue;
+      }
+      newEdges.push({
+        id: edgeId,
+        source: sourceId,
+        target,
+        sourceHandle: 'source',
+        targetHandle: 'target',
+        type: 'disconnectableEdge',
+      });
+    }
+    if (newEdges.length === 0) {
       return null;
     }
-    // 上游类型规则收口（如音频←非文本）。
-    if (!isUpstreamConnectionAllowed(sourceNode.type, targetNode.type)) {
-      return null;
-    }
-
-    const edgeId = `e-${source}-${target}`;
-    // Check if edge already exists
-    if (state.edges.some((e) => e.id === edgeId)) {
-      return edgeId;
-    }
-
-    const newEdge: CanvasEdge = {
-      id: edgeId,
-      source,
-      target,
-      sourceHandle: 'source',
-      targetHandle: 'target',
-      type: 'disconnectableEdge',
-    };
 
     set({
-      edges: [...state.edges, newEdge],
+      edges: [...state.edges, ...newEdges],
       ...trackEdit(state),
     });
 
-    return edgeId;
+    return newEdges[0].id;
   },
 
   addEdgeWithData: (source, target, data, options) => {

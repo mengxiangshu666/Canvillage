@@ -1,0 +1,77 @@
+# TapCanvas hard-cutover overlay for DeepSeek Harness's official `sdk` profile.
+# Hono supplies only per-turn facts and authorization. The Harness runtime owns
+# planning, skills, tool selection, subagents, persistence, and the agent loop.
+
+- id: system-prompt
+  config:
+    persona: !!js process.env.TAPCANVAS_DSH_SYSTEM_PROMPT
+
+- id: llm-pi-ai
+  config:
+    providers:
+      tapcanvas:
+        displayName: TapCanvas Model Gateway
+        apiKeyEnv: TAPCANVAS_DSH_API_KEY
+        api: !!js process.env.TAPCANVAS_DSH_API_STYLE
+        baseURL: !!js process.env.TAPCANVAS_DSH_API_BASE_URL
+        defaultContextWindow: !!js Number(process.env.TAPCANVAS_DSH_CONTEXT_WINDOW)
+        defaultMaxTokens: !!js Number(process.env.TAPCANVAS_DSH_MAX_OUTPUT_TOKENS)
+        reasoning: !!js process.env.TAPCANVAS_DSH_REASONING_EFFORT
+        models:
+          - id: !!js process.env.TAPCANVAS_DSH_MODEL
+            name: !!js process.env.TAPCANVAS_DSH_MODEL
+            contextWindow: !!js Number(process.env.TAPCANVAS_DSH_CONTEXT_WINDOW)
+
+- id: skill-filesystem
+  config:
+    # Only the product-curated catalog plus this turn's external skills. The
+    # host user's ~/.agents/skills must not leak into the canvas agent.
+    includeDefaultRoots: false
+    bundledSkillDir: !!js process.env.DSH_BUNDLED_SKILL_DIR
+    customSkillDirs: [!!js process.env.TAPCANVAS_DSH_REQUEST_SKILLS_DIR]
+
+- insert:
+    - id: tapcanvas-request-mcp
+      name: '@deepseek-ai/dsh-mcp-client'
+      disabled: !!js process.env.TAPCANVAS_DSH_MCP_ENABLED !== 'true'
+      config:
+        serverName: tapcanvas
+        transport: streamable-http
+        url: !!js process.env.TAPCANVAS_DSH_MCP_URL
+        headers:
+          Authorization: !!js '`Bearer ${process.env.TAPCANVAS_DSH_MCP_TOKEN}`'
+        failOnStartupError: true
+        reconnect:
+          enabled: false
+        toolCallTimeoutMs: 600000
+
+# Village Canvas isolation: the sidecar may only act through the request MCP
+# gateway.  Never let it run shell commands or read arbitrary local files.
+- id: tool-bash
+  disabled: true
+- id: tool-pwsh
+  disabled: true
+- id: tool-fs
+  disabled: true
+- id: tool-fs-search
+  disabled: true
+- id: tool-jobs
+  disabled: true
+- id: tool-subagent
+  disabled: true
+- id: tool-subagent-fork
+  disabled: true
+- id: tool-subagent-control
+  disabled: true
+- id: tool-subagent-list-agents
+  disabled: true
+- id: tool-str-replace-editor
+  disabled: true
+- id: tool-ralph
+  disabled: true
+- id: tool-workflow
+  disabled: true
+- id: tool-web
+  disabled: true
+- id: tool-subagent-report
+  disabled: true

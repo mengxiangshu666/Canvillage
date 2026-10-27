@@ -1,0 +1,20 @@
+{
+  "name": "village-canvas",
+  "interface": {
+    "displayName": "村长无限画布"
+  },
+  "plugins": [
+    {
+      "name": "village-canvas",
+      "source": {
+        "source": "local",
+        "path": "./plugins/village-canvas"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

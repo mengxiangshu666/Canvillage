@@ -1,0 +1,147 @@
+import assert from "node:assert/strict";
+import { mkdtemp, rm } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import test from "node:test";
+
+import type { AgentsChatRequest } from "./contracts.js";
+import { HarnessChatLifecycleStore } from "./chat-lifecycle.js";
+
+function request(): AgentsChatRequest {
+  return {
+    prompt: "你是谁？",
+    stream: true,
+    systemPrompt: "You are 小T.",
+    sessionId: "project:1:flow:1:lane:general",
+    userId: "user-1",
+    model: "gpt-5.6-luna",
+    apiBaseUrl: "http://models.test/v1",
+    apiKey: "test-key",
+    apiStyle: "openai-responses",
+    requiredSkills: [],
+    requiredSkillCalls: [],
+    externalSkills: [],
+    externalSkillResolverConfig: null,
+    referenceImages: [],
+    assetInputs: [],
+    remoteTools: [],
+    remoteToolCatalog: [],
+    remoteToolConfig: null,
+    turnContext: {
+      logicalTaskId: "public-chat-turn:1",
+      publicTurnId: "public-chat-turn:1",
+    },
+    raw: { turnDisplayText: "你是谁？" },
+  };
+}
+
+test("returns a durable idle snapshot before the first Harness turn", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "tapcanvas-harness-lifecycle-"));
+  try {
+    const store = new HarnessChatLifecycleStore(root);
+    assert.deepEqual(
+      await store.status("user-1", "project:1:flow:1:lane:general"),
+      {
+        sessionId: "project:1:flow:1:lane:general",
+        durable: true,
+        activeTurn: false,
+        turn: null,
+      },
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("persists the exact running turn and exposes an interruptible controller", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "tapcanvas-harness-lifecycle-"));
+  try {
+    const store = new HarnessChatLifecycleStore(root);
+    const lease = await store.begin(request());
+    const running = await store.status("user-1", lease.sessionId);
+    assert.equal(running.activeTurn, true);
+    assert.equal(running.turn?.turnId, "public-chat-turn:1");
+    assert.equal(
+      (running.turn?.logicalTaskState as Record<string, unknown>).physicalRunStatus,
+      "running",
+    );
+
+    const interrupted = await store.interrupt({
+      userId: "user-1",
+      sessionId: lease.sessionId,
+      turnId: lease.turnId,
+      reasonCode: "chat_turn_user_interrupt",
+    });
+    assert.equal(interrupted.interrupted, true);
+    assert.equal(interrupted.snapshot.activeTurn, false);
+    assert.equal(lease.signal.aborted, true);
+
+    const reloaded = new HarnessChatLifecycleStore(root);
+    const persisted = await reloaded.status("user-1", lease.sessionId);
+    assert.equal(persisted.activeTurn, false);
+    assert.equal(
+      (persisted.turn?.logicalTaskState as Record<string, unknown>).status,
+      "cancelled",
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("does not report a persisted running checkpoint as live after Bridge restart", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "tapcanvas-harness-lifecycle-"));
+  try {
+    const firstProcess = new HarnessChatLifecycleStore(root);
+    const lease = await firstProcess.begin(request());
+
+    const restartedProcess = new HarnessChatLifecycleStore(root);
+    const recovered = await restartedProcess.status("user-1", lease.sessionId);
+    assert.equal(recovered.activeTurn, false);
+    assert.equal(
+      (recovered.turn?.logicalTaskState as Record<string, unknown>).status,
+      "failed",
+    );
+    assert.equal(
+      (recovered.turn?.logicalTaskState as Record<string, unknown>).reasonCode,
+      "deepseek_harness_process_restarted",
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('provider physical interruption suspends without logical cancellation or invented recovery and ignores its late callbacks', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'tapcanvas-physical-interrupt-'));
+  try {
+    const store = new HarnessChatLifecycleStore(root);
+    const lease = await store.begin(request());
+    const result = await store.interrupt({ userId: 'user-1', sessionId: lease.sessionId, turnId: lease.turnId, reasonCode: 'provider_stream_interrupted' });
+    assert.equal(result.snapshot.turn?.state, 'suspended');
+    assert.equal((result.snapshot.turn?.logicalTaskState as Record<string, unknown>).status, 'active');
+    assert.equal((result.snapshot.turn?.logicalTaskState as Record<string, unknown>).deliveryStatus, 'pending');
+    assert.equal(result.snapshot.turn?.recoveryAvailable, undefined);
+    assert.equal(result.snapshot.turn?.recoveryCheckpoint ?? null, null);
+    await store.fail('user-1', lease.sessionId, new Error('late abort callback'), lease.turnId);
+    assert.deepEqual(await store.status('user-1', lease.sessionId), result.snapshot);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('persists upstream failure details in the user-visible status summary', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'tapcanvas-provider-failure-'));
+  try {
+    const store = new HarnessChatLifecycleStore(root);
+    const lease = await store.begin(request());
+    const { HarnessEventProjector } = await import('./event-projector.js');
+    await store.complete('user-1', lease.sessionId, {
+      response: { trace: { runOutcome: { status: 'failed', reason: 'deepseek_harness_provider_error', message: '403: token quota is not enough' } } },
+      text: '', completed: false, projector: new HarnessEventProjector(lease.sessionId, () => {}),
+    }, lease.turnId);
+    const status = await new HarnessChatLifecycleStore(root).status('user-1', lease.sessionId);
+    assert.equal(status.turn?.state, 'failed');
+    assert.match(String(status.turn?.lastConfirmedSummary), /403: token quota is not enough/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

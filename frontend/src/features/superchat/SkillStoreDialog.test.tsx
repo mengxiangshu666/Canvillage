@@ -98,7 +98,7 @@ describe("SkillStoreDialog", () => {
     importSkillStoreFile.mockResolvedValue({ items: [catalog.items[1]], imported: 1 });
   });
 
-  it("loads the local catalog and enables a bundled skill", async () => {
+  it("lists skills as LibTV-style rows with slug and search", async () => {
     render(
       <SkillStoreDialog
         open
@@ -110,14 +110,65 @@ describe("SkillStoreDialog", () => {
 
     expect(await screen.findByText("电影分镜大师")).toBeInTheDocument();
     expect(screen.getByText("灯光导演")).toBeInTheDocument();
-    expect(screen.getByText("可执行 92")).toBeInTheDocument();
-    expect(screen.getByText("可编排 68")).toBeInTheDocument();
+    expect(screen.getByText("/storyboard")).toBeInTheDocument();
+    expect(screen.getByText("Skill")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("搜索 Skill")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "通用" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "收藏" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "我的" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加技能" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "筛选技能范围" })).toBeInTheDocument();
+  });
+
+  it("shows a floating cover card when a row is hovered", async () => {
+    render(
+      <SkillStoreDialog
+        open
+        onOpenChange={vi.fn()}
+        mountedSkillIds={[]}
+        onToggleMount={vi.fn()}
+      />,
+    );
+
+    const row = (await screen.findByText("电影分镜大师")).closest('[role="button"]');
+    expect(row).not.toBeNull();
+    fireEvent.mouseEnter(row as HTMLElement);
+
+    const card = await waitFor(() => {
+      const found = document.querySelector('[data-skill-hover-card="libtv.storyboard"]');
+      expect(found).not.toBeNull();
+      return found as HTMLElement;
+    });
+    expect(card.textContent).toContain("电影分镜大师");
+    expect(card.textContent).toContain("可执行 92");
+
+    fireEvent.mouseLeave(row as HTMLElement);
+    await waitFor(() =>
+      expect(document.querySelector('[data-skill-hover-card="libtv.storyboard"]')).toBeNull(),
+    );
+  });
+
+  it("expands a row into details and enables the skill", async () => {
+    render(
+      <SkillStoreDialog
+        open
+        onOpenChange={vi.fn()}
+        mountedSkillIds={[]}
+        onToggleMount={vi.fn()}
+      />,
+    );
+
+    await screen.findByText("电影分镜大师");
+    fireEvent.click(screen.getByText("电影分镜大师"));
+
+    expect(await screen.findByText("可执行 92")).toBeInTheDocument();
     expect(screen.getByText("输出：可生成的分镜节点")).toBeInTheDocument();
+
     fireEvent.click(screen.getByRole("button", { name: "启用" }));
     await waitFor(() => expect(installSkillStoreItem).toHaveBeenCalledWith("libtv.storyboard"));
   });
 
-  it("uploads a custom SKILL.md and switches to my skills", async () => {
+  it("uploads a custom SKILL.md from the add menu", async () => {
     render(
       <SkillStoreDialog
         open
@@ -127,11 +178,32 @@ describe("SkillStoreDialog", () => {
       />,
     );
     await screen.findByText("电影分镜大师");
+
+    fireEvent.click(screen.getByRole("button", { name: "添加技能" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "上传技能" }));
+
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
     const file = new File(["# Skill"], "SKILL.md", { type: "text/markdown" });
     fireEvent.change(input, { target: { files: [file] } });
 
     await waitFor(() => expect(importSkillStoreFile).toHaveBeenCalledWith(file));
-    expect(await screen.findByRole("button", { name: "我的技能" })).toBeInTheDocument();
+  });
+
+  it("filters to my skills from the scope menu", async () => {
+    render(
+      <SkillStoreDialog
+        open
+        onOpenChange={vi.fn()}
+        mountedSkillIds={[]}
+        onToggleMount={vi.fn()}
+      />,
+    );
+    await screen.findByText("电影分镜大师");
+
+    fireEvent.click(screen.getByRole("button", { name: "筛选技能范围" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: /我的技能/ }));
+
+    expect(screen.queryByText("电影分镜大师")).not.toBeInTheDocument();
+    expect(screen.getByText("灯光导演")).toBeInTheDocument();
   });
 });

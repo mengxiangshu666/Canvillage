@@ -48,6 +48,11 @@ interface PromptMentionEditorProps {
 
 export interface PromptMentionEditorHandle {
   insertTextAtCursor: (text: string) => void;
+  /**
+   * 插入一个真正的 @ chip（点参考素材缩略图时用）。纯文本插入要等下一次整棵
+   * 重建才会变成 chip，用户看到的会是一段 `@图片N` 原文。
+   */
+  insertMentionAtCursor: (candidate: MentionCandidate) => void;
   focus: () => void;
 }
 
@@ -386,24 +391,31 @@ export const PromptMentionEditor = forwardRef<PromptMentionEditorHandle, PromptM
       onChange(next);
     }, [onChange]);
 
+    // 点参考素材缩略图时焦点在按钮上，selection 已经不在编辑器里；优先用编辑器
+    // 内当前 selection，其次用光标监听留下的 saved range，最后回退到末尾。
+    const resolveInsertionRange = useCallback((el: HTMLElement): Range => {
+      const selection = window.getSelection();
+      if (
+        selection &&
+        selection.rangeCount > 0 &&
+        selectionBelongsTo(el, selection)
+      ) {
+        return selection.getRangeAt(0).cloneRange();
+      }
+      const saved = savedRangeRef.current;
+      if (saved && el.contains(saved.startContainer)) {
+        return saved.cloneRange();
+      }
+      return rangeAtEndOf(el);
+    }, []);
+
     const insertTextAtCursor = useCallback(
       (text: string) => {
         const el = editorRef.current;
         if (!el || text.length === 0) return;
 
-        const selection = window.getSelection();
         // 先取 range 再 focus：焦点回到编辑器时浏览器可能重置 caret，取晚就丢了。
-        let range: Range | null = null;
-        if (selection && selection.rangeCount > 0 && selectionBelongsTo(el, selection)) {
-          range = selection.getRangeAt(0).cloneRange();
-        } else {
-          const saved = savedRangeRef.current;
-          if (saved && el.contains(saved.startContainer)) {
-            range = saved.cloneRange();
-          }
-        }
-        if (!range) range = rangeAtEndOf(el);
-
+        const range = resolveInsertionRange(el);
         el.focus({ preventScroll: true });
         const after = insertPlainTextAtRange(range, text);
         const next = window.getSelection();
@@ -415,13 +427,42 @@ export const PromptMentionEditor = forwardRef<PromptMentionEditorHandle, PromptM
         setMention(null);
         commitChange();
       },
-      [commitChange],
+      [commitChange, resolveInsertionRange],
+    );
+
+    // 点参考素材时直接落 chip：走纯文本插入的话，DOM 里会先出现 `@图片N` 原文，
+    // 要等下一次整棵重建（例如刷新）才被 rebuildDOM 换成 chip。
+    const insertMentionAtCursor = useCallback(
+      (candidate: MentionCandidate) => {
+        const el = editorRef.current;
+        if (!el) return;
+        const range = resolveInsertionRange(el);
+        el.focus({ preventScroll: true });
+        range.deleteContents();
+        const chip = buildChipElement(candidate);
+        range.insertNode(chip);
+        const space = document.createTextNode(' ');
+        chip.parentNode?.insertBefore(space, chip.nextSibling);
+        const after = document.createRange();
+        after.setStartAfter(space);
+        after.collapse(true);
+        const selection = window.getSelection();
+        if (selection) {
+          selection.removeAllRanges();
+          selection.addRange(after);
+        }
+        savedRangeRef.current = after.cloneRange();
+        setMention(null);
+        commitChange();
+      },
+      [commitChange, resolveInsertionRange],
     );
 
     useImperativeHandle(
       ref,
       () => ({
         insertTextAtCursor,
+        insertMentionAtCursor,
         focus: () => editorRef.current?.focus(),
       }),
       [insertTextAtCursor],

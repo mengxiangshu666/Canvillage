@@ -112,7 +112,6 @@ _CREATION_TYPES = {
     "annotate",
     "create_canvas_node",
     "create_image_prompt_node",
-    "create_shot_sequence",
     "create_video_prompt_node",
     "insert_starter_workflow",
 }
@@ -768,7 +767,7 @@ def _is_creative_video_request(
             continue
         command_type = _text(command.get("type"))
         node_type = _text(command.get("node_type")).casefold()
-        if command_type in {"create_video_prompt_node", "create_shot_sequence"}:
+        if command_type == "create_video_prompt_node":
             return True
         if command_type == "create_canvas_node" and "video" in node_type:
             return True

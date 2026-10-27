@@ -180,24 +180,17 @@ async def test_disconnect_watcher_queues_frames_until_turn_finishes() -> None:
 
 
 @pytest.mark.anyio
-async def test_disconnected_turn_cleanup_releases_lock_and_worker(monkeypatch) -> None:
-    from novelvideo.chat.village_harness import pool as village_pool
-
+async def test_disconnected_turn_cleanup_releases_lock(monkeypatch) -> None:
     seen: list[tuple[str, str]] = []
 
     def release_lock(username: str, project: str) -> None:
         seen.append((username, project))
-
-    async def close_user(username: str) -> bool:
-        seen.append(("worker", username))
-        return True
 
     monkeypatch.setattr(
         chat_route.chat_service,
         "force_release_chat_run_lock",
         release_lock,
     )
-    monkeypatch.setattr(village_pool, "close_user", close_user)
     turn = chat_route._ChatWsTurn(
         task=asyncio.current_task(),
         scope=ChatScope(kind="project", id="project-a"),
@@ -205,7 +198,7 @@ async def test_disconnected_turn_cleanup_releases_lock_and_worker(monkeypatch) -
     )
     await chat_route._cleanup_disconnected_chat_turn("alice", turn)
 
-    assert seen == [("alice", "project-a"), ("worker", "alice")]
+    assert seen == [("alice", "project-a")]
 
 
 def test_ws_connect_does_not_prewarm_default_home_scope() -> None:
@@ -769,86 +762,3 @@ async def test_failed_project_turn_does_not_emit_false_chat_done(monkeypatch) ->
     assert all(frame.get("type") != "chat.done" for frame in websocket.frames)
 
 
-@pytest.mark.anyio
-async def test_failed_home_turn_emits_recovery_packet_without_persisting_partial(
-    monkeypatch,
-) -> None:
-    from novelvideo.chat.village_harness import (
-        VillageAgentWorkerLostError,
-        pool as village_pool,
-    )
-
-    class RecordingWebSocket:
-        def __init__(self) -> None:
-            self.frames = []
-
-        async def send_json(self, payload) -> None:
-            self.frames.append(payload)
-
-    class LostHomeThread:
-        id = "home-session"
-
-        async def stream(self, *_args, **_kwargs):
-            if False:
-                yield None
-            raise VillageAgentWorkerLostError(
-                "worker lost",
-                thread_id="home-session",
-                turn_id="backend-turn",
-                pending_tool="render_storyboard",
-                last_event="tool_update",
-            )
-
-    persisted = []
-
-    async def get_for_user(*_args, **_kwargs):
-        return LostHomeThread()
-
-    async def worker_status(*_args, **_kwargs):
-        return {
-            "present": False,
-            "alive": False,
-            "scope_matches": True,
-            "thread_id": "home-session",
-            "agent_session_id": "agent-session",
-        }
-
-    monkeypatch.setattr(village_pool, "get_for_user", get_for_user)
-    monkeypatch.setattr(village_pool, "worker_status", worker_status)
-    monkeypatch.setattr(chat_route, "list_user_projects", lambda _username: [])
-    monkeypatch.setattr(chat_route.chat_store, "list_messages", lambda *_args: [])
-    monkeypatch.setattr(
-        chat_route.chat_store,
-        "append_message",
-        lambda *args, **kwargs: persisted.append((args, kwargs)),
-    )
-    websocket = RecordingWebSocket()
-
-    with pytest.raises(chat_route.chat_service.RecoverableChatTurnError) as caught:
-        await chat_route._stream_home_turn(
-            websocket=websocket,
-            username="alice",
-            scope=ChatScope(kind="home"),
-            text="继续",
-            attachments=[],
-            turn_id="client-turn",
-            record_user_message=False,
-        )
-
-    packet = caught.value.recovery_packet
-    assert packet["thread_id"] == "home-session"
-    assert packet["session_id"] == "home-session"
-    assert packet["agent_session_id"] == "agent-session"
-    assert packet["turn_id"] == "client-turn"
-    assert packet["backend_turn_id"] == "backend-turn"
-    assert packet["canvas"] == {
-        "project_id": None,
-        "canvas_id": None,
-        "revision": None,
-    }
-    assert packet["pending_tool"] == "render_storyboard"
-    assert packet["last_event"]["type"] == "tool_update"
-    assert packet["retry_reason"] == "worker_lost"
-    assert packet["worker"]["alive"] is False
-    assert persisted == []
-    assert all(frame.get("type") != "chat.done" for frame in websocket.frames)

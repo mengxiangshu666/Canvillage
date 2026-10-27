@@ -61,6 +61,25 @@ export function isToolMessage(message: ChatMessage): boolean {
   );
 }
 
+const INTERNAL_TOOL_NAMES = new Set([
+  "record_user_intent",
+  "get_delivery_evidence",
+  "report_delivery",
+  "submit_structured_output",
+  "village_turn_intent",
+  "village_delivery_evidence",
+  "village_delivery_check",
+]);
+
+export function isInternalToolMessage(message: ChatMessage): boolean {
+  if (!isToolMessage(message)) return false;
+  const raw = message.raw && typeof message.raw === "object"
+    ? (message.raw as Record<string, unknown>)
+    : {};
+  const name = raw.name ?? raw.tool_name ?? raw.toolName;
+  return typeof name === "string" && INTERNAL_TOOL_NAMES.has(name);
+}
+
 function isHistoricalToolMessage(message: ChatMessage): boolean {
   const raw = message.raw && typeof message.raw === "object"
     ? (message.raw as Record<string, unknown>)

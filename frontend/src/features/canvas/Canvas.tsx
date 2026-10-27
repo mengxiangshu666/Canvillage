@@ -11,7 +11,6 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from 'react';
 import {
-  ReactFlow,
   ConnectionMode,
   SelectionMode,
   useReactFlow,
@@ -36,6 +35,8 @@ import { useShallow } from 'zustand/react/shallow';
 import { CreditDisplayHiddenProvider } from '@/components/credits/credit-visual';
 import { isCeRuntime } from '@/lib/runtime-config';
 import { resolveAbsolutePosition, useCanvasStore } from '@/stores/canvasStore';
+import { selectNodeById } from './application/nodeIndex';
+import { patchNodeDataTransient } from './application/nodeTransientPatch';
 import { useAppStore } from '@/stores/app-store';
 import {
   pinCanvasNodeForAgent,
@@ -57,7 +58,6 @@ import {
   setCanvasGestureActive,
   setCanvasLowDetail,
 } from '@/features/canvas/application/canvasLod';
-import { createDragStableCanvasDerivation } from '@/features/canvas/application/canvasDragDerivation';
 import {
   CANVAS_NODE_TYPES,
   type BeatContextNodeData,
@@ -138,7 +138,7 @@ import { CanvasOrphanNodesPanel } from './ui/CanvasOrphanNodesPanel';
 import { useEdgeVisibilityStore } from './ui/edgeVisibilityStore';
 import { CanvasQuickActionBar } from './ui/CanvasQuickActionBar';
 import { EmptyCanvasStart } from './ui/EmptyCanvasStart';
-import { AdaptiveCanvasGrid } from './ui/AdaptiveCanvasGrid';
+import { CanvasGridLayer } from './ui/CanvasGridLayer';
 import {
   colorWithAlpha,
   resolveCanvasTheme,
@@ -158,6 +158,7 @@ import {
 import { useTrackpadPanStore } from './trackpad-pan/trackpadPanStore';
 import { useCanvasToolStore } from './ui/canvasToolStore';
 import { SnapAlignGuides } from './snap-align/SnapAlignGuides';
+import { CanvasFlowSurface } from './CanvasFlowSurface';
 import { useSnapAlignStore } from './snap-align/snapAlignStore';
 import {
   buildSnapAlignIndex,
@@ -996,21 +997,20 @@ export function Canvas({
   const renderCountRef = useRef(0);
   renderCountRef.current += 1;
 
-  const nodes = useCanvasStore((state) => state.nodes);
-  const edges = useCanvasStore((state) => state.edges);
+  // This component intentionally does NOT subscribe to `nodes` / `edges`.
+  // React Flow replaces both arrays on every drag frame, and re-running this
+  // component's body (and its whole JSX tree) once per frame was the main
+  // rendering tax on a busy canvas. `CanvasFlowSurface` owns those
+  // subscriptions; everything here reads the latest snapshot on demand.
   const canvasViewportSize = useCanvasStore((state) => state.canvasViewportSize);
-  // React Flow replaces the nodes array for every drag frame. Keep a ref for
-  // event listeners that only need the latest snapshot so those listeners do
-  // not get torn down and re-attached on every pointermove.
-  const nodesRef = useRef(nodes);
-  nodesRef.current = nodes;
+  // Cheap scalar signals: these only change when the graph meaningfully changes,
+  // never on a drag frame.
+  const nodeCount = useCanvasStore((state) => state.nodes.length);
+  const isEmptyCanvas = useCanvasStore((state) => state.nodes.length === 0);
   const dragHistorySnapshot = useCanvasStore((state) => state.dragHistorySnapshot);
-  const contextMenuImageSource = useMemo(() => {
-    if (!contextMenu?.nodeId) {
-      return null;
-    }
-    return resolveNodeSourceImageUrl(nodes.find((node) => node.id === contextMenu.nodeId));
-  }, [contextMenu?.nodeId, nodes]);
+  const contextMenuImageSource = useCanvasStore((state) =>
+    resolveNodeSourceImageUrl(selectNodeById(state, contextMenu?.nodeId)),
+  );
   // 连线可见性：隐藏时只给 ReactFlow 的边打 `hidden`，真实 edges 一动不动（见
   // edgeVisibilityStore）。持久化/自动布局/导出全部照用 store 里的真实连线。
   const edgesHidden = useEdgeVisibilityStore((state) => state.hidden);
@@ -1079,17 +1079,14 @@ export function Canvas({
   // 底部任务中心面板展开时，让出底部空间——隐藏画布快捷操作栏，避免与面板重叠。
   const taskPanelOpen = useAppStore((state) => state.taskPanelOpen);
   const taskPanelHeight = useAppStore((state) => state.taskPanelHeight);
-  // Stable signatures of the nodes that need polling / resume, so those effects
-  // only re-run when the *set* of pending generations changes — not on every
-  // drag frame (which rebuilds the whole `nodes` array). See the two effects below.
-  // Canvas already subscribes to `nodes` for React Flow. Derive both task
-  // signatures in one pass here instead of registering two extra Zustand
-  // selectors that each scanned all nodes on every drag/store update.
-  const derivePendingNodeSignaturesRef = useRef(
-    createDragStableCanvasDerivation((currentNodes: readonly CanvasNode[]) => {
+  // Stable signatures of the nodes that need polling / resume. The selector
+  // returns two strings, so the effects below only re-run when the *set* of
+  // pending generations changes — position frames leave them untouched.
+  const { pendingJobNodeKey, pendingResumeNodeKey } = useCanvasStore(
+    useShallow((state) => {
       const jobNodeIds: string[] = [];
       const resumeNodeIds: string[] = [];
-      for (const node of currentNodes) {
+      for (const node of state.nodes) {
         const data = node.data as Record<string, unknown>;
         if (
           node.type === CANVAS_NODE_TYPES.exportImage
@@ -1106,10 +1103,6 @@ export function Canvas({
         pendingResumeNodeKey: resumeNodeIds.join(','),
       };
     }),
-  );
-  const { pendingJobNodeKey, pendingResumeNodeKey } = derivePendingNodeSignaturesRef.current(
-    nodes,
-    dragHistorySnapshot,
   );
   const history = useCanvasStore((state) => state.history);
   const applyNodesChange = useCanvasStore((state) => state.onNodesChange);
@@ -1160,53 +1153,6 @@ export function Canvas({
     () => new Map(skillRegistry.map((skill) => [skill.id, skill] as const)),
     [skillRegistry],
   );
-  const deriveHasGeneratingNodeRef = useRef(
-    createDragStableCanvasDerivation((currentNodes: readonly CanvasNode[]) =>
-      currentNodes.some((node) =>
-        canvasNodeRuntimeIsActive(node.data as Record<string, unknown>),
-      ),
-    ),
-  );
-  const renderedNodes = useMemo(() => {
-    const hasGeneratingNode = deriveHasGeneratingNodeRef.current(nodes, dragHistorySnapshot);
-    if (!placementConfirmNodeId && !hasGeneratingNode) return nodes;
-    return nodes.map((node) => {
-      const runtimeClasses = new Set(
-        String(node.className ?? '')
-          .split(/\s+/)
-          .filter(
-            (value) =>
-              value
-              && value !== 'canvas-node-placement-confirm'
-              && value !== 'canvas-node-generating',
-          ),
-      );
-      if (node.id === placementConfirmNodeId) {
-        runtimeClasses.add('canvas-node-placement-confirm');
-      }
-      const data = node.data as Record<string, unknown>;
-      if (canvasNodeRuntimeIsActive(data)) {
-        runtimeClasses.add('canvas-node-generating');
-      }
-      const className = Array.from(runtimeClasses).join(' ');
-      if (className === (node.className ?? '')) return node;
-      return {
-        ...node,
-        className: className || undefined,
-      };
-    });
-  }, [dragHistorySnapshot, nodes, placementConfirmNodeId]);
-  const canvasHasDraggingNode = useMemo(
-    () => nodes.some((node) => node.dragging === true),
-    [nodes],
-  );
-
-  // 隐藏连线时给每条边补 `hidden: true`——ReactFlow 会跳过渲染但边仍在图里，
-  // 连接、reconnect、持久化都不受影响。显示时直接透传真实 edges，零额外分配。
-  const renderedEdges = useMemo(() => {
-    if (!edgesHidden) return edges;
-    return edges.map((edge) => (edge.hidden ? edge : { ...edge, hidden: true }));
-  }, [edges, edgesHidden]);
 
   const getCanvasSafeInsets = useCallback((): CanvasSafeInsets => {
     const wrapper = wrapperRef.current;
@@ -1375,6 +1321,26 @@ export function Canvas({
       attributeFilter: ['data-village-interacting'],
     });
     const unsubscribeStore = reactFlowStore.subscribe(syncSuspension);
+    let activeBeamKey = '';
+    const syncActiveNodes = () => {
+      const active = new Map<string, 'running' | 'selected'>();
+      for (const node of useCanvasStore.getState().nodes) {
+        if (canvasNodeRuntimeIsActive(node.data as Record<string, unknown>)) {
+          active.set(node.id, 'running');
+        } else if (node.selected) {
+          active.set(node.id, 'selected');
+        }
+      }
+      const key = Array.from(active, ([id, state]) => `${id}:${state}`).join(',');
+      if (key === activeBeamKey) return;
+      activeBeamKey = key;
+      manager.setActiveNodes(active);
+    };
+    const unsubscribeCanvasStore = useCanvasStore.subscribe((state, previous) => {
+      if (state.nodes === previous.nodes) return;
+      syncActiveNodes();
+    });
+    syncActiveNodes();
     document.addEventListener('visibilitychange', syncSuspension);
     reducedMotion?.addEventListener('change', syncSuspension);
     syncSuspension();
@@ -1382,6 +1348,7 @@ export function Canvas({
     return () => {
       interactionObserver.disconnect();
       unsubscribeStore();
+      unsubscribeCanvasStore();
       document.removeEventListener('visibilitychange', syncSuspension);
       reducedMotion?.removeEventListener('change', syncSuspension);
       manager.destroy();
@@ -1417,20 +1384,13 @@ export function Canvas({
     setViewportState,
   ]);
 
-  useEffect(() => {
-    if (isRestoringCanvasRef.current || dragHistorySnapshot) {
-      return;
-    }
-
-    scheduleCanvasPersist();
-  }, [nodes, edges, history, dragHistorySnapshot, scheduleCanvasPersist]);
-
   // 项目刚加载完时，先按用户保存的 viewport 恢复。
   // 等容器尺寸稳定后再判断：若节点 bbox 与当前可视区完全无交集，或者
   // 小工作流在保存视口里缩得过小，自动拉回可读范围。这里不依赖
   // useNodesInitialized：持久化节点已有 measured 数据时该 hook 可能不翻转。
   useEffect(() => {
     if (!initialViewportCorrectionPendingRef.current) return;
+    const nodes = useCanvasStore.getState().nodes;
     if (nodes.length === 0) return;
 
     let cancelled = false;
@@ -1521,7 +1481,7 @@ export function Canvas({
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [getCanvasSafeInsets, handleFitCanvasView, nodes, reactFlowInstance, setViewportState]);
+  }, [getCanvasSafeInsets, handleFitCanvasView, nodeCount, reactFlowInstance, setViewportState]);
 
   // 派生一批节点（分镜图 / 逐镜视频）时的「整块 fit」请求。
   // 为什么不能复用下面那个单节点聚焦：单节点只把相机对准一个点，同批的其它成员
@@ -1530,6 +1490,7 @@ export function Canvas({
   // 所以整块 fit 到安全区里，让这一批全部进 DOM。
   useEffect(() => {
     if (!pendingFocusNodeIds || pendingFocusNodeIds.length === 0) return;
+    const nodes = useCanvasStore.getState().nodes;
     const nodeMap = new Map(nodes.map((node) => [node.id, node] as const));
     const rects = pendingFocusNodeIds
       .map((nodeId) => nodeMap.get(nodeId))
@@ -1564,7 +1525,6 @@ export function Canvas({
     clearPendingFocus();
   }, [
     pendingFocusNodeIds,
-    nodes,
     canvasViewportSize,
     reactFlowInstance,
     clearPendingFocus,
@@ -1577,7 +1537,7 @@ export function Canvas({
   // 节点刚 add 完时 measured 还没到，回退到 DEFAULT_NODE_WIDTH / 240 估算。
   useEffect(() => {
     if (!pendingFocusNodeId) return;
-    const target = nodes.find((node) => node.id === pendingFocusNodeId);
+    const target = selectNodeById(useCanvasStore.getState(), pendingFocusNodeId);
     if (!target) {
       clearPendingFocus();
       return;
@@ -1607,7 +1567,7 @@ export function Canvas({
       duration: 320,
     });
     clearPendingFocus();
-  }, [pendingFocusNodeId, nodes, reactFlowInstance, clearPendingFocus, getCanvasSafeInsets]);
+  }, [pendingFocusNodeId, reactFlowInstance, clearPendingFocus, getCanvasSafeInsets]);
 
   // 「跟随模式」：视口持续贴着被跟随节点的中心，直到用户取消。
   //
@@ -1615,9 +1575,7 @@ export function Canvas({
   // 拖动任何一个无关节点时都会换引用，相机就会被反复弹回被跟随节点，用户再也
   // 移不开视口。节点自身被拖动 / 被上游重算时它的引用才变，正好是「该跟」的时刻。
   const followedNodeId = useCanvasFollowStore((state) => state.followedNodeId);
-  const followedNode = useCanvasStore((state) =>
-    followedNodeId ? (state.nodes.find((node) => node.id === followedNodeId) ?? null) : null,
-  );
+  const followedNode = useCanvasStore((state) => selectNodeById(state, followedNodeId));
 
   useEffect(() => {
     if (!followedNodeId) return;
@@ -1762,7 +1720,10 @@ export function Canvas({
               });
               void showErrorDialog(errorMessage, t('common.error'), status.error ?? undefined, reportText);
             }
-            updateNodeData(pendingNode.id, {
+            // Async failure is task bookkeeping, not a user edit: writing it
+            // through the undo path would push a "still generating" snapshot
+            // that Ctrl+Z would restore.
+            patchNodeDataTransient(pendingNode.id, {
               isGenerating: false,
               generationStartedAt: null,
               generationJobId: null,
@@ -2123,13 +2084,14 @@ export function Canvas({
 
   const handleConnect = useCallback(
     (connection: Connection) => {
-      if (!canNodeBeManualConnectionSource(connection.source, nodes, connection.target)) {
+      const latestNodes = useCanvasStore.getState().nodes;
+      if (!canNodeBeManualConnectionSource(connection.source, latestNodes, connection.target)) {
         return;
       }
       connectGraphNodes(connection);
       scheduleCanvasPersist(0);
     },
-    [connectGraphNodes, nodes, scheduleCanvasPersist]
+    [connectGraphNodes, scheduleCanvasPersist]
   );
 
   // 3D 世界节点只用一张上游图生成 —— 入边唯一。已有上游时实时拒绝再连入(连线
@@ -2139,24 +2101,28 @@ export function Canvas({
     (connection: Connection | Edge) => {
       const targetId = connection.target;
       if (!targetId) return true;
-      const targetNode = nodes.find((node) => node.id === targetId);
+      // Read the live snapshot instead of closing over `nodes`/`edges`: the
+      // callback identity stays stable, so React Flow stops re-binding it on
+      // every drag frame.
+      const state = useCanvasStore.getState();
+      const targetNode = selectNodeById(state, targetId);
       if (!targetNode) return true;
       // 类型规则：拖线过程中就把不合法的源（如音频连图片）变灰、禁止落点。刻意复用
       // handleConnect 松手时那把尺子本身 —— 只查领域层的手工建边规则是不够的，那样
       // 3D 世界 / 360° 全景的额外限制会漏在外面，表现成「拖过去高亮成合法、一松手
       // 什么也没有」（视频→音频那条溯源边就是这样：建边规则放行，但不开放手工创建）。
       const sourceNode = connection.source
-        ? nodes.find((node) => node.id === connection.source)
+        ? selectNodeById(state, connection.source)
         : undefined;
       if (sourceNode && !canNodeTypeBeManualConnectionSource(sourceNode.type, targetNode.type)) {
         return false;
       }
       if (targetNode.type !== CANVAS_NODE_TYPES.threeDWorld) return true;
-      return !edges.some(
+      return !state.edges.some(
         (edge) => edge.target === targetId && edge.source !== connection.source,
       );
     },
-    [nodes, edges]
+    []
   );
 
   const applyLowDetail = useCallback((zoom: number) => {
@@ -2741,7 +2707,7 @@ export function Canvas({
       // absolute selectionRect made the marquee silently miss every grouped node even
       // when the box visibly covered them. resolveAbsolutePosition walks the parent
       // chain; for top-level nodes it returns node.position unchanged.
-      const currentNodes = nodesRef.current;
+      const currentNodes = useCanvasStore.getState().nodes;
       const nodeMap = new Map(currentNodes.map((node) => [node.id, node] as const));
       const hitIds = new Set(
         currentNodes
@@ -2874,39 +2840,26 @@ export function Canvas({
     setSelectedNode,
   ]);
 
-  const deriveSelectedNodeIdsRef = useRef(
-    createDragStableCanvasDerivation((currentNodes: readonly CanvasNode[]) =>
-      currentNodes.filter((node) => Boolean(node.selected)).map((node) => node.id),
-    ),
+  // Selected ids are strings; `useShallow` keeps the array stable across drag
+  // frames, so nothing downstream re-renders while an unrelated node moves.
+  const selectedNodeIds = useCanvasStore(
+    useShallow((state) => {
+      const ids: string[] = [];
+      for (const node of state.nodes) if (node.selected) ids.push(node.id);
+      return ids;
+    }),
   );
-  const selectedNodeIds = deriveSelectedNodeIdsRef.current(nodes, dragHistorySnapshot);
-  const selectedUploadCacheRef = useRef<{
-    dragHistorySnapshot: unknown;
-    nodeId: string | null;
-  } | null>(null);
-  const selectedUploadNodeId = useMemo(() => {
-    if (selectedNodeIds.length !== 1) {
-      return null;
+  const selectedUploadNodeId = useCanvasStore((state) => {
+    let selectedId: string | null = null;
+    for (const node of state.nodes) {
+      if (!node.selected) continue;
+      if (selectedId !== null) return null; // more than one selected
+      selectedId = node.id;
     }
-    const cached = selectedUploadCacheRef.current;
-    if (
-      cached
-      && dragHistorySnapshot !== null
-      && cached.dragHistorySnapshot === dragHistorySnapshot
-    ) {
-      return cached.nodeId;
-    }
-    const selectedNode = nodes.find((node) => node.id === selectedNodeIds[0]);
-    if (!selectedNode || selectedNode.type !== CANVAS_NODE_TYPES.upload) {
-      selectedUploadCacheRef.current = { dragHistorySnapshot, nodeId: null };
-      return null;
-    }
-    selectedUploadCacheRef.current = {
-      dragHistorySnapshot,
-      nodeId: selectedNode.id,
-    };
-    return selectedNode.id;
-  }, [dragHistorySnapshot, nodes, selectedNodeIds]);
+    if (selectedId === null) return null;
+    const node = selectNodeById(state, selectedId);
+    return node?.type === CANVAS_NODE_TYPES.upload ? node.id : null;
+  });
 
   useEffect(() => {
     if (selectedNodeIds.length === 1) {
@@ -3010,6 +2963,7 @@ export function Canvas({
   ]);
 
   const handleOrganizeCanvas = useCallback(() => {
+    const { nodes, edges } = useCanvasStore.getState();
     const { positions, changedCount } = computeAutoLayout(nodes, edges);
     if (Object.keys(positions).length === 0) {
       return;
@@ -3021,7 +2975,7 @@ export function Canvas({
     window.requestAnimationFrame(() => {
       handleFitCanvasView(240);
     });
-  }, [edges, handleFitCanvasView, nodes, scheduleCanvasPersist, setNodePositions]);
+  }, [handleFitCanvasView, scheduleCanvasPersist, setNodePositions]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -3095,11 +3049,12 @@ export function Canvas({
         }
         event.preventDefault();
         const selectedIdSet = new Set(selectedNodeIds);
+        const liveGraph = useCanvasStore.getState();
         // Deep-clone into a self-contained snapshot so paste no longer depends
         // on the originals still existing, and mirror it to the module-level
         // clipboard for cross-canvas paste.
         const snapshot: ClipboardSnapshot = {
-          nodes: nodes
+          nodes: liveGraph.nodes
             .filter((node) => selectedIdSet.has(node.id))
             .map((node) => ({
               ...node,
@@ -3107,7 +3062,7 @@ export function Canvas({
               selected: false,
               dragging: false,
             })),
-          edges: edges
+          edges: liveGraph.edges
             .filter(
               (edge) => selectedIdSet.has(edge.source) && selectedIdSet.has(edge.target)
             )
@@ -3167,12 +3122,13 @@ export function Canvas({
 
       // ⌘⇧G 解组：单选组节点时拆掉它，成员回到各自绝对坐标。
       if (isUngroup) {
-        const groupIds = nodes
+        const liveNodes = useCanvasStore.getState().nodes;
+        const groupIds = liveNodes
           .filter((node) => node.selected && node.type === CANVAS_NODE_TYPES.group)
           .map((node) => node.id);
         const targetIds = groupIds.length > 0
           ? groupIds
-          : selectedNodeId && nodes.find((node) => node.id === selectedNodeId)?.type === CANVAS_NODE_TYPES.group
+          : selectedNodeId && selectNodeById({ nodes: liveNodes }, selectedNodeId)?.type === CANVAS_NODE_TYPES.group
             ? [selectedNodeId]
             : [];
         if (targetIds.length === 0) {
@@ -3235,7 +3191,8 @@ export function Canvas({
           ? [selectedNodeId]
           : [];
 
-      const lockedNodeIds = new Set(nodes.filter(isPresetManagedNode).map((node) => node.id));
+      const liveState = useCanvasStore.getState();
+      const lockedNodeIds = new Set(liveState.nodes.filter(isPresetManagedNode).map((node) => node.id));
       const deletableNodeIds = idsToDelete.filter((nodeId) => !lockedNodeIds.has(nodeId));
 
       if (deletableNodeIds.length === 0 && deletableEdgeIds.length === 0) {
@@ -3547,7 +3504,7 @@ export function Canvas({
         // 从 imageGen 的 target handle 拖出来 → 点「图片」落到 upload 节点
         // 时，按「上传图片」语义初始化（同步 ImageGen 的 spawn-upstream-image
         // 按钮：拒视频）。
-        const originNode = nodes.find((node) => node.id === pendingConnectStart.nodeId);
+        const originNode = selectNodeById(useCanvasStore.getState(), pendingConnectStart.nodeId);
         if (originNode?.type === CANVAS_NODE_TYPES.imageGen) {
           initialData = { imageOnly: true };
         }
@@ -3586,7 +3543,6 @@ export function Canvas({
       menuAllowedTypes,
       menuPosition.x,
       menuPosition.y,
-      nodes,
       pendingBatchConnectIds,
       pendingConnectStart,
       setSelectedNode,
@@ -3736,9 +3692,10 @@ export function Canvas({
       // Source is either a serialized clipboard snapshot (paste) or live nodes
       // looked up by id (duplicate / 创建副本).
       const snapshot = options.sourceSnapshot;
+      const liveGraph = useCanvasStore.getState();
       const sourceNodes = snapshot
         ? snapshot.nodes
-        : nodes.filter((node) => sourceNodeIds.includes(node.id));
+        : liveGraph.nodes.filter((node) => sourceNodeIds.includes(node.id));
       if (sourceNodes.length === 0) {
         return null as DuplicateResult | null;
       }
@@ -3746,7 +3703,7 @@ export function Canvas({
       const sourceIdSet = new Set(sourceNodes.map((node) => node.id));
       const internalEdges = snapshot
         ? snapshot.edges
-        : edges.filter(
+        : liveGraph.edges.filter(
             (edge) => sourceIdSet.has(edge.source) && sourceIdSet.has(edge.target)
           );
 
@@ -3947,8 +3904,6 @@ export function Canvas({
       addNode,
       applyNodesChange,
       connectNodes,
-      edges,
-      nodes,
       scheduleCanvasPersist,
       setSelectedNode,
       t,
@@ -3997,12 +3952,13 @@ export function Canvas({
 
       // 拖线起点是 source handle 时，只要存在「至少一种合法的下游节点类型」就允许开拽；
       // 实际连接合法性会在 onConnect 里按目标类型再次校验。
+      const liveNodes = useCanvasStore.getState().nodes;
       if (
         params.handleType === 'source'
-        && !canNodeBeManualConnectionSource(params.nodeId, nodes)
+        && !canNodeBeManualConnectionSource(params.nodeId, liveNodes)
         && !canNodeBeManualConnectionSource(
           params.nodeId,
-          nodes,
+          liveNodes,
           CANVAS_NODE_TYPES.threeDWorld,
         )
       ) {
@@ -4035,7 +3991,7 @@ export function Canvas({
         start,
       });
     },
-    [nodes]
+    []
   );
 
   const handleNodeDragStart = useCallback(
@@ -4100,8 +4056,9 @@ export function Canvas({
         return;
       }
       const startPositions = new Map<string, { x: number; y: number }>();
+      const liveNodes = useCanvasStore.getState().nodes;
       for (const sourceNodeId of sourceNodeIds) {
-        const sourceNode = nodes.find((item) => item.id === sourceNodeId);
+        const sourceNode = selectNodeById({ nodes: liveNodes }, sourceNodeId);
         if (!sourceNode) {
           continue;
         }
@@ -4158,7 +4115,7 @@ export function Canvas({
         sourceToCopyIdMap: duplicateResult.idMap,
       };
     },
-    [duplicateNodes, nodes, selectedNodeIds]
+    [duplicateNodes, selectedNodeIds]
   );
 
   const handleNodeDrag = useCallback(
@@ -4385,15 +4342,16 @@ export function Canvas({
       const dropNodeElement = nodeElementFromTarget ?? nodeElementFromPoint;
       const dropNodeId = dropNodeElement?.dataset?.id ?? null;
 
+      const liveNodes = useCanvasStore.getState().nodes;
       if (dropNodeId && dropNodeId !== pendingConnectStart.nodeId) {
         const sourceNode =
           pendingConnectStart.handleType === 'source'
-            ? nodes.find((node) => node.id === pendingConnectStart.nodeId)
-            : nodes.find((node) => node.id === dropNodeId);
+            ? selectNodeById({ nodes: liveNodes }, pendingConnectStart.nodeId)
+            : selectNodeById({ nodes: liveNodes }, dropNodeId);
         const targetNode =
           pendingConnectStart.handleType === 'source'
-            ? nodes.find((node) => node.id === dropNodeId)
-            : nodes.find((node) => node.id === pendingConnectStart.nodeId);
+            ? selectNodeById({ nodes: liveNodes }, dropNodeId)
+            : selectNodeById({ nodes: liveNodes }, pendingConnectStart.nodeId);
 
         if (
           sourceNode &&
@@ -4435,7 +4393,7 @@ export function Canvas({
         }
       }
 
-      const originNode = nodes.find((node) => node.id === pendingConnectStart.nodeId);
+      const originNode = selectNodeById({ nodes: liveNodes }, pendingConnectStart.nodeId);
       const allowedTypes = resolveAllowedNodeTypes(
         pendingConnectStart.handleType,
         originNode?.type,
@@ -4507,7 +4465,6 @@ export function Canvas({
     [
       connectGraphNodes,
       connectionPreviewStroke,
-      nodes,
       pendingConnectStart,
       reactFlowInstance,
       scheduleCanvasPersist,
@@ -4542,7 +4499,7 @@ export function Canvas({
               y: params.clientPosition.y - containerRect.top,
             };
 
-      const originNode = nodesRef.current.find((node) => node.id === params.nodeId);
+      const originNode = selectNodeById(useCanvasStore.getState(), params.nodeId);
       const allowedTypes = resolveAllowedNodeTypes(params.handleType, originNode?.type);
       if (allowedTypes.length === 0) return;
 
@@ -4578,7 +4535,7 @@ export function Canvas({
   // 邻域内挑「点到矩形」距离最近的合法节点——不必压进节点内部才触发。
   const resolveManualDropTargetEl = useCallback(
     (clientPosition: { x: number; y: number }, pending: PendingConnectStart) => {
-      const currentNodes = nodesRef.current;
+      const currentNodes = useCanvasStore.getState().nodes;
       const validate = (el: HTMLElement | null): HTMLElement | null => {
         const dropNodeId = el?.dataset?.id ?? null;
         if (!el || !dropNodeId || dropNodeId === pending.nodeId) return null;
@@ -4738,7 +4695,7 @@ export function Canvas({
       // 与拖动高亮同一套邻域判定：松手时落在节点周围一圈邻域内即可建边，不必压进节点内部。
       const dropNodeElement = resolveManualDropTargetEl(params.clientPosition, pending);
       const dropNodeId = dropNodeElement?.dataset?.id ?? null;
-      const currentNodes = nodesRef.current;
+      const currentNodes = useCanvasStore.getState().nodes;
 
       if (dropNodeId && dropNodeId !== pending.nodeId) {
         const sourceNode =
@@ -4840,7 +4797,7 @@ export function Canvas({
   // Selected source-capable nodes + the downstream types valid for ALL of them
   // + the right-center of their bounding box (where a spawned node is anchored).
   const getBatchConnectContext = useCallback(() => {
-    const sources = nodes.filter(
+    const sources = useCanvasStore.getState().nodes.filter(
       (node) => Boolean(node.selected) && nodeHasSourceHandle(node.type),
     );
     if (sources.length < 2) {
@@ -4867,7 +4824,7 @@ export function Canvas({
       allowedTypes: allowed,
       bboxRightCenter: { x: maxX, y: (minY + maxY) / 2 },
     };
-  }, [nodes]);
+  }, []);
 
   // Open the spawn menu pre-armed to fan all selected sources into the new node.
   const openBatchSpawnMenu = useCallback(
@@ -5018,11 +4975,12 @@ export function Canvas({
 
       // Dropped on an existing node → fan every valid source straight into it.
       if (dropNodeId && !sourceIdSet.has(dropNodeId)) {
-        const targetNode = nodes.find((node) => node.id === dropNodeId);
+        const liveNodes = useCanvasStore.getState().nodes;
+        const targetNode = selectNodeById({ nodes: liveNodes }, dropNodeId);
         if (targetNode && nodeHasTargetHandle(targetNode.type)) {
           let connected = 0;
           for (const sourceId of drag.sourceIds) {
-            const sourceNode = nodes.find((node) => node.id === sourceId);
+            const sourceNode = selectNodeById({ nodes: liveNodes }, sourceId);
             if (
               sourceNode &&
               nodeHasSourceHandle(sourceNode.type) &&
@@ -5061,7 +5019,6 @@ export function Canvas({
     [
       connectGraphNodes,
       getBatchConnectContext,
-      nodes,
       openBatchSpawnMenu,
       reactFlowInstance,
       scheduleCanvasPersist,
@@ -5131,68 +5088,69 @@ export function Canvas({
       onDrop={handleCanvasDrop}
       onPointerMove={handleCanvasPointerMove}
     >
-      <ReactFlow
-        nodes={renderedNodes}
-        edges={renderedEdges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={handleEdgesChange}
-        onEdgeClick={handleEdgeClick}
-        onEdgeDoubleClick={handleEdgeDoubleClick}
-        onConnect={handleConnect}
-        onConnectStart={handleConnectStart}
-        onConnectEnd={handleConnectEnd}
-        isValidConnection={isValidConnection}
-        onNodeMouseEnter={handleNodeMouseEnter}
-        onNodeMouseLeave={handleNodeMouseLeave}
-        onNodeClick={handleNodeClick}
-        onNodeContextMenu={handleNodeContextMenu}
-        onNodeDragStart={handleNodeDragStart}
-        onNodeDrag={handleNodeDrag}
-        onNodeDragStop={handleNodeDragStop}
-        onSelectionDragStart={handleSelectionDragStart}
-        onSelectionDragStop={handleSelectionDragStop}
-        onPaneClick={handlePaneClick}
-        onMove={handleMove}
-        onMoveStart={handleMoveStart}
-        onMoveEnd={handleMoveEnd}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
-        connectionMode={ConnectionMode.Loose}
-        defaultViewport={initialViewportRef.current}
-        connectionRadius={CONNECTION_SNAP_RADIUS}
-        minZoom={0.1}
-        maxZoom={8}
-        nodesDraggable={!handToolActive}
-        elementsSelectable={!handToolActive}
-        nodesConnectable
-        edgesReconnectable
-        panOnDrag={handToolActive ? PAN_ON_DRAG_BUTTONS_HAND : PAN_ON_DRAG_BUTTONS}
-        panOnScroll={trackpadPanEnabled}
-        zoomOnScroll={!trackpadPanEnabled}
-        snapToGrid={snapToGrid}
-        snapGrid={[gridGap, gridGap]}
-        panActivationKeyCode={PAN_ACTIVATION_KEY_CODE}
-        selectionMode={SelectionMode.Partial}
-        multiSelectionKeyCode={MULTI_SELECTION_KEY_CODES}
-        selectionKeyCode={null}
-        deleteKeyCode={null}
-        onlyRenderVisibleElements={CANVAS_ONLY_RENDER_VISIBLE_ELEMENTS}
-        zoomOnDoubleClick={false}
-        proOptions={REACT_FLOW_PRO_OPTIONS}
-        style={{ backgroundColor: canvasTheme.background }}
+      <CanvasFlowSurface
+        flowProps={{
+          onNodesChange: handleNodesChange,
+          onEdgesChange: handleEdgesChange,
+          onEdgeClick: handleEdgeClick,
+          onEdgeDoubleClick: handleEdgeDoubleClick,
+          onConnect: handleConnect,
+          onConnectStart: handleConnectStart,
+          onConnectEnd: handleConnectEnd,
+          isValidConnection,
+          onNodeMouseEnter: handleNodeMouseEnter,
+          onNodeMouseLeave: handleNodeMouseLeave,
+          onNodeClick: handleNodeClick,
+          onNodeContextMenu: handleNodeContextMenu,
+          onNodeDragStart: handleNodeDragStart,
+          onNodeDrag: handleNodeDrag,
+          onNodeDragStop: handleNodeDragStop,
+          onSelectionDragStart: handleSelectionDragStart,
+          onSelectionDragStop: handleSelectionDragStop,
+          onPaneClick: handlePaneClick,
+          onMove: handleMove,
+          onMoveStart: handleMoveStart,
+          onMoveEnd: handleMoveEnd,
+          nodeTypes,
+          edgeTypes,
+          defaultEdgeOptions: DEFAULT_EDGE_OPTIONS,
+          connectionMode: ConnectionMode.Loose,
+          defaultViewport: initialViewportRef.current,
+          connectionRadius: CONNECTION_SNAP_RADIUS,
+          minZoom: 0.1,
+          maxZoom: 8,
+          nodesDraggable: !handToolActive,
+          elementsSelectable: !handToolActive,
+          nodesConnectable: true,
+          edgesReconnectable: true,
+          panOnDrag: handToolActive ? PAN_ON_DRAG_BUTTONS_HAND : PAN_ON_DRAG_BUTTONS,
+          panOnScroll: trackpadPanEnabled,
+          zoomOnScroll: !trackpadPanEnabled,
+          snapToGrid,
+          snapGrid: [gridGap, gridGap],
+          panActivationKeyCode: PAN_ACTIVATION_KEY_CODE,
+          selectionMode: SelectionMode.Partial,
+          multiSelectionKeyCode: MULTI_SELECTION_KEY_CODES,
+          selectionKeyCode: null,
+          deleteKeyCode: null,
+          onlyRenderVisibleElements: CANVAS_ONLY_RENDER_VISIBLE_ELEMENTS,
+          zoomOnDoubleClick: false,
+          proOptions: REACT_FLOW_PRO_OPTIONS,
+          style: { backgroundColor: canvasTheme.background },
+        }}
+        placementConfirmNodeId={placementConfirmNodeId}
+        dragHistorySnapshot={dragHistorySnapshot}
+        edgesHidden={edgesHidden}
+        history={history}
+        isRestoringCanvasRef={isRestoringCanvasRef}
+        scheduleCanvasPersist={scheduleCanvasPersist}
       >
         {showGrid && (
-          <AdaptiveCanvasGrid
-            gap={gridGap}
-            dotSize={gridDotSize}
-            color={canvasTheme.grid}
-          />
+          <CanvasGridLayer gap={gridGap} dotSize={gridDotSize} color={canvasTheme.grid} />
         )}
         <CanvasMinimapPanel
           open={minimapPinned}
           expanded={minimapExpanded && !taskPanelOpen}
-          suspended={canvasHasDraggingNode}
           onExpandedChange={setMinimapExpanded}
           onClose={() => {
             setMinimapExpanded(false);
@@ -5221,7 +5179,7 @@ export function Canvas({
           onPlusDragEnd={handlePlusConnectDragEnd}
         />
         <SnapAlignGuides />
-      </ReactFlow>
+      </CanvasFlowSurface>
 
       <ReferencePickBanner />
 
@@ -5391,7 +5349,7 @@ export function Canvas({
         />
       )}
 
-      {nodes.length === 0 && (
+      {isEmptyCanvas && (
         <EmptyCanvasStart />
       )}
 
@@ -5408,8 +5366,6 @@ export function Canvas({
 
       {performanceDebugAvailable && (
         <CanvasPerformanceHud
-          nodes={nodes}
-          edgeCount={edges.length}
           renderCount={renderCountRef.current}
           enabled={performanceHudEnabled}
           onEnabledChange={setPerformanceHudEnabled}

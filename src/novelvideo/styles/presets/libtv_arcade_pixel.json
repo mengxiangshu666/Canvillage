@@ -1,0 +1,26 @@
+{
+  "id": "libtv_arcade_pixel",
+  "name": "街机像素风",
+  "label": "街机像素风",
+  "family": "pixel",
+  "era": "",
+  "palette": "limited 16-bit palette, strong square color blocks",
+  "lighting": "flat pixel shading with hard-edged highlights",
+  "optics": "orthographic pixel grid, no anti-aliased photographic detail",
+  "composition": "side-scroller framing with readable sprite silhouette",
+  "camera_motion": "static frame; keep the pixel grid locked",
+  "style_instructions": "Pixel style with strong square graphics, full of nostalgic arcade feeling",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "街机像素风",
+  "tags": [
+    "街机像素风",
+    "libtv",
+    "像素复古"
+  ],
+  "model_overrides": {},
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "image_prompt": "Pixel style with strong square graphics, full of nostalgic arcade feeling",
+  "video_prompt": "Pixel style with strong square graphics, full of nostalgic arcade feeling. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

@@ -1,0 +1,1910 @@
+{
+  "version": "1.0",
+  "updated": "2026-10-15",
+  "purpose": "失败样本库。把散落在技能各处的失败知识收敛成「症状 → 证据 → 硬规则」，供生成前主动排查、生成后快速归因。用法见同目录 README.md，命令行入口 scripts/dream_fail.py。",
+  "reading_order": [
+    "1. 开工/出分镜前：按 planned 症状查，把风险写进分镜表",
+    "2. 生成后：按 observed 症状查，先归类再改，别堆提示词"
+  ],
+  "stages": {
+    "script": "剧本",
+    "dialogue": "台词",
+    "asset": "资产图",
+    "storyboard": "分镜",
+    "keyframe": "关键帧/锚点帧",
+    "prompt": "提示词写法",
+    "video": "视频生成",
+    "audio": "声音",
+    "post": "后期剪辑",
+    "channel": "渠道与工程"
+  },
+  "severity_legend": {
+    "致命": "必崩或必扣额度，必须做进前置步骤",
+    "严重": "大概率崩，需按处方规避",
+    "一般": "影响质量或造成误判，知悉即可"
+  },
+  "global_decision_trees": [
+    {
+      "id": "DT-1",
+      "name": "动态崩坏四类归因（先归类，再动手）",
+      "order": "按顺序排查，互斥",
+      "branches": [
+        {
+          "signal": "缺陷随运动幅度单调变化，动作减半就稳",
+          "class": "R1 运动幅度超预算",
+          "goto": "F-VID-01"
+        },
+        {
+          "signal": "缺陷集中在画面里元素的位置关系、机位自己动",
+          "class": "R2 空间不一致",
+          "goto": "F-VID-02"
+        },
+        {
+          "signal": "缺陷集中在人物本身：脸逐帧液化、五官重排",
+          "class": "R3 身份漂移",
+          "goto": "F-VID-03"
+        },
+        {
+          "signal": "换一个场景/题材就消失（镜面、水下、火场）",
+          "class": "R4 物理光学先验",
+          "goto": "F-VID-04"
+        },
+        {
+          "signal": "所有东西都不对，四类都对不上",
+          "class": "R5 全崩（多为提示词自相矛盾或超预算叠加）",
+          "goto": "F-PRM-06"
+        }
+      ],
+      "iron_rule": "禁止在归因前堆提示词。已有两次实测反证：锁机位无效、删净气泡无效。"
+    },
+    {
+      "id": "DT-2",
+      "name": "台词「不对」四病型分流（防止白重做）",
+      "branches": [
+        {
+          "signal": "读不通 + 文言腔 + 无对应画面",
+          "class": "病型1 空白填充（真故障）",
+          "goto": "F-DLG-01"
+        },
+        {
+          "signal": "读得通、发音相同或极近",
+          "class": "病型2 同音字（假故障，别重做）",
+          "goto": "F-DLG-04"
+        },
+        {
+          "signal": "发音正确但像文言",
+          "class": "病型3 文言化（模型口味，可接受）",
+          "goto": "F-DLG-05"
+        },
+        {
+          "signal": "语音总时长 ≥90% 镜头时长",
+          "class": "病型4 语速慢（正常，接受）",
+          "goto": "F-DLG-06"
+        }
+      ],
+      "iron_rule": "先把「真故障 / 假故障 / 口味 / 正常」分开，再决定要不要花额度重做。"
+    },
+    {
+      "id": "DT-3",
+      "name": "改词无效的识别（判断是不是场景先验）",
+      "branches": [
+        {
+          "signal": "删净所有相关描述后缺陷仍出现",
+          "class": "场景先验，不是提示词问题",
+          "action": "立刻停止改词，改走 后期 / 缩时长 / 拆镜 / 规避构图"
+        },
+        {
+          "signal": "写了「不要XX」之后 XX 反而出现",
+          "class": "负面词召回 / 反向激活",
+          "goto": "F-PRM-01"
+        },
+        {
+          "signal": "改了幅度词但幅度没变",
+          "class": "扩写器接管了幅度",
+          "goto": "F-PRM-07"
+        }
+      ]
+    },
+    {
+      "id": "DT-4",
+      "name": "接缝断裂排查（跨镜接不上）",
+      "order": "严格按此顺序",
+      "branches": [
+        {
+          "step": 1,
+          "check": "看锚点图：是不是画成了静止姿态",
+          "goto": "F-KEY-01"
+        },
+        {
+          "step": 2,
+          "check": "看单镜动作数：是不是一镜塞了多个主动作",
+          "goto": "F-SB-01"
+        },
+        {
+          "step": 3,
+          "check": "看接缝行：方向/速度档/锚点是不是漏填或没被机器校验",
+          "goto": "F-SB-02"
+        },
+        {
+          "step": 4,
+          "check": "以上都不是，才怀疑模型档位",
+          "goto": "F-VID-08"
+        }
+      ],
+      "iron_rule": "90% 的「衔接不符合常理」出在前三步，不在模型。"
+    }
+  ],
+  "cases": [
+    {
+      "id": "F-SCR-01",
+      "stage": "script",
+      "symptom": "每场戏都发生了事，但看完没感觉，观众没被推动",
+      "also": [
+        "平",
+        "没劲",
+        "流水账",
+        "串不起来"
+      ],
+      "severity": "致命",
+      "machine": null,
+      "threshold": "每场/序列须有具体观看收益及声画证据，核删并损失；不强制每场正负翻转或每序列反转",
+      "cause": "只罗列事件或空称氛围，没有让观众获得信息、人物/关系、行动结果、常态/母题、时空或余波的可核收益；旧正负翻转配额仅局部方法，不作通用阈值",
+      "rules": [
+        "R-VALUE-SHIFT"
+      ],
+      "fix": [
+        "写本场/序列让观众得到什么及实际声画证据，分开核结果/认知/关系/价值/人物评价的变化或确认",
+        "比较删掉、缩短、合并的具体损失；常态/母题/观察收益须能落到细节，不能填氛围空标签",
+        "无功能重复才合并/删改；若有反转核铺垫/触发与兑现，不为过关给每序列强加反转；人工设计审查不等于影片或观众PASS"
+      ],
+      "avoid": [
+        "靠加旁白解释情绪",
+        "靠配乐硬撑"
+      ],
+      "evidence": "剧作层蒸馏（v5.1.14 序列定义与价值转移轨迹）",
+      "src": "theory/01-剧本与叙事.md；film-masters/01-电影编剧理论.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-SCR-02",
+      "stage": "script",
+      "symptom": "反转不成立，观众提前猜到或者觉得莫名其妙",
+      "also": [
+        "硬转",
+        "为了反转而反转",
+        "没铺垫"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "反转前必须有至少一处可回溯的铺垫",
+      "cause": "惰性反转：只有转折结果，没有种植在前的伏笔",
+      "rules": [
+        "R-SETUP-PAYOFF"
+      ],
+      "fix": [
+        "两种可用形式：自身动作反弹（自食其果）/ 隐藏主体揭示（有人一直在）",
+        "把支撑反转的信息前置到前面某场戏的可见细节里"
+      ],
+      "avoid": [
+        "靠事后解释补设定"
+      ],
+      "evidence": "剧作层蒸馏（v5.1.14 反转两形式）",
+      "src": "theory/01-剧本与叙事.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-SCR-03",
+      "stage": "script",
+      "symptom": "无依据中途换目标，或当前追求/行动含糊到无法解释人物选择与后果",
+      "also": [
+        "跑偏",
+        "不知道要干嘛"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "目标维持/修订有具体触发、知情时点和动机；有依据演变合法，无依据漂移返工",
+      "cause": "没有建立原目标到新选择的过渡，或混淆目标/战术；旧大目标全程不变仅局部策略，不作通用限制",
+      "rules": [
+        "R-GOAL-STABLE"
+      ],
+      "fix": [
+        "写原目标→具体触发→人物当时所知/误认→现在为何继续/放弃/替换→可选行动→选择与后果",
+        "区分目标维持下的战术调整、有依据目标修订和无依据漂移；群体/网络叙事核各线关系，不强迫全员同一总目标"
+      ],
+      "avoid": [
+        "用成长/目标升级标签代替触发与后果",
+        "把合理目标修订一律写死回去，或让人物知道尚未接收到的信息"
+      ],
+      "evidence": "剧作层蒸馏（v5.1.14 大目标不变战术可错）",
+      "src": "theory/01-剧本与叙事.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-SCR-04",
+      "stage": "script",
+      "symptom": "障碍太软，主角随便就过了，没有张力",
+      "also": [
+        "太顺",
+        "没压迫感"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "只允许两种形态：分支搜索空间 / 单堵硬墙",
+      "cause": "障碍没有形态，只是「有点难」",
+      "rules": [
+        "R-OBSTACLE-FORM"
+      ],
+      "fix": [
+        "要么给多条可选路径（观众猜他会走哪条）",
+        "要么给一堵不可绕的硬墙（观众看他怎么撞）"
+      ],
+      "avoid": [
+        "用「他很努力」代替结构性障碍"
+      ],
+      "evidence": "剧作层蒸馏（v5.1.14 障碍两形态）",
+      "src": "theory/01-剧本与叙事.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-SCR-05",
+      "stage": "script",
+      "symptom": "画面技术合格，但所谓两难或牺牲可被随手移物等低代价办法解决，损失人为制造",
+      "also": [
+        "假两难",
+        "为什么不挪一下",
+        "故意牺牲",
+        "有表情没动机"
+      ],
+      "severity": "致命",
+      "machine": null,
+      "threshold": "声称两难的场景先挑战至少两个便利解法；触发危险、限制与角色动机需在画面成立",
+      "cause": "作者先想要感动的结果，再让角色忽略常识；静态章节/价值变化关键词通过不代表真实困境成立",
+      "rules": [
+        "R-VALUE-SHIFT"
+      ],
+      "fix": [
+        "列出观众会想到的移物、收起、同时遮护或求助等办法，逐项找可见可信的限制",
+        "没有真实限制就改写欲望/障碍/场景，或明确写成自愿付出并建立真实动机，不加牵强设定补洞",
+        "首段实际危机与反应未成立，登记production_hold，暂停后段收费，先修因果"
+      ],
+      "avoid": [
+        "让后镜替前镜补动机",
+        "只禁微笑而不修假两难",
+        "以旁白、音乐或工程PASS代替戏剧成立"
+      ],
+      "evidence": "2026-10-08《雨停之前》S01真实8秒：可移动花盆、未建立可见危机、后半微笑；内部抽帧/剧作审查FAIL，停止S02/S03；未听审、未独立试映",
+      "src": "case-studies/雨停之前-首段实测.md；theory/01-剧本与叙事.md；team/dream-script/SKILL.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-DLG-01",
+      "stage": "dialogue",
+      "symptom": "台词前后冒出听不懂的伪古文（「猛运热无教区」「臣们名誉咬」）",
+      "also": [
+        "乱说",
+        "念经",
+        "杂音",
+        "胡言乱语",
+        "多说了几句"
+      ],
+      "severity": "致命",
+      "machine": "可测：语音时长 ÷ 镜头时长，或台词字数 ÷ 镜头秒数",
+      "threshold": "逐句落在 5.0–7.0 字/秒（唯一数字源 capabilities.json 的 dialogue_rate）；低于下限自造杂音，高于上限吞句",
+      "cause": "语音时长 < 镜头时长，模型必须填满空档，于是编造伪古文（官方 discussions #76：the model does NOT do silence well）",
+      "rules": [
+        "R-DIALOGUE-FILL",
+        "R-NO-EMPTY-SLOT"
+      ],
+      "fix": [
+        "台词密度补到 5.0~7.0 字/秒（唯一数字源 capabilities.json 的 dialogue_rate）；10 秒镜即 50~70 字",
+        "达不到字数就走剧情细节/心理描写/动作细节扩写，不注水废话",
+        "提交前先算字数，不达标不提交"
+      ],
+      "avoid": [
+        "标注「XX 保持静默」（无效，只防该说话的人乱说，防不住空档编词）",
+        "把台词块提到提示词最前（实测 70%→70%，无效）",
+        "加「不要出现含混低语或念白」（负向约束挡不住填满本能）",
+        "加环境音（部分有效，不能根除）"
+      ],
+      "evidence": "本机 11 镜实测：9 字→71% 杂音 / 47 字→32% / 83~98 字→0%",
+      "src": "film-masters/40-台词填充率铁律与杂音根因.md；film-masters/41-台词乱读四病型诊断与处方.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-DLG-02",
+      "stage": "dialogue",
+      "symptom": "短台词被重复念了两遍甚至三遍",
+      "also": [
+        "说两遍",
+        "重复",
+        "循环"
+      ],
+      "severity": "致命",
+      "machine": "可测：语音占比",
+      "threshold": "逐句落在 5.0–7.0 字/秒；4 秒镜即 20~28 字",
+      "cause": "同 F-DLG-01：模型宁可重复也不留静默",
+      "rules": [
+        "R-DIALOGUE-FILL"
+      ],
+      "fix": [
+        "台词匹配时长（首选，同 F-DLG-01）",
+        "台词标签内加句号，提示「说完了」",
+        "补 overall_soundscape 环境音底噪垫底"
+      ],
+      "avoid": [
+        "只加静默标注而不补长台词"
+      ],
+      "evidence": "S02 逐词时间戳：0.66-1.90「我就知道」→1.90-3.86 又一遍；语音占比约 37%",
+      "src": "film-masters/35-H3尾段漂移与台词重复根因研究.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-DLG-03",
+      "stage": "dialogue",
+      "symptom": "没安排台词的角色发出了声音（笑、哼、叹气）",
+      "also": [
+        "多余的声音",
+        "谁在说话",
+        "不该出声"
+      ],
+      "severity": "严重",
+      "machine": "可测：转写时间戳里出现脚本外内容",
+      "threshold": "每个非说话角色必须显式声明静默",
+      "cause": "旁挂角色有可见动作（忍笑、皱眉）却没被标静默，模型把动作发成了声",
+      "rules": [
+        "R-SILENT-CAST"
+      ],
+      "fix": [
+        "逐个列出本镜不发声的角色，写明「嘴部闭合不动，全程不发任何声音」",
+        "露脸但不出声的人在提示词里点名为静默"
+      ],
+      "avoid": [
+        "只写主角台词，默认别人自动闭嘴"
+      ],
+      "evidence": "S02 双人镜，父亲「忍笑」未标注静默 → 0.00-0.66 出现「呵呵」",
+      "src": "film-masters/35-H3尾段漂移与台词重复根因研究.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-DLG-04",
+      "stage": "dialogue",
+      "symptom": "转写文本里台词个别字不对（「中规中矩」变「终归终局」），但听上去是对的",
+      "also": [
+        "错别字",
+        "字幕不对"
+      ],
+      "severity": "一般",
+      "machine": "可测：模糊匹配（3 字滑窗）",
+      "threshold": "字符重合度 <90% 才判可疑",
+      "cause": "Whisper ASR 的同音字偏好，与模型无关",
+      "rules": [
+        "R-ASR-FALSE-ALARM"
+      ],
+      "fix": [
+        "验收脚本用模糊匹配或白名单",
+        "想确认就人工听一遍"
+      ],
+      "avoid": [
+        "因为转写「看着不对」就重做——纯浪费额度"
+      ],
+      "evidence": "《落凡宗小臣》多镜转写同音字变体，实际发音正确",
+      "src": "film-masters/41-台词乱读四病型诊断与处方.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-DLG-05",
+      "stage": "dialogue",
+      "symptom": "现代白话被念成半文半白（「魔道入侵，国将倾覆」→「摩托入侵国将侵赴」）",
+      "also": [
+        "文言腔",
+        "古风腔调"
+      ],
+      "severity": "一般",
+      "machine": null,
+      "threshold": "语义通即可接受",
+      "cause": "仙侠/古风题材 + 台词本身用古语 + 模型古文语料倾向强",
+      "rules": [
+        "R-MODERN-ANCHOR"
+      ],
+      "fix": [
+        "台词里掺一两个现代白话锚点（摩托车、派出所、手机、打卡）",
+        "古风片但想让口播稳，就放 1~2 个当代词作参照"
+      ],
+      "avoid": [
+        "默认要重做——多数观众听不出来，除非用户明确要求现代口音"
+      ],
+      "evidence": "《落凡宗小臣》台词腔调实测",
+      "src": "film-masters/41-台词乱读四病型诊断与处方.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-DLG-06",
+      "stage": "dialogue",
+      "symptom": "台词念得极慢，9 个字念了 9 秒",
+      "also": [
+        "语速慢",
+        "拖"
+      ],
+      "severity": "一般",
+      "machine": "可测：语音总时长 ÷ 镜头时长",
+      "threshold": "≥90% 视为正常",
+      "cause": "模型自动放慢语速来填满时长，是它「填满」机制的正常表现",
+      "rules": [
+        "R-ACCEPT-SLOW"
+      ],
+      "fix": [
+        "接受它",
+        "若确实太长再减字数"
+      ],
+      "avoid": [
+        "因为「念得慢」继续加字，会超载"
+      ],
+      "evidence": "病型 4 实例",
+      "src": "film-masters/41-台词乱读四病型诊断与处方.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-DLG-07",
+      "stage": "dialogue",
+      "symptom": "该说的台词漏了，或者模型不知道读哪一句",
+      "also": [
+        "漏台词",
+        "读错句子",
+        "乱序"
+      ],
+      "severity": "致命",
+      "machine": "可测：提交前检查台词块格式",
+      "threshold": "一段一镜只放一个台词块",
+      "cause": "把表演指导、括号注释、多个候选句混在同一段里，模型分不清哪句是人话",
+      "rules": [
+        "R-DIALOGUE-FORMAT"
+      ],
+      "fix": [
+        "固定格式：谁谁谁说（一个表演词）：“台词”",
+        "台词正文严格放引号内；引号外一律写明「不出声」",
+        "用标点驱动停顿与语气：省略号=停顿，破折号=打断，问号/感叹号=语气",
+        "一个镜头只给一段台词，多角色分镜拆开"
+      ],
+      "avoid": [
+        "用括号写表演指导（会漏台词或乱读）",
+        "把停连重音术语直接写进提示词（实测反而更乱）",
+        "一镜塞多人台词"
+      ],
+      "evidence": "2026-10-06 实测：格式化为「谁谁说：“…”」后稳定；此前的表演术语写法导致漏读",
+      "src": "film-masters/41 写作模板；SKILL.md §4 台词与对白",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-DLG-08",
+      "stage": "dialogue",
+      "symptom": "画面里出现了台词字幕",
+      "also": [
+        "字幕",
+        "文字",
+        "水印"
+      ],
+      "severity": "严重",
+      "machine": "可测：抽帧目视 / OCR",
+      "threshold": "画面文字必须为 0",
+      "cause": "未声明无字幕；或台词格式被模型当成待渲染文本",
+      "rules": [
+        "R-NO-ONSCREEN-TEXT"
+      ],
+      "fix": [
+        "负向约束里明确写 No on-screen text / 不要字幕（针对文字这类训练集外强先验，散文式否定有效）"
+      ],
+      "avoid": [
+        "把「字幕」「标题」等词写在正面描述里"
+      ],
+      "evidence": "H3 官方示例即 No cuts. No on-screen text.",
+      "src": "film-masters/60-事件持续性缺陷与H3运镜语法修正.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-DLG-09",
+      "stage": "dialogue",
+      "symptom": "台词或人物描述里出现年龄词，任务被判敏感",
+      "also": [
+        "审核",
+        "422",
+        "被拒"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "任何语言不写年龄",
+      "cause": "年龄词触发内容审核",
+      "rules": [
+        "R-AGE-BLIND"
+      ],
+      "fix": [
+        "改用角色身份、服装、动作描述人物",
+        "年龄盲规则：不写 boy/girl/child/kid/young/teen/little"
+      ],
+      "avoid": [
+        "用「少女」「少年」「小孩」当人物标签"
+      ],
+      "evidence": "13-翻车对照 7.1 误判敏感",
+      "src": "prompt-library/13-翻车对照与排查.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-AST-01",
+      "stage": "asset",
+      "symptom": "同一角色跨镜长得不一样，脸在飘",
+      "also": [
+        "换脸",
+        "不像了",
+        "身份漂移"
+      ],
+      "severity": "致命",
+      "machine": "可测：人脸相似度（dream_asset_qa.py face-threshold 0.55）",
+      "threshold": "跨镜首帧与主参考图五官偏差 ≤5%",
+      "cause": "身份靠文字描述维持，或参考图用法不对；模型在去噪早期就把身份定死",
+      "rules": [
+        "R-IDENTITY-LOCK",
+        "R-FIRST-FRAME-5"
+      ],
+      "fix": [
+        "每镜复用同一张角色主参考图，不靠重复描述外貌",
+        "用「大头照 + 全身照」做参考，不是把多视图整表塞进去",
+        "身份一致性优先靠首帧图本身，不靠多参考堆叠",
+        "新片首帧与主参考图五官点位偏差超过画面高/宽的 5%，直接重做"
+      ],
+      "avoid": [
+        "靠「暖光/冷光下的同一张脸」跨镜保身份（身份会微妙变化）",
+        "一镜内主光色温变化——要变就拆镜",
+        "服装变化不拆镜"
+      ],
+      "evidence": "官方 5% 规则；本机多镜实测",
+      "src": "film-masters/53、35；prompt-library/11-角色一致性系统.md、13 第 8.1 节",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-AST-02",
+      "stage": "asset",
+      "symptom": "角色四视图做成了四张图，或者把人头也画在三个侧视图上",
+      "also": [
+        "四视图不对",
+        "设定表格式错"
+      ],
+      "severity": "严重",
+      "machine": "可测：资产文件数",
+      "threshold": "一张图：左 1/3 大头照 + 右 2/3 严格无头三视图",
+      "cause": "没有按硬口径产出，导致参考混乱、模型识别成多个主体",
+      "rules": [
+        "R-SHEET-FORMAT"
+      ],
+      "fix": [
+        "按硬口径重出：一张图内多格版式",
+        "进视频前先由四视图生成单张完整首帧，再走 I2V"
+      ],
+      "avoid": [
+        "把整张四视图复合表直接当单镜的参考图"
+      ],
+      "evidence": "用户硬口径（2026-09 多次纠正）",
+      "src": "SKILL.md 资产闸门；prompt-library/27-资产体系.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-AST-03",
+      "stage": "asset",
+      "symptom": "首帧图就有点糊/有噪点，成片更脏",
+      "also": [
+        "噪点",
+        "脏",
+        "不干净",
+        "灰"
+      ],
+      "severity": "致命",
+      "machine": "可测：图像清晰度指标",
+      "threshold": "首现画质决定后续一致性上限",
+      "cause": "观众用「实体第一次清晰出现」作一致性基准，首帧质量不够会拖低整条片子的上限",
+      "rules": [
+        "R-FIRST-APPEARANCE"
+      ],
+      "fix": [
+        "首帧必须干净锐利，不用带噪点的图当锚",
+        "生图提示词侧控住质感（避免把 film grain / imperfect focus / blurry background 写进主体描述——它们会落到整帧）",
+        "不够就重出首帧，而不是指望视频模型修复"
+      ],
+      "avoid": [
+        "在提示词里用「胶片颗粒」「不完美对焦」当氛围词"
+      ],
+      "evidence": "GroundShot（arXiv 2606.20799）：观众以实体首次清晰出现为一致性基准",
+      "src": "research/CROSS_SHOT_MOTION_CONTINUITY_2026-10-07.md；prompt-library/13 第三节",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-AST-04",
+      "stage": "asset",
+      "symptom": "跨镜空间关系错乱，门在左边下一秒跑右边",
+      "also": [
+        "空间错乱",
+        "方向不对",
+        "场景变了"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "每个复用场景必须先有拓扑图/俯视图",
+      "cause": "场景资产只有单视角图，没有机位与门窗相对位置信息",
+      "rules": [
+        "R-SCENE-TOPO"
+      ],
+      "fix": [
+        "先出场景拓扑图与俯视图，锁定机位与动线",
+        "复杂场景出背面图或 720 全景"
+      ],
+      "avoid": [
+        "只有一张正面场景图就开始拍多机位"
+      ],
+      "evidence": "用户口径：场景要有背面图/720 全景/拓扑图/俯视图",
+      "src": "prompt-library/27-资产体系.md、21-构图与画面经营.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-SB-01",
+      "stage": "storyboard",
+      "symptom": "单个镜头里塞了三个大动作，成片里中间那段凭空消失（不报错）",
+      "also": [
+        "跳段",
+        "瞬移",
+        "动作被跳过",
+        "缺一段"
+      ],
+      "severity": "致命",
+      "machine": "可测：数每镜主动作数（改变主体位置/状态的大动作）",
+      "threshold": "单镜 = 1 个主动作 +（最多）1 个过渡动作",
+      "cause": "超出运动预算。次级动作（眨眼、衣摆、尘土）不算；改变主体位置/状态的大动作才算主动作",
+      "rules": [
+        "R-ACTBUDGET"
+      ],
+      "fix": [
+        "分镜写完先数主动作，>1 就拆镜",
+        "节拍上限（≤8s 最多 3 拍）说的是时间分段，不是能塞 3 个主动作"
+      ],
+      "avoid": [
+        "靠提示词让模型「连续做三个动作」",
+        "把多个物理事件压在一镜里"
+      ],
+      "evidence": "跑酷片镜2：贴地滚降→撞护栏甩出→抓缆 三个动作，中间「甩出腾空」被整段跳过，无告警",
+      "src": "film-masters/24-AI视频运动崩坏图谱与动态一致性工程.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-SB-02",
+      "stage": "storyboard",
+      "symptom": "分镜看起来没问题，但成片接缝处像瞬移或速度突然归零",
+      "also": [
+        "接缝断裂",
+        "衔接不对",
+        "突然停"
+      ],
+      "severity": "致命",
+      "machine": "可测：dream_seam.py（分镜方向/档位/锚点）+ dream_delivery_guard.py compare_boundary_motion（实际片段边界光流方向/档位）",
+      "threshold": "相邻镜的出入方向差 ≤45°；速度档差 ≤1 档",
+      "cause": "分镜只写了画面内容，没写运动怎么接力",
+      "rules": [
+        "R-SEAM-MOMENTUM"
+      ],
+      "fix": [
+        "每镜块写一行：运动接力：入速=右下·快 ｜ 出速=右下·快 ｜ 锚点=运动中",
+        "方向要反就写理由标记（[转折][反弹][制动][加速]）",
+        "档位突变要写理由，否则判 WARN/FAIL"
+      ],
+      "avoid": [
+        "先跑完再看成片发现接不上"
+      ],
+      "evidence": "v7.6 接缝动量校验器实测 20/20 通过；坏样本能稳定判 FAIL",
+      "src": "scripts/dream_seam.py；team/dream-storyboard/SKILL.md v1.2",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-SB-03",
+      "stage": "storyboard",
+      "symptom": "人物跑到画面外去了，或者某一镜主体丢了只剩空景",
+      "also": [
+        "主体丢失",
+        "跑出画",
+        "空景"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "每镜必须写明主体在画面中的落点",
+      "cause": "只写了动作没写落点，模型按自己的理解把人推出画框",
+      "rules": [
+        "R-SUBJECT-ANCHOR"
+      ],
+      "fix": [
+        "每镜标注主体起止位置（如：起画面中，止画面左 1/3）",
+        "跨镜方向连续性要在接缝行体现"
+      ],
+      "avoid": [
+        "默认主体会自动居中"
+      ],
+      "evidence": "跑酷片镜3 尾帧主体丢失（空景）",
+      "src": "film-masters/24",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-SB-04",
+      "stage": "storyboard",
+      "symptom": "首尾帧都给了，成片中间塌了，末段才又对",
+      "also": [
+        "中段崩",
+        "两头对中间垮"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "首尾帧只能锚定两端",
+      "cause": "误以为双锚定能锁住整段",
+      "rules": [
+        "R-DUAL-ANCHOR-LIMIT"
+      ],
+      "fix": [
+        "接受双锚定只锁两端",
+        "把关键内容放进前后各 2 秒",
+        "必要时中段补一个关键帧或拆镜"
+      ],
+      "avoid": [
+        "不断加长镜头指望中段自动稳"
+      ],
+      "evidence": "film-masters/60 实测：尾帧锚定能拉回终点事件、锁不住中段",
+      "src": "film-masters/60",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-SB-05",
+      "stage": "storyboard",
+      "symptom": "一镜多切或者出现计划外的硬切",
+      "also": [
+        "多了剪切",
+        "硬切",
+        "被拆成多镜"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "一镜一运镜",
+      "cause": "同一段里堆了多个运镜指令，扩写器把它们拆成多个镜头",
+      "rules": [
+        "R-ONE-CAMERA-PER-SHOT"
+      ],
+      "fix": [
+        "一镜只给一个运镜",
+        "确实要切就自己写分镜表和切点",
+        "每镜给够秒数（5 秒切三镜=每镜不到 2 秒）"
+      ],
+      "avoid": [
+        "堆叠方括号运镜标签（实测在 1.58s/3.67s 出现真实硬切）"
+      ],
+      "evidence": "fuser.studio 实测三链式运镜被拆成 Shot1/2/3",
+      "src": "film-masters/60",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-KEY-01",
+      "stage": "keyframe",
+      "symptom": "锚点图看着很漂亮，但和前后镜接不上",
+      "also": [
+        "静态图",
+        "摆拍感",
+        "接不上"
+      ],
+      "severity": "致命",
+      "machine": "可测：人工判据（问他「这东西正在往哪动、动得多快」）",
+      "threshold": "问的人必须能答出方向与速度",
+      "cause": "锚点图画成了静止瞬间，等于给模型下了一个「停住」的指令",
+      "rules": [
+        "R-MOTIONANCHOR"
+      ],
+      "fix": [
+        "锚点图里带速度证据：倾斜前压的躯干、被拉直绷紧的绳索衣料、向后拖的头发衣摆、被压进画面的速度线、被气流带起的尘/水/碎屑",
+        "只有这一镜本就要停（收势、定场空镜）时才用静止锚点"
+      ],
+      "avoid": [
+        "选一张最好看的静止姿态当锚点"
+      ],
+      "evidence": "跑酷片 v3：镜2 5.5s 已抓在缆索上倒挂，地面与缆上之间没有甩出腾空抛物线=瞬移；镜2 7.0s 与镜3 1.0s 双双悬停（速度=0）",
+      "src": "film-masters/24",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-KEY-02",
+      "stage": "keyframe",
+      "symptom": "首尾帧都给了，但成片中间出现明显跳变或忽明忽暗",
+      "also": [
+        "跳变",
+        "光照不一致",
+        "色温变"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "起止图光照方向、强度、色温必须匹配",
+      "cause": "首尾帧来自两次独立出图，光照条件不一致",
+      "rules": [
+        "R-PAIR-LIGHT-MATCH"
+      ],
+      "fix": [
+        "首尾帧一起出（同一批、同一光照描述）",
+        "出完先并排看一遍：光源方向、明暗面、色温是否一致"
+      ],
+      "avoid": [
+        "两张图分别出、不比对就提交"
+      ],
+      "evidence": "首尾帧三条硬要求（起止图有逻辑空间关系 / 匹配光照方向强度色温 / 对齐透视与尺度）",
+      "src": "research/CROSS_SHOT_MOTION_CONTINUITY_2026-10-07.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-KEY-03",
+      "stage": "keyframe",
+      "symptom": "首尾帧宽高比不一样，成片出现裁切或拉伸",
+      "also": [
+        "变形",
+        "被裁",
+        "比例不对"
+      ],
+      "severity": "严重",
+      "machine": "可测：比对两张图的尺寸",
+      "threshold": "宽高比必须完全一致",
+      "cause": "两张图比例不同，插值必然裁切形变",
+      "rules": [
+        "R-ASPECT-FIX"
+      ],
+      "fix": [
+        "出图前统一比例参数",
+        "提交前用脚本比对宽高比"
+      ],
+      "avoid": [
+        "用 16:9 首帧配 4:3 尾帧"
+      ],
+      "evidence": "film-masters/53 实测规则 R-ASPECT-FIX",
+      "src": "film-masters/53-动态缺陷根因分类与运动预算参数化.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-VID-01",
+      "stage": "video",
+      "symptom": "整体都在动，动作一大就崩；动作减半就稳",
+      "also": [
+        "动作大就糊",
+        "幅度太大",
+        "变形"
+      ],
+      "severity": "致命",
+      "machine": null,
+      "threshold": "主体占画面 ≥1/3",
+      "cause": "R1 运动幅度超预算。提示词只能轻微缓解",
+      "rules": [
+        "R-MOTION-BUDGET",
+        "R1"
+      ],
+      "fix": [
+        "按性价比顺序：①时长压到最短档 ②单镜只留一个主动作 ③主体占画面 ≥1/3 ④机位写死固定或极缓推 ⑤首尾帧服装/光位/机位严格一致 ⑥全做完仍不稳才换模型档"
+      ],
+      "avoid": [
+        "靠加副词（缓慢地、轻轻地）压幅度——实测无效"
+      ],
+      "evidence": "缺陷随运动幅度单调变化就是 R1 的判据",
+      "src": "film-masters/53",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-VID-02",
+      "stage": "video",
+      "symptom": "元素位置跨帧漂移，机位自己动了",
+      "also": [
+        "机位自己动",
+        "背景漂",
+        "构图跑了"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "要定的东西必须做进首帧",
+      "cause": "R2 空间不一致。布局在去噪早期就定死，写进提示词已经太晚（RoPE 空间注意力衰减）",
+      "rules": [
+        "R2",
+        "R-EARLY-LOCK"
+      ],
+      "fix": [
+        "首尾帧双锚定（唯一有效手段）",
+        "构图、接触点、主体位置全部做进首帧"
+      ],
+      "avoid": [
+        "靠提示词反复叮嘱「保持构图」——实测锁机位无效"
+      ],
+      "evidence": "第 009 轮 S05 实测：堆「固定机位」锁构图无效",
+      "src": "film-masters/53、60",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-VID-03",
+      "stage": "video",
+      "symptom": "同一张脸逐帧液化、五官重排",
+      "also": [
+        "脸在变",
+        "五官乱",
+        "变形脸"
+      ],
+      "severity": "致命",
+      "machine": "可测：人脸相似度",
+      "threshold": "跨帧相似度不低于 0.55（须按片校准）",
+      "cause": "R3 身份漂移。提示词完全无效",
+      "rules": [
+        "R3",
+        "R-IDENTITY-LOCK"
+      ],
+      "fix": [
+        "身份层 LoRA（若有）",
+        "全程复用同一张参考图",
+        "一镜内主光色温不变，要变就拆镜"
+      ],
+      "avoid": [
+        "靠重复描述外貌保身份",
+        "指望加形容词修脸"
+      ],
+      "evidence": "缺陷集中在人物本身 = R3 判据",
+      "src": "film-masters/53",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-VID-04",
+      "stage": "video",
+      "symptom": "换一个场景就消失的缺陷（镜面反射错乱、水下冒气泡、火场飞火星、雨雪）",
+      "also": [
+        "每次都冒",
+        "删不掉",
+        "场景自带的毛病"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "删净所有相关描述后仍出现 = 场景先验",
+      "cause": "R4 物理/光学先验。模型缺 3D 场景表示，是从语料里模式匹配「这附近该长什么样」，不是在模拟光学",
+      "rules": [
+        "R4",
+        "R-SCENE-PRIOR"
+      ],
+      "fix": [
+        "立刻停止改词，改走 后期 / 缩时长 / 拆镜 / 规避构图",
+        "镜面：改机位避开正面镜面、镜中只留局部或剪影，或分镜拆开留到后期合成",
+        "水下/火场/雨雪：帧级修剪 或 缩时长 或 改语境"
+      ],
+      "avoid": [
+        "继续删词改词（第 011 轮 S08 已证伪：删净气泡描述也压不住气泡）"
+      ],
+      "evidence": "统一律：删净所有相关描述后缺陷仍出现 → 它是场景先验，不是提示词问题",
+      "src": "film-masters/47-场景先验失效图谱与影视界规避术.md；film-masters/24",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-VID-05",
+      "stage": "video",
+      "symptom": "所有东西都对，但该发生的事不再发生（打斗火花 1~2 秒后熄灭，剩下时间变静止摆拍）",
+      "also": [
+        "事件熄灭",
+        "打着打着停了",
+        "火花没了"
+      ],
+      "severity": "严重",
+      "machine": "可测：粒子/特效像素占比随时间",
+      "threshold": "事件约 2 秒后自然熄灭",
+      "cause": "事件持续性缺陷——模型检索到静止构图压过了模拟碰撞。这是独立缺陷类，在时间轴上，不在空间轴上",
+      "rules": [
+        "R-EVENT-PERSIST"
+      ],
+      "fix": [
+        "事件前置：把事件峰值放进首帧，让它从第 0 秒就在发生",
+        "按「两次爆发」剪：一个 4 秒镜真正可用的是前 2 秒，前后各取一次爆发",
+        "双锚定取两端爆发"
+      ],
+      "avoid": [
+        "靠降级律（把元素做成不可读）——对它无效，因为没东西崩坏",
+        "靠提示词延长事件——无效",
+        "为防两把武器融合去拉大外观差异——实测不但无效还更早熄灭（1.0s vs 2.0s）"
+      ],
+      "evidence": "Iron-08 三臂实测：A 组 1.5s 达 16.88% 峰值→3.6s 归 3.33%；C 臂 3.6s 完全无火花、4.2s 重新爆发 8.14%",
+      "src": "film-masters/60",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-VID-06",
+      "stage": "video",
+      "symptom": "图生视频几乎不动，像一张会呼吸的图",
+      "also": [
+        "不动",
+        "静止",
+        "没动起来"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "I2V 提示词只描述「变什么」，不复述已有内容",
+      "cause": "把画面里已经有的东西又描述了一遍，挤掉了运动指令；或本来就没写运动",
+      "rules": [
+        "R-I2V-DESCRIBE-DELTA"
+      ],
+      "fix": [
+        "只写会动/会变的部分 + 一个运镜",
+        "首帧要预留可动空间（不要把所有动作都在首帧做完）"
+      ],
+      "avoid": [
+        "把首帧内容重述一遍求稳"
+      ],
+      "evidence": "Higgsfield I2V 硬规则：不要重新描述图里已有的东西",
+      "src": "higgsfield-prompt § Image-to-Video",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-VID-07",
+      "stage": "video",
+      "symptom": "镜头动得很僵、或者一动就成了糊",
+      "also": [
+        "糊",
+        "运镜僵",
+        "画面烂"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "每个运镜必须带幅度和速度",
+      "cause": "运镜没写幅度与速度，被扩写器接管；或写了自相矛盾的运镜句，被模型平均成糊",
+      "rules": [
+        "R-CAMERA-3PART"
+      ],
+      "fix": [
+        "三段式：类型 + 幅度 + 速度（The camera pushes in with small amplitude at slow speed toward …）",
+        "锁机位要明写 static，且同一段里不要再出现任何移动动词"
+      ],
+      "avoid": [
+        "「a slow steady push」和「Framing stays completely fixed」同时出现在一段里"
+      ],
+      "evidence": "H3 官方文档明确警告重复表述会互相竞争、被平均",
+      "src": "film-masters/60",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PRM-01",
+      "stage": "prompt",
+      "symptom": "写了「不要XX」，结果 XX 反而出现了",
+      "also": [
+        "禁令无效",
+        "越禁越有",
+        "不要出现还是出现"
+      ],
+      "severity": "致命",
+      "machine": null,
+      "threshold": "禁令要写成正面描述，且放进你要的那个画面句子里",
+      "cause": "模型没有「禁止」只有「提到」。负面词只在去噪第 4~10 步有个短暂窗口，且可能反向激活",
+      "rules": [
+        "R-NO-NEGATIVE-LIST"
+      ],
+      "fix": [
+        "把禁令改写成正面描述：不写 `no man-made structures`，写 `a desolate landscape with no buildings or roads`",
+        "区别在语义位置，不在有没有 no 这个词"
+      ],
+      "avoid": [
+        "单开一行写 no ... 清单",
+        "指望负面词锁机位、锁背景、保跨帧一致性——它没有持续效力",
+        "在最早期用负面词（可能造出你想禁的东西）"
+      ],
+      "evidence": "arXiv 2406.02965：把 Glasses 当负面词只用前 3 步，模型反而生成了眼镜",
+      "src": "film-masters/57-提示词禁令失效机制与禁止句反效果.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PRM-02",
+      "stage": "prompt",
+      "symptom": "焦点景深怎么调都不对，背景中途自己变清晰",
+      "also": [
+        "背景变清晰",
+        "景深失效",
+        "虚化不够"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "用比较级词，不用绝对数值",
+      "cause": "把 f/1.8、85mm 当绝对指令；模型把它们当 vibes 解读。官方承认背景中途变清晰是默认失效模式",
+      "rules": [
+        "R-DOF-COMPARATIVE"
+      ],
+      "fix": [
+        "改用比较级说法：extreme foreground focus / deep background blur",
+        "正面复述 + 减法：背景太乱就删掉描述性形容词，换 hazy / misty / obscured"
+      ],
+      "avoid": [
+        "反复重新生成——景深是后期可控的确定性操作，背景太清晰的正解是后期依深度二次虚化"
+      ],
+      "evidence": "海螺官方 DoF 知识库 + arXiv 2510.06215（先全清晰、再物理模糊后处理）",
+      "src": "film-masters/57",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PRM-03",
+      "stage": "prompt",
+      "symptom": "镜头漂移，尤其在大景和全景里",
+      "also": [
+        "漂移",
+        "镜头乱动",
+        "静不下来"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "抽象背景 + 固定机位 = 风险叠加区，要格外小心",
+      "cause": "模型没有默认相机速度；静止是最难落的指令，而漂移在大景/全景最严重",
+      "rules": [
+        "R-CAMERA-SPEED-WORD"
+      ],
+      "fix": [
+        "每个运镜必须带速度词或显式时长（slow 5-second pan right）",
+        "先给画面内运动让模型有处花能量，再写 static 句强化"
+      ],
+      "avoid": [
+        "提示词和滑块双重指挥（最常见的失败）"
+      ],
+      "evidence": "Runway 官方：Static is the hardest camera instruction to land… establishing shots and wide landscapes are where unwanted drift shows up most",
+      "src": "film-masters/57",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PRM-04",
+      "stage": "prompt",
+      "symptom": "人群镜头必崩，背景像乱码蠕动",
+      "also": [
+        "人群",
+        "群演",
+        "背景士兵",
+        "千军万马"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "绝不给人数",
+      "cause": "把人数写进提示词（a hundred extras 必失败）；且人群在一张图里太小，模型接收不到",
+      "rules": [
+        "R-CROWD-DENSITY"
+      ],
+      "fix": [
+        "用地点 + 定性密度词：sparse / scattered / steady foot traffic / busy / packed / shoulder-to-shoulder",
+        "静止机位 + 高能量 = 人脸被运动模糊糊成一片，要把高能量人群配一个主动运镜",
+        "逆光剪影人群是安全牌",
+        "分层：前景 1v1 独立生成 → 中景色块 → 远景剪影，或合成，或拆镜"
+      ],
+      "avoid": [
+        "指望一次生成群体背景",
+        "给具体人数"
+      ],
+      "evidence": "LTX 官方人群指南；AI 电影创作者实拍记录「背景士兵的动作是我发现的限制之一」",
+      "src": "film-masters/57、47",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PRM-05",
+      "stage": "prompt",
+      "symptom": "画面很空、很假，像 AI 默认产出的那种漂亮废片",
+      "also": [
+        "AI味",
+        "假",
+        "廉价",
+        "塑料感",
+        "没质感"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "删除 slop 词",
+      "cause": "用了大而空的形容词：beautiful / stunning / epic / amazing / 震撼 / 绝美",
+      "rules": [
+        "R-ANTI-SLOP"
+      ],
+      "fix": [
+        "换成具体的视觉与物理描述",
+        "给主体一个可执行的动作和一个内在状态（由它产生可见行为）",
+        "命名具体运镜，不写「镜头缓慢环绕」"
+      ],
+      "avoid": [
+        "用形容词堆砌气氛"
+      ],
+      "evidence": "Higgsfield anti-slop 词汇表：最大的错误是过度描述外貌、不足描述行为",
+      "src": "higgsfield-prompt § Anti-Slop Vocabulary",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-AUD-01",
+      "stage": "audio",
+      "symptom": "同一角色在不同镜头里音色不一样",
+      "also": [
+        "音色飘",
+        "换人了",
+        "声音不对"
+      ],
+      "severity": "致命",
+      "machine": "可测：音色相似度",
+      "threshold": "每个角色必须有固定音色资产",
+      "cause": "音色没被固化，每镜由模型重新生成",
+      "rules": [
+        "R-VOICE-ASSET"
+      ],
+      "fix": [
+        "从已生成的成功镜头里把该角色的音色提取出来，存成音色资产",
+        "后续镜头用 reference_audio 引用同一份音色",
+        "音色参考控制在约 4 秒（更长会导致开头含糊）"
+      ],
+      "avoid": [
+        "每镜靠文字描述音色（低音、沙哑）来求一致"
+      ],
+      "evidence": "《落凡宗小臣》镜头3 音色漂移实测；用户提出「把音色扒下来固化」",
+      "src": "film-masters/34-音色资产提取方案与H3原生音频路线.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-AUD-02",
+      "stage": "audio",
+      "symptom": "自己给片子加了背景音乐，和后期要配的 BGM 打架",
+      "also": [
+        "自带BGM",
+        "有音乐",
+        "配乐重复"
+      ],
+      "severity": "一般",
+      "machine": null,
+      "threshold": "默认不要 BGM",
+      "cause": "没在负向约束里排除音乐",
+      "rules": [
+        "R-NO-BGM"
+      ],
+      "fix": [
+        "负向约束明确写「不要BGM」「无配乐人声」「无歌词」"
+      ],
+      "avoid": [
+        "在正面描述里写「煽情的配乐」「激昂音乐」"
+      ],
+      "evidence": "技能已统一音频尾注为「不要字幕 不要BGM」",
+      "src": "SKILL.md §8 声音与音乐",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PST-01",
+      "stage": "post",
+      "symptom": "为了流畅插帧到 60fps，结果小体积角色融化成蓝色云雾",
+      "also": [
+        "鬼影",
+        "插帧",
+        "融化",
+        "轮廓消失"
+      ],
+      "severity": "致命",
+      "machine": "可测：抽帧目视轮廓",
+      "threshold": "禁止对高速位移镜头做 minterpolate 插帧",
+      "cause": "小体积角色 + 高速运动，插帧算法跟不上",
+      "rules": [
+        "R-NOFAKESMOOTH"
+      ],
+      "fix": [
+        "每镜动作干净 + 起止动量接得上 + 原生 24fps 交付 = 快而稳",
+        "要流畅先问是不是接缝问题——多数「不流畅」是接缝速度归零，不是帧率不够"
+      ],
+      "avoid": [
+        "minterpolate 插帧到 60fps"
+      ],
+      "evidence": "跑酷片实测：19.0s 帧角色融化成蓝色云雾，轮廓消失",
+      "src": "film-masters/24",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PST-02",
+      "stage": "post",
+      "symptom": "用时间混合伪造运动模糊，观众看完说头晕",
+      "also": [
+        "头晕",
+        "回卷",
+        "拖影不对"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "判据是主体是否在高速位移",
+      "cause": "tmix 时间混合在高速片段产生「回卷漂移」",
+      "rules": [
+        "R-NOFAKESMOOTH"
+      ],
+      "fix": [
+        "高速片段不要用 tmix",
+        "短片段、低运动（静止氛围镜）里它是安全工具"
+      ],
+      "avoid": [
+        "给全片套时间混合求电影感"
+      ],
+      "evidence": "跑酷片 v3：30 秒高速片段连续观看用户直接反馈头晕",
+      "src": "film-masters/24",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PST-03",
+      "stage": "post",
+      "symptom": "两段视频首尾相接时跳一下",
+      "also": [
+        "接缝跳",
+        "闪一下"
+      ],
+      "severity": "一般",
+      "machine": null,
+      "threshold": "前段末尾删 6 帧 + 后段开头删 1 帧",
+      "cause": "直接把两段拼起来，接缝处有冗余帧和重复动作",
+      "rules": [
+        "R-SPLICE-TRIM"
+      ],
+      "fix": [
+        "按 6/1 帧修剪再拼",
+        "或用接缝动量校验在生成前把方向速度对上"
+      ],
+      "avoid": [
+        "直接硬拼"
+      ],
+      "evidence": "prompt-library/13 第 8.4 节",
+      "src": "prompt-library/13-翻车对照与排查.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PST-04",
+      "stage": "post",
+      "symptom": "一次失败生成被整个扔掉",
+      "also": [
+        "废片",
+        "全废了",
+        "白花额度"
+      ],
+      "severity": "一般",
+      "machine": null,
+      "threshold": "一次失败生成很少全程失败",
+      "cause": "没有逐帧抢救",
+      "rules": [
+        "R-SALVAGE"
+      ],
+      "fix": [
+        "抽帧找可用段：常含 1~3 秒可用素材",
+        "逐帧检查是强制工序（24 帧片段是 24 次独立生成串起来的）"
+      ],
+      "avoid": [
+        "看到失败就整条重跑"
+      ],
+      "evidence": "prompt-library/13 第六节：失败生成要抢救不要扔",
+      "src": "prompt-library/13",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-CHN-01",
+      "stage": "channel",
+      "symptom": "看到下载失败就重跑，结果重复扣费",
+      "also": [
+        "下载失败",
+        "重复扣费",
+        "任务没记录"
+      ],
+      "severity": "致命",
+      "machine": "可测：查任务 ID 状态",
+      "threshold": "任务 succeeded 但下载中断 ≠ 生成失败",
+      "cause": "下载成功后才写流水账，所以「没有流水账」不等于「任务没跑」；SSL 中断时文件没落地、task_id 也没记",
+      "rules": [
+        "R-DOWNLOAD-RETRY"
+      ],
+      "fix": [
+        "下载失败也记 task_id",
+        "用 dream_video.py --task-id <id> 拉回",
+        "H3 任务记录只留 7 天，及时拉"
+      ],
+      "avoid": [
+        "看到「下载失败」立刻重跑"
+      ],
+      "evidence": "H3 任务已 succeeded 但拉取 SSL 中断，重试 3 次仍失败",
+      "src": "film-masters/41",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-CHN-02",
+      "stage": "channel",
+      "symptom": "首帧和参考图一起传，接口报错",
+      "also": [
+        "400",
+        "参数错",
+        "不能混用"
+      ],
+      "severity": "致命",
+      "machine": "可测：请求前校验 role 组合",
+      "threshold": "first_frame/last_frame 与 reference_* 互斥",
+      "cause": "把两种模式混在一个请求里",
+      "rules": [
+        "R-MODE-EXCLUSIVE"
+      ],
+      "fix": [
+        "I2V 用 first/last；多模态参考用 reference_*",
+        "长片拼接建议：每镜首帧 + 上镜尾帧接力"
+      ],
+      "avoid": [
+        "同一请求既传首帧又传 reference_image"
+      ],
+      "evidence": "dmc.cc 渠道 400 实测确认",
+      "src": "model-contracts/minimax-h3.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-CHN-03",
+      "stage": "channel",
+      "symptom": "没有首帧就提交，或者用 n/a(t2v) 占位绕过闸门",
+      "also": [
+        "t2v",
+        "占位",
+        "绕过检查"
+      ],
+      "severity": "严重",
+      "machine": "可测：gate 要求 first_frame 是真实存在的文件路径",
+      "threshold": "任何镜头都必须先有首帧",
+      "cause": "想走纯文生视频省事",
+      "rules": [
+        "R-NO-T2V-BYPASS"
+      ],
+      "fix": [
+        "先出首帧再提交",
+        "首帧确实是文件，不是占位字符串"
+      ],
+      "avoid": [
+        "用 n/a 之类字符串糊过闸门"
+      ],
+      "evidence": "闸门不支持纯文生视频（t2v）的设计决定",
+      "src": "film-masters/41",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-CHN-04",
+      "stage": "channel",
+      "symptom": "想用图床 URL 做视频参考图，结果失败",
+      "also": [
+        "图床",
+        "参考图失败",
+        "链接无效"
+      ],
+      "severity": "一般",
+      "machine": null,
+      "threshold": "参考图必须可被模型侧直接拉取",
+      "cause": "图床对模型侧不可达或被拦",
+      "rules": [
+        "R-REF-URL-REACHABLE"
+      ],
+      "fix": [
+        "优先用渠道自己返回的图片 URL",
+        "需要公网 URL 时用渠道产物域"
+      ],
+      "avoid": [
+        "拿第三方图床凑合"
+      ],
+      "evidence": "实测图床方案做视频参考图失败",
+      "src": "渠道实测记录",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PRM-06",
+      "stage": "prompt",
+      "symptom": "所有东西都不对，四类归因都对不上",
+      "also": [
+        "全崩",
+        "哪都不对",
+        "怎么改都不行",
+        "全乱"
+      ],
+      "severity": "致命",
+      "machine": null,
+      "threshold": "提示词内部自相矛盾的运动指令必须为 0",
+      "cause": "R5 全崩：提示词里存在互相竞争的运动指令（双重指挥），或多条超预算要求叠在一起，模型把矛盾平均成了乱",
+      "rules": [
+        "R-NO-DOUBLE-DIRECT",
+        "R-ACTBUDGET"
+      ],
+      "fix": [
+        "按句拆开提示词，逐句问：这句和上一句冲突吗",
+        "同一段里只留一个运动方向、一个速度、一个机位状态",
+        "砍到只剩一条主动作 + 一条运镜，先跑一次做基线",
+        "基线通过后再逐条加回，一次只加一条（单变量）"
+      ],
+      "avoid": [
+        "在不知道哪句有问题的情况下整体重写提示词",
+        "四类归因一个都没做就换模型"
+      ],
+      "evidence": "H3 官方文档警告重复表述会互相竞争；fuser.studio 实测链式运镜被拆镜",
+      "src": "film-masters/60；film-masters/53",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PRM-07",
+      "stage": "prompt",
+      "symptom": "改了幅度词（从 large 改成 small）但成片幅度没变",
+      "also": [
+        "改了没用",
+        "幅度没变",
+        "被改写了",
+        "提示词被改写"
+      ],
+      "severity": "严重",
+      "machine": "可测：比对 API 返回的改写后提示词",
+      "threshold": "提交前后的幅度词必须一致",
+      "cause": "提示词扩写器（H3 默认开启）接管了幅度与速度，把你写的幅度词替换或忽略了",
+      "rules": [
+        "R-EXPANDER-AWARENESS"
+      ],
+      "fix": [
+        "API 会把改写后的提示词一起返回，用它做单变量污染检查",
+        "幅度用自然英文句子写（with small amplitude at slow speed），不要堆方括号标签",
+        "确认改写后的提示词里你的关键约束还在"
+      ],
+      "avoid": [
+        "不看改写结果就断言提示词无效",
+        "同一轮里同时改幅度和改构图，导致无法判断是谁起作用"
+      ],
+      "evidence": "H3 扩写器实测会自动加 [Shot 1]、(S1)、运镜幅度与速度、台词时间码",
+      "src": "film-masters/60",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-VID-08",
+      "stage": "video",
+      "symptom": "前面三步都排查干净了，接缝还是接不上、动作还是崩",
+      "also": [
+        "换模型",
+        "模型不行",
+        "这模型做不了"
+      ],
+      "severity": "一般",
+      "machine": null,
+      "threshold": "只有前置全部做完，才允许怀疑模型档位",
+      "cause": "模型档位本身的运动预算上限不够，或原生音频能力不足",
+      "rules": [
+        "R-MODEL-LAST"
+      ],
+      "fix": [
+        "换档前先记录：当前哪个模型、哪一档、什么分辨率、什么时长",
+        "优先在同一模型内降条件（缩短时长、降分辨率），而不是直接换厂商",
+        "换档后用同样条件重跑一条做对照，不要同时改别的东西"
+      ],
+      "avoid": [
+        "把换模型当第一手段（绝大多数接缝问题出在锚点图、动作数、接缝行）",
+        "换模型时顺手把提示词也改了，导致无法归因"
+      ],
+      "evidence": "DT-4 铁律：90% 的「衔接不符合常理」出在前三步，不在模型",
+      "src": "film-masters/24；film-masters/53",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-AUD-03",
+      "stage": "audio",
+      "symptom": "声音设计表齐全，成片实际没有音轨或整段近似静音",
+      "also": [
+        "没声音",
+        "静音",
+        "音轨丢了",
+        "只有文档没声音"
+      ],
+      "severity": "致命",
+      "machine": "可测：dream_delivery_guard.py audio（ffprobe音轨存在、采样率/声道、volumedetect平均与峰值）",
+      "threshold": "生产成片至少一路>=44.1kHz音轨；平均电平>-45dBFS且峰值>-30dBFS；目标响度另按交付规范",
+      "cause": "只验证声音设计表关键词、sequence-review手写PASS或容器扫描，没有把实际成片音轨的流、响度和听审绑定当前输出哈希",
+      "rules": [
+        "R-SEQUENCEQC"
+      ],
+      "fix": [
+        "成片合成后先跑媒体守卫，音轨缺失、采样率/声道异常或近似静音直接FAIL",
+        "机器通过后仍须带声音听审；确认画内声、拟音、对白/留白与无BGM声明实际成立",
+        "用户说没声音时立即以实际播放为准，撤回PASS并定位合成层、映射或播放输出"
+      ],
+      "avoid": [
+        "以“声音表写了”代替实际音轨",
+        "以FFprobe看到AAC流代替可听见和听审",
+        "只抽一格波形或看集成响度数字就宣布声音完成"
+      ],
+      "evidence": "2026-10-15《闪电斗克莱克·亮一下》用户实看反馈“声音没有”；旧交付只核文件和手写sequence-review，未做成片音轨媒体守卫",
+      "src": "实践复盘；team/dream-audio；team/dream-post；scripts/dream_delivery_guard.py",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-KEY-04",
+      "stage": "keyframe",
+      "symptom": "关键帧图片和生成视频的第一帧对不上，视频从另一张画面开始",
+      "also": [
+        "关键帧无效",
+        "首帧跑了",
+        "图生视频没从首帧开始",
+        "锚点图对不上"
+      ],
+      "severity": "致命",
+      "machine": "可测：dream_delivery_guard.py；抽取视频首/末帧与登记关键帧算SSIM，默认首帧>=0.78、尾帧>=0.72",
+      "threshold": "I2V/首尾帧视频的开始和结束必须能被登记关键帧解释；不匹配直接重做，不靠改JSON",
+      "cause": "旧闸门只核关键帧文件存在、哈希和评审JSON，没有抽取生成视频实际首/末帧回比；关键帧和视频请求之间只有声明绑定",
+      "rules": [
+        "R-FIRST-FRAME-5",
+        "R-MOTIONANCHOR"
+      ],
+      "fix": [
+        "每个I2V/首尾帧输出先抽首帧（首尾帧模式再抽末帧）与原图比对并写进media-guard",
+        "SSIM不达标时回查请求输入、缓存文件、模型模式和合成帧序，不能口称“应该用了”",
+        "关键帧替换后重新绑定视频请求与评审，旧视频不能沿用旧PASS"
+      ],
+      "avoid": [
+        "只核图片SHA256就认为视频从它开始",
+        "只看视频预览图不看首帧",
+        "首帧不对靠后期裁掉开头"
+      ],
+      "evidence": "2026-10-15用户实看指出“关键帧对不上”；原keyframe-lock只验图文件和JSON，没有视频首帧回比",
+      "src": "实践复盘；scripts/dream_delivery_guard.py；references/project-contract.md",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-AST-05",
+      "stage": "asset",
+      "symptom": "同一角色、道具或场景只挂同一个ID和参考图，切镜后比例、材质或造型仍发生变化",
+      "also": [
+        "切镜头换资产",
+        "同一个ID长得不一样",
+        "场景不一致",
+        "道具变了"
+      ],
+      "severity": "致命",
+      "machine": "部分可测：continuity_from承接SSIM；跨镜场景/身份由release-review真实观看者或视觉模型逐接点签收",
+      "threshold": "同场连续角色/持物必须指定承接来源或逐接点签收；任何身份/场景/道具重排都不得以同ID登记当一致",
+      "cause": "把“引用同一资产ID/参考图”误当成模型输出一致；没有要求下一镜首帧承接上一镜末态，也没有真实观看者逐接点核对",
+      "rules": [
+        "R-IDENTITY-LOCK",
+        "R-SEQUENCEQC"
+      ],
+      "fix": [
+        "同场连续切点登记continuity_from，优先用上一镜末帧或明确的切点关键帧作为下一镜首帧/参考",
+        "锁角色主参考、场景板、道具多视图和状态变体；不要用整张四视图替代首帧",
+        "release-review逐接点核身份、服装、比例、材质、门窗地标和光色；代理不能自签"
+      ],
+      "avoid": [
+        "只靠提示词重复外貌",
+        "以为同一张参考图堆多了就会一致",
+        "工程JSON写PASS就跳过正常速度看片"
+      ],
+      "evidence": "2026-10-15用户实看指出“场景不一致、切镜资产不一致”；旧闸门无媒体级跨镜身份/承接验证",
+      "src": "实践复盘；team/dream-assets；team/dream-post；scripts/dream_delivery_guard.py",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "F-PST-05",
+      "stage": "post",
+      "symptom": "技术预检全绿并声称成片交付，用户实际观看却认为声音、场景、关键帧和切镜资产都不成立",
+      "also": [
+        "假PASS",
+        "代理自签",
+        "交付闭环却不好看",
+        "工程PASS不等于成片PASS"
+      ],
+      "severity": "致命",
+      "machine": "可测结构+人工签收：dream_delivery_guard.py 核音轨、关键帧、承接、切点运动、逐镜台词音频、sound_bridge声桥及 release-review.dialogue_audit（片段哈希/语言/转录/方法/证据）；缺少、语言不符或哈希漂移阻断",
+      "threshold": "技术PASS与创作签收分开；没有真实观看者/视觉模型正常速度全片+听审+逐接点签收，不得宣布交付完成",
+      "cause": "把文件存在、ffprobe、关键词、哈希和手写sequence-review聚合为“成片PASS”，没有区分技术完整性与真实观看；代理在无视觉/听觉证据时自签",
+      "rules": [
+        "R-SEQUENCEQC"
+      ],
+      "fix": [
+        "delivery先跑媒体守卫，再要求release-review真实签收；任一缺失保持FAIL",
+        "用户否定时保留历史输出并撤回完成声明，不能改JSON覆盖用户观看事实",
+        "面向用户的报告写“技术产物/候选”，只有签收且无未解缺陷时才写“成片PASS”"
+      ],
+      "avoid": [
+        "把预检ok:true当电影完成",
+        "用结构字段和哈希替代观看",
+        "用户说失败后只解释不修闸门"
+      ],
+      "evidence": "2026-10-15用户实看四项均失败，代理曾把delivery结构与自写sequence-review的PASS当完成；项目随后被用户删除",
+      "src": "实践复盘；DREAM_GOAL_CHECKLIST.md；team/dream-qc；scripts/dream_delivery_guard.py",
+      "origin": "dream-director",
+      "license": "MIT (self-authored distillation)"
+    },
+    {
+      "id": "P-PRM-01",
+      "stage": "prompt",
+      "symptom": "六镜技术达标（角色一致/台词正确/音画同步），用户仍评价“没啥看头”",
+      "also": [
+        "配音幻灯片",
+        "平淡",
+        "没有视觉事件",
+        "没看头"
+      ],
+      "severity": "致命",
+      "machine": null,
+      "threshold": "每镜至少一个属于画面、不属于台词的戏剧事件；关掉声音仍能看懂谁在做什么",
+      "cause": "只写了台词和正确画面，没有给观众可见的物理/调度/道具/光影/揭示/质感事件；技术合格替代不了观看收益",
+      "rules": [
+        "R-VISUAL-EVENT"
+      ],
+      "fix": [
+        "给每镜补一个六类视觉事件之一，并先写视觉事件再写台词",
+        "分镜表增加“视觉事件”与“无声可读性”两栏",
+        "开场三秒必须是视觉奇观/生死危机/反常识画面三选一"
+      ],
+      "avoid": [
+        "靠加旁白解释情绪",
+        "靠配乐硬撑",
+        "把镜头拍得更美当作有事件"
+      ],
+      "evidence": "村长画布 2026-09-29 十九次真实付费生成复盘",
+      "src": "agent_skills/village-canvas-practical-directing-lessons/SKILL.md §一",
+      "origin": "product",
+      "license": "Elastic-2.0"
+    },
+    {
+      "id": "P-CON-01",
+      "stage": "asset",
+      "symptom": "同一角色跨镜脸不一样，文字描述锁不住长相",
+      "also": [
+        "变脸",
+        "角色漂移",
+        "六镜六张脸"
+      ],
+      "severity": "致命",
+      "machine": null,
+      "threshold": "每镜首帧必须用同一张已锁定妆主图作参考；帧级并排比对五官偏差",
+      "cause": "凭文字描述重新想象角色，没有把定妆主图作为每镜参考图",
+      "rules": [
+        "R-IDENTITY-LOCK"
+      ],
+      "fix": [
+        "先出并锁定角色定妆主图，作为全片唯一身份锚点",
+        "每镜首帧用定妆主图作参考生成，禁止只靠文字描述",
+        "同场戏再叠加上一镜尾帧作第二参考"
+      ],
+      "avoid": [
+        "每镜重新描述外貌当作锁定",
+        "只给第一镜参考后面靠模型记忆"
+      ],
+      "evidence": "村长画布 2026-09-29 实战复盘（锚定链）",
+      "src": "agent_skills/village-canvas-practical-directing-lessons/SKILL.md §三",
+      "origin": "product",
+      "license": "Elastic-2.0"
+    },
+    {
+      "id": "P-DLG-01",
+      "stage": "dialogue",
+      "symptom": "H3 台词说错、念成乱码、重复念或画面烧出字幕",
+      "also": [
+        "台词乱码",
+        "重复念",
+        "烧字幕",
+        "嘴型对不上"
+      ],
+      "severity": "致命",
+      "machine": null,
+      "threshold": "逐字台词进提示词；按 5.0–7.0 字/秒预留口播窗口；一镜一嘴；无 BGM 与无字幕显式声明",
+      "cause": "台词只写大意或密度不匹配；模型在嘴空闲时自造音节，文字先验又把字幕画进画面",
+      "rules": [
+        "R-VERBATIM",
+        "R-DIALOGUE-FILL",
+        "R-NO-ONSCREEN-TEXT"
+      ],
+      "fix": [
+        "每句逐字写进提示词，放不下就加长或拆镜，不改台词",
+        "按 5.0–7.0 字/秒核对口播窗口，低于 5.0 也不要留长嘴部空闲",
+        "无字幕/无 BGM 写进负向约束，或走后期叠字幕"
+      ],
+      "avoid": [
+        "把台词写成摘要让模型自由发挥",
+        "用静音填满有台词的嘴部窗口"
+      ],
+      "evidence": "村长画布 2026-09-29 H3 真实付费生成",
+      "src": "agent_skills/village-canvas-practical-directing-lessons/SKILL.md §四",
+      "origin": "product",
+      "license": "Elastic-2.0"
+    },
+    {
+      "id": "P-KEY-01",
+      "stage": "keyframe",
+      "symptom": "片尾画面崩坏、构图漂移、推镜失控，前段正常",
+      "also": [
+        "尾段漂移",
+        "结尾崩",
+        "推镜失控",
+        "越到后面越乱"
+      ],
+      "severity": "严重",
+      "machine": null,
+      "threshold": "长镜或尾段使用首尾帧双锚定；尾帧与首帧同批、同光照、同比例",
+      "cause": "只锚定首帧，模型在长时段内自由漂移；尾段没有目标状态",
+      "rules": [
+        "R-DUAL-ANCHOR-LIMIT"
+      ],
+      "fix": [
+        "给容易漂移的镜头补尾帧，首尾帧同批生成",
+        "尾帧只锁两端，中间塌陷仍需拆镜或缩短时长"
+      ],
+      "avoid": [
+        "只加负面词压尾段漂移",
+        "把首尾帧当万能药不拆超长动作"
+      ],
+      "evidence": "村长画布 2026-09-29 首尾帧双锚定实测",
+      "src": "agent_skills/village-canvas-practical-directing-lessons/SKILL.md §五",
+      "origin": "product",
+      "license": "Elastic-2.0"
+    },
+    {
+      "id": "P-DUR-01",
+      "stage": "script",
+      "symptom": "18 镜长稿逐镜时长合计 146 秒，但实际请求只有 96 秒，整片对不上",
+      "also": [
+        "时长对不上",
+        "整片秒数不一致",
+        "长稿合并后差额"
+      ],
+      "severity": "严重",
+      "machine": "script.duration.total_budget.v1",
+      "threshold": "整片目标秒数与逐镜请求秒数分别记账；差额必须显式列出，不静默均摊",
+      "cause": "模型按镜头写时长，合并后没有和整片目标对账；部分镜头被四舍五入到模型档位",
+      "rules": [
+        "R-DURATION"
+      ],
+      "fix": [
+        "计划层同时记录取用/请求/实片合计与目标差额",
+        "硬目标冲突保留待决定，不自动删剧情或均摊",
+        "档位高于剧本时逐镜标记 durationRounded"
+      ],
+      "avoid": [
+        "把模型上限当默认时长",
+        "用整片目标倒推每镜秒数掩盖差额"
+      ],
+      "evidence": "docs/ai/acceptance/script-generator-refactor-m01-m11-20261023.md；18 镜长稿实测",
+      "src": "docs/ai/acceptance/script-generator-long-script-18shot-20261024.json",
+      "origin": "product",
+      "license": "Elastic-2.0"
+    }
+  ],
+  "origin": "dream-director + village-canvas",
+  "source_package": "Dream导演-通用满血版 v7.91-e6",
+  "source_license": "MIT (Dream self-authored distillation); third-party prose is not copied",
+  "imported_at": "2026-10-25",
+  "product_cases": 5
+}

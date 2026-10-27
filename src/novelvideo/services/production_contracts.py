@@ -237,6 +237,24 @@ def compile_delivery_qc_contract(**kwargs: Any) -> dict[str, Any]:
     return compile_qc(**kwargs)
 
 
+def delivery_media_manifest_schema() -> str:
+    """Return the content-level delivery manifest schema without the owner import."""
+
+    from novelvideo.production.delivery_media_guard import MEDIA_MANIFEST_SCHEMA
+
+    return MEDIA_MANIFEST_SCHEMA
+
+
+def audit_delivery_media(manifest: object) -> dict[str, Any]:
+    """Audit finished media against keyframe/seam/sound evidence."""
+
+    from novelvideo.production.delivery_media_guard import (
+        audit_delivery_media as audit,
+    )
+
+    return audit(manifest)
+
+
 def project_release_readiness(
     value: object,
     *,
@@ -351,10 +369,12 @@ def resolve_authoritative_production_pipeline(
 
 __all__ = [
     "audit_cinematic_contracts",
+    "audit_delivery_media",
     "combat_film_quantity_gates",
     "compile_combat_film_contract",
     "requested_combat_duration_seconds",
     "compile_delivery_qc_contract",
+    "delivery_media_manifest_schema",
     "compile_film_preproduction_contract",
     "compile_screening_repair_plan",
     "cinematic_quality_gates",

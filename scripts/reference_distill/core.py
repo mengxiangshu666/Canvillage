@@ -595,7 +595,7 @@ _TAPCANVAS_NATIVE_BINDINGS: dict[str, dict[str, Any]] = {
 _DOCUMENT_NATIVE_BINDINGS: dict[str, dict[str, Any]] = {
     "libtv.agent_protocol": {
         "status": "implemented",
-        "native": ["src/novelvideo/chat/village_harness.py"],
+        "native": ["src/novelvideo/chat/tapcanvas_sidecar.py"],
     },
     "libtv.agent_behavior": {
         "status": "partial",

@@ -242,7 +242,9 @@ const groupNodeDefinition: CanvasNodeDefinition<GroupNodeData> = {
     promptInput: false,
   },
   connectivity: {
-    sourceHandle: false,
+    // 组可以当「引用源」：右侧「引用该节点生成」出现，连线时展开成组内成员
+    // （见 canvasStore.resolveGroupSourceIds）——组本身没有素材，直接连组读不到东西。
+    sourceHandle: true,
     targetHandle: false,
     connectMenu: {
       fromSource: false,

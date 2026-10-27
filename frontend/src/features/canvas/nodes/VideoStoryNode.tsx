@@ -2,6 +2,7 @@
 // Copyright (c) 2026 ClaymoreLab
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useShallow } from 'zustand/react/shallow';
 import {
   Handle,
   Position,
@@ -56,6 +57,7 @@ import { VideoStoryClipDialog } from './videoStory/VideoStoryClipDialog';
 import {
   planVideoStoryScatter,
   scatterVideoStoryShots,
+  selectVideoStoryRelatedNodes,
 } from './videoStory/scatterVideoStoryShots';
 import {
   planVideoStoryShotVideos,
@@ -344,16 +346,19 @@ export const VideoStoryNode = memo(({ id, data, width, height }: VideoStoryNodeP
     imageGenConfig.aspectRatio ?? DEFAULT_SCRIPT_IMAGE_GEN_CONFIG.aspectRatio ?? '16:9';
   const [isScatterDialogOpen, setIsScatterDialogOpen] = useState(false);
   const [scatterError, setScatterError] = useState<string | null>(null);
-  const canvasNodes = useCanvasStore((state) => state.nodes);
+  // Only edges + the node objects these plans actually read. Dragging an
+  // unrelated node replaces the `nodes` array but none of these references.
   const canvasEdges = useCanvasStore((state) => state.edges);
+  const relatedCanvasNodes = useCanvasStore(
+    useShallow((state) => selectVideoStoryRelatedNodes(state, id)),
+  );
 
   // 弹层要显示的张数、按钮文案都按这份账来 —— 与点下去真正做的事共用同一套判定
   // （planVideoStoryScatter / scatterVideoStoryShots 内部同源），避免口径漂移。
   const scatterPlan = useMemo(
     () => planVideoStoryScatter(id),
-    // 节点的 rows/imageGenConfig 变了、或画布上派生节点增减了都要重算。
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [id, data, canvasNodes, canvasEdges],
+    [id, data, relatedCanvasNodes, canvasEdges],
   );
   const scatterPendingCount = scatterPlan.ok ? scatterPlan.pendingCount : 0;
   const scatterHasDerived = scatterPlan.ok && scatterPlan.mode === 'regenerate';
@@ -445,7 +450,7 @@ export const VideoStoryNode = memo(({ id, data, width, height }: VideoStoryNodeP
     () => planVideoStoryShotVideos(id),
     // 与图片那条路同理：节点 rows/videoGenConfig 变了、画布上派生节点增减了都要重算。
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [id, data, canvasNodes, canvasEdges],
+    [id, data, relatedCanvasNodes, canvasEdges],
   );
   const videoPendingCount = videoPlan.ok ? videoPlan.pendingCount : 0;
   const videoHasDerived = videoPlan.ok && videoPlan.mode === 'regenerate';
@@ -529,7 +534,7 @@ export const VideoStoryNode = memo(({ id, data, width, height }: VideoStoryNodeP
     () => planVideoStoryClips(id),
     // 与另外两条路同理：节点 rows 变了、画布上派生节点增减了都要重算。
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [id, data, canvasNodes, canvasEdges],
+    [id, data, relatedCanvasNodes, canvasEdges],
   );
   const clipPendingCount = clipPlan.ok ? clipPlan.pendingCount : 0;
   const clipHasDerived = clipPlan.ok && clipPlan.mode === 'regenerate';

@@ -1,0 +1,1815 @@
+{
+ "_meta": {
+  "source": "libtv r79 静态注册表蒸馏，仅目录名与枚举名，不含素材"
+ },
+ "items": [
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "长直发",
+   "key": "morden_female_changzhifa",
+   "enum": "LongStraight"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "大波浪",
+   "key": "morden_male_dabolang",
+   "enum": "BigWaves"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "波波头",
+   "key": "morden_male_bobotou",
+   "enum": "BobCut"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "齐肩中短发",
+   "key": "morden_male_qijianduanfa",
+   "enum": "ShoulderLength"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "高马尾",
+   "key": "morden_male_gaomawei",
+   "enum": "HighPonytail"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "低马尾",
+   "key": "morden_male_dimawei",
+   "enum": "LowPonytail"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "双马尾",
+   "key": "morden_male_shuangmawei",
+   "enum": "TwinTails"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "丸子头",
+   "key": "morden_male_wanzitou",
+   "enum": "Bun"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "半扎发",
+   "key": "morden_male_banzha",
+   "enum": "HalfUp"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "编发",
+   "key": "morden_male_bianfa",
+   "enum": "Braids"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "空气刘海",
+   "key": "morden_male_kongqiliuhai",
+   "enum": "AirBangs"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "女",
+   "name": "齐刘海",
+   "key": "morden_male_qiliuhai",
+   "enum": "BluntBangs"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "垂发",
+   "key": "gufeng_female_chuifa",
+   "enum": "HangingHair"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "高髻",
+   "key": "gufeng_female_gaoji",
+   "enum": "HighBun"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "双环髻",
+   "key": "gufeng_female_shuanghuanji",
+   "enum": "DoubleLoopBun"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "飞仙髻",
+   "key": "gufeng_female_feixianji",
+   "enum": "FlyingFairyBun"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "灵蛇髻",
+   "key": "gufeng_female_lingsheji",
+   "enum": "SnakeBun"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "女冠道髻",
+   "key": "gufeng_female_nvguandaoji",
+   "enum": "TaoistBun"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "半束",
+   "key": "gufeng_female_banshu",
+   "enum": "HalfTied"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "花冠",
+   "key": "gufeng_female_huaguan",
+   "enum": "FlowerCrown"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "堕马髻",
+   "key": "gufeng_female_duomaji",
+   "enum": "FallingHorseBun"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "公主辫",
+   "key": "gufeng_female_gongzhubian",
+   "enum": "PrincessBraids"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "女",
+   "name": "编绳发",
+   "key": "gufeng_female_bianshengfa",
+   "enum": "CordBraids"
+  },
+  {
+   "kind": "hair",
+   "style": "民国",
+   "gender": "女",
+   "name": "手推波",
+   "key": "minguo_female_shoutuibowen",
+   "enum": "FingerWaves"
+  },
+  {
+   "kind": "hair",
+   "style": "民国",
+   "gender": "女",
+   "name": "旗袍卷",
+   "key": "minguo_female_qipaojuan",
+   "enum": "QipaoCurls"
+  },
+  {
+   "kind": "hair",
+   "style": "民国",
+   "gender": "女",
+   "name": "齐耳学生短发",
+   "key": "minguo_female_qierxueshengduanfa",
+   "enum": "StudentBob"
+  },
+  {
+   "kind": "hair",
+   "style": "玄幻仙侠",
+   "gender": "女",
+   "name": "超长飘发",
+   "key": "fantacy_female_chaochangpiaofa",
+   "enum": "ExtraLongFlowingHair"
+  },
+  {
+   "kind": "hair",
+   "style": "玄幻仙侠",
+   "gender": "女",
+   "name": "发带束发",
+   "key": "fantacy_female_fadaishufa",
+   "enum": "RibbonTiedHair"
+  },
+  {
+   "kind": "hair",
+   "style": "玄幻仙侠",
+   "gender": "女",
+   "name": "脏辫",
+   "key": "fantacy_female_zangbian",
+   "enum": "Dreadlocks"
+  },
+  {
+   "kind": "hair",
+   "style": "玄幻仙侠",
+   "gender": "女",
+   "name": "仙气高盘",
+   "key": "fantacy_female_xianqigaopan",
+   "enum": "EtherealHighUpdo"
+  },
+  {
+   "kind": "hair",
+   "style": "玄幻仙侠",
+   "gender": "女",
+   "name": "编绳发",
+   "key": "fantacy_female_bianshengfa",
+   "enum": "CordBraids"
+  },
+  {
+   "kind": "hair",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "利落短发",
+   "key": "future_female_liluoduanfa",
+   "enum": "SleekShortHair"
+  },
+  {
+   "kind": "hair",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "几何剪裁",
+   "key": "future_female_jihejiancai",
+   "enum": "GeometricCut"
+  },
+  {
+   "kind": "hair",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "单侧挑染",
+   "key": "future_female_dancetiaoran",
+   "enum": "SingleSideHighlight"
+  },
+  {
+   "kind": "hair",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "机械配饰发型",
+   "key": "future_female_jixiepeishi",
+   "enum": "MechanicalAccessoryHair"
+  },
+  {
+   "kind": "hair",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "双色渐变",
+   "key": "future_female_shuangsejianbian",
+   "enum": "TwoToneGradient"
+  },
+  {
+   "kind": "hair",
+   "style": "民族",
+   "gender": "女",
+   "name": "民族辫发",
+   "key": "nation_female_minzubianfa",
+   "enum": "EthnicBraids"
+  },
+  {
+   "kind": "hair",
+   "style": "民族",
+   "gender": "女",
+   "name": "头饰一体发型",
+   "key": "nation_female_toushiyiti",
+   "enum": "IntegratedHeaddressHair"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "男",
+   "name": "寸头",
+   "key": "morden_male_cuntou",
+   "enum": "BuzzCut"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "男",
+   "name": "背头",
+   "key": "morden_male_beitou",
+   "enum": "SlickedBack"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "男",
+   "name": "油头",
+   "key": "morden_male_youtou",
+   "enum": "Pompadour"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "男",
+   "name": "短碎发",
+   "key": "morden_male_duansuifa",
+   "enum": "ShortTexturedHair"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "男",
+   "name": "中分",
+   "key": "morden_male_zhongfen",
+   "enum": "MiddlePart"
+  },
+  {
+   "kind": "hair",
+   "style": "现代",
+   "gender": "男",
+   "name": "卷发",
+   "key": "morden_male_juanfa",
+   "enum": "Curls"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "男",
+   "name": "书生束发",
+   "key": "gufeng_male_shushengshufa",
+   "enum": "ScholarTopknot"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "男",
+   "name": "将军高冠束发",
+   "key": "gufeng_male_jiangjungaoguanshufa",
+   "enum": "GeneralCrownTopknot"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "男",
+   "name": "男道髻",
+   "key": "gufeng_male_nandaoji",
+   "enum": "MaleTaoistBun"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "男",
+   "name": "少年垂髻",
+   "key": "gufeng_male_shaonianchuiji",
+   "enum": "YoungManLooseBun"
+  },
+  {
+   "kind": "hair",
+   "style": "古风",
+   "gender": "男",
+   "name": "散发",
+   "key": "gufeng_male_sanfa",
+   "enum": "LooseHair"
+  },
+  {
+   "kind": "hair",
+   "style": "民国",
+   "gender": "男",
+   "name": "油亮背头",
+   "key": "minguo_male_youliangbeitou",
+   "enum": "OiledSlickBack"
+  },
+  {
+   "kind": "hair",
+   "style": "民族",
+   "gender": "男",
+   "name": "民族辫发",
+   "key": "nation_male_minzubianfa",
+   "enum": "EthnicBraids"
+  },
+  {
+   "kind": "hair",
+   "style": "民族",
+   "gender": "男",
+   "name": "头饰一体发型",
+   "key": "nation_male_toushiyiti",
+   "enum": "IntegratedHeaddressHair"
+  },
+  {
+   "kind": "hair",
+   "style": "玄幻仙侠",
+   "gender": "男",
+   "name": "发带束发",
+   "key": "fantacy_male_fadaishufa",
+   "enum": "RibbonTiedHair"
+  },
+  {
+   "kind": "hair",
+   "style": "玄幻仙侠",
+   "gender": "男",
+   "name": "脏辫",
+   "key": "fantacy_male_zangbian",
+   "enum": "Dreadlocks"
+  },
+  {
+   "kind": "hair",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "利落短发",
+   "key": "future_male_liluoduanfa",
+   "enum": "SleekShortHair"
+  },
+  {
+   "kind": "hair",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "几何剪裁",
+   "key": "future_male_jihejiancai",
+   "enum": "GeometricCut"
+  },
+  {
+   "kind": "hair",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "单侧挑染",
+   "key": "future_male_dancetiaoran",
+   "enum": "SingleSideHighlight"
+  },
+  {
+   "kind": "hair",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "机械配饰发型",
+   "key": "future_male_jixiepeishi",
+   "enum": "MechanicalAccessoryHair"
+  },
+  {
+   "kind": "hair",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "双色渐变",
+   "key": "future_male_shuangsejianbian",
+   "enum": "TwoToneGradient"
+  },
+  {
+   "kind": "hair",
+   "style": "儿童",
+   "gender": "男",
+   "name": "童花头",
+   "key": "kid_male_tonghuatou",
+   "enum": "ChildrensBob"
+  },
+  {
+   "kind": "hair",
+   "style": "儿童",
+   "gender": "男",
+   "name": "男童寸头",
+   "key": "kid_male_nantongcuntou",
+   "enum": "BoysBuzzCut"
+  },
+  {
+   "kind": "hair",
+   "style": "儿童",
+   "gender": "女",
+   "name": "童花头",
+   "key": "kid_female_tonghuatou",
+   "enum": "ChildrensBob"
+  },
+  {
+   "kind": "hair",
+   "style": "儿童",
+   "gender": "女",
+   "name": "小辫",
+   "key": "kid_female_xiaobian",
+   "enum": "SmallBraids"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "魏晋梅花妆",
+   "key": "gufeng_female_weijinmeihuazhuang",
+   "enum": "WeiJinPlumBlossomMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "秦汉红妆",
+   "key": "gufeng_female_qinhanhongzhuang",
+   "enum": "QinHanRedMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "秦汉白妆",
+   "key": "gufeng_female_qinhanbaizhuang",
+   "enum": "QinHanWhiteMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "魏晋额黄妆",
+   "key": "gufeng_female_weijinehuangzhuang",
+   "enum": "WeiJinForeheadYellowMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "魏晋晓霞妆",
+   "key": "gufeng_female_weijinxiaoxiazhuang",
+   "enum": "WeiJinDawnGlowMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "唐三白妆",
+   "key": "gufeng_female_tangsanbaizhuang",
+   "enum": "TangThreeWhiteMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "唐桃花妆",
+   "key": "gufeng_female_tangtaohuazhuang",
+   "enum": "TangPeachBlossomMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "唐花钿妆",
+   "key": "gufeng_female_tanghuaxizhuang",
+   "enum": "TangHuadianMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "唐飞霞妆",
+   "key": "gufeng_female_tangfeixiazhuang",
+   "enum": "TangFlyingCloudMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "唐酒晕妆",
+   "key": "gufeng_female_tangjiuyunzhuang",
+   "enum": "TangWineFlushMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "宋珍珠花钿妆",
+   "key": "gufeng_female_songzhenzhuhuaxizhuang",
+   "enum": "SongPearlHuadianMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "明素妆",
+   "key": "gufeng_female_mingsuzhuang",
+   "enum": "MingNaturalMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "古代",
+   "gender": "女",
+   "name": "清旗妆",
+   "key": "gufeng_female_qingqizhuang",
+   "enum": "QingBannerMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "女",
+   "name": "素颜",
+   "key": "morden_female_suyan",
+   "enum": "BareFace"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "女",
+   "name": "裸妆",
+   "key": "morden_female_luozhuang",
+   "enum": "NudeMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "女",
+   "name": "桃花氛围妆",
+   "key": "morden_female_taohuafenweizhuang",
+   "enum": "PeachBlossomLook"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "女",
+   "name": "日常淡妆",
+   "key": "morden_female_richangdanzhuang",
+   "enum": "DailyLightMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "女",
+   "name": "冷艳妆",
+   "key": "morden_female_lengyanzhuang",
+   "enum": "CoolGlamMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "女",
+   "name": "甜美妆",
+   "key": "morden_female_tianmeizhuang",
+   "enum": "SweetMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "女",
+   "name": "韩系妆",
+   "key": "morden_female_hanxizhuang",
+   "enum": "KoreanMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "欧美时尚",
+   "gender": "女",
+   "name": "立体妆",
+   "key": "fashion_female_litizhuang",
+   "enum": "ContouredMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "欧美时尚",
+   "gender": "女",
+   "name": "复古红唇妆",
+   "key": "fashion_female_fuguhongchunzhuang",
+   "enum": "RetroRedLipMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "欧美时尚",
+   "gender": "女",
+   "name": "烟熏妆",
+   "key": "fashion_female_yanxunzhuang",
+   "enum": "SmokyMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "欧美时尚",
+   "gender": "女",
+   "name": "混血妆",
+   "key": "fashion_female_hunxiezhuang",
+   "enum": "MixedRaceMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "欧美时尚",
+   "gender": "女",
+   "name": "金属幻彩妆",
+   "key": "fashion_female_jinshuhuancaizhuang",
+   "enum": "MetallicIridescentMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "国潮",
+   "gender": "女",
+   "name": "国潮妆",
+   "key": "guochao_female_guochaozhuang",
+   "enum": "GuochaoMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "国潮",
+   "gender": "女",
+   "name": "舞台浓妆",
+   "key": "guochao_female_wutainongzhuang",
+   "enum": "StageMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "国潮",
+   "gender": "女",
+   "name": "戏曲旦妆",
+   "key": "guochao_female_xiqudanzhuang",
+   "enum": "OperaDanMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "国潮",
+   "gender": "女",
+   "name": "戏曲生妆",
+   "key": "guochao_female_xiqushengzhuang",
+   "enum": "OperaShengMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "特效",
+   "gender": "女",
+   "name": "生病妆容",
+   "key": "texiao_female_shengbingzhuangrong",
+   "enum": "SicklyMakeupLook"
+  },
+  {
+   "kind": "makeup",
+   "style": "特效",
+   "gender": "女",
+   "name": "鬼妆/尸妆",
+   "key": "texiao_female_guizhuang",
+   "enum": "GhostMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "特效",
+   "gender": "女",
+   "name": "丧尸妆",
+   "key": "texiao_female_sangshizhuang",
+   "enum": "ZombieMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "特效",
+   "gender": "女",
+   "name": "老年妆",
+   "key": "texiao_female_laonianzhuang",
+   "enum": "AgingMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "特效",
+   "gender": "女",
+   "name": "伤妆",
+   "key": "texiao_female_shangzhuang",
+   "enum": "WoundMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "民国",
+   "gender": "女",
+   "name": "民国妆",
+   "key": "minguo_female_minguozhuang",
+   "enum": "RepublicMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "男",
+   "name": "男士精修",
+   "key": "morden_male_nanshijingxiu",
+   "enum": "MensRetouch"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "男",
+   "name": "裸妆",
+   "key": "morden_male_luozhuang",
+   "enum": "NudeMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "男",
+   "name": "素颜",
+   "key": "morden_male_suyan",
+   "enum": "BareFace"
+  },
+  {
+   "kind": "makeup",
+   "style": "现代",
+   "gender": "男",
+   "name": "韩系妆",
+   "key": "morden_male_hanxizhuang",
+   "enum": "KoreanMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "欧美时尚",
+   "gender": "男",
+   "name": "立体妆",
+   "key": "fashion_male_litizhuang",
+   "enum": "ContouredMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "欧美时尚",
+   "gender": "男",
+   "name": "混血感妆",
+   "key": "fashion_male_hunxueganzhuang",
+   "enum": "MixedRaceLookMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "欧美时尚",
+   "gender": "男",
+   "name": "烟熏妆",
+   "key": "fashion_male_yanxunzhuang",
+   "enum": "SmokyMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "特效",
+   "gender": "男",
+   "name": "伤妆",
+   "key": "texiao_male_shangzhuang",
+   "enum": "WoundMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "特效",
+   "gender": "男",
+   "name": "老年妆",
+   "key": "texiao_male_laonianzhuang",
+   "enum": "AgingMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "特效",
+   "gender": "男",
+   "name": "鬼妆/尸妆",
+   "key": "texiao_male_guizhuang",
+   "enum": "GhostMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "特效",
+   "gender": "男",
+   "name": "丧尸妆",
+   "key": "texiao_male_sangshizhuang",
+   "enum": "ZombieMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "特效",
+   "gender": "男",
+   "name": "生病妆",
+   "key": "texiao_male_shengbingzhuangrong",
+   "enum": "SickMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "国潮",
+   "gender": "男",
+   "name": "戏曲旦妆",
+   "key": "guochao_male_xiqudanzhuang",
+   "enum": "OperaDanMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "国潮",
+   "gender": "男",
+   "name": "戏曲生妆",
+   "key": "guochao_male_xiqushengzhuang",
+   "enum": "OperaShengMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "儿童",
+   "gender": "女",
+   "name": "儿童无妆",
+   "key": "kid_female_ertongwuzhuang",
+   "enum": "ChildNoMakeup"
+  },
+  {
+   "kind": "makeup",
+   "style": "儿童",
+   "gender": "男",
+   "name": "儿童无妆",
+   "key": "kid_male_ertongwuzhuang",
+   "enum": "ChildNoMakeup"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "便装_1",
+   "key": "morden_female_bianzhuang_1",
+   "enum": "CasualWear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "便装_2",
+   "key": "morden_female_bianzhuang_2",
+   "enum": "CasualWear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "便装_3",
+   "key": "morden_female_bianzhuang_3",
+   "enum": "CasualWear3"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "连衣裙_1",
+   "key": "morden_female_lianyiqun_1",
+   "enum": "Dress1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "连衣裙_2",
+   "key": "morden_female_lianyiqun_2",
+   "enum": "Dress2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "连衣裙_3",
+   "key": "morden_female_lianyiqun_3",
+   "enum": "Dress3"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "连衣裙_4",
+   "key": "morden_female_lianyiqun_4",
+   "enum": "Dress4"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "职业西装_1",
+   "key": "morden_female_zhiyexizhuang_1",
+   "enum": "BusinessSuit1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "职业西装_2",
+   "key": "morden_female_zhiyexizhuang_2",
+   "enum": "BusinessSuit2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "通勤",
+   "key": "morden_female_tongqin",
+   "enum": "CommuteWear"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "运动_1",
+   "key": "morden_female_yundong_1",
+   "enum": "Sportswear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "运动_2",
+   "key": "morden_female_yundong_2",
+   "enum": "Sportswear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "运动_3",
+   "key": "morden_female_yundong_3",
+   "enum": "Sportswear3"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "运动_4",
+   "key": "morden_female_yundong_4",
+   "enum": "Sportswear4"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "JK制服_1",
+   "key": "morden_female_JKzhifu_1",
+   "enum": "JkUniform1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "JK制服_2",
+   "key": "morden_female_JKzhifu_2",
+   "enum": "JkUniform2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "校服_1",
+   "key": "morden_female_xiaofu_1",
+   "enum": "SchoolUniform1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "校服_2",
+   "key": "morden_female_xiaofu_2",
+   "enum": "SchoolUniform2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "校服_3",
+   "key": "morden_female_xiaofu_3",
+   "enum": "SchoolUniform3"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "街头_1",
+   "key": "morden_female_jietou_1",
+   "enum": "Streetwear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "街头_2",
+   "key": "morden_female_jietou_2",
+   "enum": "Streetwear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "家居_1",
+   "key": "morden_female_jiaju_1",
+   "enum": "Homewear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "家居_2",
+   "key": "morden_female_jiaju_2",
+   "enum": "Homewear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "女",
+   "name": "家居_3",
+   "key": "morden_female_jiaju_3",
+   "enum": "Homewear3"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "便装_1",
+   "key": "morden_male_bianzhuang_1",
+   "enum": "CasualWear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "便装_2",
+   "key": "morden_male_bianzhuang_2",
+   "enum": "CasualWear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "西装_1",
+   "key": "morden_male_xizhuang_1",
+   "enum": "Suit1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "西装_2",
+   "key": "morden_male_xizhuang_2",
+   "enum": "Suit2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "西装_3",
+   "key": "morden_male_xizhuang_3",
+   "enum": "Suit3"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "休闲_1",
+   "key": "morden_male_xiuxian_1",
+   "enum": "Leisurewear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "休闲_2",
+   "key": "morden_male_xiuxian_2",
+   "enum": "Leisurewear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "运动_1",
+   "key": "morden_male_yundong_1",
+   "enum": "Sportswear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "运动_2",
+   "key": "morden_male_yundong_2",
+   "enum": "Sportswear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "校服_1",
+   "key": "morden_male_xiaofu_1",
+   "enum": "SchoolUniform1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "校服_2",
+   "key": "morden_male_xiaofu_2",
+   "enum": "SchoolUniform2"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "夹克_1",
+   "key": "morden_male_jiake_1",
+   "enum": "Jacket1"
+  },
+  {
+   "kind": "outfit",
+   "style": "现代",
+   "gender": "男",
+   "name": "夹克_2",
+   "key": "morden_male_jiake_2",
+   "enum": "Jacket2"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "女",
+   "name": "齐胸襦裙",
+   "key": "gufeng_female_qixiongruqun",
+   "enum": "ChestHighRuqun"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "女",
+   "name": "交领襦裙",
+   "key": "gufeng_female_jiaolingruqun",
+   "enum": "CrossCollarRuqun"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "女",
+   "name": "曲裾",
+   "key": "gufeng_female_quju",
+   "enum": "QujuRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "女",
+   "name": "齐腰襦裙",
+   "key": "gufeng_female_qiyaoruqun",
+   "enum": "WaistHighRuqun"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "女",
+   "name": "大袖衫",
+   "key": "gufeng_female_daxiushan",
+   "enum": "WideSleeveRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "女",
+   "name": "宫装",
+   "key": "gufeng_female_gongzhuang",
+   "enum": "PalaceDress"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "女",
+   "name": "战甲",
+   "key": "gufeng_female_nvzhanjia",
+   "enum": "BattleArmor"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "女",
+   "name": "道袍",
+   "key": "gufeng_female_nvdaopao",
+   "enum": "TaoistRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "男",
+   "name": "圆领袍",
+   "key": "gufeng_male_yuanlingpao",
+   "enum": "RoundCollarRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "男",
+   "name": "直裾",
+   "key": "gufeng_male_zhiju",
+   "enum": "ZhijuRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "男",
+   "name": "官服",
+   "key": "gufeng_male_guanfu",
+   "enum": "OfficialRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "男",
+   "name": "铠甲",
+   "key": "gufeng_male_kaijia",
+   "enum": "Armor"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "男",
+   "name": "道袍",
+   "key": "gufeng_male_nandaopao",
+   "enum": "TaoistRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "男",
+   "name": "书生长衫",
+   "key": "gufeng_male_shushengchangshan",
+   "enum": "ScholarGown"
+  },
+  {
+   "kind": "outfit",
+   "style": "古风",
+   "gender": "男",
+   "name": "劲装",
+   "key": "gufeng_male_jingzhuang",
+   "enum": "MartialAttire"
+  },
+  {
+   "kind": "outfit",
+   "style": "玄幻仙侠",
+   "gender": "女",
+   "name": "仙服",
+   "key": "fantacy_female_xianfu",
+   "enum": "ImmortalRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "玄幻仙侠",
+   "gender": "女",
+   "name": "异族服",
+   "key": "fantacy_female_yizufu",
+   "enum": "FantasyTribalAttire"
+  },
+  {
+   "kind": "outfit",
+   "style": "玄幻仙侠",
+   "gender": "女",
+   "name": "羽衣",
+   "key": "fantacy_female_yuyi",
+   "enum": "FeatherRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "玄幻仙侠",
+   "gender": "女",
+   "name": "法袍",
+   "key": "fantacy_female_fapao",
+   "enum": "MageRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "玄幻仙侠",
+   "gender": "女",
+   "name": "战袍",
+   "key": "fantacy_female_zhanpao",
+   "enum": "BattleRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "玄幻仙侠",
+   "gender": "男",
+   "name": "仙服",
+   "key": "fantacy_male_xianfu",
+   "enum": "ImmortalRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "玄幻仙侠",
+   "gender": "男",
+   "name": "异族服",
+   "key": "fantacy_male_yizufu",
+   "enum": "FantasyTribalAttire"
+  },
+  {
+   "kind": "outfit",
+   "style": "玄幻仙侠",
+   "gender": "男",
+   "name": "法袍",
+   "key": "fantacy_male_fapao",
+   "enum": "MageRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "玄幻仙侠",
+   "gender": "男",
+   "name": "战袍",
+   "key": "fantacy_male_zhanpao",
+   "enum": "BattleRobe"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "女",
+   "name": "旗袍_1",
+   "key": "minguo_female_qipao_1",
+   "enum": "Qipao1"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "女",
+   "name": "旗袍_2",
+   "key": "minguo_female_qipao_2",
+   "enum": "Qipao2"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "女",
+   "name": "旗袍_3",
+   "key": "minguo_female_qipao_3",
+   "enum": "Qipao3"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "女",
+   "name": "改良旗袍_1",
+   "key": "minguo_female_gailiangqipao_1",
+   "enum": "ModernizedQipao1"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "女",
+   "name": "改良旗袍_2",
+   "key": "minguo_female_gailiangqipao_2",
+   "enum": "ModernizedQipao2"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "女",
+   "name": "学生装",
+   "key": "minguo_female_xueshengzhuang",
+   "enum": "StudentUniform"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "女",
+   "name": "西式礼服_1",
+   "key": "minguo_female_xishilifu_1",
+   "enum": "WesternFormalwear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "女",
+   "name": "西式礼服_2",
+   "key": "minguo_female_xishilifu_2",
+   "enum": "WesternFormalwear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "女",
+   "name": "西式礼服_3",
+   "key": "minguo_female_xishilifu_3",
+   "enum": "WesternFormalwear3"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "女",
+   "name": "军装",
+   "key": "minguo_female_nvjunzhuang",
+   "enum": "MilitaryUniform"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "男",
+   "name": "长衫_1",
+   "key": "minguo_male_changshan_1",
+   "enum": "Changshan1"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "男",
+   "name": "长衫_2",
+   "key": "minguo_male_changshan_2",
+   "enum": "Changshan2"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "男",
+   "name": "西式礼服_1",
+   "key": "minguo_male_xishilifu_1",
+   "enum": "WesternFormalwear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "男",
+   "name": "西式礼服_2",
+   "key": "minguo_male_xishilifu_2",
+   "enum": "WesternFormalwear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "男",
+   "name": "西式礼服_3",
+   "key": "minguo_male_xishilifu_3",
+   "enum": "WesternFormalwear3"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "男",
+   "name": "军装_1",
+   "key": "minguo_male_junzhuang_1",
+   "enum": "MilitaryUniform1"
+  },
+  {
+   "kind": "outfit",
+   "style": "民国",
+   "gender": "男",
+   "name": "军装_2",
+   "key": "minguo_male_junzhuang_2",
+   "enum": "MilitaryUniform2"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "机能装_1",
+   "key": "future_female_jinengzhuang_1",
+   "enum": "Techwear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "机能装_2",
+   "key": "future_female_jinengzhuang_2",
+   "enum": "Techwear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "制服_1",
+   "key": "future_female_zhifu_1",
+   "enum": "Uniform1"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "制服_2",
+   "key": "future_female_zhifu_2",
+   "enum": "Uniform2"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "战甲_1",
+   "key": "future_female_zhanjia_1",
+   "enum": "BattleArmor1"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "战甲_2",
+   "key": "future_female_zhanjia_2",
+   "enum": "BattleArmor2"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "战甲_3",
+   "key": "future_female_zhanjia_3",
+   "enum": "BattleArmor3"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "战甲_4",
+   "key": "future_female_zhanjia_4",
+   "enum": "BattleArmor4"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "女",
+   "name": "赛博夹克",
+   "key": "future_female_saibojiake",
+   "enum": "CyberJacket"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "机能装_1",
+   "key": "future_male_jinengzhuang_1",
+   "enum": "Techwear1"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "机能装_2",
+   "key": "future_male_jinengzhuang_2",
+   "enum": "Techwear2"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "制服_1",
+   "key": "future_male_zhifu_1",
+   "enum": "Uniform1"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "制服_2",
+   "key": "future_male_zhifu_2",
+   "enum": "Uniform2"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "战甲_1",
+   "key": "future_male_zhanjia_1",
+   "enum": "BattleArmor1"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "战甲_2",
+   "key": "future_male_zhanjia_2",
+   "enum": "BattleArmor2"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "战甲_3",
+   "key": "future_male_zhanjia_3",
+   "enum": "BattleArmor3"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "战甲_4",
+   "key": "future_male_zhanjia_4",
+   "enum": "BattleArmor4"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "赛博夹克_1",
+   "key": "future_male_saibojiake_1",
+   "enum": "CyberJacket1"
+  },
+  {
+   "kind": "outfit",
+   "style": "科幻未来",
+   "gender": "男",
+   "name": "赛博夹克_2",
+   "key": "future_male_saibojiake_2",
+   "enum": "CyberJacket2"
+  },
+  {
+   "kind": "outfit",
+   "style": "礼服",
+   "gender": "女",
+   "name": "婚纱_1",
+   "key": "formal_female_hunsha_1",
+   "enum": "WeddingDress1"
+  },
+  {
+   "kind": "outfit",
+   "style": "礼服",
+   "gender": "女",
+   "name": "婚纱_2",
+   "key": "formal_female_hunsha_2",
+   "enum": "WeddingDress2"
+  },
+  {
+   "kind": "outfit",
+   "style": "礼服",
+   "gender": "女",
+   "name": "晚礼服_1",
+   "key": "formal_female_wanlifu_1",
+   "enum": "EveningGown1"
+  },
+  {
+   "kind": "outfit",
+   "style": "礼服",
+   "gender": "女",
+   "name": "晚礼服_2",
+   "key": "formal_female_wanlifu_2",
+   "enum": "EveningGown2"
+  },
+  {
+   "kind": "outfit",
+   "style": "礼服",
+   "gender": "男",
+   "name": "燕尾服_1",
+   "key": "formal_male_yanweifu_1",
+   "enum": "Tailcoat1"
+  },
+  {
+   "kind": "outfit",
+   "style": "礼服",
+   "gender": "男",
+   "name": "燕尾服_2",
+   "key": "formal_male_yanweifu_2",
+   "enum": "Tailcoat2"
+  },
+  {
+   "kind": "outfit",
+   "style": "礼服",
+   "gender": "男",
+   "name": "燕尾服_3",
+   "key": "formal_male_yanweifu_3",
+   "enum": "Tailcoat3"
+  },
+  {
+   "kind": "outfit",
+   "style": "民族",
+   "gender": "女",
+   "name": "波希米亚游牧风",
+   "key": "minzu_female_boximiyayoumufeng",
+   "enum": "BohemianNomad"
+  },
+  {
+   "kind": "outfit",
+   "style": "民族",
+   "gender": "女",
+   "name": "苗族",
+   "key": "minzu_female_miaozu",
+   "enum": "MiaoAttire"
+  },
+  {
+   "kind": "outfit",
+   "style": "民族",
+   "gender": "女",
+   "name": "藏族",
+   "key": "minzu_female_zangzu",
+   "enum": "TibetanAttire"
+  },
+  {
+   "kind": "outfit",
+   "style": "民族",
+   "gender": "女",
+   "name": "蒙古族",
+   "key": "minzu_female_mengguzu",
+   "enum": "MongolianAttire"
+  },
+  {
+   "kind": "outfit",
+   "style": "民族",
+   "gender": "男",
+   "name": "波希米亚游牧风",
+   "key": "minzu_male_boximiyayoumufeng",
+   "enum": "BohemianNomad"
+  },
+  {
+   "kind": "outfit",
+   "style": "民族",
+   "gender": "男",
+   "name": "苗族",
+   "key": "minzu_male_miaozu",
+   "enum": "MiaoAttire"
+  },
+  {
+   "kind": "outfit",
+   "style": "民族",
+   "gender": "男",
+   "name": "藏族",
+   "key": "minzu_male_zangzu",
+   "enum": "TibetanAttire"
+  },
+  {
+   "kind": "outfit",
+   "style": "民族",
+   "gender": "男",
+   "name": "蒙古族",
+   "key": "minzu_male_mengguzu",
+   "enum": "MongolianAttire"
+  }
+ ]
+}

@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from ._service_shared import *  # noqa: F401,F403
+from novelvideo.chat.tool_error_messages import (
+    TOOL_ERROR_MESSAGES as _DELIVERY_FAILURE_BY_CODE,
+)
 
 # Definitions in this module share the facade namespace at runtime.
 # ruff: noqa: F401,F403,F405,F821
@@ -211,15 +214,7 @@ _UNVERIFIED_WRITE_NOTE = (
     "请重试刚才的操作；如果调整对象还不明确，我会先问清楚再执行。"
 )
 #: Internal error codes must never reach the user; the Agent's own preserved prose
-#: carries the explanation. These are the only codes we translate to plain language.
-_DELIVERY_FAILURE_BY_CODE = {
-    "canvas_revision_conflict": "画布在你操作期间被别的改动改过，我没有覆盖它，先核对最新内容再重试。",
-    "canvas_action_requires_workflow": "这次调整不是直接改画布能完成的，应该走工作流。",
-    "canvas_existing_mutation_revision_required": "这次修改需要先绑定画布当前版本，我会重新取一次再改。",
-    "canvas_command_apply_failed": "画布没能写入，现有内容保持不变。",
-    "FZ_EMIT_UNVERIFIED": "画布写入没有被确认，现有内容保持不变。",
-    "FZ_SERVER_APPLY_FAILED": "画布没能写入，现有内容保持不变。",
-}
+#: carries the explanation. The shared map is the one place these are translated.
 _GENERIC_WRITE_FAILURE = "这次画布写入没有成功，现有内容保持不变。"
 _CODE_LIKE_RE = re.compile(r"[a-z]{3,}_[a-z_]+|\bFZ_[A-Z_]+\b|\b[a-z]+\.[a-z_.]+\(|error_code")
 

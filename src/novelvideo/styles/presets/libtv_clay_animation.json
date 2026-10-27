@@ -1,0 +1,26 @@
+{
+  "id": "libtv_clay_animation",
+  "name": "粘土动画画风",
+  "label": "粘土动画画风",
+  "family": "three_d",
+  "era": "",
+  "palette": "vivid toy-like colors, glossy highlights, simple material separation",
+  "lighting": "soft studio HDRI, gentle rim light, clean contact shadows",
+  "optics": "50mm product lens, moderate depth of field, no wide-angle distortion",
+  "composition": "centered product-like subject on a clean background",
+  "camera_motion": "slow turntable orbit or slight push-in, stable horizon",
+  "style_instructions": "Clayanimation movie still style",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "粘土动画画风",
+  "tags": [
+    "粘土动画画风",
+    "libtv",
+    "3D潮玩"
+  ],
+  "model_overrides": {},
+  "style_family": "animation",
+  "animation_subtype": "3d",
+  "image_prompt": "Clayanimation movie still style",
+  "video_prompt": "Clayanimation movie still style. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

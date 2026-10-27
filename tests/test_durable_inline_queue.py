@@ -699,15 +699,3 @@ def test_local_lifecycle_runs_durable_recovery(monkeypatch):
     assert calls == ["recover"]
 
 
-def test_local_lifecycle_closes_village_agent_sessions(monkeypatch):
-    calls: list[str] = []
-
-    class _Pool:
-        async def close_all(self) -> None:
-            calls.append("close_all")
-
-    monkeypatch.setattr("novelvideo.chat.village_harness.pool", _Pool())
-
-    asyncio.run(LocalLifecycle().on_shutdown())
-
-    assert calls == ["close_all"]

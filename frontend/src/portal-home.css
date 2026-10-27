@@ -1,0 +1,593 @@
+/* SPDX-License-Identifier: Elastic-2.0
+   Copyright (c) 2026 ClaymoreLab */
+
+/* ── Portal homepage ──
+   复刻参考产品门户首屏的版式与节奏：整屏媒体 + 居中大字 + 深浅两段式叙事。
+   媒体先留纯 CSS 占位（深色渐变 + 两团冷光），换成真视频/海报时只替换
+   `.village-portal-hero__media` 这一层，不动排版。
+   指针光效由 HomeAtmosphere 提供，节段背景保持透明，光斑能透上来。 */
+.village-portal {
+  --portal-accent: #f06a5c;
+  --portal-accent-soft: rgb(240 106 92 / 34%);
+  --portal-muted: rgb(255 255 255 / 46%);
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background: #050505;
+  color: #fff;
+}
+
+.village-portal-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr);
+  align-items: center;
+  height: 62px;
+  padding: 0 24px;
+  color: #fff;
+}
+
+.village-portal-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 10px rgb(0 0 0 / 72%);
+  cursor: pointer;
+  transition: opacity 180ms ease;
+}
+
+.village-portal-brand:hover { opacity: 0.86; }
+.village-portal-brand img { width: 24px; height: 24px; border-radius: 7px; object-fit: contain; }
+
+.village-portal-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-self: center;
+}
+
+.village-portal-nav button {
+  position: relative;
+  height: 34px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: rgb(255 255 255 / 66%);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 180ms ease, background 180ms ease;
+}
+
+.village-portal-nav button:hover { color: #fff; background: rgb(255 255 255 / 7%); }
+.village-portal-nav button.is-active { color: #fff; }
+
+.village-portal-nav button.is-active::after {
+  position: absolute;
+  right: 12px;
+  bottom: 4px;
+  left: 12px;
+  height: 2px;
+  border-radius: 999px;
+  background: #fff;
+  content: "";
+}
+
+.village-portal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: end;
+}
+
+.village-portal-enter {
+  height: 34px;
+  padding: 0 15px;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 9px;
+  background: rgb(255 255 255 / 7%);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+.village-portal-enter:hover { background: rgb(255 255 255 / 14%); border-color: rgb(255 255 255 / 30%); }
+
+/* Hero */
+.village-portal-hero {
+  position: relative;
+  display: flex;
+  height: calc(100dvh - 62px);
+  min-height: 560px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #050505;
+}
+
+.village-portal.is-immersive .village-portal-hero { height: 100dvh; }
+
+.village-portal-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(58% 46% at 50% 30%, rgb(96 165 250 / 12%), transparent 62%),
+    radial-gradient(46% 40% at 74% 82%, rgb(240 106 92 / 7%), transparent 66%),
+    linear-gradient(180deg, #131317 0%, #0a0a0e 56%, #050505 100%);
+}
+
+.village-portal-hero__media::after {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgb(255 255 255 / 7%) 0.6px, transparent 0.7px);
+  background-size: 26px 26px;
+  opacity: 0.55;
+  content: "";
+}
+
+.village-portal-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgb(0 0 0 / 42%), rgb(0 0 0 / 16%) 52%, #050505 100%);
+}
+
+.village-portal-hero__content {
+  position: relative;
+  z-index: 4;
+  width: min(1240px, calc(100% - 48px));
+  padding-top: 132px;
+  text-align: center;
+}
+
+.village-portal-hero__title {
+  margin: 0 0 30px;
+  color: #fff;
+  font-size: clamp(46px, 8.4vw, 112px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-shadow: 0 10px 40px rgb(0 0 0 / 35%);
+  animation: village-portal-title-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes village-portal-title-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+.village-portal-hero__statement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin: 0 0 54px;
+  color: rgb(255 255 255 / 66%);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.village-portal-hero__statement button {
+  padding: 0 0 1px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+
+.village-portal-hero__statement button:hover { color: #fff; border-color: var(--portal-accent); }
+
+.village-portal-hero__actions { display: flex; justify-content: center; gap: 14px; }
+
+.village-portal-hero__primary {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 30px;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 25px rgb(255 255 255 / 28%);
+  color: #050505;
+  font-size: 18px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform 300ms ease, box-shadow 300ms ease;
+}
+
+.village-portal-hero__primary:hover { transform: scale(1.045); box-shadow: 0 0 48px rgb(255 255 255 / 50%); }
+.village-portal-hero__primary:active { transform: scale(0.98); }
+.village-portal-hero__primary svg { transition: transform 220ms ease; }
+.village-portal-hero__primary:hover svg { transform: translateX(3px); }
+
+.village-portal-hero__immersive {
+  position: absolute;
+  top: 78px;
+  right: 24px;
+  z-index: 8;
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 999px;
+  background: rgb(0 0 0 / 28%);
+  color: rgb(255 255 255 / 82%);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: background 180ms ease, color 180ms ease;
+}
+
+.village-portal-hero__immersive:hover { background: rgb(255 255 255 / 14%); color: #fff; }
+
+.village-portal-hero__credit {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: rgb(255 255 255 / 72%);
+  font-size: 12px;
+  line-height: 1.5;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 60%);
+}
+
+.village-portal-hero__credit span:first-child { font-weight: 600; color: #fff; }
+
+.village-portal-hero__scroll {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  z-index: 6;
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+  background: rgb(0 0 0 / 24%);
+  color: rgb(255 255 255 / 78%);
+  cursor: pointer;
+  transform: translateX(-50%);
+  backdrop-filter: blur(10px);
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.village-portal-hero__scroll:hover { background: rgb(255 255 255 / 12%); color: #fff; transform: translateX(-50%) translateY(2px); }
+
+/* Sections */
+.village-portal-section {
+  position: relative;
+  z-index: 2;
+  padding: 96px max(24px, calc((100% - 1400px) / 2));
+}
+
+.village-portal-heading {
+  max-width: 720px;
+  margin: 0 auto 80px;
+  text-align: center;
+}
+
+.village-portal-heading__index {
+  color: var(--portal-accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.village-portal-heading h2 {
+  margin: 12px 0 0;
+  color: #fff;
+  font-size: clamp(30px, 3.4vw, 44px);
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+}
+
+.village-portal-heading p {
+  margin: 18px 0 0;
+  color: var(--portal-muted);
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+/* Workflow timeline */
+.village-portal-timeline {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.village-portal-timeline::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--portal-accent-soft), transparent);
+  content: "";
+}
+
+.village-portal-step {
+  position: relative;
+  display: grid;
+  min-height: 330px;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.village-portal-step.is-left .village-portal-step__copy { grid-column: 1; padding-right: 72px; text-align: right; }
+.village-portal-step.is-left .village-portal-step__media { grid-column: 2; margin-left: 72px; }
+.village-portal-step.is-right .village-portal-step__copy { grid-column: 2; padding-left: 72px; text-align: left; }
+.village-portal-step.is-right .village-portal-step__media { grid-column: 1; grid-row: 1; margin-right: 72px; }
+
+.village-portal-step::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--portal-accent);
+  border-radius: 999px;
+  background: #050505;
+  content: "";
+  transform: translate(-50%, -50%);
+  transition: transform 240ms ease, box-shadow 240ms ease;
+}
+
+.village-portal-step:hover::after { transform: translate(-50%, -50%) scale(1.35); box-shadow: 0 0 30px rgb(240 106 92 / 75%); }
+
+.village-portal-step__index {
+  color: var(--portal-accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.village-portal-step__copy h3 {
+  margin: 12px 0 14px;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+}
+
+.village-portal-step__copy p {
+  margin: 0;
+  color: var(--portal-muted);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.village-portal-step__media {
+  position: relative;
+  display: flex;
+  aspect-ratio: 16 / 9;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background:
+    radial-gradient(70% 70% at 30% 20%, rgb(96 165 250 / 14%), transparent 70%),
+    linear-gradient(145deg, #15151a, #0b0b0f);
+  color: rgb(255 255 255 / 26%);
+  transition: filter 300ms ease, transform 380ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.village-portal-step:hover .village-portal-step__media { filter: brightness(1.08); transform: translateY(-2px); }
+.village-portal-step__media-icon { opacity: 0.9; }
+
+.village-portal-step__media-mark {
+  position: absolute;
+  right: 18px;
+  bottom: 12px;
+  color: rgb(255 255 255 / 8%);
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Capabilities */
+.village-portal-capabilities {
+  display: grid;
+  max-width: 1180px;
+  margin: 0 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.village-portal-capability {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  padding: 30px;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 7%);
+  border-radius: 8px;
+  background:
+    radial-gradient(60% 60% at 20% 12%, rgb(96 165 250 / 10%), transparent 70%),
+    linear-gradient(160deg, #141419, #09090c);
+  transition: filter 240ms ease, transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1), border-color 240ms ease;
+}
+
+.village-portal-capability:hover { filter: brightness(1.06); transform: translateY(-2px); border-color: rgb(255 255 255 / 14%); }
+.village-portal-capability__icon { color: rgb(255 255 255 / 30%); }
+
+.village-portal-capability h3 {
+  margin: 60px 0 6px;
+  color: #fff;
+  font-size: 26px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+}
+
+.village-portal-capability p { margin: 0; color: rgb(255 255 255 / 48%); font-size: 14px; }
+
+.village-portal-capability ul {
+  display: flex;
+  margin: 22px 0 0;
+  padding: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.village-portal-capability li {
+  padding: 5px 10px;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 999px;
+  color: rgb(255 255 255 / 62%);
+  font-size: 12px;
+}
+
+/* Works */
+.village-portal-works-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.village-portal-works-head h2 {
+  margin: 10px 0 0;
+  color: #fff;
+  font-size: 34px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.village-portal-works-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  color: rgb(255 255 255 / 62%);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.village-portal-works-more:hover { color: #fff; }
+
+.village-portal-works-empty {
+  display: flex;
+  min-height: 220px;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgb(255 255 255 / 10%);
+  border-radius: 10px;
+  color: rgb(255 255 255 / 34%);
+  font-size: 13px;
+}
+
+/* Community */
+.village-portal-community-grid {
+  display: grid;
+  max-width: 980px;
+  margin: 0 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.village-portal-community-card {
+  display: flex;
+  min-height: 150px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 24px;
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 3%);
+  color: rgb(255 255 255 / 34%);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+
+.village-portal-community-card:hover { border-color: rgb(255 255 255 / 16%); background: rgb(255 255 255 / 5%); }
+.village-portal-community-card strong { color: #fff; font-size: 16px; font-weight: 600; }
+.village-portal-community-card span { color: rgb(255 255 255 / 44%); font-size: 13px; }
+
+.village-portal-footer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px 32px;
+  border-top: 1px solid rgb(255 255 255 / 7%);
+  color: rgb(255 255 255 / 34%);
+  font-size: 12px;
+}
+
+/* 门户的指针光效要压在首屏媒体之上、正文之下：媒体 z0，氛围层 z1，
+   首屏正文/节段 z2+。节段背景保持透明，光斑能从内容之间透上来。 */
+.village-portal > .village-home-atmosphere { z-index: 1; }
+
+@media (max-width: 900px) {
+  .village-portal-header { grid-template-columns: auto 1fr auto; padding: 0 16px; }
+  .village-portal-nav { display: none; }
+  .village-portal-hero__content { padding-top: 96px; }
+  .village-portal-hero__statement { margin-bottom: 38px; font-size: 15px; gap: 14px; }
+  .village-portal-section { padding: 64px 20px; }
+  .village-portal-heading { margin-bottom: 48px; }
+  .village-portal-heading p { font-size: 15px; }
+  .village-portal-timeline::before { left: 7px; }
+  .village-portal-step { min-height: 0; grid-template-columns: 1fr; gap: 16px; padding: 22px 0 22px 34px; }
+  .village-portal-step.is-left .village-portal-step__copy,
+  .village-portal-step.is-right .village-portal-step__copy { grid-column: 1; padding: 0; text-align: left; }
+  .village-portal-step.is-left .village-portal-step__media,
+  .village-portal-step.is-right .village-portal-step__media {
+    grid-column: 1;
+    grid-row: 2;
+    margin: 0;
+  }
+  .village-portal-step::after { top: 30px; left: 7px; }
+  .village-portal-step__copy h3 { font-size: 24px; }
+  .village-portal-capabilities { grid-template-columns: minmax(0, 1fr); }
+  .village-portal-capability { aspect-ratio: auto; min-height: 260px; padding: 22px; }
+  .village-portal-capability h3 { margin-top: 34px; }
+  .village-portal-community-grid { grid-template-columns: minmax(0, 1fr); }
+  .village-portal-footer { flex-direction: column; align-items: flex-start; padding: 22px 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .village-portal-hero__title { animation: none; }
+  .village-portal-hero__primary,
+  .village-portal-hero__primary svg,
+  .village-portal-step,
+  .village-portal-step__media,
+  .village-portal-capability { transition: none; }
+}

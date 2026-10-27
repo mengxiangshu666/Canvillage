@@ -71,6 +71,35 @@ description: Use for 生成失败、任务卡住、内容安全、参数不兼�
 
 模型持续不可用时，优先顺序是：保持同模型降低不兼容参数 → 保持任务目标切换已配置兼容模式 → 经用户同意换模型。每次降级都记录对质量、时长、引用能力和费用的影响。
 
+## 失败样本库（先查再修）
+
+产品内置 60 条失败样本（Dream 导演 55 条 + 村长画布 5 条付费实测），按「症状 → 根因 → 量化阈值 → 处方 → 已证伪的错修法 → 证据」组织。查询入口是 `novelvideo.production.failure_library`，不是重新猜一遍。
+
+```python
+from novelvideo.production import failure_library
+failure_library.search_failure_cases("接缝瞬移")      # 按大白话症状
+failure_library.list_failure_cases(stage="dialogue")  # 按阶段
+failure_library.get_failure_case("F-SB-02")           # 单条详情
+failure_library.failure_library_summary()             # 总量与分布
+```
+
+高价值入口：
+
+| 症状 | 样本 |
+|---|---|
+| 接缝像瞬移或速度归零 | `F-SB-02`、`F-KEY-01` |
+| 台词乱码/重复/漏句/烧字幕 | `F-DLG-01`、`F-DLG-02`、`F-DLG-07`、`F-DLG-08` |
+| 跨镜变脸、换装、场景漂移 | `F-AST-01`、`F-AST-05`、`P-CON-01` |
+| 技术全绿但“没啥看头” | `P-PRM-01` |
+| 关键帧和视频第一帧对不上 | `F-KEY-04` |
+| 成片没音轨或近似静音 | `F-AUD-03` |
+| 超长动作/多动作塞一镜 | `F-SB-01`、`F-VID-01` |
+
+**使用纪律：**
+- `avoid` 栏是已经试过、确认没用的修法；不得再提。
+- 检索为空时说「失败库没有对应证据」，不要编一条像样的建议。
+- 库里的阈值是历史实测，换模型/换渠道后要重新验证；不能把旧样本当当前模型定律。
+
 ## 验收
 
 - [ ] 错误来自真实任务或运行记录；

@@ -894,6 +894,44 @@ def _active_dispatch_grant(
     return data
 
 
+
+
+_PRODUCTION_SEQUENCE_MARKERS = (
+    "工作流",
+    "分镜",
+    "镜头",
+    "成片",
+    "整片",
+    "多镜",
+    "连续",
+    "分集",
+    "生产流水线",
+    "storyboard",
+    "shot",
+    "sequence",
+    "film",
+    "movie",
+    "episode",
+)
+
+
+def _requests_production_sequence(request: str, goal: str) -> bool:
+    text = (request + "\n" + goal).casefold()
+    return any(marker in text for marker in _PRODUCTION_SEQUENCE_MARKERS)
+
+
+def _simple_prompt_node_batch(commands: object) -> bool:
+    """Delegate shape decisions to the one authoritative router classifier."""
+
+    try:
+        from novelvideo.workflow_runtime.action_router import (
+            atomic_prompt_node_creation_batch,
+        )
+    except Exception:
+        return False
+    return atomic_prompt_node_creation_batch(commands)
+
+
 def _handle_dispatch_canvas_action(args: dict[str, Any], **_: Any) -> Any:
     """Route one compiled Agent action to the shortest authoritative executor."""
 
@@ -955,10 +993,17 @@ def _handle_dispatch_canvas_action(args: dict[str, Any], **_: Any) -> Any:
         )
         contains_creation = _canvas_creation_batch(commands)
         single_created_node_transaction = _single_created_node_transaction(commands)
+        simple_prompt_node_batch = _simple_prompt_node_batch(commands) and not (
+            _requests_production_sequence(request, str(args.get("goal") or ""))
+        )
         single_prompt_node_transaction = single_created_node_transaction and any(
             isinstance(command, dict)
             and str(command.get("type") or "").strip()
-            in {"create_image_prompt_node", "create_video_prompt_node"}
+            in {
+                "create_image_prompt_node",
+                "create_video_prompt_node",
+                "create_canvas_node",
+            }
             for command in (commands if isinstance(commands, list) else [])
         )
         existing_references = _existing_node_references(commands)
@@ -1304,17 +1349,19 @@ def _handle_dispatch_canvas_action(args: dict[str, Any], **_: Any) -> Any:
             and (
                 action_profile.get("contains_paid_media") is not True
                 or single_prompt_node_transaction
+                or simple_prompt_node_batch
             )
             and action_profile.get("requires_recovery") is not True
             and (
                 action_profile.get("requires_delivery") is not True
                 or single_prompt_node_transaction
+                or simple_prompt_node_batch
             )
         ):
             # Atomic media creation can use the existing authorized node runner.
             # One compiled node plus its dependency edges is also atomic; a
             # copied delivery flag must not replace it with a starter workflow.
-            if single_prompt_node_transaction:
+            if single_prompt_node_transaction or simple_prompt_node_batch:
                 action_profile["requires_delivery"] = False
             action_profile["operation"] = "canvas_command"
 
@@ -1381,19 +1428,27 @@ def _handle_dispatch_canvas_action(args: dict[str, Any], **_: Any) -> Any:
             )
         if (
             str(route.get("lane") or "").strip() == "workflow"
-            and single_prompt_node_transaction
+            and (single_prompt_node_transaction or simple_prompt_node_batch)
             and action_profile.get("requires_recovery") is not True
             and not existing_run_id
             and action_profile.get("requested_lane") != "workflow"
         ):
-            # A one-node create with dependency edges is already a complete
-            # canvas transaction. Keep a stale/copied delivery decision from
-            # promoting this narrow structure write to a starter WorkflowRun.
+            # A compiled create batch is already a complete canvas
+            # transaction. Keep a stale/copied routing decision from promoting
+            # it to a starter WorkflowRun that scaffolds empty shot nodes.
             route = {
                 **route,
                 "lane": "canvas",
-                "reason_code": "single_canvas_creation",
-                "reason": "单个节点及依赖连线直接写入画布，不启动替代工作流",
+                "reason_code": (
+                    "single_canvas_creation"
+                    if single_prompt_node_transaction
+                    else "atomic_prompt_node_batch"
+                ),
+                "reason": (
+                    "单个节点及依赖连线直接写入画布，不启动替代工作流"
+                    if single_prompt_node_transaction
+                    else "多个独立提示词节点直接写入画布，不启动替代工作流"
+                ),
                 "requires_durable_run": False,
                 "requires_confirmation": action_profile.get("contains_paid_media")
                 is True,

@@ -2289,21 +2289,6 @@ class CanvasCommandGateway:
                     "created_node_id", mint_agent_node_id(command_id, sequence)
                 )
                 created_ids.append(str(command["created_node_id"]))
-            elif command_type == "create_shot_sequence":
-                prompts = [
-                    str(value).strip()
-                    for value in (command.get("prompts") or [])
-                    if str(value or "").strip()
-                ]
-                ids: list[str] = []
-                for _prompt in prompts:
-                    sequence += 1
-                    ids.append(mint_agent_node_id(command_id, sequence))
-                command["prompts"] = prompts
-                command["created_node_ids"] = ids
-                if ids:
-                    command["created_node_id"] = ids[-1]
-                created_ids.extend(ids)
             elif command_type == "insert_starter_workflow":
                 workflow_id = str(command.get("workflow_id") or "").strip()
                 definition = catalog.get(workflow_id)
@@ -2360,7 +2345,6 @@ class CanvasCommandGateway:
                             inferred_type = {
                                 "create_image_prompt_node": "imageGenNode",
                                 "create_video_prompt_node": "videoNode",
-                                "create_shot_sequence": "imageGenNode",
                             }.get(
                                 prior_type,
                                 str(prior.get("node_type") or ""),
@@ -2437,7 +2421,6 @@ class CanvasCommandGateway:
                 "create_image_prompt_node",
                 "create_video_prompt_node",
                 "annotate",
-                "create_shot_sequence",
                 "insert_starter_workflow",
             }:
                 command["x"] = float(x) if _is_number(x) else base_x + index * 40
@@ -2837,79 +2820,6 @@ class CanvasCommandGateway:
                     "node_type": "textAnnotationNode",
                     "position": deepcopy(node["position"]),
                     "data": deepcopy(node["data"]),
-                }
-            elif command_type == "create_shot_sequence":
-                prompts = list(command.get("prompts") or [])
-                ids = [str(value) for value in (command.get("created_node_ids") or [])]
-                if not prompts or len(prompts) != len(ids) or len(prompts) > 12:
-                    raise CanvasCommandError(
-                        "分镜序列缺少有效提示词或镜数超过 12",
-                        code="canvas_command_invalid",
-                        op_index=index,
-                    )
-                expected_nodes: list[dict[str, Any]] = []
-                expected_edges: list[dict[str, Any]] = []
-                root = str(command.get("display_name") or "小树分镜")[:180]
-                for shot_index, (node_id, prompt) in enumerate(
-                    zip(ids, prompts, strict=True)
-                ):
-                    if node_id in by_id:
-                        raise CanvasCommandError(
-                            f"画布节点 ID 已存在：{node_id}",
-                            code="canvas_command_node_id_conflict",
-                            op_index=index,
-                        )
-                    data = {
-                        **_node_parameters(command, "imageGenNode", op_index=index),
-                        "displayName": f"{root} · 镜{shot_index + 1}",
-                        "prompt": str(prompt),
-                        "compiledPromptPreview": str(prompt),
-                        "canvas_auto_generate_once": False,
-                        "agent_command_id": command_id,
-                    }
-                    node = _build_node(
-                        node_id=node_id,
-                        node_type="imageGenNode",
-                        x=float(command["x"]) + shot_index * 40,
-                        y=float(command["y"])
-                        + shot_index
-                        * (
-                            _AGENT_NODE_LAYOUT_SIZES["imageGenNode"][1]
-                            + _AGENT_NODE_LAYOUT_MARGIN
-                        ),
-                        data=data,
-                    )
-                    nodes.append(node)
-                    by_id[node_id] = node
-                    reference_edges = append_reference_binding_edges(
-                        node_id, command, index
-                    )
-                    expected_edges.extend(
-                        semantic_edge_expectation(edge) for edge in reference_edges
-                    )
-                    created_ids.append(node_id)
-                    expected_nodes.append(
-                        {
-                            "node_id": node_id,
-                            "node_type": "imageGenNode",
-                            "position": deepcopy(node["position"]),
-                            "data": deepcopy(node["data"]),
-                        }
-                    )
-                    if shot_index > 0:
-                        edge = append_edge(
-                            ids[shot_index - 1],
-                            node_id,
-                            index,
-                            relation="continuity",
-                        )
-                        expected_edges.append(semantic_edge_expectation(edge))
-                target_ids = ids
-                changed_fields = ["nodes", "edges"]
-                expectation = {
-                    "kind": "graph_present",
-                    "nodes": expected_nodes,
-                    "edges": expected_edges,
                 }
             elif command_type == "insert_starter_workflow":
                 workflow_id = _required_text(command, "workflow_id", op_index=index)

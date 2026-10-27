@@ -1,0 +1,26 @@
+{
+  "id": "libtv_vector_line_icon",
+  "name": "矢量线条图标",
+  "label": "矢量线条图标",
+  "family": "illustration",
+  "era": "",
+  "palette": "flat high-saturation colors, limited palette, clean separation between shapes",
+  "lighting": "even illustration lighting, minimal cast shadows, readable silhouettes",
+  "optics": "orthographic 2D drawing, no photographic lens distortion",
+  "composition": "single readable subject with clean negative space",
+  "camera_motion": "static frame; if animated, use gentle 2D parallax",
+  "style_instructions": "Minimalist line logo, minimal vector line icon, bold black outline，white background",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "矢量线条图标",
+  "tags": [
+    "矢量线条图标",
+    "libtv",
+    "插画漫画"
+  ],
+  "model_overrides": {},
+  "style_family": "animation",
+  "animation_subtype": "2d",
+  "image_prompt": "Minimalist line logo, minimal vector line icon, bold black outline，white background",
+  "video_prompt": "Minimalist line logo, minimal vector line icon, bold black outline，white background. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

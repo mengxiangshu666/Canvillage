@@ -16,7 +16,6 @@ import {
   Languages,
   LogOut,
   MoreHorizontal,
-  PawPrint,
   Trash2,
   X,
 } from "lucide-react";
@@ -39,8 +38,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PetGalleryDialog } from "@/features/companion/petdex/PetGalleryDialog";
-import type { PetdexCatalogEntry } from "@/features/companion/petdex/petdex-pets";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth-store";
 import { useAppStore } from "@/stores/app-store";
@@ -63,30 +60,12 @@ import {
   projectModeFromPath,
   projectSectionFromPath,
 } from "@/components/layout/project-navigation-routes";
-import { COMPANION_MANAGER_EVENT } from "@/components/layout/app-sidebar";
 const ACCOUNT_PANEL_TRANSITION_MS = 350;
-
-export function resolveCompanionManagerEntryCopy(
-  isCanvasOnlyProduct: boolean,
-  fallbackLabel: string,
-): { label: string; title: string } {
-  if (isCanvasOnlyProduct) {
-    return {
-      label: "管理搭子",
-      title: "更换、导入或管理你的搭子",
-    };
-  }
-  return {
-    label: fallbackLabel,
-    title: fallbackLabel,
-  };
-}
 
 export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const params = useParams({ strict: false }) as { project?: string };
-  const [companionOpen, setCompanionOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [releaseNotificationStateVersion, setReleaseNotificationStateVersion] = useState(0);
@@ -113,9 +92,6 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
     resetUserSessionState({ queryClient });
   };
   const avatarUrl = useAuthStore((s) => s.avatarUrl);
-  const companionKind = useAppStore((s) => s.companionKind);
-  const companionPet = useAppStore((s) => s.companionPet);
-  const setCompanion = useAppStore((s) => s.setCompanion);
   const setLanguage = useAppStore((s) => s.setLanguage);
   const projectLibraryOpen = useAppStore((s) => s.projectLibraryOpen);
   const showLogout = authRequired();
@@ -130,10 +106,6 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
   const releaseFeed = releaseNotifications.data?.data;
   void releaseNotificationStateVersion;
   const hasUnreadNotification = shouldShowUpgradeNudge(releaseFeed);
-  const companionManagerEntryCopy = resolveCompanionManagerEntryCopy(
-    canvasOnlyProduct,
-    t("myBuddy.companion.entry"),
-  );
   const gatewayConfig = modelGatewayConfig.data?.data;
   const directVideoConfigured = Boolean(
     gatewayConfig?.directVideoModels?.some((model) => model.enabled && model.configured),
@@ -169,22 +141,10 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
   }, []);
 
   useEffect(() => {
-    const openCompanionManager = () => setCompanionOpen(true);
-    window.addEventListener(COMPANION_MANAGER_EVENT, openCompanionManager);
-    return () => window.removeEventListener(COMPANION_MANAGER_EVENT, openCompanionManager);
-  }, []);
-
-
-  useEffect(() => {
     if (!hasSettingsWarning) {
       setSettingsWarningBubbleDismissed(false);
     }
   }, [hasSettingsWarning]);
-
-  const handleCompanionConfirm = (pet: PetdexCatalogEntry) => {
-    setCompanion(pet.slug, pet);
-    window.dispatchEvent(new Event("mybuddy-companion-reset"));
-  };
 
   const clearAccountCloseTimer = () => {
     if (accountCloseTimerRef.current === null) return;
@@ -377,13 +337,6 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
                     通知中心
                     {hasUnreadNotification ? <span className="ml-auto size-1.5 rounded-full bg-rose-500" /> : null}
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setCompanionOpen(true)}
-                    className="min-h-9 gap-2 rounded-lg px-2.5 py-2 text-xs focus:bg-accent focus:text-accent-foreground"
-                  >
-                    <PawPrint className="size-4 text-muted-foreground" />
-                    管理搭子
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator className="mx-1 my-1 bg-white/[0.07]" />
                   <DropdownMenuItem
                     onClick={openAvatarDialog}
@@ -457,34 +410,6 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
               />
             ) : null}
           </Button>
-          <Button
-            id="mybuddy-companion-entry"
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            data-companion-manager-entry={canvasOnlyProduct ? "village" : "default"}
-            className={cn(
-              "companion-capsule-entry transition-colors duration-150 ease-[var(--ease-out-quint)] hover:bg-white/[0.06] aria-expanded:bg-white/[0.06]",
-              canvasOnlyProduct
-                ? "h-[32px] w-auto gap-1.5 rounded-lg px-2.5 text-[12px] font-medium text-white/72 hover:text-white"
-                : "-ml-0.5 -mr-0.5 size-[32px]",
-            )}
-            onClick={() => setCompanionOpen(true)}
-            aria-label={companionManagerEntryCopy.label}
-            title={companionManagerEntryCopy.title}
-          >
-            {canvasOnlyProduct ? (
-              <>
-                <PawPrint className="size-[15px]" />
-                <span>搭子</span>
-              </>
-            ) : (
-              <PawPrint
-                aria-hidden="true"
-                className="companion-capsule-entry__icon size-[20px] text-text-dark/88"
-              />
-            )}
-          </Button>
           <CreditBalanceBadge />
           {!canvasOnlyProduct ? (
             <div
@@ -539,13 +464,6 @@ export function Header({ showBrand = true }: { showBrand?: boolean } = {}) {
             document.body,
           )
         : null}
-      <PetGalleryDialog
-        open={companionOpen}
-        onOpenChange={setCompanionOpen}
-        currentKind={companionKind}
-        currentPet={companionPet}
-        onConfirm={handleCompanionConfirm}
-      />
       <NotificationDrawer
         open={notificationOpen}
         onOpenChange={setNotificationOpen}

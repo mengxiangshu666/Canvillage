@@ -163,6 +163,9 @@ class FreezoneStoryVisualPlan(BaseModel):
     color_progression: str = Field(default="", max_length=1200, description="色彩随故事的变化")
     lighting: str = Field(default="", max_length=1200, description="主光方向、光源及变化理由")
     camera_language: str = Field(default="", max_length=1200, description="服务叙事的视点、构图与运动习惯及适用理由；实际起点、路径、速度、揭示与结束构图逐镜展开")
+    planned_changes: str = Field(default="", max_length=2000, description="全片计划内的视觉变化：机位、景别、光色、人物与道具状态的变化、触发、范围与结束；不是事后追认的漂移")
+    forbidden_drift: str = Field(default="", max_length=1200, description="明确禁止的漂移：新增主色、写实跳卡通、镜头质感突变、塑料皮肤等；只写真正会毁掉本片的项")
+    reference_choices: str = Field(default="", max_length=2000, description="参考取舍：沿用哪些来源的哪些特征、明确不继承什么及理由；不靠导演名或同一套词放行")
 
 
 class FreezoneStoryAssetContent(BaseModel):

@@ -95,6 +95,53 @@ describe('canvas node border beam', () => {
     manager.destroy();
   });
 
+  it('drives beams from store-supplied node ids instead of watching class changes', () => {
+    const stage = document.createElement('div');
+    const node = document.createElement('div');
+    node.className = 'react-flow__node';
+    node.setAttribute('data-id', 'node-1');
+    const other = document.createElement('div');
+    other.className = 'react-flow__node';
+    other.setAttribute('data-id', 'node-2');
+    stage.append(node, other);
+    document.body.append(stage);
+
+    const controller = {
+      element: document.createElement('div'),
+      update: vi.fn(),
+      setActive: vi.fn(),
+      destroy: vi.fn(),
+    };
+    const attach = vi.fn((_element: HTMLElement, _options: BorderBeamOptions) => controller);
+    const manager = createCanvasNodeBorderBeamManager(stage, attach);
+
+    expect(attach).not.toHaveBeenCalled();
+
+    manager.setActiveNodes(new Map([['node-1', 'running']]));
+    expect(attach).toHaveBeenCalledOnce();
+    expect(node.querySelector('.canvas-node-live-beam')).toHaveAttribute(
+      'data-state',
+      'running',
+    );
+    expect(other.querySelector('.canvas-node-live-beam')).toBeNull();
+
+    // A class flip alone must no longer be what drives the beam.
+    other.classList.add('canvas-node-generating');
+    expect(other.querySelector('.canvas-node-live-beam')).toBeNull();
+
+    manager.setActiveNodes(new Map([['node-2', 'selected']]));
+    expect(node.querySelector('.canvas-node-live-beam')).toHaveAttribute(
+      'data-state',
+      'fading',
+    );
+    expect(other.querySelector('.canvas-node-live-beam')).toHaveAttribute(
+      'data-state',
+      'selected',
+    );
+
+    manager.destroy();
+  });
+
   it('recognizes every real asynchronous node state without treating idle data as active', () => {
     expect(canvasNodeRuntimeIsActive({ isGenerating: true })).toBe(true);
     expect(canvasNodeRuntimeIsActive({ isUploading: true })).toBe(true);

@@ -99,6 +99,11 @@ guards = ["banned-words"]
 reason = "Developer Certificate of Origin 1.1 标准法律文本(Linux Foundation),原文含 open source license 措辞,不可改,非本项目自称"
 
 [[skip]]
+path = "third_party/xiaoshu-agent/1.0.0"
+guards = ["banned-words"]
+reason = "随产品分发的小树 Agent 上游技能与说明原文(MIT),“开源/open source”指其他第三方项目或上游自身定位,不是本项目自称;保留原文以便追溯"
+
+[[skip]]
 path = "agent_skills/village-canvas-aigc-knowledge/references/vault-aigc"
 guards = ["banned-words"]
 reason = "第三方 AIGC 研究语料副本(整棵子树)。“开源”指的是 HunyuanVideo / TRELLIS / Stable Audio 等他方模型,不是本项目自称;逐文件列条目会随语料增长立刻腐烂,故按目录豁免"

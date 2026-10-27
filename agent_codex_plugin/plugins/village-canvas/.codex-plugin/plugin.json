@@ -1,0 +1,35 @@
+{
+  "name": "village-canvas",
+  "version": "1.0.0",
+  "mcpServers": "./.mcp.json",
+  "skills": "./skills/",
+  "description": "让 Codex 读取和修改本机运行的村长无限画布：项目、画布、节点、连线、提示词、模型任务和工作流。",
+  "author": {
+    "name": "ClaymoreLab"
+  },
+  "license": "Elastic-2.0",
+  "keywords": [
+    "canvas",
+    "image",
+    "video",
+    "workflow",
+    "agent"
+  ],
+  "interface": {
+    "displayName": "村长无限画布",
+    "shortDescription": "让 Agent 读取和修改本机画布",
+    "longDescription": "把村长无限画布的 49 个画布操作暴露给 Codex：先读 revision 和节点，再批量写画布命令、跑任务和工作流。写入带 command_id 与 expected_revision，完成只认服务端回执。",
+    "developerName": "ClaymoreLab",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "读取当前画布，列出所有节点和连线",
+      "把选中图片节点的提示词改成电影感夜景"
+    ],
+    "brandColor": "#09caf5"
+  }
+}

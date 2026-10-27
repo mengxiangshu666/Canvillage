@@ -976,7 +976,7 @@ async def test_agent_recovery_turn_waits_for_real_workflow_terminal_receipt(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from novelvideo.chat import village_turn_policy
+    from tests import legacy_director_fixture as village_turn_policy
     from novelvideo.workflow_runtime.executor import WorkflowExecutor
 
     ffmpeg, _ffprobe = _prepare_local_media_runtime(monkeypatch)

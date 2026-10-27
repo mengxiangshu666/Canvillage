@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: Elastic-2.0
 // Copyright (c) 2026 ClaymoreLab
+import { useMemo } from 'react';
 import type { FreezoneStoryScriptRow } from '@/api/ops';
 import { isRenderableImageSrc, resolveImageDisplayUrl } from '@/features/canvas/application/imageData';
 import { rowCharacters, rowImagePrompt, scriptRowShotNumber } from './scriptViews';
 import { ScriptRoughPreview } from './ScriptRoughPreview';
-import { useShallow } from 'zustand/react/shallow';
-import { useCanvasStore } from '@/stores/canvasStore';
 import type { ScriptAssetLedger } from './scriptAssets';
 import { scriptPreviewFrames, type ScriptPreviewFrame } from './scriptPreviewFrames';
 import { scriptPreviewVideos } from './scriptPreviewVideos';
+import { useScriptGraphSlice } from './useScriptGraphSlice';
 
 /**
  * 创意视图：一镜一卡。
@@ -36,9 +36,15 @@ export interface ScriptCreativeViewProps {
 }
 
 export function ScriptCreativeView({ rows, scriptNodeId = '', ledger }: ScriptCreativeViewProps) {
-  const graph = useCanvasStore(useShallow(state => ({ nodes: state.nodes, edges: state.edges })));
-  const frames = scriptPreviewFrames(scriptNodeId, rows, graph, ledger);
-  const videos = scriptPreviewVideos(scriptNodeId, rows, graph);
+  const graph = useScriptGraphSlice(scriptNodeId);
+  const frames = useMemo(
+    () => scriptPreviewFrames(scriptNodeId, rows, graph, ledger),
+    [scriptNodeId, rows, graph, ledger],
+  );
+  const videos = useMemo(
+    () => scriptPreviewVideos(scriptNodeId, rows, graph),
+    [scriptNodeId, rows, graph],
+  );
   if (rows.length === 0) {
     return (
       <div className="flex h-full items-center justify-center text-[12px] text-text-muted">

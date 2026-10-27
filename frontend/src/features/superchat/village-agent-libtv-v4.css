@@ -1341,38 +1341,6 @@
   color: var(--agent-dialog-fg);
 }
 
-/* A Portal sits above the canvas, so the draggable mascot must yield while a
- * secondary surface is open instead of covering its navigation on mobile. */
-body:has([data-agent-dialog='v4']) .mybuddy-companion-floating,
-body:has([data-agent-dialog='v4']) .mybuddy-companion-motion-layer,
-body:has([data-agent-dialog='v4']) .mybuddy-companion-settle-layer,
-body:has([data-agent-dialog='v4']) .mybuddy-companion-drag-handle {
-  visibility: hidden;
-  pointer-events: none;
-  opacity: 0;
-  transform: scale(0.92);
-}
-
-body:has([data-agent-drawer='village-agent-v4-libtv'][data-open]) .mybuddy-companion-floating,
-body:has([data-agent-drawer='village-agent-v4-libtv'][data-open]) .mybuddy-companion-motion-layer,
-body:has([data-agent-drawer='village-agent-v4-libtv'][data-open]) .mybuddy-companion-settle-layer,
-body:has([data-agent-drawer='village-agent-v4-libtv'][data-open]) .mybuddy-companion-drag-handle {
-  visibility: hidden;
-  pointer-events: none;
-  opacity: 0;
-  transform: scale(0.92);
-}
-
-html[data-village-agent-docked='true'] .mybuddy-companion-floating,
-html[data-village-agent-docked='true'] .mybuddy-companion-motion-layer,
-html[data-village-agent-docked='true'] .mybuddy-companion-settle-layer,
-html[data-village-agent-docked='true'] .mybuddy-companion-drag-handle {
-  visibility: hidden;
-  pointer-events: none;
-  opacity: 0;
-  transform: scale(0.92);
-}
-
 @media (max-width: 640px) {
   [data-agent-dialog='v4'].village-agent-dialog-v4--cli,
   [data-agent-dialog='v4'].village-agent-dialog-v4--memory {

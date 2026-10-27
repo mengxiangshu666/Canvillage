@@ -109,7 +109,7 @@ def build_snapshot() -> dict[str, Any]:
 
     components = [
         _component("frontend-canvas", "frontend", "XYFlow Canvas", "Interactive canvas UI", (20, 70), "frontend/src/stores/canvasStore.ts", "Canvas state"),
-        _component("village-agent", "backend", "Village Agent", "Conversation + tools", (220, 70), "src/novelvideo/chat/village_harness.py", "Village Agent session"),
+        _component("village-agent", "backend", "Village Agent", "Conversation + tools", (220, 70), "src/novelvideo/chat/tapcanvas_sidecar.py", "Sidecar agent bridge"),
         _component("canvas-gateway", "backend", "Canvas Command Gateway", "Typed command boundary", (420, 70), "src/novelvideo/freezone/canvas_command_gateway.py", "Canvas command gateway"),
         _component("workflow-run", "backend", "WorkflowRun", "Durable runs + state", (620, 70), "src/novelvideo/workflow_runtime/service.py", "Workflow runtime"),
         _component("verifier", "security", "Verifier", "Evidence + quality gates", (820, 70), "src/novelvideo/workflow_runtime/verifier.py", "Workflow verifier"),

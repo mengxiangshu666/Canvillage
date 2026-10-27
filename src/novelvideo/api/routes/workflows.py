@@ -58,6 +58,7 @@ from novelvideo.workflow_runtime.action_router import (
     profile_from_mapping,
     route_action,
     single_atomic_canvas_creation_batch,
+    atomic_prompt_node_creation_batch,
 )
 from novelvideo.workflow_runtime.target_resolver import (
     resolve_existing_targets,
@@ -189,6 +190,7 @@ async def route_canvas_action(
         existing_node_mutation_only=existing_node_mutation_batch(payload.commands),
         contains_creation=canvas_creation_batch(payload.commands),
         single_atomic_creation=single_atomic_canvas_creation_batch(payload.commands),
+        atomic_prompt_batch=atomic_prompt_node_creation_batch(payload.commands),
         existing_node_ids=[
             node_id for node_id in canvas_node_ids if node_id not in dependency_node_ids
         ],

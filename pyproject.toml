@@ -90,6 +90,8 @@ dev = [
 
 [tool.ruff]
 target-version = "py311"
+# 随包第三方运行时是上游原样代码，不按本仓规则改写，也不参与 lint。
+exclude = ["third_party"]
 
 [tool.ruff.lint]
 # 显式冻结规则集为 ruff 默认（pycodestyle 错误 + pyflakes），

@@ -1,0 +1,36 @@
+{
+  "name": "agents",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "tapcanvas-harness": "dist/cli/index.js"
+  },
+  "scripts": {
+    "prebuild": "node scripts/clean-dist.mjs",
+    "dev": "node --loader ts-node/esm src/cli/index.ts",
+    "dev:watch": "node --watch --watch-path=src --watch-path=skills --loader ts-node/esm src/cli/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "test": "node scripts/run-tests.mjs",
+    "verify:profile": "node scripts/verify-harness-profile.mjs",
+    "watch": "node scripts/watch.mjs",
+    "start": "node dist/cli/index.js",
+    "postbuild": "node scripts/verify-harness-install.mjs"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh": "0.1.2-alpha.2",
+    "@deepseek-ai/dsh-sdk-client": "0.1.2-alpha.2",
+    "commander": "^12.1.0",
+    "dotenv": "^16.6.1",
+    "js-yaml": "4.3.2"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "4.0.9",
+    "@types/node": "^24.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

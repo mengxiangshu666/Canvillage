@@ -222,9 +222,8 @@ _CANVAS_COMPATIBILITY_FORBIDDEN_MEDIA_COMMAND_TYPES = {
     "create_image_prompt_node",
     "create_video_prompt_node",
     # 这两条同样会建出 imageGenNode / videoNode（见 canvas_command_gateway 的
-    # create_shot_sequence 与 insert_starter_workflow 落点），必须与上面两条
+    # insert_starter_workflow 落点也会建视频节点，必须与上面两条
     # 一并禁止走兼容写入，否则一条命令即可绕开导演准入批量建媒体节点（T-217）。
-    "create_shot_sequence",
     "insert_starter_workflow",
 }
 
@@ -458,7 +457,6 @@ def _handle_emit_canvas_command(args: dict[str, Any], **_: Any) -> str:
             "create_canvas_node",
             "create_image_prompt_node",
             "create_video_prompt_node",
-            "create_shot_sequence",
             "insert_starter_workflow",
             "update_node_prompt",
             "update_node_label",
@@ -501,23 +499,6 @@ def _handle_emit_canvas_command(args: dict[str, Any], **_: Any) -> str:
                 if len(workflow_id) > 200:
                     raise ValueError("insert_starter_workflow.workflow_id is too long")
                 clean["workflow_id"] = workflow_id
-            elif command_type == "create_shot_sequence":
-                prompts = item.get("prompts")
-                if not isinstance(prompts, list) or not prompts or len(prompts) > 12:
-                    raise ValueError(
-                        "create_shot_sequence requires prompts: 1-12 non-empty strings"
-                    )
-                clean_prompts: list[str] = []
-                for prompt in prompts:
-                    text = str(prompt or "").strip()
-                    if not text:
-                        raise ValueError(
-                            "create_shot_sequence prompts must be non-empty"
-                        )
-                    if len(text) > 50_000:
-                        raise ValueError("create_shot_sequence prompt is too long")
-                    clean_prompts.append(text)
-                clean["prompts"] = clean_prompts
             elif command_type in {
                 "focus_node",
                 "select_node",
@@ -717,7 +698,6 @@ def _handle_emit_canvas_command(args: dict[str, Any], **_: Any) -> str:
             if command_type in {
                 "create_image_prompt_node",
                 "create_video_prompt_node",
-                "create_shot_sequence",
             }:
                 aspect_ratio = str(item.get("aspect_ratio") or "").strip()
                 if aspect_ratio:
@@ -743,7 +723,7 @@ def _handle_emit_canvas_command(args: dict[str, Any], **_: Any) -> str:
                     ):
                         raise ValueError("count must be one of 1, 2, 4, 6, 8, 12")
                     clean["count"] = count
-                if command_type in {"create_image_prompt_node", "create_shot_sequence"}:
+                if command_type == "create_image_prompt_node":
                     image_size = str(item.get("image_size") or "").strip()
                     if image_size:
                         if image_size not in _CANVAS_AGENT_IMAGE_SIZES:
@@ -1403,7 +1383,6 @@ _CANVAS_CREATION_COMMAND_TYPES = frozenset(
         "annotate",
         "create_canvas_node",
         "create_image_prompt_node",
-        "create_shot_sequence",
         "create_video_prompt_node",
         "insert_starter_workflow",
     }

@@ -193,6 +193,16 @@ const DELIVERY_LEVEL_LABEL: Record<string, string> = {
   final_film: "最终成片",
 };
 
+/** 六个真实质量门翻成用户看得懂的检票灯，不复制第二套状态。 */
+const DIRECTOR_GATE_LABEL: Record<string, string> = {
+  visual_bible_locked: "风格",
+  series_story_contract_valid: "剧本",
+  dialogue_sound_contract_valid: "台词",
+  asset_view_plan_ready: "资产",
+  film_prompt_contract_valid: "提示词",
+  final_delivery_qc_passed: "交付",
+};
+
 const CONTRACT_STAGE_LABEL: Record<string, string> = {
   brief: "目标",
   canvas_scaffold: "画布骨架",
@@ -389,6 +399,11 @@ function ProductionContractPanel({
       }));
   const qualityStatus = effectiveQuality?.status || "pending";
   const qualityGates = Object.entries(effectiveQuality?.gate_statuses ?? {});
+  const directorGates = Object.entries(DIRECTOR_GATE_LABEL).map(([gate, label]) => ({
+    gate,
+    label,
+    status: String(effectiveQuality?.gate_statuses?.[gate] || "not_run"),
+  }));
   const receiptStatus = effectiveReceipt?.status || "pending";
   const contractVisible = Boolean(
     contract || effectiveQuality || effectiveCost || effectiveReceipt,
@@ -487,6 +502,25 @@ function ProductionContractPanel({
             >
               {qualityStatusLabel(qualityStatus)}
             </span>
+          </div>
+          <div className="mt-2 grid grid-cols-3 gap-1.5">
+            {directorGates.map((item) => (
+              <div
+                key={item.gate}
+                className={cn(
+                  "flex items-center justify-between rounded-md border px-2 py-1 text-[10px]",
+                  item.status === "passed"
+                    ? "border-emerald-400/20 bg-emerald-400/[0.06] text-emerald-200"
+                    : item.status === "failed"
+                      ? "border-red-400/20 bg-red-400/[0.06] text-red-200"
+                      : "border-white/[0.08] bg-white/[0.03] text-muted-foreground",
+                )}
+                title={`${item.gate}: ${item.status}`}
+              >
+                <span>{item.label}</span>
+                <span>{qualityStatusLabel(item.status)}</span>
+              </div>
+            ))}
           </div>
           {qualityGates.length ? (
             <div className="mt-2 flex flex-wrap gap-1.5">

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from novelvideo.chat import village_turn_policy
+from tests import legacy_director_fixture as village_turn_policy
 from novelvideo.chat.agent_events import build_agent_event
 from novelvideo.chat.context_checkpoint import build_checkpoint, checkpoint_prompt
 from novelvideo.workflow_runtime.canvas_recovery import (

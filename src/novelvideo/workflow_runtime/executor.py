@@ -980,15 +980,25 @@ async def _storyboard_handler(run: dict[str, Any], step: dict[str, Any]) -> Step
             if reuse_target_node_ids
             else [
                 {
-                    "type": "create_shot_sequence",
-                    "display_name": plan.title,
-                    "prompts": [shot.prompt for shot in plan.shots],
+                    "type": "create_image_prompt_node",
+                    "display_name": f"{plan.title} · 镜{index + 1}",
+                    "prompt": shot.prompt,
                     "model": image_model_ref,
                     "placement": {
                         "anchor": "viewport_center",
                         "layout": "column",
                     },
                 }
+                for index, shot in enumerate(plan.shots)
+            ]
+            + [
+                {
+                    "type": "connect_nodes",
+                    "source": f"$created:{index - 1}",
+                    "target": f"$created:{index}",
+                    "relation": "continuity",
+                }
+                for index in range(1, len(plan.shots))
             ]
         ),
     }

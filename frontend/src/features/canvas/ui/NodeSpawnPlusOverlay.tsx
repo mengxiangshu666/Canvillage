@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Elastic-2.0
 // Copyright (c) 2026 ClaymoreLab
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { NodeToolbar as ReactFlowNodeToolbar, Position, useStore } from '@xyflow/react';
+import { NodeToolbar as ReactFlowNodeToolbar, Position } from '@xyflow/react';
 import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,11 +42,11 @@ const PLUS_DRAG_THRESHOLD_PX = 5;
 // 「+」的出现仍由节点 hover(onNodeMouseEnter)驱动，不受影响。
 const PLUS_MAGNET_RADIUS_PX = 48;
 // 「+」最多能离锚点多远地追向光标（越大追得越远）。
-const PLUS_MAGNET_MAX_OFFSET_PX = 18;
+const PLUS_MAGNET_MAX_OFFSET_PX = 10;
 // 每帧把当前位移朝目标位移插值的比例（0~1）：越小越「飘」越丝滑、越大越跟手。
 const PLUS_MAGNET_LERP = 0.18;
 // 「+」距节点边缘的基础间距（NodeToolbar offset）。
-const PLUS_TOOLBAR_OFFSET = 20;
+const PLUS_TOOLBAR_OFFSET = 16;
 // 磁吸朝向节点方向时，按钮贴近节点一侧的边缘至少离节点边缘这么远——避免把节点边缘
 // 的连接小球（Handle，约外露 4px）盖住。
 const PLUS_MIN_GAP_FROM_NODE_PX = 10;
@@ -91,14 +91,9 @@ function PlusButton({
   const rafRef = useRef<number | null>(null);
   const handleType: PlusHandleType = direction === 'right' ? 'source' : 'target';
 
-  // 跟随画布缩放：直接用 zoom 作为按钮 scale（不夹取，严格按画布比例——与浮动
-  // 工具条/上传按钮栏一致），缩小时一起变小、放大时一起变大，不再显得突兀。
-  // grow 方向背离节点（右侧「+」以左缘为原点向右长、左侧「+」以右缘为原点向左长），
-  // 避免放大时盖回节点本体。
-  const zoom = useStore((state) => state.transform[2]);
-  const plusScale = zoom;
-  const plusScaleRef = useRef(plusScale);
-  plusScaleRef.current = plusScale;
+  // 「+」在屏幕上保持恒定大小：NodeToolbar 已经反向缩放过，这里再乘 zoom 会让
+  // 画布缩小时按钮小到点不中（53% 时只剩 17px）。用户 2026-10-27 反馈「不好点」，
+  // 改为固定 36px，命中区随之外扩。
 
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLButtonElement>) => {
@@ -171,7 +166,7 @@ function PlusButton({
     currentOffsetRef.current = { x, y };
     if (buttonRef.current) {
       // translate(磁吸位移, 屏幕 px，不随 scale 改变) + scale(跟随缩放)。
-      buttonRef.current.style.transform = `translate(${x}px, ${y}px) scale(${plusScaleRef.current})`;
+      buttonRef.current.style.transform = `translate(${x}px, ${y}px)`;
     }
     if (settled) {
       rafRef.current = null;
@@ -232,15 +227,6 @@ function PlusButton({
     };
   }, []);
 
-  // zoom 变化时立即重写 transform —— 磁吸 rAF 在静止后会停掉，不会自动跟上新的
-  // scale；这里在缩放变化时补一次，保证空闲态的「+」也随缩放即时变大变小。
-  useEffect(() => {
-    if (buttonRef.current) {
-      const { x, y } = currentOffsetRef.current;
-      buttonRef.current.style.transform = `translate(${x}px, ${y}px) scale(${plusScale})`;
-    }
-  }, [plusScale]);
-
   return (
     <div
       ref={anchorRef}
@@ -263,7 +249,7 @@ function PlusButton({
           延迟兜住(见 Canvas: NODE_SPAWN_PLUS_HIDE_DELAY_MS)。 */}
       <span
         aria-hidden="true"
-        className="pointer-events-auto absolute -inset-2 z-0 rounded-full"
+        className="pointer-events-auto absolute -inset-3 z-0 rounded-full"
         onPointerEnter={(event) => {
           onHoverStart?.();
           updateMagnetOffset(event);
@@ -280,7 +266,7 @@ function PlusButton({
         aria-label={direction === 'right' ? '引用该节点生成' : '连入该节点'}
         // 缩放原点放在贴近节点的一侧，放大时朝远离节点的方向生长，不会盖回节点本体。
         style={{ transformOrigin: direction === 'right' ? 'left center' : 'right center' }}
-        className="canvas-spawn-plus-magnetic-button nodrag relative z-10 flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-surface-dark/95 text-white/85 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_18px_rgba(0,0,0,0.32)] transition-[border-color,color,box-shadow] duration-150 will-change-transform hover:border-white/85 hover:text-white hover:shadow-[0_0_0_1px_rgba(255,255,255,0.42),0_0_18px_rgba(255,255,255,0.22)]"
+        className="canvas-spawn-plus-magnetic-button nodrag relative z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-surface-dark/95 text-white/85 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_18px_rgba(0,0,0,0.32)] transition-[border-color,color,box-shadow] duration-150 will-change-transform hover:border-white/85 hover:text-white hover:shadow-[0_0_0_1px_rgba(255,255,255,0.42),0_0_18px_rgba(255,255,255,0.22)]"
         onPointerEnter={(event) => {
           onHoverStart?.();
           updateMagnetOffset(event);
@@ -338,8 +324,7 @@ export const NodeSpawnPlusOverlay = memo(({
   // 节点变小、这段固定间距相对就显得很远。改成 offset = 基础间距 × zoom，让间距在
   // 流空间里恒定 —— 缩小时「+」紧贴节点、放大时按比例拉开。留 4px 屏幕下限避免贴到
   // 连接小球上。
-  const zoom = useStore((state) => state.transform[2]);
-  const toolbarOffset = Math.max(4, PLUS_TOOLBAR_OFFSET * zoom);
+  const toolbarOffset = PLUS_TOOLBAR_OFFSET;
   const [renderNodeId, setRenderNodeId] = useState<string | null>(hidden ? null : hoveredNodeId);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -410,7 +395,19 @@ export const NodeSpawnPlusOverlay = memo(({
     return null;
   }
 
-  const showRight = nodeHasSourceHandle(selectedNode.type) && rightAllowedTypes.length > 0;
+  // 组：只有组里确实有能当输入的成员时才露「引用该节点生成」，否则连出去也是空的。
+  const groupHasSourceMembers =
+    selectedNode.type !== CANVAS_NODE_TYPES.group ||
+    useCanvasStore
+      .getState()
+      .nodes.some(
+        (node) =>
+          node.parentId === selectedNode.id && nodeHasSourceHandle(node.type),
+      );
+  const showRight =
+    groupHasSourceMembers &&
+    nodeHasSourceHandle(selectedNode.type) &&
+    rightAllowedTypes.length > 0;
   // Left + is scoped to the video node per product spec: a video node can pull
   // resources from upstream image/audio/text inputs. Other node types only show
   // the right + (existing "引用该节点生成" affordance).

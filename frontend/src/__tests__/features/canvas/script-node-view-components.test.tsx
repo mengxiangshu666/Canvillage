@@ -16,7 +16,7 @@ import { ScriptShotVideoDialog } from '@/features/canvas/nodes/script/ScriptShot
 import { ScriptViewSwitcher } from '@/features/canvas/nodes/script/ScriptViewSwitcher';
 
 describe('脚本节点视图切换', () => {
-  it('展开后列出四种视图，当前视图带勾选', () => {
+  it('展开后列出五种视图，当前视图带勾选', () => {
     render(<ScriptViewSwitcher value="creative" onChange={() => {}} />);
     // 收起态只显示当前视图名。
     expect(screen.getByRole('button', { name: /创意视图/ })).toBeTruthy();
@@ -27,6 +27,7 @@ describe('脚本节点视图切换', () => {
       '创意视图',
       '资产视图',
       '视频素材',
+      '关键帧验收',
     ]);
     expect(items[1].getAttribute('aria-checked')).toBe('true');
     expect(items[0].getAttribute('aria-checked')).toBe('false');

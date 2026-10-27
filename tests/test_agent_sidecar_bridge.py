@@ -157,17 +157,6 @@ async def test_unknown_turn_token_is_rejected() -> None:
     assert response.status_code == 401
 
 
-def test_chat_backend_requires_explicit_opt_in(monkeypatch) -> None:
-    monkeypatch.delenv("VILLAGE_CHAT_AGENT_BACKEND", raising=False)
-    assert tapcanvas_sidecar.chat_backend_enabled() is False
-    monkeypatch.setenv("VILLAGE_CHAT_AGENT_BACKEND", "xiaoshu")
-    assert tapcanvas_sidecar.chat_backend_enabled() is True
-    monkeypatch.setenv("VILLAGE_CHAT_AGENT_BACKEND", "tapcanvas")
-    assert tapcanvas_sidecar.chat_backend_enabled() is True
-    monkeypatch.setenv("VILLAGE_CHAT_AGENT_BACKEND", "village")
-    assert tapcanvas_sidecar.chat_backend_enabled() is False
-
-
 def test_vendor_names_are_replaced_in_user_visible_text() -> None:
     assert (
         tapcanvas_sidecar.product_text("TapCanvas Harness / DeepSeek Harness 已完成")
@@ -176,13 +165,10 @@ def test_vendor_names_are_replaced_in_user_visible_text() -> None:
     assert tapcanvas_sidecar.product_text("我是 TapCanvas") == "小树"
     # User-authored labels are data, not the assistant's identity.
     assert tapcanvas_sidecar.product_text("TapCanvas 隔离测试") == "TapCanvas 隔离测试"
-    assert (
-        tapcanvas_sidecar.display_tool_name("report_delivery")
-        == "village_delivery_check"
-    )
+    assert "report_delivery" in tapcanvas_sidecar._INTERNAL_TOOL_NAMES
     assert (
         tapcanvas_sidecar.display_tool_name("village_canvas_read_compact")
-        == "village_canvas_read_compact"
+        == "读取画布"
     )
 
 
@@ -288,7 +274,7 @@ def test_workflow_scaffolding_is_blocked_for_plain_asset_requests() -> None:
     with pytest.raises(ValueError, match="没有要求工作流"):
         tapcanvas_sidecar.authorized_tool_arguments(
             "village_canvas_dispatch_action",
-            {"commands": [{"type": "create_shot_sequence"}]},
+            {"commands": [{"type": "insert_starter_workflow", "workflow_id": "custom-canvas-workflow"}]},
             context,
         )
     with pytest.raises(ValueError, match="没有要求工作流"):
@@ -435,8 +421,6 @@ async def test_village_chat_delegates_only_when_flag_is_enabled(monkeypatch) -> 
         return {"role": "assistant", "content": "sidecar"}
 
     monkeypatch.setattr(tapcanvas_sidecar, "stream_chat_turn", fake_stream_chat_turn)
-    monkeypatch.setenv("VILLAGE_CHAT_AGENT_BACKEND", "tapcanvas")
-
     async def noop(_event):
         return None
 
@@ -451,3 +435,144 @@ async def test_village_chat_delegates_only_when_flag_is_enabled(monkeypatch) -> 
 
     assert result["content"] == "sidecar"
     assert calls and calls[0]["canvas_id"] == "default"
+
+
+def test_reference_image_locators_prefer_urls_and_persist_inline_uploads(tmp_path):
+    from novelvideo.chat._service_parts._service_village import (
+        _reference_image_locators,
+    )
+
+    assert _reference_image_locators(
+        [{"uri": "/static/projects/project-a/a.png", "data": "", "mimeType": "image/png"}],
+        project="project-a",
+        project_dir=tmp_path,
+    ) == ["/static/projects/project-a/a.png"]
+
+    locators = _reference_image_locators(
+        [{"data": "eA==", "mimeType": "image/png"}],
+        project="project-a",
+        project_dir=tmp_path,
+    )
+    assert len(locators) == 1
+    assert locators[0].startswith("/static/projects/project-a/inputs/sidecar-ref-")
+    written = list((tmp_path / "inputs").glob("sidecar-ref-*"))
+    assert len(written) == 1 and written[0].read_bytes() == b"x"
+
+    assert _reference_image_locators(
+        [{"data": "x" * (65 * 1024), "mimeType": "image/png"}],
+        project="",
+        project_dir=None,
+    ) == []
+
+
+def test_conversation_history_is_bounded_and_skips_current_prompt(monkeypatch):
+    from novelvideo.chat import tapcanvas_sidecar
+
+    rows = [
+        {"role": "user", "content": "第一问"},
+        {"role": "assistant", "content": "第一答"},
+        {"role": "user", "content": "当前问题"},
+    ]
+
+    class FakeStore:
+        def list_messages(self, *args, **kwargs):
+            return rows
+
+    monkeypatch.setattr("novelvideo.chat.store.chat_store", FakeStore())
+    lines = tapcanvas_sidecar._recent_conversation_lines(
+        "local", "project-a", "conv", None, current_prompt="当前问题"
+    )
+    assert lines == ["user: 第一问", "assistant: 第一答"]
+    prompt = tapcanvas_sidecar._prompt_with_history("当前问题", lines)
+    assert prompt.startswith("<conversation_history>")
+    assert prompt.endswith("当前问题")
+
+
+def test_internal_machinery_is_not_user_facing_and_tool_results_are_one_line():
+    from novelvideo.chat import tapcanvas_sidecar
+
+    assert tapcanvas_sidecar.display_tool_name("village_canvas_apply_commands") == "修改画布"
+    assert tapcanvas_sidecar.display_tool_name("freezone_run_node") == "运行节点"
+    assert tapcanvas_sidecar._tool_result_text("修改画布", True, '{"revision": 3}') == "✅ 修改画布已完成。"
+    failure = tapcanvas_sidecar._tool_result_text(
+        "运行节点", False, '{"error": "provider unavailable"}'
+    )
+    assert failure.startswith("⚠️ 运行节点失败：")
+    assert "✅" not in failure
+
+    conflict = tapcanvas_sidecar._tool_result_text(
+        "执行画布操作",
+        False,
+        'Error: 远程工具 village_canvas_dispatch_action 执行失败：HTTP 400 '
+        '{"ok": false, "error_code": "canvas_revision_conflict", '
+        '"error": "画布版本已变化，请基于最新版本重试"}',
+    )
+    assert "画布在你操作期间被别的改动改过" in conflict
+    assert "远程工具" not in conflict
+    assert "HTTP 400" not in conflict
+
+
+@pytest.mark.asyncio
+async def test_failed_native_tool_return_carries_disposition(monkeypatch):
+    from novelvideo.chat import tapcanvas_sidecar
+
+    class FakeRegistry:
+        async def invoke(self, name, arguments):
+            return {"ok": False, "error_code": "tool_arguments_invalid"}
+
+    monkeypatch.setattr(
+        "novelvideo.agent_tools.native_registry.build_native_registry",
+        lambda full=True: FakeRegistry(),
+    )
+    monkeypatch.setattr(
+        tapcanvas_sidecar,
+        "authorized_tool_arguments",
+        lambda name, arguments, context: dict(arguments),
+    )
+    result = await tapcanvas_sidecar.invoke_native_tool(
+        "village_canvas_read_compact",
+        {},
+        {
+            "api_url": "http://127.0.0.1:1",
+            "agent_token": "token",
+            "project_id": "project-a",
+            "turn_id": "turn-disposition",
+        },
+    )
+    assert result["disposition"]["base_disposition"] == "fix_params"
+    assert result["disposition"]["ask_user_now"] is False
+
+
+@pytest.mark.asyncio
+async def test_canvas_revision_conflict_gets_refresh_guidance(monkeypatch):
+    from novelvideo.chat import tapcanvas_sidecar
+
+    class FakeRegistry:
+        async def invoke(self, name, arguments):
+            return {
+                "ok": False,
+                "error_code": "canvas_revision_conflict",
+                "current_revision": 12,
+            }
+
+    monkeypatch.setattr(
+        "novelvideo.agent_tools.native_registry.build_native_registry",
+        lambda full=True: FakeRegistry(),
+    )
+    monkeypatch.setattr(
+        tapcanvas_sidecar,
+        "authorized_tool_arguments",
+        lambda name, arguments, context: dict(arguments),
+    )
+    result = await tapcanvas_sidecar.invoke_native_tool(
+        "village_canvas_dispatch_action",
+        {},
+        {
+            "api_url": "http://127.0.0.1:1",
+            "agent_token": "token",
+            "project_id": "project-a",
+            "turn_id": "turn-conflict-guidance",
+        },
+    )
+    assert result["disposition"]["base_disposition"] == "retry_after_refresh"
+    assert "重新读取画布" in result["disposition"]["instruction"]

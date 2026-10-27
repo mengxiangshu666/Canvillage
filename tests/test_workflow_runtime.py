@@ -237,9 +237,21 @@ def _storyboard_output() -> dict:
             "command_id": "workflow:story:shots:a1",
             "commands": [
                 {
-                    "type": "create_shot_sequence",
-                    "prompts": ["第一镜头提示词", "第二镜头提示词"],
-                }
+                    "type": "create_image_prompt_node",
+                    "display_name": "水果短片 · 镜1",
+                    "prompt": "第一镜头提示词",
+                },
+                {
+                    "type": "create_image_prompt_node",
+                    "display_name": "水果短片 · 镜2",
+                    "prompt": "第二镜头提示词",
+                },
+                {
+                    "type": "connect_nodes",
+                    "source": "$created:0",
+                    "target": "$created:1",
+                    "relation": "continuity",
+                },
             ],
         },
         "plan": {
@@ -268,7 +280,22 @@ def _storyboard_output_with_shots(shot_count: int) -> dict:
     """A storyboard receipt with `shot_count` shots, for chain-shaped canvases."""
     storyboard = _storyboard_output()
     prompts = [f"第{index}镜头提示词" for index in range(1, shot_count + 1)]
-    storyboard["command_envelope"]["commands"][0]["prompts"] = prompts
+    storyboard["command_envelope"]["commands"] = [
+        {
+            "type": "create_image_prompt_node",
+            "display_name": f"水果短片 · 镜{index + 1}",
+            "prompt": prompt,
+        }
+        for index, prompt in enumerate(prompts)
+    ] + [
+        {
+            "type": "connect_nodes",
+            "source": f"$created:{index - 1}",
+            "target": f"$created:{index}",
+            "relation": "continuity",
+        }
+        for index in range(1, len(prompts))
+    ]
     shots = storyboard["plan"]["shots"]
     while len(shots) < shot_count:
         shots.append(
@@ -2455,8 +2482,13 @@ async def test_storyboard_handler_compiles_model_json_to_canvas_command(
     envelope = result.payload["command_envelope"]
     assert envelope["project_id"] == "project-1"
     assert envelope["canvas_id"] == "canvas-1"
-    assert envelope["commands"][0]["type"] == "create_shot_sequence"
-    assert len(envelope["commands"][0]["prompts"]) == 2
+    create_commands = [
+        command
+        for command in envelope["commands"]
+        if command["type"] == "create_image_prompt_node"
+    ]
+    assert len(create_commands) == 2
+    assert create_commands[0]["prompt"]
 
 
 def test_compose_shot_prompt_injects_identity_lock_verbatim():
@@ -2525,7 +2557,11 @@ async def test_storyboard_handler_prepends_one_identity_lock_to_every_shot(
     # 模型合同必须真的要求这一段，并明确禁止各镜重复描述长相。
     assert "identity_lock" in captured["system_prompt"]
     assert "不要重新描述角色长相" in captured["system_prompt"]
-    prompts = result.payload["command_envelope"]["commands"][0]["prompts"]
+    prompts = [
+        command["prompt"]
+        for command in result.payload["command_envelope"]["commands"]
+        if command["type"] == "create_image_prompt_node"
+    ]
 
     lock = "主角林小满，27岁，齐肩黑发，米色风衣"
     assert result.payload["plan"]["identity_lock"] == lock
@@ -2856,7 +2892,6 @@ async def test_reuse_workflow_updates_bound_nodes_instead_of_creating_shots(
         "shot-existing-1",
         "shot-existing-2",
     ]
-    assert all(command["type"] != "create_shot_sequence" for command in commands)
 
 
 @pytest.mark.asyncio
@@ -4733,7 +4768,7 @@ def test_canvas_command_apply_api_uses_shared_gateway(monkeypatch, tmp_path):
     assert receipt["schema"] == "canvas_command_receipt.v2"
     assert receipt["revision"] == 2
     assert receipt["server_applied"] is True
-    assert receipt["action_route"]["reason_code"] == "single_canvas_action"
+    assert receipt["action_route"]["reason_code"] == "single_canvas_creation"
     assert receipt["causal_binding"]["source_turn_id"] == "turn-api-command"
     snapshot = canvas_store.read_canvas(state_dir, "canvas-1")
     assert snapshot is not None

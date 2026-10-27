@@ -1,0 +1,26 @@
+{
+  "id": "libtv_tiny_world",
+  "name": "小人国世界",
+  "label": "小人国世界",
+  "family": "three_d",
+  "era": "",
+  "palette": "vivid toy-like colors, glossy highlights, simple material separation",
+  "lighting": "soft studio HDRI, gentle rim light, clean contact shadows",
+  "optics": "50mm product lens, moderate depth of field, no wide-angle distortion",
+  "composition": "centered product-like subject on a clean background",
+  "camera_motion": "slow turntable orbit or slight push-in, stable horizon",
+  "style_instructions": "Creative 3D ad, where tiny people interact with oversized objects from that concept in a surreal way. Minimal white background, clever and playful composition, cinematic lighting,high detail, eye-catching and whimsical",
+  "avoid_instructions": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur.",
+  "style_tag": "小人国世界",
+  "tags": [
+    "小人国世界",
+    "libtv",
+    "3D潮玩"
+  ],
+  "model_overrides": {},
+  "style_family": "animation",
+  "animation_subtype": "3d",
+  "image_prompt": "Creative 3D ad, where tiny people interact with oversized objects from that concept in a surreal way. Minimal white background, clever and playful composition, cinematic lighting,high detail, eye-catching and whimsical",
+  "video_prompt": "Creative 3D ad, where tiny people interact with oversized objects from that concept in a surreal way. Minimal white background, clever and playful composition, cinematic lighting,high detail, eye-catching and whimsical. Keep the visual style consistent during motion; avoid morphing, flicker, or style drift.",
+  "negative_prompt": "No watermark, no signature, no garbled text, no extra fingers, no distorted anatomy, no low-resolution blur."
+}

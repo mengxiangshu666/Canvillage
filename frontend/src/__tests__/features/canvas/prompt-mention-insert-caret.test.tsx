@@ -8,6 +8,7 @@ import { render } from "@testing-library/react";
 
 import {
   PromptMentionEditor,
+  type MentionCandidate,
   type PromptMentionEditorHandle,
 } from "@/features/canvas/nodes/PromptMentionEditor";
 
@@ -101,6 +102,41 @@ describe("PromptMentionEditor — 引用插入位置", () => {
 
     expect(editor.textContent).toBe("一只猫@图片1 @图片1 在跑");
     expect(onChange).toHaveBeenLastCalledWith("一只猫@图片1 @图片1 在跑");
+  });
+
+  // 用户 2026-10-26：点参考素材后要先看到「图片」chip，而不是一段 `@图片1` 原文；
+  // 原文要等刷新后才被 rebuildDOM 换成 chip。这里锁住「插入当场就是 chip」。
+  it("点参考素材时当场落 chip，不留下 @图片1 原文", () => {
+    const candidate: MentionCandidate = {
+      key: "node-1",
+      name: "图片1",
+      imageUrl: "/reference-1.png",
+      index: 1,
+    };
+    const ref = createRef<PromptMentionEditorHandle>();
+    const onChange = vi.fn();
+    const { container } = render(
+      <PromptMentionEditor
+        ref={ref}
+        value="变成美国人"
+        onChange={onChange}
+        candidates={[candidate]}
+      />,
+    );
+    const editor = container.querySelector<HTMLElement>(".prompt-mention-editor");
+    if (!editor) throw new Error("editor not rendered");
+    editor.focus();
+    placeCaret(editor.firstChild as Node, 5);
+    moveSelectionOutside();
+
+    ref.current?.insertMentionAtCursor(candidate);
+
+    const chip = editor.querySelector<HTMLElement>(".mention-chip");
+    expect(chip).not.toBeNull();
+    expect(chip?.dataset.name).toBe("图片1");
+    expect(chip?.querySelector(".mention-chip-label")?.textContent).toBe("图片");
+    expect(editor.textContent).not.toContain("@");
+    expect(onChange).toHaveBeenCalledWith("变成美国人@图片1 ");
   });
 });
 

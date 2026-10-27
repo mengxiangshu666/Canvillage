@@ -2,10 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from novelvideo.freezone import canvas_store
 from novelvideo.freezone.paths import canvas_path
+from novelvideo.ports.canvas_commands import CanvasCommandPortError
 from novelvideo.project_context import ProjectContext
 from novelvideo.task_backend.runners.canvas_media import (
+    _apply_canvas_patch_with_retry,
     commit_media_result_to_canvas,
     media_file_metadata,
 )
@@ -253,3 +257,41 @@ def test_commit_clears_stale_resource_meta_when_nothing_is_known(tmp_path: Path)
     )
 
     assert _node_data(ctx)["resourceMeta"] is None
+
+
+class _FlakyPort:
+    def __init__(self, failures: int, code: str = "canvas_revision_conflict") -> None:
+        self.failures = failures
+        self.code = code
+        self.calls = 0
+
+    def apply(self, **kwargs):
+        self.calls += 1
+        if self.calls <= self.failures:
+            raise CanvasCommandPortError("conflict", code=self.code)
+        return {"ok": True, "calls": self.calls}
+
+
+def test_revision_conflict_is_retried_before_giving_up():
+    port = _FlakyPort(failures=2)
+    result = _apply_canvas_patch_with_retry(
+        port, canvas_id="c", envelope={"schema": "x"}
+    )
+    assert result == {"ok": True, "calls": 3}
+    assert port.calls == 3
+
+
+def test_non_revision_error_is_not_retried():
+    port = _FlakyPort(failures=1, code="canvas_command_apply_failed")
+    with pytest.raises(CanvasCommandPortError):
+        _apply_canvas_patch_with_retry(port, canvas_id="c", envelope={})
+    assert port.calls == 1
+
+
+def test_revision_conflict_stops_after_the_budget():
+    port = _FlakyPort(failures=99)
+    with pytest.raises(CanvasCommandPortError):
+        _apply_canvas_patch_with_retry(
+            port, canvas_id="c", envelope={}, attempts=3
+        )
+    assert port.calls == 3

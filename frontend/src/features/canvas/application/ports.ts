@@ -135,6 +135,14 @@ export interface CanvasEventMap {
     duration?: number;
     maxZoom?: number;
   };
+  /** 画布底栏「全部功能」：由常驻的 SelectedNodeOverlay 接管当前选中节点。 */
+  'canvas/all-features/open': undefined;
+  /** 底栏右侧的 Agent 光球：由画布壳层（FreezoneShell）开关聊天台。 */
+  'canvas/agent/toggle': undefined;
+  /** 画布底栏的角色/风格/特效库入口：由 FreezoneShell 打开对应浮层。 */
+  'canvas/character-studio/open': undefined;
+  'canvas/style-library/open': undefined;
+  'canvas/effect-library/open': undefined;
   'tool-dialog/open': {
     nodeId: string;
     toolType: NodeToolType;

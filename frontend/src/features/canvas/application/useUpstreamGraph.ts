@@ -5,9 +5,9 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasNode } from '../domain/canvasNodes';
-import { upstreamNodesInEdgeOrder } from '../nodes/referenceOrdering';
 import { extractUpstreamContent } from './graphContentResolver';
 import { extractUpstreamImages } from './graphImageResolver';
+import { upstreamNodesFromIndex } from './nodeIndex';
 import type { UpstreamContent } from './ports';
 
 /**
@@ -18,15 +18,16 @@ import type { UpstreamContent } from './ports';
  * frame, but `applyNodeChanges` / `updateNodeData` reuse object identity for the
  * nodes that didn't change. A node component that subscribed to the full array
  * therefore re-rendered (and re-walked the graph) on *any* change anywhere on the
- * canvas. By selecting just the upstream node objects under `useShallow`, an
- * unrelated node's drag leaves this result referentially stable, so the consuming
- * node skips the re-render entirely.
+ * canvas.
+ *
+ * The selector is now a cheap lookup instead of a graph walk: the id sequence is
+ * cached per `edges` reference (drags never touch edges) and the node objects
+ * come from the shared id index. Result arrays are shallow-compared, so an
+ * unrelated node's drag leaves this subscription referentially stable.
  */
 export function useUpstreamNodes(nodeId: string): CanvasNode[] {
   return useCanvasStore(
-    useShallow((state) =>
-      upstreamNodesInEdgeOrder(state.nodes, state.edges, nodeId),
-    ),
+    useShallow((state) => upstreamNodesFromIndex(state.nodes, state.edges, nodeId)),
   );
 }
 

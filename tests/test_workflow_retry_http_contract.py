@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from novelvideo.api.routes import workflows
-from novelvideo.chat import village_turn_policy
+from tests import legacy_director_fixture as village_turn_policy
 from novelvideo.workflow_runtime.service import WorkflowRuntimeService
 
 pytestmark = pytest.mark.m03

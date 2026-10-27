@@ -1,9 +1,9 @@
-# Optional TapCanvas sidecar launcher for local A/B runs.
+# 小树 Agent sidecar launcher.
 #
-# This is NOT part of the default product startup.  The Village Canvas API keeps
-# working without the sidecar; only `VILLAGE_CHAT_AGENT_BACKEND=tapcanvas` routes
-# chat turns through it.  The external TapCanvas checkout stays outside the
-# repository; set VILLAGE_AGENT_SIDECAR_DIR to its apps/agents-cli directory.
+# The agent runtime ships with the product under third_party/xiaoshu-agent and is
+# materialized into runtime/agent_sidecar; VILLAGE_AGENT_SIDECAR_DIR is only an
+# override for development.  The product launcher starts it automatically, but
+# stopping/starting it by hand is still supported.
 #
 # Every start verifies the isolation patch before launching: shell, filesystem,
 # web, workflow, subagent and file-editor tools must all be disabled.  A sidecar
@@ -107,17 +107,29 @@ switch ($Action) {
   }
   'start' {
     if (-not $Dir) {
-      throw 'VILLAGE_AGENT_SIDECAR_DIR is not set; point it at the TapCanvas apps/agents-cli directory'
+      $Dir = Join-Path $root 'runtime\agent_sidecar\apps\agents-cli'
+    }
+    if (-not (Test-Path -LiteralPath $Dir -PathType Container)) {
+      throw "sidecar directory not found: $Dir"
     }
     $sidecarDir = (Resolve-Path -LiteralPath $Dir).Path
     $entry = Join-Path $sidecarDir 'dist\cli\index.js'
     if (-not (Test-Path -LiteralPath $entry -PathType Leaf)) {
-      throw "sidecar build not found: $entry (run the TapCanvas build first)"
+      throw "sidecar build not found: $entry"
     }
     Assert-IsolationPatch -SidecarDir $sidecarDir
-    if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-      throw 'node is not on PATH'
+    $nodeExe = Join-Path $root 'runtime\node\node.exe'
+    if (-not (Test-Path -LiteralPath $nodeExe -PathType Leaf)) {
+      $nodeExe = (Get-Command node -ErrorAction SilentlyContinue).Source
     }
+    if (-not $nodeExe) {
+      throw 'node is not available (runtime\node\node.exe or PATH)'
+    }
+    $skillsDir = Join-Path $root 'runtime\agent_sidecar\skills'
+    if (Test-Path -LiteralPath $skillsDir -PathType Container) {
+      $env:AGENTS_SKILLS_DIR = $skillsDir
+    }
+    $env:DSH_AGENTS_HOME = Join-Path $root 'runtime\agent_sidecar\.agents-home'
     if (Test-Path -LiteralPath $pidFile) {
       $raw = (Get-Content -LiteralPath $pidFile -Raw -ErrorAction SilentlyContinue)
       if ($raw -and $raw.Trim() -match '^\d+$' -and (Test-IsSidecarProcess -ProcessId ([int]$raw.Trim()))) {
@@ -126,7 +138,7 @@ switch ($Action) {
       }
     }
     New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
-    $process = Start-Process -FilePath 'node' `
+    $process = Start-Process -FilePath $nodeExe `
       -ArgumentList @('dist/cli/index.js', 'serve', '--host', '127.0.0.1', '--port', "$Port") `
       -WorkingDirectory $sidecarDir `
       -WindowStyle Hidden `

@@ -46,18 +46,19 @@ function estimateVisibleNodeCount(
 }
 
 export function CanvasPerformanceHud({
-  nodes,
-  edgeCount,
   renderCount,
   enabled,
   onEnabledChange,
 }: {
-  nodes: CanvasNode[];
-  edgeCount: number;
   renderCount: number;
   enabled: boolean;
   onEnabledChange: (enabled: boolean) => void;
 }) {
+  // The HUD is a developer-only overlay; it subscribes to the graph itself so
+  // the Canvas shell no longer has to hold a full `nodes` subscription just to
+  // pass two numbers down.
+  const nodes = useCanvasStore((state) => state.nodes);
+  const edgeCount = useCanvasStore((state) => state.edges.length);
   const { currentViewport, canvasViewportSize } = useCanvasStore(
     useShallow((state) => ({
       currentViewport: state.currentViewport,

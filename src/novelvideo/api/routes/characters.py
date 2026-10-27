@@ -24,6 +24,7 @@ from novelvideo.api.deps import (
 )
 from novelvideo.project_context import ProjectContext
 from novelvideo.novel_source import has_imported_novel, novel_import_required_response
+from novelvideo.services.project_resources import resolve_static_url_for_context
 from novelvideo.ports import get_task_backend
 from novelvideo.ports.tasks import queued_task_receipt_fields
 from novelvideo.task_identity import project_task_state_key
@@ -36,6 +37,7 @@ from novelvideo.api.schemas import (
     CharacterFixRequest,
     CharacterImageSelectionRequest,
     CharacterAssetRestoreRequest,
+    CharacterProfileParseRequest,
     IdentityCreate,
     IdentityUpdate,
     IdentityImageGenRequest,
@@ -627,6 +629,71 @@ async def list_characters(
     return {"ok": True, "data": data}
 
 
+@router.post("/projects/{project}/characters/parse-profile")
+async def parse_character_profile_route(
+    project: str,
+    body: CharacterProfileParseRequest,
+    user: dict = Depends(get_api_user),
+):
+    """一句话或一张参考图 → 角色档案（结构化字段 + 生图提示词 + 三档证据）。
+
+    解析是 20-40 秒的重 LLM 调用，与参考产品 `character/parse` 同位；挂进
+    任务队列异步跑，这里只回执。参考图仅收项目内的静态 URL（不允许把外部
+    任意 URL 喂给视觉模型），落成项目内文件路径再交给解析器。
+    """
+    logger.info("[%s] parse_character_profile", project)
+    resolved = await resolve_project_scope(project, user, required_role="editor")
+    ctx = resolved.ctx
+    if ctx is None:
+        return {"ok": False, "error": "解析角色档案需要 project context"}
+    description = str(body.description or "").strip()
+    image_url = str(body.image_url or "").strip()
+    if not description and not image_url:
+        return {"ok": False, "error": "解析角色档案需要一句话描述或一张参考图"}
+    if description and image_url:
+        return {"ok": False, "error": "一句话描述和参考图只能二选一"}
+
+    image_path = ""
+    if image_url:
+        # 前端给的是 /static/... 或 /api/v1/projects/.../media/...，也可能带
+        # ?v= 缓存参数；手拼 project_dir 会在这里全部落空，统一走静态 URL 解析。
+        try:
+            candidate = resolve_static_url_for_context(image_url, resolved.project_dir)
+        except ValueError:
+            return {"ok": False, "error": "参考图必须是当前项目内的图片"}
+        if not candidate.is_file():
+            return {"ok": False, "error": "参考图不存在"}
+        image_path = str(candidate)
+
+    scope = f"character-profile:{description[:24] or Path(image_path).name}"
+    queued = await get_task_backend().enqueue_project_task(
+        ctx,
+        task_type="character_profile_parse",
+        queue_kind="default",
+        episode=0,
+        scope=scope,
+        payload={
+            "task_type": "character_profile_parse",
+            "description": description,
+            "image_path": image_path,
+            "output_dir": str(resolved.output_dir),
+        },
+    )
+    return {
+        "ok": True,
+        "task_type": "character_profile_parse",
+        "scope": scope,
+        "task_id": queued.task_state.task_id,
+        "task_key": project_task_state_key(
+            "character_profile_parse", ctx.project_id, 0, scope=scope
+        ),
+        "backend": queued.backend,
+        "queue": queued.queue,
+        **queued_task_receipt_fields(queued),
+        "message": "角色档案解析任务已进入队列",
+    }
+
+
 @router.post("/projects/{project}/characters")
 async def add_character(
     project: str,
@@ -657,6 +724,7 @@ async def add_character(
         age_group=body.age_group,
         description=body.description,
         face_prompt=body.face_prompt,
+        body_type=body.body_type,
     )
     await store.add_character(char)
 
@@ -671,6 +739,7 @@ async def add_character(
                 "age_group",
                 "description",
                 "face_prompt",
+                "body_type",
             }
         ),
     }

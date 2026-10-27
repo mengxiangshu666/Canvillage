@@ -3,18 +3,22 @@
 import {
   ArrowDown,
   ArrowUp,
+  Box,
   Brain,
-  Braces,
   Check,
+  ChevronDown,
   File,
   Image,
+  ImagePlus,
   ListTree,
   Mic,
   MicOff,
   MoreHorizontal,
   PanelRightClose,
   PictureInPicture2,
+  Plug,
   Plus,
+  RefreshCw,
   Search,
   ShieldAlert,
   Settings2,
@@ -38,10 +42,18 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/stores/auth-store";
 import { useCanvasStore, type CanvasNode } from "@/stores/canvasStore";
+import { selectNodeById, selectNodesByIds } from "@/features/canvas/application/nodeIndex";
+import { useShallow } from "zustand/react/shallow";
 import { canvasOnlyProduct } from "@/lib/product-mode";
 import { PRODUCT_NAME } from "@/lib/product-identity";
 import { cn } from "@/lib/utils";
@@ -116,7 +128,6 @@ import {
 import type { CanvasWorkflowRuntimeContext, WorkflowRun } from "@/types/workflow-runtime";
 import {
   CANVAS_AGENT_RUN_MODE_OPTIONS,
-  canvasAgentRunModeLabel,
   DEFAULT_CANVAS_AGENT_RUN_MODE,
   loadCanvasAgentRunMode,
   saveCanvasAgentRunMode,
@@ -137,6 +148,7 @@ import {
   LIBTV_HEADER_SUBTITLE,
   FreezoneSlashSkillMenu,
   FreezoneWelcomeSkills,
+  type CanvasAgentQuickAction,
   type WorkflowItemSelectionGroup,
 } from "@/features/superchat/freezone-canvas-agent-ui";
 import {
@@ -185,7 +197,7 @@ import { DotsIndicator } from "./superchat-message-rendering";
 import type { ApprovalRequest, ChatAttachment } from "@/features/superchat/types";
 import { FormatCheckDetailsDialog } from "@/components/ingest/FormatCheckDetailsDialog";
 import type { FormatCheck } from "@/lib/queries/ingest";
-import { isToolMessage, MessageBubble, ChatTimeline, ControlBar, VillageAgentSelect, HeaderControlPortal, SearchBar, PinnedPanel, MessageDetailPanel, SpecMediaDetailModal } from "@/features/superchat/superchat-panel-presentation";
+import { isInternalToolMessage, isToolMessage, MessageBubble, ChatTimeline, ControlBar, HeaderControlPortal, SearchBar, PinnedPanel, MessageDetailPanel, SpecMediaDetailModal } from "@/features/superchat/superchat-panel-presentation";
 import type { SpecMediaDetail } from "@/features/superchat/superchat-panel-presentation";
 import { VIDEO_CREATION_RE, isAllowedScriptUpload, isAllowedScriptDragItem, isOverwriteChoice, isFinalOverwriteConfirmation, shouldReportUploadedFiles, isNovelAttachment, loadUploadedIngestFiles, saveUploadedIngestFiles, mergeUploadedIngestFiles, uploadedFileFromPrepared, buildUploadedFilesContext, buildReingestConfirmationContext, buildReingestCancelledContext, uploadAttachmentsForIngest, startNovelIngest, projectHasIngestedContent, buildAttachmentAnalysisContext, surfaceFormatCheckWarnings, appendIngestAutomationContext, appendAttachmentAnalysisContext } from "@/features/superchat/superchat-ingest-context";
 import "./village-agent-libtv-v4.css";
@@ -396,13 +408,16 @@ export function SuperChatPanel({
         : "正在加载已选技能，请稍候"
     : null;
   const selectedNodeId = useCanvasStore((state) => state.selectedNodeId);
-  const canvasNodes = useCanvasStore((state) => state.nodes);
+  // Only the selected / pinned node objects are subscribed, by id. The full
+  // `nodes` array changes on every drag frame; these references do not, so the
+  // panel no longer re-renders while the user drags an unrelated node.
+  const selectedCanvasNodeSource = useCanvasStore((state) => selectNodeById(state, selectedNodeId));
+  const pinnedCanvasNodeSources = useCanvasStore(
+    useShallow((state) => selectNodesByIds(state, pinnedCanvasNodeIds)),
+  );
   const toAgentNodeRef = useCallback((
-    nodeId: string,
-    sourceNodes: readonly CanvasNode[] = canvasNodes,
+    node: CanvasNode,
   ): CanvasAgentNodeRef | null => {
-    const node = sourceNodes.find((item) => item.id === nodeId);
-    if (!node) return null;
     const data = node.data as Record<string, unknown> | undefined;
     const resolveFirstMediaUrl = (...candidates: unknown[]): string | undefined => {
       for (const candidate of candidates) {
@@ -467,14 +482,14 @@ export function SuperChatPanel({
               ? { previewKind: "text" as const }
               : {}),
     };
-  }, [canvasNodes, freezoneCanvasId]);
+  }, [freezoneCanvasId]);
   const selectedCanvasNode = useMemo(() => {
-    if (!isFreezoneLayout || !selectedNodeId) return null;
-    return toAgentNodeRef(selectedNodeId);
-  }, [isFreezoneLayout, selectedNodeId, toAgentNodeRef]);
+    if (!isFreezoneLayout || !selectedCanvasNodeSource) return null;
+    return toAgentNodeRef(selectedCanvasNodeSource);
+  }, [isFreezoneLayout, selectedCanvasNodeSource, toAgentNodeRef]);
   const pinnedCanvasNodes = useMemo(
-    () => pinnedCanvasNodeIds.map((id) => toAgentNodeRef(id)).filter((node): node is CanvasAgentNodeRef => Boolean(node)),
-    [pinnedCanvasNodeIds, toAgentNodeRef],
+    () => pinnedCanvasNodeSources.map((node) => toAgentNodeRef(node)).filter((node): node is CanvasAgentNodeRef => Boolean(node)),
+    [pinnedCanvasNodeSources, toAgentNodeRef],
   );
 
   // Load + sync pinned nodes from shared store (Canvas right-click 「加入 Agent」).
@@ -592,6 +607,27 @@ export function SuperChatPanel({
   const [messageRenderLimit, setMessageRenderLimit] = useState(DEFAULT_MESSAGE_RENDER_LIMIT);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const draftInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const handleWelcomeQuickAction = useCallback(
+    (action: CanvasAgentQuickAction) => {
+      if (action === "upload") {
+        fileInputRef.current?.click();
+        return;
+      }
+      const prompts: Record<Exclude<CanvasAgentQuickAction, "upload">, string> = {
+        canvas: "在画布上开始创作：先读当前画布，再告诉我下一步可以做什么。",
+        script: "用模板预设开始一个剧本原创：先列出可用的剧本模板，再按我选的方向写。",
+        optimize: "批量优化当前画布上选中节点的提示词：先读节点，再给出逐条修改稿。",
+      };
+      setDraft(prompts[action]);
+      window.setTimeout(() => {
+        const textarea = draftInputRef.current;
+        if (!textarea) return;
+        textarea.focus({ preventScroll: true });
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      }, 0);
+    },
+    [setDraft],
+  );
   const restoreDraftFocusRef = useRef(false);
   const dragDepthRef = useRef(0);
   const speechRef = useRef<SpeechRecognitionLike | null>(null);
@@ -754,11 +790,29 @@ export function SuperChatPanel({
       toast.error(`工作流画布步骤执行失败：${message}`);
     });
   }, [activeWorkflowRun, freezoneCanvasId, freezoneProjectId, params.project]);
+  // The media-batch checkpoint only looks at the run's target nodes. Subscribe
+  // to those by id instead of the whole canvas so drag frames don't re-run it.
+  const workflowMediaTargetIds = useMemo(() => {
+    const run = activeWorkflowRun;
+    if (!run || run.status !== "running") return [] as string[];
+    const stepId = run.current_frontier.find((id) => id === "media_generation");
+    if (!stepId || run.step_states[stepId]?.status !== "running") return [] as string[];
+    const artifact = run.artifacts[stepId] as Record<string, unknown> | undefined;
+    if (artifact?.completion_mode !== "media_tasks" || artifact.status !== "monitoring") {
+      return [] as string[];
+    }
+    return Array.isArray(artifact.target_node_ids)
+      ? artifact.target_node_ids.map(String).filter(Boolean)
+      : [] as string[];
+  }, [activeWorkflowRun]);
+  const workflowMediaNodes = useCanvasStore(
+    useShallow((state) => selectNodesByIds(state, workflowMediaTargetIds)),
+  );
   useEffect(() => {
     const run = activeWorkflowRun;
     const projectId = (freezoneProjectId || params.project || "").trim();
     if (!projectId || !run) return;
-    const checkpoint = canvasWorkflowMediaBatchCheckpoint(run, canvasNodes);
+    const checkpoint = canvasWorkflowMediaBatchCheckpoint(run, workflowMediaNodes);
     if (!checkpoint || recordedWorkflowMediaEventsRef.current.has(checkpoint.eventId)) return;
     recordedWorkflowMediaEventsRef.current.add(checkpoint.eventId);
     void recordWorkflowRunEvent(projectId, run.id, {
@@ -774,7 +828,7 @@ export function SuperChatPanel({
     }).catch(() => {
       recordedWorkflowMediaEventsRef.current.delete(checkpoint.eventId);
     });
-  }, [activeWorkflowRun, canvasNodes, freezoneProjectId, params.project]);
+  }, [activeWorkflowRun, workflowMediaNodes, freezoneProjectId, params.project]);
   useEffect(() => {
     const run = activeWorkflowRun;
     const projectId = (freezoneProjectId || params.project || "").trim();
@@ -946,7 +1000,10 @@ export function SuperChatPanel({
   const activeMessages = useMemo(
     () =>
       chat.messages.filter(
-        (message) => !chat.deletedIds.has(message.id) && (chat.settings.showToolEvents || !isToolMessage(message)),
+        (message) =>
+          !chat.deletedIds.has(message.id)
+          && !isInternalToolMessage(message)
+          && (chat.settings.showToolEvents || !isToolMessage(message)),
       ),
     [chat.deletedIds, chat.messages, chat.settings.showToolEvents],
   );
@@ -1911,22 +1968,21 @@ export function SuperChatPanel({
             <div className="flex min-w-0 flex-1 items-center gap-3">
               {canvasOnlyProduct ? (
                 <div className="village-agent-titlebar flex min-w-0 items-center gap-2">
-                  <span className="village-agent-title truncate text-[15px] font-semibold tracking-[-0.025em] text-[#f2f2f3]">
-                    {chat.conversations.find((conversation) => conversation.id === chat.activeConversationId)?.title?.trim() || "新对话"}
+                  <span className="village-agent-title truncate text-[14px] font-semibold tracking-[-0.025em] text-[#f2f2f3]">
+                    对话
                   </span>
-                  <span className="village-agent-status-pill inline-flex shrink-0 items-center gap-1 rounded-full border border-white/[0.07] bg-white/[0.035] px-1.5 py-0.5 text-[9px] font-medium text-white/45">
-                    <span
-                      className={cn(
-                        "size-1.5 rounded-full",
-                        chat.busy
-                          ? "animate-pulse bg-amber-300"
-                          : chat.connected
-                            ? "bg-emerald-400"
-                            : "bg-white/25",
-                      )}
-                    />
-                    {chat.busy ? "执行中" : chat.connected ? "在线" : "连接中"}
-                  </span>
+                  <span
+                    className={cn(
+                      "size-1.5 shrink-0 rounded-full",
+                      chat.busy
+                        ? "animate-pulse bg-amber-300"
+                        : chat.connected
+                          ? "bg-emerald-400"
+                          : "bg-white/25",
+                    )}
+                    title={chat.busy ? "执行中" : chat.connected ? "在线" : "连接中"}
+                    aria-label={chat.busy ? "执行中" : chat.connected ? "在线" : "连接中"}
+                  />
                 </div>
               ) : (
                 <>
@@ -1981,19 +2037,6 @@ export function SuperChatPanel({
                 </Button>
               )}
               {canvasOnlyProduct && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => setAgentCliSkillOpen(true)}
-                  aria-label="CLI & Skill"
-                  title="CLI & Skill"
-                  className="village-agent-header-cli rounded-full border border-transparent text-white/40 hover:border-white/[0.08] hover:bg-white/[0.06] hover:text-[#f7f7f7]"
-                >
-                  <Braces className="size-4" strokeWidth={2.05} />
-                </Button>
-              )}
-              {canvasOnlyProduct && (
                 <ConversationHistoryMenu
                   conversations={chat.conversations}
                   activeConversationId={chat.activeConversationId}
@@ -2006,20 +2049,6 @@ export function SuperChatPanel({
                 />
               )}
               {canvasOnlyProduct && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => setSkillDrawerOpen((open) => !open)}
-                  aria-expanded={skillDrawerOpen}
-                  aria-label="打开技能"
-                  title="技能"
-                  className="village-agent-header-skill rounded-full border border-transparent text-white/40 hover:border-white/[0.08] hover:bg-white/[0.06] hover:text-[#f7f7f7]"
-                >
-                  <Star className="size-4" strokeWidth={2.05} />
-                </Button>
-              )}
-              {canvasOnlyProduct && (
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
@@ -2027,8 +2056,8 @@ export function SuperChatPanel({
                         type="button"
                         variant="ghost"
                         size="icon-sm"
-                        aria-label="Agent 设置"
-                        title="Agent 设置"
+                        aria-label="Agent 功能"
+                        title="Agent 功能：技能、联网、模型、运行模式、设置"
                         className="village-agent-header-more rounded-full border border-transparent text-white/40 hover:border-white/[0.08] hover:bg-white/[0.06] hover:text-[#f7f7f7]"
                       />
                     }
@@ -2041,6 +2070,89 @@ export function SuperChatPanel({
                     sideOffset={8}
                     className="village-agent-header-menu w-48"
                   >
+                    <DropdownMenuItem
+                      closeOnClick
+                      onClick={() => setAgentCliSkillOpen(true)}
+                    >
+                      <Plug className="size-4" />
+                      Agent 接入
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      closeOnClick
+                      onClick={() => setSkillDrawerOpen(true)}
+                    >
+                      <Star className="size-4" />
+                      技能
+                      {selectedCanvasSkillIds.length > 0 ? (
+                        <span className="ml-auto text-[10px] text-white/40">
+                          {selectedCanvasSkillIds.length}
+                        </span>
+                      ) : null}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem closeOnClick onClick={toggleResearch}>
+                      {researchEnabled ? <Check className="size-4" /> : <Search className="size-4" />}
+                      {researchEnabled ? "关闭联网研究" : "开启联网研究"}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      closeOnClick
+                      onClick={toggleSpeech}
+                      disabled={!chat.connected}
+                    >
+                      {recording ? <MicOff className="size-4" /> : <Mic className="size-4" />}
+                      {recording ? "停止语音输入" : "语音输入"}
+                    </DropdownMenuItem>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>模型</DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="w-56">
+                        {chat.models.length > 0 ? (
+                          <DropdownMenuRadioGroup
+                            value={chat.activeModel ?? ""}
+                            onValueChange={chat.switchModel}
+                          >
+                            {chat.models.map((model) => (
+                              <DropdownMenuRadioItem
+                                key={model.id}
+                                value={model.id}
+                                disabled={
+                                  chat.modelsLoading ||
+                                  chat.busy ||
+                                  !chat.connected ||
+                                  model.stale === true ||
+                                  model.disabled === true ||
+                                  model.enabled === false
+                                }
+                              >
+                                {(model.label || model.id).replace(/\s*·\s*深度\s*$/, "")}
+                              </DropdownMenuRadioItem>
+                            ))}
+                          </DropdownMenuRadioGroup>
+                        ) : (
+                          <DropdownMenuItem disabled>请先配置小树直连模型</DropdownMenuItem>
+                        )}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>运行模式</DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="w-56">
+                        <DropdownMenuRadioGroup
+                          value={canvasAgentRunMode}
+                          onValueChange={(value) =>
+                            switchCanvasAgentRunMode(value as CanvasAgentRunMode)
+                          }
+                        >
+                          {CANVAS_AGENT_RUN_MODE_OPTIONS.map((option) => (
+                            <DropdownMenuRadioItem
+                              key={option.id}
+                              value={option.id}
+                              disabled={chat.busy}
+                            >
+                              {option.label}
+                            </DropdownMenuRadioItem>
+                          ))}
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                       closeOnClick
                       onClick={() => setAgentSettingsOpen(true)}
@@ -2235,8 +2347,8 @@ export function SuperChatPanel({
               isFreezoneLayout ? (
                 <div
                   className={cn(
-                    "flex w-full flex-col pt-6",
-                    canvasOnlyProduct ? "mt-5 justify-start" : "mt-auto justify-end",
+                    "flex w-full flex-col",
+                    canvasOnlyProduct ? "mt-auto pb-3" : "mt-auto justify-end pt-6",
                     isVillageFloating && "village-agent-floating-welcome",
                   )}
                 >
@@ -2247,6 +2359,7 @@ export function SuperChatPanel({
                     displayName={username || "创作者"}
                     showSkillPicker
                     compact={canvasOnlyProduct}
+                    onQuickAction={handleWelcomeQuickAction}
                   />
                 </div>
               ) : (
@@ -2634,143 +2747,95 @@ export function SuperChatPanel({
              <div className="flex items-center justify-between px-3 py-2">
                <div className="flex min-w-0 items-center gap-1">
                  {ENABLE_SUPERCHAT_FILE_UPLOAD && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8"
-                    disabled={!chat.connected}
-                    onClick={() => fileInputRef.current?.click()}
-                    aria-label={t("aiAssistant.attach")}
-                    title={t("aiAssistant.attach")}
-                  >
-                    <Plus className="size-4" />
-                     </Button>
+                   <DropdownMenu>
+                     <DropdownMenuTrigger
+                       render={
+                         <Button
+                           type="button"
+                           variant="ghost"
+                           size="sm"
+                           className="h-8 gap-1.5 rounded-md px-1 text-[13px] font-semibold text-white/85 hover:bg-white/[0.05] hover:text-white"
+                         />
+                       }
+                     >
+                       <Plus className="size-4" />
+                       全能创作
+                       <ChevronDown className="size-3 text-white/30" />
+                     </DropdownMenuTrigger>
+                     <DropdownMenuContent
+                       side="top"
+                       align="start"
+                       sideOffset={8}
+                       className="w-44"
+                     >
+                       <DropdownMenuItem
+                         closeOnClick
+                         onClick={() => fileInputRef.current?.click()}
+                       >
+                         <Plus className="size-4" />
+                         添加素材
+                       </DropdownMenuItem>
+                       <DropdownMenuItem
+                         closeOnClick
+                         onClick={() => setSkillDrawerOpen(true)}
+                       >
+                         <Star className="size-4" />
+                         技能
+                       </DropdownMenuItem>
+                       <DropdownMenuItem closeOnClick onClick={toggleResearch}>
+                         {researchEnabled ? <Check className="size-4" /> : <Search className="size-4" />}
+                         {researchEnabled ? "关闭联网研究" : "开启联网研究"}
+                       </DropdownMenuItem>
+                       <DropdownMenuItem
+                         closeOnClick
+                         onClick={toggleSpeech}
+                         disabled={!chat.connected}
+                       >
+                         {recording ? <MicOff className="size-4" /> : <Mic className="size-4" />}
+                         {recording ? "停止语音输入" : "语音输入"}
+                       </DropdownMenuItem>
+                     </DropdownMenuContent>
+                   </DropdownMenu>
                    )}
-                 {canvasOnlyProduct && (
-                   <div
-                     className="village-agent-control-strip flex min-w-0 flex-1 flex-nowrap items-center gap-1.5"
-                     data-agent-composer-layout="libtv"
-                   >
-                     <button
-                       type="button"
-                       className={cn(
-                         "village-agent-skill-drawer-button relative inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.045] px-2.5 text-[12px] font-semibold text-white/72 transition hover:border-white/[0.18] hover:bg-white/[0.075] hover:text-white",
-                         selectedCanvasSkillIds.length > 0 && [
-                           "border-amber-200/45",
-                           "bg-amber-200/[0.14]",
-                           "text-amber-50",
-                           "shadow-[0_0_16px_rgba(251,191,36,0.12)]",
-                           "ring-1",
-                           "ring-amber-200/20",
-                         ],
-                       )}
-                       onPointerDown={(event) => {
-                         event.preventDefault();
-                         event.stopPropagation();
-                         setSkillDrawerOpen((open) => !open);
-                         setSlashMenuOpen(false);
-                       }}
-                       onClick={(event) => event.preventDefault()}
-                       onKeyDown={(event) => {
-                         if (event.key !== "Enter" && event.key !== " ") return;
-                         event.preventDefault();
-                         setSkillDrawerOpen((open) => !open);
-                         setSlashMenuOpen(false);
-                       }}
-                       aria-expanded={skillDrawerOpen}
-                       aria-pressed={selectedCanvasSkillIds.length > 0}
-                       aria-label={selectedCanvasSkillIds.length > 0
-                         ? `打开技能栏，已选 ${selectedCanvasSkillIds.length} 个`
-                         : "打开技能栏"}
-                       title={selectedCanvasSkillIds.length > 0
-                         ? `已选 ${selectedCanvasSkillIds.length} 个 Skill`
-                         : "技能"}
-                       data-selected={selectedCanvasSkillIds.length > 0 ? "true" : "false"}
-                     >
-                       <Star className="size-4" strokeWidth={2.15} />
-                       <span>技能</span>
-                      {selectedCanvasSkillIds.length > 0 && (
-                         <span className="village-agent-skill-count">{selectedCanvasSkillIds.length}</span>
-                       )}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={toggleResearch}
-                        disabled={chat.busy}
-                        aria-pressed={researchEnabled}
-                        data-selected={researchEnabled ? "true" : "false"}
-                        aria-label={researchEnabled ? "关闭联网研究" : "开启联网研究"}
-                        title={researchEnabled
-                          ? "联网研究已开启：按需检索 AIGC 资料并沉淀到当前项目"
-                          : "开启后，小树可按需检索 AIGC 资料并沉淀到当前项目"}
-                        className={cn(
-                          "village-agent-research-toggle inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-[12px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-45",
-                          researchEnabled
-                            ? "border-cyan-200/70 bg-cyan-300/[0.22] text-cyan-50 shadow-[0_0_18px_rgba(34,211,238,0.16)] ring-1 ring-cyan-200/20"
-                            : "border-white/[0.08] bg-white/[0.045] text-white/55 hover:border-white/[0.18] hover:bg-white/[0.075] hover:text-white/86",
-                        )}
-                      >
-                        {researchEnabled ? (
-                          <Check className="size-3.5" strokeWidth={2.5} />
-                        ) : (
-                          <Search className="size-3.5" strokeWidth={2.15} />
-                        )}
-                       <span>{researchEnabled ? "联网" : "联网研究"}</span>
-                      </button>
-                  <div
-                        className="village-agent-model-picker flex min-w-0 items-center gap-1.5"
-                        data-configured={chat.activeModel ? "true" : "false"}
-                        title={
-                          chat.activeModelReady
-                            ? ""
-                            : chat.activeModelBlockedReason
-                              ?? (chat.models.length === 0 ? "请先配置小树直连模型" : undefined)
-                        }
-                      >
-                      {chat.models.length > 0 ? (
-                       <VillageAgentSelect
-                         value={chat.activeModel ?? ""}
-                         onValueChange={chat.switchModel}
-                         disabled={chat.modelsLoading || chat.busy || !chat.connected}
-                            ariaLabel="小树模型"
-                            title="选择小树模型"
-                         testId="composer-model"
-                         options={chat.models.map((model) => ({
-                           value: model.id,
-                           label: (model.label || model.id).replace(/\s*·\s*深度\s*$/, ""),
-                            description: `${model.reasoning ? "深度 · " : ""}${model.description || "小树直连模型"}`,
-                            disabled: model.stale === true || model.disabled === true || model.enabled === false,
-                         }))}
-                         triggerClassName="w-full justify-between text-white/68 hover:bg-white/[0.055] hover:text-white/92"
-                       />
-                     ) : (
-                       <span className="village-agent-model-picker__empty whitespace-nowrap px-2 text-[12px] text-white/35">
-                          请先配置小树直连模型
-                       </span>
-                     )}
-                     </div>
-                     <label
-                       className="village-agent-run-mode-picker inline-flex min-w-0 items-center gap-1.5"
-                       data-run-mode={canvasAgentRunMode}
-                     >
-                       <span className="sr-only">小树运行模式</span>
-                       <VillageAgentSelect
-                         value={canvasAgentRunMode}
-                         onValueChange={(value) => switchCanvasAgentRunMode(value as CanvasAgentRunMode)}
-                         disabled={chat.busy}
-                         ariaLabel="小树运行模式"
-                         title={`${canvasAgentRunModeLabel(canvasAgentRunMode)}：${CANVAS_AGENT_RUN_MODE_OPTIONS.find((option) => option.id === canvasAgentRunMode)?.description ?? ""}`}
-                         testId="composer-run-mode"
-                         options={CANVAS_AGENT_RUN_MODE_OPTIONS.map((option) => ({
-                           value: option.id,
-                           label: option.label,
-                           description: option.description,
-                         }))}
-                         triggerClassName="w-full justify-between font-semibold text-white/72 hover:bg-white/[0.055] hover:text-white/92"
-                       />
-                     </label>
-                   </div>
-                 )}
+                 <Button
+                   type="button"
+                   variant="ghost"
+                   size="icon"
+                   className="size-7 rounded-md text-white/38 hover:bg-white/[0.06] hover:text-white/75"
+                   onClick={() => setSkillDrawerOpen(true)}
+                   aria-label="技能"
+                   title="技能"
+                 >
+                   <Box className="size-4" />
+                 </Button>
+                 <Button
+                   type="button"
+                   variant="ghost"
+                   size="icon"
+                   className="size-7 rounded-md text-white/38 hover:bg-white/[0.06] hover:text-white/75"
+                   onClick={() => fileInputRef.current?.click()}
+                   aria-label="添加图片"
+                   title="添加图片"
+                 >
+                   <ImagePlus className="size-4" />
+                 </Button>
+                 <Button
+                   type="button"
+                   variant="ghost"
+                   size="icon"
+                   aria-pressed={researchEnabled}
+                   className={cn(
+                     "size-7 rounded-md hover:bg-white/[0.06]",
+                     researchEnabled
+                       ? "text-cyan-200"
+                       : "text-white/38 hover:text-white/75",
+                   )}
+                   onClick={toggleResearch}
+                   aria-label="联网研究"
+                   title="联网研究"
+                 >
+                   <RefreshCw className="size-4" />
+                 </Button>
                </div>
                <div className="village-agent-primary-actions flex shrink-0 items-center gap-1.5">
                  {canvasOnlyProduct && (
@@ -2782,17 +2847,6 @@ export function SuperChatPanel({
                     <span>{t("aiAssistant.listening")}</span>
                   </div>
                 )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn("neo-agent-voice-action size-8 rounded-full text-white/85 hover:bg-white/[0.08] hover:text-white", recording && "text-primary")}
-                  disabled={!chat.connected}
-                  onClick={toggleSpeech}
-                  aria-label={recording ? t("aiAssistant.stopVoice") : t("aiAssistant.voiceInput")}
-                  title={recording ? t("aiAssistant.stopVoice") : t("aiAssistant.voiceInput")}
-                >
-                  {recording ? <MicOff className="size-4.5" /> : <Mic className="size-4.5" />}
-                </Button>
                 {composerPrimaryAction === "steer" && (
                   <Button
                     type="button"
@@ -2810,12 +2864,12 @@ export function SuperChatPanel({
                   type="button"
                   size="icon"
                   className={cn(
-                    "neo-agent-send-action size-8 rounded-full shadow-none disabled:bg-white/30 disabled:text-black/45",
+                    "neo-agent-send-action size-8 rounded-full shadow-none disabled:bg-white/20 disabled:text-black/40",
                     composerPrimaryAction === "steer"
-                      ? "bg-white text-black hover:bg-white/90"
+                      ? "bg-[#c9c9c9] text-[#111] hover:bg-[#d6d6d6]"
                       : composerPrimaryAction === "stop"
                         ? "bg-white/10 text-white hover:bg-white/15"
-                      : "bg-white text-black hover:bg-white/90",
+                      : "bg-[#c9c9c9] text-[#111] hover:bg-[#d6d6d6]",
                   )}
                   disabled={agentComposerPrimaryActionDisabled(composerPrimaryAction, canSend)}
                   onClick={composerPrimaryAction === "stop" ? chat.abort : submit}
@@ -2878,6 +2932,7 @@ export function SuperChatPanel({
             mountedSkillCount={selectedCanvasSkillIds.length}
             totalSkillCount={availableCanvasAgentSkills.length}
             autoMatching={selectedCanvasSkillIds.length === 0}
+            connected={chat.connected}
             onOpenSkillDrawer={() => {
               setAgentCliSkillOpen(false);
               setSkillDrawerOpen(true);

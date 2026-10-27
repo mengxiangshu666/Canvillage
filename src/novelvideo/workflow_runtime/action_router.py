@@ -124,7 +124,6 @@ _CANVAS_CREATION_TYPES = frozenset(
         "annotate",
         "create_canvas_node",
         "create_image_prompt_node",
-        "create_shot_sequence",
         "create_video_prompt_node",
         "insert_starter_workflow",
     }
@@ -226,17 +225,116 @@ def single_atomic_canvas_creation_batch(commands: object) -> bool:
     command_type = str(command.get("type") or "").strip()
     if command_type == "insert_starter_workflow":
         return False
-    if command_type == "create_shot_sequence":
-        prompts = command.get("prompts")
-        return isinstance(prompts, (list, tuple)) and len(
-            [item for item in prompts if str(item or "").strip()]
-        ) == 1
     return command_type in {
         "annotate",
         "create_canvas_node",
         "create_image_prompt_node",
         "create_video_prompt_node",
     }
+
+
+_ATOMIC_PROMPT_COMMAND_TYPES = frozenset(
+    {"create_image_prompt_node", "create_video_prompt_node"}
+)
+_ATOMIC_GENERATION_NODE_TYPES = frozenset(
+    {"imageGenNode", "videoGenNode", "imageNode", "videoNode", "audioNode"}
+)
+_ATOMIC_CONNECTION_COMMAND_TYPES = frozenset(
+    {"connect_nodes", "create_edge", "connect_node"}
+)
+_ATOMIC_STRUCTURAL_COMMAND_TYPES = frozenset(
+    {"insert_starter_workflow"}
+)
+_ATOMIC_PROMPT_MAX_ITEMS = 8
+_ATOMIC_MAX_COMMANDS = 32
+_WORKFLOWISH_OPERATION_MARKERS = (
+    "storyboard",
+    "shot",
+    "sequence",
+    "film",
+    "movie",
+    "episode",
+    "分镜",
+    "镜头",
+    "成片",
+    "整片",
+    "分集",
+)
+
+
+@dataclass(frozen=True, slots=True)
+class AtomicCreationShape:
+    """The command-shape facts that decide whether a write is one transaction."""
+
+    creations: int = 0
+    connections: int = 0
+    structural: int = 0
+    other: int = 0
+
+    @property
+    def is_atomic(self) -> bool:
+        return (
+            1 <= self.creations <= _ATOMIC_PROMPT_MAX_ITEMS
+            and self.structural == 0
+            and self.other == 0
+            and self.connections <= _ATOMIC_MAX_COMMANDS
+        )
+
+
+def _is_generation_creation(command: Mapping[str, Any]) -> bool:
+    command_type = str(command.get("type") or "").strip()
+    if command_type in _ATOMIC_PROMPT_COMMAND_TYPES:
+        return True
+    if command_type != "create_canvas_node":
+        return False
+    node = command.get("node")
+    node_type = command.get("node_type") or (
+        node.get("type") if isinstance(node, Mapping) else None
+    )
+    return str(node_type or "").strip() in _ATOMIC_GENERATION_NODE_TYPES
+
+
+def classify_atomic_creation(commands: object) -> AtomicCreationShape:
+    """Classify a command batch once; every routing layer must reuse this."""
+
+    if not isinstance(commands, (list, tuple)) or not commands:
+        return AtomicCreationShape()
+    creations = connections = structural = other = 0
+    for command in commands:
+        if not isinstance(command, Mapping):
+            other += 1
+            continue
+        command_type = str(command.get("type") or "").strip()
+        if _is_generation_creation(command):
+            creations += 1
+        elif command_type in _ATOMIC_CONNECTION_COMMAND_TYPES:
+            connections += 1
+        elif command_type in _ATOMIC_STRUCTURAL_COMMAND_TYPES:
+            structural += 1
+        else:
+            other += 1
+    return AtomicCreationShape(
+        creations=creations,
+        connections=connections,
+        structural=structural,
+        other=other,
+    )
+
+
+def atomic_prompt_node_creation_batch(commands: object) -> bool:
+    """True for a bounded, fully compiled generation-node creation batch.
+
+    Two character cards are two independent image nodes, not a production
+    sequence.  Connections are part of the same transaction; any structural,
+    mutation or unknown command falls back to the durable lane.
+    """
+
+    return classify_atomic_creation(commands).is_atomic
+
+
+def _workflowish_operation(operation: str) -> bool:
+    text = str(operation or "").casefold()
+    return any(marker in text for marker in _WORKFLOWISH_OPERATION_MARKERS)
 
 
 @dataclass(frozen=True, slots=True)
@@ -350,6 +448,7 @@ def route_action(
     existing_node_mutation_only: bool = False,
     contains_creation: bool = False,
     single_atomic_creation: bool = False,
+    atomic_prompt_batch: bool = False,
     existing_node_ids: object = (),
 ) -> ActionRoute:
     """Choose the shortest execution lane from structural task facts."""
@@ -441,21 +540,39 @@ def route_action(
 
     # A fully compiled one-node create is an atomic canvas mutation even when
     # a model copied ``requires_delivery`` from a broader director contract.
-    # The command shape, not topic words, decides this fast path.  Explicit
-    # workflow requests and recovery remain authoritative above.
+    # The command shape, not the declared step counter, decides this fast path:
+    # "create node then generate" is one node plus one run, not a durable plan.
+    # Explicit workflow requests and recovery remain authoritative above.
     if (
         single_atomic_creation
         and profile.target_strategy == "create_missing"
-        and profile.step_count == 1
-        and profile.item_count == 1
         and profile.dependency_count == 0
         and not profile.requires_recovery
-        and profile.requires_delivery
     ):
         return ActionRoute(
             lane="canvas",
             reason_code="single_canvas_creation",
             reason="单个已编译节点创建可在一次画布事务内完成，不启动替代工作流",
+            requires_durable_run=False,
+            requires_confirmation=profile.contains_paid_media,
+        )
+
+    # A small batch of independent prompt nodes (for example two character
+    # cards) is also one canvas transaction.  Promoting it to a durable
+    # workflow made the runner scaffold empty storyboard placeholders that the
+    # user never asked for.  Storyboard/film-shaped operations keep the
+    # durable lane.
+    if (
+        atomic_prompt_batch
+        and not _workflowish_operation(profile.operation)
+        and profile.target_strategy == "create_missing"
+        and profile.dependency_count == 0
+        and not profile.requires_recovery
+    ):
+        return ActionRoute(
+            lane="canvas",
+            reason_code="atomic_prompt_node_batch",
+            reason="多个独立提示词节点可在一次画布事务内写入，不启动替代工作流",
             requires_durable_run=False,
             requires_confirmation=profile.contains_paid_media,
         )
@@ -566,6 +683,7 @@ def route_canvas_envelope(
             existing_node_mutation_only=existing_node_mutation_batch(commands),
             contains_creation=canvas_creation_batch(commands),
             single_atomic_creation=single_atomic_canvas_creation_batch(commands),
+            atomic_prompt_batch=atomic_prompt_node_creation_batch(commands),
             existing_node_ids=observed_node_ids,
         )
     commands = envelope.get("commands")
@@ -582,6 +700,7 @@ def route_canvas_envelope(
         existing_node_mutation_only=existing_node_mutation_batch(commands),
         contains_creation=canvas_creation_batch(commands),
         single_atomic_creation=single_atomic_canvas_creation_batch(commands),
+        atomic_prompt_batch=atomic_prompt_node_creation_batch(commands),
         existing_node_ids=existing_node_ids,
     )
 
@@ -599,4 +718,5 @@ __all__ = [
     "existing_node_mutation_batch",
     "canvas_creation_batch",
     "single_atomic_canvas_creation_batch",
+    "atomic_prompt_node_creation_batch",
 ]

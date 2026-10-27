@@ -154,7 +154,7 @@ vi.mock("@/features/superchat/SkillStoreDialog", () => ({
   SkillStoreDialog: () => null,
 }));
 
-import { ProjectDashboard } from "@/routes/_app/index";
+import { ProjectDashboard } from "@/routes/_app/studio";
 
 describe("project dashboard trash bulk purge", () => {
   beforeEach(() => {

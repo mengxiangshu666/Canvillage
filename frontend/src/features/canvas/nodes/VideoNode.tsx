@@ -24,6 +24,7 @@ import {
   Languages,
   Loader2,
   Play,
+  SlidersHorizontal,
   WandSparkles,
   Upload as UploadIcon,
   Video as VideoIcon,
@@ -60,9 +61,6 @@ import { videoFrameCaptureMetadata } from '@/features/canvas/application/extract
 import { useAlbumPendingTotal } from "@/features/canvas/nodes/shared/albumPendingTotals";
 import { canvasEventBus } from "@/features/canvas/application/canvasServices";
 import { ReferenceTextChip } from "@/features/canvas/nodes/shared/ReferenceTextChip";
-import {
-  referenceInsertText,
-} from "@/features/canvas/nodes/shared/referenceStripBadges";
 import { CanvasReferencePickChip } from "@/features/canvas/nodes/shared/CanvasReferencePickChip";
 import { useNodeGenerationTaskState } from "@/features/canvas/application/useNodeGenerationTaskState";
 import { resolveErrorContent } from "@/features/canvas/application/errorDialog";
@@ -468,21 +466,6 @@ export const VideoNode = memo(
       [],
     );
 
-    // 点引用缩略图 → 把它的 `@图片N` 写进提示词。
-    //
-    // 只写、不重排：序号 = 「这张在当前队列里的第几位」，点一下就悄悄改别人的号会让
-    // 提示词里已有的 `@图片N` 全部错位；要换位用户自己拖 chip（拖完 mention 会跟着重
-    // 编号）。同一张引用点几次就写几次：用户要在句子不同位置重复提同一张时，这里
-    // 不该拦（插入位置由编辑器光标决定）。
-    const handleInsertReference = useCallback(
-      (mentionName: string) => {
-        if (!mentionName) return;
-        promptEditorRef.current?.insertTextAtCursor(
-          referenceInsertText(mentionName),
-        );
-      },
-      [],
-    );
     const requestedGenMode: VideoGenMode = data.genMode ?? "textToVideo";
     const {
       models: availableVideoModels,
@@ -913,6 +896,33 @@ export const VideoNode = memo(
       updatePrompt: updateReferencePrompt,
     });
 
+    // 点引用缩略图 → 把它的 `@图片N` 写进提示词。
+    //
+    // 只写、不重排：序号 = 「这张在当前队列里的第几位」，点一下就悄悄改别人的号会让
+    // 提示词里已有的 `@图片N` 全部错位；要换位用户自己拖 chip（拖完 mention 会跟着重
+    // 编号）。同一张引用点几次就写几次：用户要在句子不同位置重复提同一张时，这里
+    // 不该拦（插入位置由编辑器光标决定）。
+    const handleInsertReference = useCallback(
+      (mentionName: string) => {
+        if (!mentionName) return;
+        const candidate = mentionCandidates.find(
+          (item) => item.name === mentionName,
+        );
+        // 直接落 chip：纯文本插入要等下一次重建（刷新）才会变成带缩略图的引用。
+        // 找不到候选（例如超出模型参考上限的那几条）也落一个无缩略图的 chip，
+        // 不能退回纯文本——那正是「点一下只看到 @图片N」的来源。
+        promptEditorRef.current?.insertMentionAtCursor(
+          candidate ?? {
+            key: `mention:${mentionName}`,
+            name: mentionName,
+            imageUrl: "",
+            index: 0,
+          },
+        );
+      },
+      [mentionCandidates],
+    );
+
     // The shipped MiniMax H3 AutoDL workflow exposes image references but no
     // video-reference slot.  A connected predecessor video therefore uses its
     // tail still as one image reference, while other models retain their
@@ -983,6 +993,11 @@ export const VideoNode = memo(
     );
     // 收起态浮动面板固定基础尺寸；放大用居中弹窗（见下方 OperationPanelShell）。
     const [panelExpanded, setPanelExpanded] = useState(false);
+    // 参数面板默认不跟着选中冒出来；只有用户点标题栏的参数按钮或双击节点才打开。
+    const [opsPanelOpen, setOpsPanelOpen] = useState(false);
+    useEffect(() => {
+      if (!selected) setOpsPanelOpen(false);
+    }, [selected]);
     const panelHeight = OPERATIONS_PANEL_HEIGHT;
     const panelOverhang = OPERATIONS_PANEL_OVERHANG;
 
@@ -1835,6 +1850,7 @@ export const VideoNode = memo(
       : cardToneClass;
     const showVideoOpsPanel =
       selected &&
+      opsPanelOpen &&
       !isBoxSelecting &&
       !albumExpanded &&
       !isClipMode &&
@@ -1842,6 +1858,29 @@ export const VideoNode = memo(
       !data.referenceOnly &&
       // 视频高清节点用自己的 VideoUpscaleEditorOverlay 配置面板，不走常规生成面板。
       !data.isUpscaleNode;
+
+    // 分辨率角标并进标题栏 rightSlot：角标原本绝对定位在节点右上角（z-20），
+    // 会把同一角落的「生成参数」按钮整个盖住，参数面板等于没有入口。
+    const videoResolutionBadge =
+      videoSource &&
+      hasMetadata &&
+      !videoLoadError &&
+      typeof data.widthPx === "number" &&
+      typeof data.heightPx === "number" &&
+      data.widthPx > 0 &&
+      data.heightPx > 0 ? (
+        <ResolutionHonestyBadge
+          inline
+          media={data.isUpscaleNode ? "video-upscale" : "video"}
+          requestedTier={
+            data.isUpscaleNode
+              ? data.upscaleResolution ?? data.lastRequestedResolution
+              : data.lastRequestedResolution ?? qualityToResolution(quality)
+          }
+          actualWidth={data.widthPx}
+          actualHeight={data.heightPx}
+        />
+      ) : null;
 
     const handleCaptureFrame = useCallback(
       async (mode: VideoFrameCaptureMode) => {
@@ -2003,6 +2042,14 @@ export const VideoNode = memo(
         data-village-video-card={data.referenceOnly ? "reference" : "standard"}
         style={{ width: resolvedWidth, height: resolvedHeight }}
         onClick={() => setSelectedNode(id)}
+        onDoubleClick={(event) => {
+          const target = event.target as HTMLElement | null;
+          if (target?.closest("input, textarea, button, a")) return;
+          if (data.referenceOnly) return;
+          event.stopPropagation();
+          setSelectedNode(id);
+          setOpsPanelOpen((value) => !value);
+        }}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
@@ -2060,26 +2107,25 @@ export const VideoNode = memo(
               onTitleChange={(nextTitle) =>
                 updateNodeData(id, { displayName: nextTitle })
               }
+              rightSlot={
+                <div className="flex items-center gap-1">
+                  {videoResolutionBadge}
+                  <button
+                    type="button"
+                    className="nodrag inline-flex h-6 w-6 items-center justify-center rounded text-white/65 transition-colors hover:bg-white/10 hover:text-white"
+                    title={opsPanelOpen ? "收起生成参数" : "打开生成参数"}
+                    aria-label={opsPanelOpen ? "收起生成参数" : "打开生成参数"}
+                    aria-expanded={opsPanelOpen}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setOpsPanelOpen((value) => !value);
+                    }}
+                  >
+                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              }
             />
-            {videoSource &&
-            hasMetadata &&
-            !videoLoadError &&
-            typeof data.widthPx === "number" &&
-            typeof data.heightPx === "number" &&
-            data.widthPx > 0 &&
-            data.heightPx > 0 ? (
-              <ResolutionHonestyBadge
-                media={data.isUpscaleNode ? "video-upscale" : "video"}
-                requestedTier={
-                  data.isUpscaleNode
-                    ? data.upscaleResolution ?? data.lastRequestedResolution
-                    : data.lastRequestedResolution ??
-                      qualityToResolution(quality)
-                }
-                actualWidth={data.widthPx}
-                actualHeight={data.heightPx}
-              />
-            ) : null}
             {videoSource &&
             hasMetadata &&
             !videoLoadError &&
@@ -2270,6 +2316,7 @@ export const VideoNode = memo(
               onRetry={() => void handleSubmit()}
               onChangeModel={() => {
                 setSelectedNode(id);
+                setOpsPanelOpen(true);
                 setPanelExpanded(true);
               }}
               onDismiss={() => updateNodeData(id, { ...CLEARED_GENERATION_ERROR_PATCH })}

@@ -1258,9 +1258,14 @@ def audit_combat_declarations(
     )
     issues.extend(item for item in cinematic["issues"] if isinstance(item, Mapping))
     dialogue = audit_combat_dialogue_declarations(items)
-    issues.extend(
-        dict(item) for item in dialogue["issues"] if isinstance(item, Mapping)
-    )
+    advisory_issues: list[dict[str, Any]] = []
+    for item in dialogue["issues"]:
+        if not isinstance(item, Mapping):
+            continue
+        if item.get("severity") == "advisory":
+            advisory_issues.append(dict(item))
+        else:
+            issues.append(dict(item))
     if require_dialogue and dialogue_lines == 0:
         issues.append(
             _issue(
@@ -1273,6 +1278,8 @@ def audit_combat_declarations(
         "schema": "combat_film_declaration_audit.v1",
         "passed": not issues,
         "issues": issues,
+        "advisory_issues": advisory_issues,
+        "advisory_count": len(advisory_issues),
         "shot_count": len(items),
         "dialogue_line_count": dialogue_lines,
         "require_dialogue": bool(require_dialogue),

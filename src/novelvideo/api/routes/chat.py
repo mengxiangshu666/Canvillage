@@ -31,7 +31,6 @@ from novelvideo.api.auth import (
     _verify_agent_bearer,
     _verify_browser_session,
 )
-from novelvideo.api.deps import list_user_projects
 from novelvideo.chat import service as chat_service
 from novelvideo.chat.agent_events import AgentEventStream, attach_agent_event, copy_skill_route_receipt
 from novelvideo.chat.context_checkpoint import delete_checkpoints
@@ -59,13 +58,7 @@ from novelvideo.chat.agent_models import (
     list_village_agent_models,
     resolve_village_direct_agent_model,
 )
-from novelvideo.chat.village_harness import (
-    VillageAgentCompressionExhaustedError,
-    VillageAgentMessageTooLargeError,
-    VillageAgentWorkerLostError,
-)
 from novelvideo.chat.identity_compat import (
-    CANONICAL_CHAT_RECOVERY_SCHEMA,
     normalize_payload_schema,
 )
 from novelvideo.chat.memory_index import remember_research_result
@@ -79,12 +72,6 @@ from novelvideo.chat.research_runtime import has_research_permission
 from novelvideo.chat import recovery_store
 from novelvideo.chat.store import DEFAULT_CHAT_CONVERSATION_ID, ChatScope, chat_store
 from novelvideo.chat.tavily_pool import TavilyPoolError, get_tavily_pool
-from novelvideo.chat.tool_events import (
-    tool_event_call_id,
-    tool_event_kind,
-    tool_event_terminal,
-    tool_payload_failed,
-)
 from novelvideo.freezone.vision_gateway import VisionInput, call_freezone_vision_model
 from novelvideo.ports import get_usage_meter
 from novelvideo.project_context import ProjectContext, resolve_project_context
@@ -255,22 +242,6 @@ async def _cleanup_disconnected_chat_turn(
     except Exception:  # noqa: BLE001 - cleanup must not mask disconnect handling
         _log.warning(
             "failed to release chat run lock after websocket disconnect user=%s turn=%s",
-            username,
-            turn.turn_id,
-            exc_info=True,
-        )
-    try:
-        from novelvideo.chat.village_harness import pool as village_pool
-
-        await village_pool.close_user(username)
-    except asyncio.CancelledError:
-        # The request itself may be cancelled by the server after the socket
-        # disappears.  The synchronous lock release above is still guaranteed;
-        # worker reaping can finish through the pool's normal lifecycle.
-        raise
-    except Exception:  # noqa: BLE001 - cleanup must not mask disconnect handling
-        _log.warning(
-            "failed to close Village sessions after websocket disconnect user=%s turn=%s",
             username,
             turn.turn_id,
             exc_info=True,
@@ -583,12 +554,7 @@ async def cancel_chat_turn(
     """
     username = str(user["username"])
     selected_engine = normalize_agent_engine(engine)
-    try:
-        from novelvideo.chat.village_harness import pool as village_pool
-
-        cancelled = await village_pool.close_user(username)
-    except Exception:
-        cancelled = False
+    cancelled = chat_service.cancel_active_turns(username)
     try:
         chat_service.force_release_chat_run_lock(username, "")
     except Exception:
@@ -1905,26 +1871,8 @@ async def delete_chat_conversation(
         else 0
     )
 
-    try:
-        from novelvideo.chat.village_harness import pool as village_pool
-
-        deleted["session_discarded"] = await village_pool.discard_session(
-            username,
-            scope_kind="project",
-            project_id=project,
-            canvas_id=scope.canvas_id,
-            conversation_id=scope.conversation_id,
-        )
-    except Exception:  # noqa: BLE001 - persisted deletion remains authoritative
-        _log.warning(
-            "failed to discard deleted chat session user=%s project=%s canvas=%s conversation=%s",
-            username,
-            project,
-            scope.canvas_id,
-            scope.conversation_id,
-            exc_info=True,
-        )
-        deleted["session_discarded"] = False
+    # The sidecar keeps no per-conversation server session to discard.
+    deleted["session_discarded"] = False
     deleted.pop("turn_ids", None)
     return {"ok": True, "data": deleted}
 
@@ -2919,19 +2867,8 @@ async def _chat_heartbeat(
 
 
 async def _sync_running_agent_scope(username: str, scope: ChatScope) -> None:
-    try:
-        from novelvideo.chat.village_harness import pool as village_pool
-
-        await village_pool.set_scope_for_user(
-            username,
-            scope_kind=scope.kind,
-            project_id=scope.id if scope.kind == "project" else None,
-            canvas_id=scope.canvas_id if scope.kind == "project" else None,
-            conversation_id=scope.conversation_id,
-        )
-    except Exception:
-        # Scope switching must never break the UI.
-        return
+    """The sidecar scopes every turn explicitly; no long-lived session to sync."""
+    return None
 
 
 async def _stream_project_turn(
@@ -2951,7 +2888,7 @@ async def _stream_project_turn(
     record_user_message: bool = True,
     checkpoint_turn_id: str | None = None,
 ) -> None:
-    project = str(scope.id)
+    project = str(scope.id or "")
     project_ctx = await _project_context_for_scope(user, scope)
     project_dir = project_ctx.output_dir if project_ctx is not None else None
     project_state_dir = project_ctx.state_dir if project_ctx is not None else None
@@ -3239,426 +3176,6 @@ async def _stream_project_turn(
             )
 
 
-async def _stream_home_turn(
-    *,
-    websocket: WebSocket,
-    username: str,
-    scope: ChatScope,
-    text: str,
-    attachments: list[ChatAttachmentIn],
-    turn_id: str,
-    send_lock: asyncio.Lock | None = None,
-    agent_engine: AgentEngine = "village",
-    model: str | None = None,
-    agent_model_config: DirectVillageAgentModelConfig | None = None,
-    research_enabled: bool = False,
-    record_user_message: bool = True,
-    checkpoint_turn_id: str | None = None,
-) -> None:
-    from novelvideo.chat.village_harness import pool as village_pool
-
-    before_projects = set(list_user_projects(username))
-    previous_assistant = next(
-        (
-            str(message.get("content") or "")
-            for message in reversed(chat_store.list_messages(username, scope))
-            if message.get("role") == "assistant"
-        ),
-        "",
-    )
-    vision_parts = _vision_image_parts(attachments, project_id=None, project_dir=None)
-    agent_text = _text_with_attachment_context(
-        text, attachments, vision_count=len(vision_parts)
-    )
-    if record_user_message:
-        chat_store.append_message(
-            username,
-            scope,
-            "user",
-            chat_service._human_user_text(text),
-            media=_attachment_payloads(attachments),
-            turn_id=turn_id,
-        )
-    thread = await village_pool.get_for_user(
-        username,
-        model=model,
-        scope_kind="home",
-        project_id=None,
-        agent_model_config=agent_model_config,
-    )
-
-    assistant_text = ""
-    assistant_sent_text = ""
-    tool_text = ""
-    tool_name = ""
-    active_tool_call_id = ""
-    tool_event_sequence = 0
-    sent_tool_frames: set[tuple[str, str, str, str]] = set()
-    persisted = False
-    send_lock = send_lock or asyncio.Lock()
-    progress = _TurnProgressState()
-    heartbeat_task = asyncio.create_task(
-        _chat_heartbeat(
-            websocket,
-            scope=scope,
-            turn_id=turn_id,
-            send_lock=send_lock,
-            progress=progress,
-        )
-    )
-    done_sent = False
-    failed = False
-    backend_thread_id = str(getattr(thread, "id", "") or "").strip()
-    backend_turn_id = ""
-    agent_events = AgentEventStream(turn_id=turn_id)
-
-    def tracked_frame(frame: dict[str, Any]) -> dict[str, Any]:
-        attached = agent_events.attach(frame)
-        _persist_agent_event_frame(username, scope, turn_id, attached)
-        return attached
-
-    def persist_partial_reply() -> dict[str, Any] | None:
-        nonlocal persisted, assistant_text
-        if persisted:
-            return None
-        final_text = chat_service._strip_replayed_chat_response(
-            assistant_text,
-            previous_assistant,
-            text,
-        ).strip()
-        if not final_text:
-            return None
-        message = chat_store.append_message(
-            username,
-            scope,
-            "assistant",
-            final_text,
-            turn_id=turn_id,
-        )
-        persisted = True
-        return message
-
-    frame = tracked_frame(
-        {
-            "type": "thread.started",
-            "scope": scope.to_dict(),
-            "thread_id": getattr(thread, "id", None) or None,
-            "turn_id": turn_id,
-        }
-    )
-    await _send_json_best_effort(
-        websocket,
-        frame,
-        send_lock,
-    )
-    try:
-        async for event in thread.stream(
-            agent_text,
-            current_project=None,
-            image_parts=vision_parts,
-        ):
-            progress.observe(
-                {
-                    "type": event.type,
-                    "stage": (event.raw or {}).get("stage")
-                    if isinstance(event.raw, dict)
-                    else None,
-                    "tool_name": event.name,
-                    "worker_alive": (event.raw or {}).get("worker_alive")
-                    if isinstance(event.raw, dict)
-                    else None,
-                }
-            )
-            if event.type == "thread_started":
-                backend_thread_id = str(event.thread_id or "").strip() or backend_thread_id
-                backend_turn_id = str(event.turn_id or "").strip() or backend_turn_id
-                thread_started = {
-                    "type": "thread.started",
-                    "scope": scope.to_dict(),
-                    "thread_id": str(event.thread_id or "").strip() or None,
-                    "turn_id": str(event.turn_id or "").strip() or turn_id,
-                }
-                copy_skill_route_receipt(event.raw, thread_started)
-                frame = tracked_frame(thread_started)
-                await _send_json_best_effort(
-                    websocket,
-                    frame,
-                    send_lock,
-                )
-            elif event.type == "assistant_delta":
-                assistant_text = chat_service._merge_stream_text(
-                    assistant_text, event.text
-                )
-                display_text = chat_service._strip_replayed_chat_response(
-                    assistant_text,
-                    previous_assistant,
-                    text,
-                    suppress_partial_replay=True,
-                )
-                assistant_sent_text = display_text
-                frame = tracked_frame(
-                    {
-                        "type": "assistant.delta",
-                        "text": display_text,
-                        "turn_id": turn_id,
-                        "accumulated": True,
-                    }
-                )
-                await _send_json_best_effort(
-                    websocket,
-                    frame,
-                    send_lock,
-                )
-            elif event.type == "progress":
-                raw_progress = event.raw if isinstance(event.raw, dict) else {}
-                frame = tracked_frame(
-                    _chat_progress_ws_frame(
-                        {
-                            **raw_progress,
-                            "message": event.text,
-                            "tool_name": event.name,
-                        },
-                        scope=scope,
-                        turn_id=turn_id,
-                    )
-                )
-                await _send_json_best_effort(
-                    websocket,
-                    frame,
-                    send_lock,
-                )
-            elif event.type == "canvas_patch":
-                envelope = event.raw if isinstance(event.raw, dict) else {}
-                frame = _canvas_patch_ws_frame(envelope, scope=scope, turn_id=turn_id)
-                if frame is not None:
-                    frame = tracked_frame(frame)
-                    await _send_canvas_scoped_turn_frame(
-                        websocket,
-                        username=username,
-                        scope=scope,
-                        frame=frame,
-                        send_lock=send_lock,
-                    )
-            elif event.type == "tool_update":
-                raw_tool_event = event.raw if isinstance(event.raw, dict) else {}
-                lifecycle_kind = tool_event_kind(raw_tool_event)
-                if event.name:
-                    tool_name = event.name
-                if lifecycle_kind == "tool_call":
-                    tool_event_sequence += 1
-                    active_tool_call_id = tool_event_call_id(
-                        raw_tool_event,
-                        fallback=f"{event.turn_id or backend_turn_id or turn_id}:{tool_event_sequence}",
-                    )
-                event_call_id = tool_event_call_id(
-                    raw_tool_event,
-                    fallback=active_tool_call_id,
-                )
-                tool_text += str(event.text or "") + "\n"
-                display_call = (
-                    chat_service._extract_display_tool_call(raw_tool_event)
-                    if lifecycle_kind == "tool_call"
-                    else None
-                )
-                frame = _tool_lifecycle_ws_frame(
-                    {
-                        "text": event.text,
-                        "name": tool_name,
-                        "tool_event_kind": lifecycle_kind or "tool_call_update",
-                        "tool_terminal": (
-                            tool_event_terminal(raw_tool_event)
-                            if lifecycle_kind == "tool_call_update"
-                            else lifecycle_kind != "tool_call"
-                        ),
-                        "tool_failed": tool_payload_failed(raw_tool_event),
-                        "tool_call_id": event_call_id,
-                        "input": display_call[1] if display_call is not None else {},
-                    },
-                    turn_id=turn_id,
-                )
-                if frame is not None:
-                    frame_key = _tool_frame_key(frame)
-                    if frame_key not in sent_tool_frames:
-                        sent_tool_frames.add(frame_key)
-                        frame = tracked_frame(frame)
-                        await _send_json_best_effort(websocket, frame, send_lock)
-                if lifecycle_kind == "tool_call_update" and tool_event_terminal(
-                    raw_tool_event
-                ):
-                    active_tool_call_id = ""
-            elif event.type == "complete":
-                assistant_text = _completion_text_or_existing(
-                    event.text, assistant_text
-                )
-
-        assistant_text = chat_service._strip_replayed_chat_response(
-            assistant_text,
-            previous_assistant,
-            text,
-        )
-        assistant_text = assistant_text.strip() or "(agent returned no content)"
-        message = chat_store.append_message(
-            username,
-            scope,
-            "assistant",
-            assistant_text,
-            turn_id=turn_id,
-        )
-        persisted = True
-        message_frame = {
-            "type": "assistant.message",
-            "turn_id": turn_id,
-            "message": message,
-        }
-        message_frame = tracked_frame(message_frame)
-        await _send_json_best_effort(
-            websocket,
-            message_frame,
-            send_lock,
-        )
-        _schedule_scope_frame_fanout(
-            username,
-            scope,
-            message_frame,
-            exclude=websocket,
-        )
-        assistant_sent_text = _message_content(message)
-        if _should_emit_final_text(assistant_text, assistant_sent_text):
-            assistant_sent_text = assistant_text
-            frame = tracked_frame(
-                {
-                    "type": "assistant.delta",
-                    "text": assistant_text,
-                    "turn_id": turn_id,
-                    "accumulated": True,
-                }
-            )
-            await _send_json_best_effort(
-                websocket,
-                frame,
-                send_lock,
-            )
-
-        after_projects = set(list_user_projects(username))
-        for project in sorted(after_projects - before_projects):
-            project_scope = ChatScope(kind="project", id=project)
-            chat_store.append_message(
-                username,
-                project_scope,
-                "system",
-                f"Created from home conversation turn {turn_id}.",
-                turn_id=turn_id,
-            )
-            await _send_json_best_effort(
-                websocket,
-                {"type": "project.created", "project": project},
-                send_lock,
-            )
-
-        done_frame = tracked_frame(
-            {"type": "chat.done", "turn_id": turn_id, "scope": scope.to_dict()}
-        )
-        done_sent = await _send_json_best_effort(
-            websocket,
-            done_frame,
-            send_lock,
-        )
-        _schedule_scope_frame_fanout(
-            username,
-            scope,
-            done_frame,
-            exclude=websocket,
-        )
-    except (VillageAgentWorkerLostError, VillageAgentCompressionExhaustedError) as exc:
-        failed = True
-        worker_status = await village_pool.worker_status(
-            username,
-            scope_kind="home",
-            project_id=None,
-            model=model,
-            agent_model_config=agent_model_config,
-        )
-        retry_reason = (
-            "compression_exhausted"
-            if isinstance(exc, VillageAgentCompressionExhaustedError)
-            else "acp_message_too_large"
-            if isinstance(exc, VillageAgentMessageTooLargeError)
-            else "worker_lost"
-        )
-        recovery_message = (
-            "本轮 Agent 通信消息超过单行上限，已保存恢复点；请缩短本次输入或重新发送。"
-            if isinstance(exc, VillageAgentMessageTooLargeError)
-            else "村长工作流工作进程已失联，本轮已保存恢复点，可从最后阶段继续。"
-        )
-        raise chat_service.RecoverableChatTurnError(
-            recovery_message,
-            {
-                "schema": CANONICAL_CHAT_RECOVERY_SCHEMA,
-                "thread_id": backend_thread_id
-                or str(getattr(exc, "thread_id", "") or "").strip()
-                or worker_status.get("thread_id"),
-                "session_id": backend_thread_id or worker_status.get("thread_id"),
-                "agent_session_id": worker_status.get("agent_session_id"),
-                "turn_id": turn_id,
-                "backend_turn_id": backend_turn_id
-                or str(getattr(exc, "turn_id", "") or "").strip()
-                or None,
-                "canvas": {
-                    "project_id": None,
-                    "canvas_id": None,
-                    "revision": None,
-                },
-                "pending_tool": str(getattr(exc, "pending_tool", "") or "").strip()
-                or tool_name
-                or None,
-                "last_event": {
-                    "type": str(getattr(exc, "last_event", "") or "").strip()
-                    or progress.last_event,
-                    "stage": progress.stage,
-                    "age_seconds": round(
-                        max(0.0, time.monotonic() - progress.last_progress_at), 1
-                    ),
-                },
-                "worker": worker_status,
-                "retry_reason": retry_reason,
-                "retryable": True,
-            },
-        ) from exc
-    except asyncio.CancelledError:
-        # A disconnected client cancels the turn; never synthesize a terminal
-        # ``chat.done`` frame for work that did not finish.
-        failed = True
-        raise
-    except Exception:
-        failed = True
-        raise
-    finally:
-        heartbeat_task.cancel()
-        with contextlib.suppress(asyncio.CancelledError):
-            await heartbeat_task
-        if not failed:
-            persist_partial_reply()
-        if not done_sent and not failed:
-            done_frame = tracked_frame(
-                {
-                    "type": "chat.done",
-                    "turn_id": turn_id,
-                    "scope": scope.to_dict(),
-                }
-            )
-            await _send_json_best_effort(
-                websocket,
-                done_frame,
-                send_lock,
-            )
-            _schedule_scope_frame_fanout(
-                username,
-                scope,
-                done_frame,
-                exclude=websocket,
-            )
-
-
 @router.websocket("/chat/ws")
 async def chat_ws(websocket: WebSocket) -> None:
     await websocket.accept()
@@ -3870,8 +3387,9 @@ async def chat_ws(websocket: WebSocket) -> None:
                     finally:
                         _unmark_project_turn_active(username, scope)
                 elif scope.kind == "home":
-                    await _stream_home_turn(
+                    await _stream_project_turn(
                         websocket=websocket,
+                        user=user,
                         username=username,
                         scope=scope,
                         text=text,

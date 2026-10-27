@@ -213,19 +213,6 @@
       ]
     },
     {
-      "id": "frontend.companion",
-      "platform": "frontend",
-      "paths": [
-        "frontend/src/features/companion"
-      ],
-      "responsibility": "Companion assets and presentation state.",
-      "gates": [
-        "file_sizes",
-        "frontend_boundaries",
-        "typescript"
-      ]
-    },
-    {
       "id": "frontend.viewer_kit",
       "platform": "frontend",
       "paths": [

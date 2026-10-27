@@ -1,0 +1,703 @@
+{
+  "contractId": "tapcanvas/video-prompt-authoring",
+  "version": "4.1.0",
+  "purpose": "Shared authoring responsibilities for faithful audiovisual storytelling. Preserve complete plot and frozen speech; choose methods freely. The current artifact schema alone owns fields, references and timing; dimension field lists apply only when that schema declares them.",
+  "runtimePolicy": {
+    "semanticAuthoringOwner": "tapcanvas-video-prompt-writer",
+    "hostInstructionScope": "immutable_facts_and_machine_protocol_only",
+    "hostSemanticMethodOverride": false,
+    "semanticQualityGate": false,
+    "reviewMode": "optional_author_correction",
+    "reviewBudget": {
+      "strategy": "author_selects_checks_and_repairs_from_actual_needs",
+      "repairScope": "actual author-introduced contradictions within granted authority",
+      "replayAfterRevision": false,
+      "stopConditions": [
+        "the requested prompt artifact expresses the frozen plot and complete speech",
+        "unavailable facts or authority are disclosed without fabricated resolution"
+      ],
+      "noProgressPolicy": "use actual evidence; no fixed review sequence, draft count, score or production gate",
+      "externalReviewLoop": false,
+      "extraMediaSubmission": false
+    },
+    "postGenerationGate": false,
+    "providerFactsSource": "dynamic_generation_contract",
+    "promptExampleAssociation": "discretionary_non_blocking",
+    "promptExampleCandidatePolicy": "optional_search_then_selective_receipt_bound_read",
+    "knowledgeEnrichmentCompletionGate": false,
+    "promptExampleSourceMutation": false,
+    "promptExampleNoMatchPolicy": "record_diagnostic_then_continue_without_false_attribution"
+  },
+  "authorityOrder": [
+    "user_intent_and_source_facts",
+    "current_project_state_and_real_assets",
+    "dynamic_generation_contract",
+    "video_prompt_authoring_contract",
+    "selected_market_validated_prompt_example",
+    "writer_task_specific_composition",
+    "domain_extensions",
+    "non_blocking_heuristics"
+  ],
+  "prioritySystem": {
+    "resolutionMode": "lexicographic",
+    "weightMeaning": "Historical priority metadata describes responsibility only; it does not allocate attention, tokens, shots, actions or scores.",
+    "tiers": [
+      {
+        "id": "P0_EXECUTABLE_FACTS",
+        "weight": 100,
+        "includes": [
+          "user intent",
+          "source facts",
+          "project state",
+          "real asset roles",
+          "permissions",
+          "dynamic generation contract"
+        ],
+        "rule": "Respect user scope, plot facts, frozen speech, real assets, permissions and provider boundaries; chapter authors may omit non-plot detail without losing plot."
+      },
+      {
+        "id": "P1_STORY_LEGIBILITY",
+        "weight": 90,
+        "includes": [
+          "who",
+          "where and when",
+          "goal",
+          "cause",
+          "choice or contact",
+          "visible result",
+          "next consequence"
+        ],
+        "rule": "A viewer can understand the plot, motives needed for it, causes and important results from the delivered sound and image."
+      },
+      {
+        "id": "P2_STATE_CONTINUITY",
+        "weight": 80,
+        "includes": [
+          "identity",
+          "position",
+          "direction",
+          "velocity",
+          "posture",
+          "contact",
+          "held objects",
+          "force result",
+          "environment residue",
+          "sound phase"
+        ],
+        "rule": "Preserve story-relevant states across continuous action or express the authorized time and scene transition."
+      },
+      {
+        "id": "P3_SHOT_EXECUTION",
+        "weight": 60,
+        "includes": [
+          "action",
+          "performance",
+          "framing",
+          "lighting",
+          "material",
+          "sound",
+          "editing"
+        ],
+        "rule": "Choose sufficient execution details for this scene; no single-change rule, motion requirement or fixed technique."
+      },
+      {
+        "id": "P4_DOMAIN_EXPRESSION",
+        "weight": 35,
+        "includes": [
+          "genre grammar",
+          "combat choreography",
+          "dialogue staging",
+          "product demonstration",
+          "VFX treatment",
+          "montage method"
+        ],
+        "rule": "Select relevant methods freely; examples do not define facts, fixed routines or quotas."
+      },
+      {
+        "id": "P5_POLISH",
+        "weight": 15,
+        "includes": [
+          "style adjectives",
+          "named equipment when already frozen",
+          "decorative texture",
+          "optional negative constraints",
+          "non-blocking heuristics"
+        ],
+        "rule": "Optional expression supports the story without crowding out necessary plot."
+      }
+    ]
+  },
+  "sceneAdaptation": {
+    "decisionOwner": "writer_from_frozen_context",
+    "allowedStructures": [
+      "continuous_scene_or_action_chain",
+      "explicit_temporal_or_spatial_montage",
+      "designed_transition_then_primary_scene",
+      "dialogue_or_performance_scene",
+      "product_or_subject_demonstration"
+    ],
+    "selectionEvidence": [
+      "temporalContext",
+      "sceneState",
+      "continuityLedger",
+      "sourceSpanText",
+      "startKeyframe",
+      "endKeyframe",
+      "durationBudget",
+      "UserIntentContract"
+    ],
+    "forbiddenDefaults": [
+      "fixed genre template",
+      "fixed shot quota",
+      "fixed duration range",
+      "fixed camera brand",
+      "fixed negative prompt pile",
+      "keyword or regex routing"
+    ]
+  },
+  "dimensions": [
+    {
+      "id": "market_validated_example_analogy",
+      "owner": "writer_for_semantic_selection_and_derivation",
+      "writerInputs": [
+        "promptExampleRetrievalScope@3",
+        "prompt_example_search candidate receipt",
+        "selectively read immutable bodies"
+      ],
+      "writerOutputs": [
+        "new derived clips[].shots",
+        "creativeReview"
+      ],
+      "reviewerChecks": [
+        "Examples are optional; only successfully read bodies are attributed, with their exact source receipts.",
+        "Retrieval failure is diagnostic; author from current facts without copying example identities, plot or specifications."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "originality_and_rights_safe_projection",
+      "owner": "parent_for_rights_facts_writer_for_original_projection",
+      "writerInputs": [
+        "source and rights facts",
+        "frozen speechEvents",
+        "canonical assets",
+        "style intent"
+      ],
+      "writerOutputs": [
+        "provider-facing clip fields",
+        "creativeReview"
+      ],
+      "reviewerChecks": [
+        "Mentions and style references are never treated as authorization; use actual rights and project facts.",
+        "Preserve frozen speech and authorized assets; there is no mandatory originality-difference count or name-based production gate."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "immutable_clip_fact_projection",
+      "owner": "parent_agent_for_facts_writer_for_projection",
+      "writerInputs": [
+        "sourceReceipt",
+        "beat",
+        "sequenceContext.chapterArc",
+        "sequenceContext.previous",
+        "sequenceContext.current",
+        "sequenceContext.next",
+        "assetObjectContracts"
+      ],
+      "writerOutputs": [
+        "clips[].continuity",
+        "clips[].shots",
+        "clips[].speakerBindings"
+      ],
+      "reviewerChecks": [
+        "Opaque machine identities do not supply story meaning; preserve frozen participants, plot order, important states and results.",
+        "Add execution details within granted creative scope, without disguising new plot facts as source facts."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "delivery_scope_and_duration",
+      "owner": "parent_agent_for_whole_clip_duration_writer_for_ordered_shots_video_model_for_intra_clip_pacing",
+      "writerInputs": [
+        "deliveryContract",
+        "durationBudget",
+        "generationContract"
+      ],
+      "writerOutputs": [
+        "ordered shots"
+      ],
+      "hostOutputs": [
+        "provider request duration"
+      ],
+      "reviewerChecks": [
+        "Deliver the requested artifact scope; whole-clip duration comes from the dynamic provider contract.",
+        "Shot count and internal pacing follow the content; no invented shot clock, speech rate or capacity quota."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "source_coverage_and_causality",
+      "owner": "parent_agent_and_writer",
+      "writerInputs": [
+        "sourceEvidence",
+        "sourceSpanText",
+        "sourceStartMarker",
+        "sourceEndMarker",
+        "beat.storyEvents",
+        "sequenceContext.chapterArc",
+        "sequenceContext.previous",
+        "sequenceContext.current",
+        "sequenceContext.next",
+        "dramaticCoverage"
+      ],
+      "writerOutputs": [
+        "shots[].action",
+        "shots[].storyEventIds"
+      ],
+      "hostOutputs": [
+        "validated event identities and order"
+      ],
+      "reviewerChecks": [
+        "The executable sound and image express all frozen plot events with their causal relations and important results.",
+        "Source facts remain distinct from summaries and author choices; event references do not prove missing story content."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "audience_narrative_legibility",
+      "owner": "parent_agent_and_writer",
+      "writerInputs": [
+        "sourceSpanText",
+        "dramaticPlan",
+        "pacingDecision",
+        "narrativeAudioPlan",
+        "temporalContext",
+        "durationBudget"
+      ],
+      "writerOutputs": [
+        "logline",
+        "shots[].visualTask",
+        "shots[].action",
+        "speechEvents[].delivery",
+        "shots[].sound",
+        "continuity",
+        "creativeReview"
+      ],
+      "reviewerChecks": [
+        "The audience can understand the current plot, identity, necessary motive, causal change and consequence.",
+        "Choose visual action, dialogue, narration, inner voice or combinations freely; preserve the distinction between fact, belief and intended audience experience."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "temporal_context",
+      "owner": "parent_agent",
+      "writerInputs": [
+        "temporalContext",
+        "returnAnchor",
+        "timeJumpNote"
+      ],
+      "writerOutputs": [
+        "continuity",
+        "shots[].visualTask",
+        "shots[].notes"
+      ],
+      "reviewerChecks": [
+        "Respect the declared timeline and relevant character states; establish memory, forecast, jumps and returns as the story requires."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "scene_space_and_blocking",
+      "owner": "parent_agent_and_writer",
+      "writerInputs": [
+        "sceneState",
+        "continuityLedger",
+        "beat.storyEvents",
+        "assetObjectContracts object states",
+        "blocking facts"
+      ],
+      "writerOutputs": [
+        "continuity",
+        "framing",
+        "composition",
+        "action"
+      ],
+      "reviewerChecks": [
+        "Preserve declared story-relevant positions, contact and movement; an opaque spatial boundary remains opaque unless the scene establishes a reveal.",
+        "Framing and axis choices serve comprehension without requiring a blocking ledger or a fixed shot order."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "ensemble_performance_continuity",
+      "owner": "parent_agent_and_writer",
+      "writerInputs": [
+        "beat.characters",
+        "beat.storyEvents",
+        "assetObjectContracts object states",
+        "spokenScript"
+      ],
+      "writerOutputs": [
+        "continuity",
+        "shots[].visualTask",
+        "shots[].action",
+        "shots[].notes",
+        "shots[].composition",
+        "editRhythm",
+        "creativeReview"
+      ],
+      "reviewerChecks": [
+        "Characters respond according to current stimulus and source facts; stable listening and stillness can be valid performance.",
+        "No per-character reaction chain, per-line gesture, emotional curve or per-shot change requirement."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "character_visible_state",
+      "owner": "parent_agent",
+      "writerInputs": [
+        "characterStateVersions",
+        "visualStateRefs",
+        "continuityLedger"
+      ],
+      "writerOutputs": [
+        "continuity",
+        "action",
+        "materialResponse"
+      ],
+      "reviewerChecks": [
+        "Preserve relevant identity, injury, age, wardrobe and held-object states within the declared timeline; changes have story support."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "asset_roles_and_identity",
+      "owner": "parent_agent_and_renderer",
+      "writerInputs": [
+        "assetObjectContracts",
+        "validated visual asset plans"
+      ],
+      "writerOutputs": [
+        "canonical names in authoring visual fields"
+      ],
+      "reviewerChecks": [
+        "Use real asset identities and their granted reference roles; never invent URLs, node IDs or image indices.",
+        "References establish appearance and other declared facts without replacing the authored plot or implying a new visible participant."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "shot_information_task",
+      "owner": "writer",
+      "writerInputs": [
+        "beat facts",
+        "durationBudget"
+      ],
+      "writerOutputs": [
+        "shots[].action",
+        "shots[].camera",
+        "shots[].sound"
+      ],
+      "reviewerChecks": [
+        "Shots carry the current story through action, performance, observation or sound; multiple related events may share a shot.",
+        "Cuts and holds are author choices; no mandatory single-change, constant-motion, fast-cut or shot-count rule."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "action_causality_physics",
+      "owner": "writer",
+      "writerInputs": [
+        "frozen actions",
+        "state transitions",
+        "domain extension"
+      ],
+      "writerOutputs": [
+        "shots[].action",
+        "shots[].motionDynamics",
+        "shots[].materialResponse"
+      ],
+      "reviewerChecks": [
+        "Preserve the important action mechanism, actor, contact target and result; choose enough visible detail for understanding.",
+        "For an exclusive shared-object contact, keep one assigned driver active limb and contact target; mutually exclusive body and object states do not overlap.",
+        "Camera, effects and sound support plot action; authorized stylization, simple actions and editorial omissions do not require a full force ledger."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "intra_clip_state_chain",
+      "owner": "parent_agent_and_writer",
+      "writerInputs": [
+        "temporalContext",
+        "sceneState",
+        "continuityLedger",
+        "startKeyframe",
+        "endKeyframe",
+        "durationBudget",
+        "beat.storyEvents"
+      ],
+      "writerOutputs": [
+        "continuity",
+        "shots[].visualTask",
+        "shots[].action",
+        "shots[].notes",
+        "editRhythm",
+        "creativeReview"
+      ],
+      "hostOutputs": [],
+      "reviewerChecks": [
+        "Continuous action inherits relevant state; declared time or scene transitions may establish a new state.",
+        "No mandatory velocity-debt chain, per-shot state table or repeated full state description."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "camera_composition_and_lens",
+      "owner": "writer",
+      "writerInputs": [
+        "visualTask",
+        "blocking facts",
+        "domain extension"
+      ],
+      "writerOutputs": [
+        "framing",
+        "lensIntent",
+        "composition",
+        "cameraMove"
+      ],
+      "reviewerChecks": [
+        "Choose framing and movement appropriate to the current scene; stable cameras and diverse shot structures remain available.",
+        "Use only fields the current schema declares; optional details need not become equipment lists or repeated instructions."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "lighting_material_and_atmosphere",
+      "owner": "writer",
+      "writerInputs": [
+        "filmBible",
+        "beat.visualIntent",
+        "sceneState",
+        "material facts",
+        "current project look",
+        "optional selected visual methods"
+      ],
+      "writerOutputs": [
+        "lighting",
+        "materialResponse",
+        "composition",
+        "framing",
+        "creativeReview"
+      ],
+      "reviewerChecks": [
+        "Respect project medium, asset appearance and established scene facts while choosing lighting and material treatment for this scene.",
+        "No default cinema look, named camera, compulsory contrast hierarchy or requirement to reauthor every visual property per shot."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "dialogue_and_voice_performance",
+      "owner": "chapter_author_for_complete_speech_clip_writer_for_starting_shot_video_model_for_pacing",
+      "writerInputs": [
+        "dialogueScript",
+        "narrativeAudioPlan",
+        "speaker bindings",
+        "dialoguePaceRate"
+      ],
+      "writerOutputs": [
+        "shots[].speechEventIds"
+      ],
+      "hostOutputs": [
+        "complete frozen speech text and performance in the first associated shot"
+      ],
+      "sharedSemantics": {
+        "identityBinding": "explicit frozen speechEventId appears once at its starting shot",
+        "coverageRule": "each complete line remains one event even when camera cuts occur",
+        "timelineRule": "speech may continue across ordered shots inside its declared clip without assigned seconds"
+      },
+      "reviewerChecks": [
+        "Preserve frozen speech text, speaker, voice, order and clip ownership; reference each event at its actual starting shot.",
+        "Speech may continue across shots without repetition or invented word-rate and first-shot-capacity rules."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "sound_and_narrative_legibility",
+      "owner": "parent_agent_for_narrative_audio_writer_for_sfx",
+      "writerInputs": [
+        "narrativeAudioPlan",
+        "scene sound facts"
+      ],
+      "writerOutputs": [
+        "sound",
+        "soundPerspective",
+        "dialogueDelivery"
+      ],
+      "reviewerChecks": [
+        "Sound supports plot comprehension; narration, inner voice, music, silence and text are selected from the current story and user intent.",
+        "Separate frozen speech from sound design; factual on-set sounds and expressive sound design remain distinguishable."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "continuity_and_exit_state",
+      "owner": "parent_agent_for_target_writer_for_execution",
+      "writerInputs": [
+        "startKeyframe",
+        "endKeyframe",
+        "continuityLedger",
+        "assetObjectContracts[].startState",
+        "assetObjectContracts[].endState",
+        "closureMode"
+      ],
+      "writerOutputs": [
+        "continuity",
+        "shots[].visualTask",
+        "shots[].action",
+        "shots[].notes"
+      ],
+      "reviewerChecks": [
+        "Start from the frozen entry and express the plot leading to its exit or handoff; do not replay prior completed events or anticipate later results."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "sequence_control_execution",
+      "owner": "parent_sequence_agent_and_clip_writer",
+      "writerInputs": [
+        "sequenceContext.sequenceControlPlan",
+        "sequenceContext.sequenceTimeline",
+        "sequenceContext.previous/current/next storyEvents spokenScript keyframes and assetObjectContracts",
+        "current Beat and current segment"
+      ],
+      "writerOutputs": [
+        "shots[].action",
+        "shots[].camera",
+        "shots[].sound",
+        "shots[].storyEventIds",
+        "shots[].speechEventIds"
+      ],
+      "reviewerChecks": [
+        "The current Clip serves the complete story and respects declared cross-clip facts, scope and handoffs.",
+        "No independently imposed local arc, ending, pacing formula or fixed whole-film replay procedure."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "deterministic_render_projection",
+      "owner": "renderer",
+      "writerInputs": [
+        "structured clip JSON",
+        "real manifest"
+      ],
+      "writerOutputs": [
+        "structured clip JSON only"
+      ],
+      "reviewerChecks": [
+        "The current schema owns output shape and explicit event references; the renderer preserves complete frozen speech and real reference bindings.",
+        "Provider-visible fields contain actual sound and image instructions; identities and diagnostics stay in their declared protocol fields."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    },
+    {
+      "id": "embedded_review_evidence",
+      "owner": "writer_for_optional_correction",
+      "writerInputs": [
+        "complete first draft",
+        "all prior dimensions"
+      ],
+      "writerOutputs": [
+        "creativeReview",
+        "selfQaNote",
+        "revised final clip"
+      ],
+      "reviewerChecks": [
+        "Author checks and corrections may follow actual needs; no independent reviewer, required replay procedure, fixed draft count or score.",
+        "When review evidence is requested, record only actual findings and changes; it cannot gate production, discard assets or prove an unobserved video result."
+      ],
+      "extensionPolicy": "Optional methods support the current plot and user intent; they do not add fields, fixed processes, quotas or production gates."
+    }
+  ],
+  "consumers": {
+    "skills": [
+      {
+        "name": "tapcanvas-video-workflow",
+        "path": "apps/agents-cli/skills/tapcanvas-video-workflow/SKILL.md",
+        "responsibility": "freeze parent facts and dispatch formal clip authoring"
+      },
+      {
+        "name": "tapcanvas-video-prompt-writer",
+        "path": "apps/agents-cli/skills/tapcanvas-video-prompt-writer/SKILL.md",
+        "responsibility": "author and revise one executable clip contract"
+      },
+      {
+        "name": "tapcanvas-video-reviewer",
+        "path": "apps/agents-cli/skills/tapcanvas-video-reviewer/SKILL.md",
+        "responsibility": "review the same dimensions in embedded or standalone mode"
+      },
+      {
+        "name": "tapcanvas-api",
+        "path": "apps/agents-cli/skills/tapcanvas-api/SKILL.md",
+        "responsibility": "route executable prompt work through the formal workflow"
+      },
+      {
+        "name": "tapcanvas-video-prompt-governance",
+        "path": "apps/agents-cli/skills/tapcanvas-video-prompt-governance/SKILL.md",
+        "responsibility": "classify new knowledge and govern versioned contract changes"
+      }
+    ],
+    "roles": [
+      {
+        "name": "video-prompt-writer",
+        "path": "apps/agents-cli/agent-definitions/defaults.json",
+        "requiredSkillBundle": [
+          "tapcanvas-video-prompt-writer"
+        ]
+      }
+    ],
+    "forbiddenRoleBindings": [
+      {
+        "skill": "tapcanvas-video-reviewer",
+        "roleNames": [
+          "film-editor",
+          "post-producer"
+        ]
+      }
+    ],
+    "documentation": [
+      "apps/hono-api/README.md"
+    ]
+  },
+  "evaluationPolicy": {
+    "deterministic": {
+      "scope": [
+        "json_shape",
+        "contract_version",
+        "declared_consumers",
+        "role_skill_bundle",
+        "retired_invocation_state"
+      ],
+      "forbiddenScope": [
+        "creative_quality",
+        "semantic_fidelity",
+        "narrative_legibility",
+        "aesthetic_judgment"
+      ]
+    },
+    "semantic": {
+      "source": "agents_judge",
+      "suitePath": "apps/agents-cli/skills/tapcanvas-video-prompt-writer/evals/evals.json",
+      "rubricSource": "dimensions[].reviewerChecks",
+      "resultContract": "AgentEvaluationResultV1",
+      "requiredBefore": [],
+      "comparison": "blind_current_vs_candidate",
+      "runtimeGate": false
+    }
+  },
+  "artifactScope": {
+    "tapcanvas.clip-production-packet/v2": "Author scene and ordered shots with action, camera, sound, storyEventIds and speechEventIds. No per-shot durations, speech seconds or clock-derived references. The provider request owns whole-clip duration; the video model adapts intra-clip pacing.",
+    "otherArtifacts": "Only fields explicitly present in the current artifact schema apply. Detailed typed-shot timing rules belong to their own declared contract, never to compact packets."
+  }
+}

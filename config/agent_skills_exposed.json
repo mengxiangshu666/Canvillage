@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "sources": {
+    "sidecar": "third_party/xiaoshu-agent/1.0.0/apps/agents-cli/skills",
+    "product": "agent_skills"
+  },
+  "skills": {
+    "sidecar": [
+      "cinematic-feel-director",
+      "seamless-transition-director",
+      "tapcanvas-continuity",
+      "tapcanvas-dramatic-adapter",
+      "tapcanvas-prompt-specialists",
+      "tapcanvas-screenwriter",
+      "tapcanvas-source-coverage",
+      "tapcanvas-video-authoring-stages",
+      "tapcanvas-video-prompt-governance",
+      "tapcanvas-video-prompt-writer",
+      "tvc-ad-director",
+      "video-shotcraft",
+      "wardrobe-continuity-director",
+      "seedance-emotion-director",
+      "seedance-prompt-library",
+      "seedance-storyboard-grid-to-video"
+    ],
+    "product": [
+      "village-canvas-runtime-tools",
+      "village-canvas-cinematography",
+      "village-canvas-lighting-director",
+      "village-canvas-performance-director",
+      "village-canvas-style-lock",
+      "village-canvas-image-prompt-craft",
+      "village-canvas-character-consistency",
+      "village-canvas-script-integrity",
+      "village-canvas-music-score",
+      "village-canvas-shortform-growth"
+    ]
+  }
+}

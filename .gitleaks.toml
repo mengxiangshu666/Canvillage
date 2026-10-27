@@ -26,6 +26,12 @@ stopwords = [
   "t095-consume",
   "consume-t086",
   "t219-isolated-run",
+  # 角色造型室的造型目录资源键（`morden_*` / `minguo_*` 服装与发型标识），
+  # generic-api-key 因 key:"..." 低熵模式误判，非凭据。
+  "morden_",
+  "minguo_",
+  # 技能清单中的逆向工具链枚举文案，非凭据。
+  "IDA/Ghidra/radare2/rizin/gdb/lldb/x64dbg",
 ]
 # 本地仓首次导入提交曾包含便携启动器与三份旧备份中的同一组本机凭据。
 # 当前树已迁移到 gitignored 的 项目资产/state 密钥文件；仅放行该只读历史提交，
@@ -54,6 +60,11 @@ keywords = ["password", "secret", "token", "api_key", "apikey", "access_key", "p
     '''(^|/)__tests__/''',
     '''(^|/)test_[^/]*\.py$''',
     '''[^/]*_test\.py$''',
+    # 随包 sidecar 的上游测试夹具：`fixture-key` 是假值，不是运行凭据。
+    '''^third_party/xiaoshu-agent/.*\.test\.(?:mjs|js|ts)$''',
+    # 随包 sidecar 的 profile 校验脚本；命中值是 `disabled`/`not-used-during-initialization`
+    # 这类开关文案，不是凭据。
+    '''^third_party/xiaoshu-agent/.*/scripts/verify-harness-profile\.mjs$''',
     # 该测试专门覆盖 apiKey 清理；值是测试夹具，不是运行凭据。
     '''^frontend/src/features/canvas/application/canvasMutationKernel\.test\.ts$''',
     '''\.py$''',

@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import math
 import mimetypes
+import time
 from pathlib import Path
 from typing import Any, Literal
 
@@ -218,6 +219,40 @@ def _video_result_node_patch(
     return patch
 
 
+def _apply_canvas_patch_with_retry(
+    port: Any,
+    *,
+    canvas_id: str,
+    envelope: dict[str, Any],
+    attempts: int = 3,
+) -> Any:
+    """Retry a worker-side canvas commit on revision conflicts.
+
+    The gateway already retries once.  A paid media result must not be dropped
+    just because two writes raced with the browser; the command is idempotent
+    (stable command_id + node_data patch), so a few short outer retries are safe.
+    """
+
+    from novelvideo.ports.canvas_commands import CanvasCommandPortError
+
+    last_error: CanvasCommandPortError | None = None
+    for attempt in range(max(1, attempts)):
+        try:
+            return port.apply(
+                canvas_id=canvas_id,
+                envelope=envelope,
+                expected_canvas_revision=None,
+            )
+        except CanvasCommandPortError as exc:
+            last_error = exc
+            if exc.code != "canvas_revision_conflict" or attempt + 1 >= attempts:
+                raise
+            time.sleep(0.05 * (attempt + 1))
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError("canvas patch retry loop ended without a result")
+
+
 def commit_media_result_to_canvas(
     *,
     ctx: ProjectContext,
@@ -308,11 +343,13 @@ def commit_media_result_to_canvas(
         return None
 
     try:
-        return make_canvas_command_port(
+        port = make_canvas_command_port(
             project_dir=ctx.state_dir,
             project_id=ctx.project_id,
             actor_id="media-task-runtime",
-        ).apply(
+        )
+        return _apply_canvas_patch_with_retry(
+            port,
             canvas_id=canvas_id,
             envelope={
                 "schema": "canvas_chat_commands.v1",
@@ -327,7 +364,6 @@ def commit_media_result_to_canvas(
                     }
                 ],
             },
-            expected_canvas_revision=None,
         )
     except CanvasCommandPortError as exc:
         logger.warning(

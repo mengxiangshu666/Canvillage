@@ -18,6 +18,21 @@ const HANDOFF_REFERENCE_ROLES: Partial<Record<VideoReferenceRole, NonNullable<Vi
   continuity: 'continuity_frame', motion: 'motion', style: 'style',
 };
 
+function referenceAssetIds(node: CanvasNode): string[] {
+  const data = node.data as Record<string, unknown>;
+  const values = [
+    data.scriptAssetId,
+    ...(Array.isArray(data.scriptShotKeyframeAssetIds) ? data.scriptShotKeyframeAssetIds : []),
+    ...(Array.isArray(data.scriptAssetIds) ? data.scriptAssetIds : []),
+  ];
+  return [...new Set(values.map(value => String(value ?? '').trim()).filter(Boolean))];
+}
+
+function referenceAssetState(node: CanvasNode): string {
+  const state = String((node.data as Record<string, unknown>).scriptShotKeyframeState ?? '').trim();
+  return /^[a-z][a-z0-9_-]{0,31}$/.test(state) ? state : '';
+}
+
 /** Only managed reference numbering and whitespace are excluded from version checks. */
 export function scriptVideoExecutionPromptKey(value: string): string {
   return stripManagedScriptVideoReferences(value).replace(/\s+/g, ' ').trim();
@@ -46,12 +61,16 @@ export function compileScriptVideoReferences(prompt: string, videoNodeId: string
       : referenceRoleFromVideoEdge(edge?.data?.role, edge?.data?.label) ?? inferVideoReferenceRole(node.data));
     const role = HANDOFF_REFERENCE_ROLES[inputRole ?? 'generic'] ?? 'reference';
     const wording = scriptReferenceResponsibility(role);
+    const assetIds = referenceAssetIds(node);
+    const assetState = referenceAssetState(node);
     return {
       scope: 'video' as const,
       imageNumber: index + 1,
       role,
       name: String(edge?.data?.label || node.data.displayName || '参考图').replace(/^(角色|场景|道具)\s+/, '$1'),
       sourceNodeId: node.id,
+      ...(assetIds.length ? { assetIds } : {}),
+      ...(assetState ? { assetState } : {}),
       ...wording,
       ...(role === 'state_frame' ? {
         responsibility: `是本镜状态关键帧，${node.data.scriptShotKeyframeStrategy === 'independent' ? '提供独立视点，' : ''}可见状态：${node.data.scriptShotKeyframeState || '此画面状态'}${node.data.scriptShotKeyframeFraming ? `；构图：${node.data.scriptShotKeyframeFraming}` : ''}${node.data.scriptShotKeyframePurpose ? `（参考用途：${node.data.scriptShotKeyframePurpose}，不另设动作，状态优先）` : ''}；${wording.responsibility}`,
